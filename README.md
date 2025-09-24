@@ -26,8 +26,6 @@ Whether you're beginning a modernization journey or enhancing an existing permit
 
 ## Included Assets
 
-[Required. List of the assets included in the Accelerator and where to find them. This can be as detailed as desired, but at a minimum it should be detailed by asset type (unmanaged package, datapack, documentation, and other assets) and the next level metadata type (Salesforce metadata, datapack contents, separate documentation files, etc.) and their counts.]
-
 This Accelerator includes the following assets:
 <ol>
   <li><strong>Custom Fields</strong> on the following standard PSS objects:
