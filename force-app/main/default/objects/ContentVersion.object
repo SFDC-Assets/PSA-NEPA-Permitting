@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <fullName>nepa_document_revision__c</fullName>
+        <description>Indicates which revision of the document (e.g., first revised Draft EIS)</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Indicates which revision of the document (e.g., first revised Draft EIS)</inlineHelpText>
+        <label>Document Revision</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_document_type__c</fullName>
+        <description>Type of document (e.g., NOI, Draft EIS, Final EIS, ROD)</description>
+        <inlineHelpText>Type of document (e.g., NOI, Draft EIS, Final EIS, ROD)</inlineHelpText>
+        <label>Document Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>NOI,</fullName>
+                    <default>false</default>
+                    <label>NOI,</label>
+                </value>
+                <value>
+                    <fullName>Draft EIS,</fullName>
+                    <default>false</default>
+                    <label>Draft EIS,</label>
+                </value>
+                <value>
+                    <fullName>Final EIS,</fullName>
+                    <default>false</default>
+                    <label>Final EIS,</label>
+                </value>
+                <value>
+                    <fullName>ROD</fullName>
+                    <default>false</default>
+                    <label>ROD</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_prepared_by__c</fullName>
+        <description>Responsible entity</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Responsible entity</inlineHelpText>
+        <label>Prepared By</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_public_access__c</fullName>
+        <description>Public access level for the document</description>
+        <inlineHelpText>Public access level for the document</inlineHelpText>
+        <label>Public Access</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Disclosable</fullName>
+                    <default>false</default>
+                    <label>Disclosable</label>
+                </value>
+                <value>
+                    <fullName>Non-disclosable</fullName>
+                    <default>false</default>
+                    <label>Non-disclosable</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_publish_date__c</fullName>
+        <description>Publication or submission date.</description>
+        <inlineHelpText>Publication or submission date.</inlineHelpText>
+        <label>Publish Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>nepa_revision_number__c</fullName>
+        <description>Indicates which revision of the document (e.g., first revised Draft EIS)</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Indicates which revision of the document (e.g., first revised Draft EIS)</inlineHelpText>
+        <label>Document Revision</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_status__c</fullName>
+        <description>Document production phase</description>
+        <inlineHelpText>Document production phase</inlineHelpText>
+        <label>Status</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Draft</fullName>
+                    <default>false</default>
+                    <label>Draft</label>
+                </value>
+                <value>
+                    <fullName>Complete</fullName>
+                    <default>false</default>
+                    <label>Complete</label>
+                </value>
+                <value>
+                    <fullName>Pending Review</fullName>
+                    <default>false</default>
+                    <label>Pending Review</label>
+                </value>
+                <value>
+                    <fullName>Approved</fullName>
+                    <default>false</default>
+                    <label>Approved</label>
+                </value>
+                <value>
+                    <fullName>Rejected</fullName>
+                    <default>false</default>
+                    <label>Rejected</label>
+                </value>
+                <value>
+                    <fullName>Published</fullName>
+                    <default>false</default>
+                    <label>Published</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_supplement_number__c</fullName>
+        <description>If the document is a supplement to another document, this indicates the sequence number of the supplement.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>If the document is a supplement to another document, this indicates the sequence number of the supplement.</inlineHelpText>
+        <label>Supplement Number</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_volume_title__c</fullName>
+        <description>Volume title (e.g., Appendix)</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Volume title (e.g., Appendix)</inlineHelpText>
+        <label>Volume Title</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <recordTypes>
+        <fullName>nepa_permit_document</fullName>
+        <active>true</active>
+        <description>A type of document associated to NEPA permitting processes</description>
+        <label>Document</label>
+        <picklistValues>
+            <picklist>nepa_document_type__c</picklist>
+            <values>
+                <fullName>Draft EIS%2C</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Final EIS%2C</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>NOI%2C</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>ROD</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>nepa_public_access__c</picklist>
+            <values>
+                <fullName>Disclosable</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Non-disclosable</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>nepa_status__c</picklist>
+            <values>
+                <fullName>Approved</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Complete</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Draft</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Pending Review</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Published</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Rejected</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+</CustomObject>

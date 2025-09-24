@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <fullName>nepa_current_status__c</fullName>
+        <description>Current phase (e.g., pre-application, in progress, paused, completed, cancelled)
+of the NEPA, permitting, or other authorization process (may be aggregated from related process
+status and related milestones or events).</description>
+        <inlineHelpText>Current phase (e.g., pre-application, in progress, paused, completed, cancelled)
+of the NEPA, permitting, or other authorization process (may be aggregated from related process
+status and related milestones or events).</inlineHelpText>
+        <label>Current Status</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>pre-application</fullName>
+                    <default>false</default>
+                    <label>pre-application</label>
+                </value>
+                <value>
+                    <fullName>underway</fullName>
+                    <default>false</default>
+                    <label>underway</label>
+                </value>
+                <value>
+                    <fullName>paused</fullName>
+                    <default>false</default>
+                    <label>paused</label>
+                </value>
+                <value>
+                    <fullName>completed</fullName>
+                    <default>false</default>
+                    <label>completed</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_lead_agency__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Federal agency that is undertaking the activity or responsible for the decision.</description>
+        <inlineHelpText>Federal agency that is undertaking the activity or responsible for the decision.</inlineHelpText>
+        <label>Lead Agency</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Projects</relationshipLabel>
+        <relationshipName>Projects</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_location__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Geographic area, including relationship to GIS Object, optionally also stored as a simple property
+here (e.g., latitude / longitude coordinates of the centroid of the project footprint). Where location is
+more complex than a point or is multi-state or regional, could be a text response.</description>
+        <inlineHelpText>Geographic area, including relationship to GIS Object, optionally also stored as a simple property
+here (e.g., latitude / longitude coordinates of the centroid of the project footprint). Where location is
+more complex than a point or is multi-state or regional, could be a text response.</inlineHelpText>
+        <label>Location</label>
+        <referenceTo>Location</referenceTo>
+        <relationshipLabel>Projects</relationshipLabel>
+        <relationshipName>Projects</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_parent_project__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <label>Parent Project</label>
+        <referenceTo>Program</referenceTo>
+        <relationshipLabel>Child Projects</relationshipLabel>
+        <relationshipName>Child_Projects</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_project_description__c</fullName>
+        <description>Summary of the project&apos;s goals and scope</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Summary of the project&apos;s goals and scope</inlineHelpText>
+        <label>Project Description</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_project_id__c</fullName>
+        <caseSensitive>false</caseSensitive>
+        <description>Unique identification number for the project</description>
+        <externalId>true</externalId>
+        <inlineHelpText>Unique identification number for the project</inlineHelpText>
+        <label>Project Id</label>
+        <length>32</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>true</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_project_sector__c</fullName>
+        <description>High-level project category (e.g., energy, transportation, land management)</description>
+        <inlineHelpText>High-level project category (e.g., energy, transportation, land management)</inlineHelpText>
+        <label>Project Sector</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Energy</fullName>
+                    <default>false</default>
+                    <label>Energy</label>
+                </value>
+                <value>
+                    <fullName>Transportation</fullName>
+                    <default>false</default>
+                    <label>Transportation</label>
+                </value>
+                <value>
+                    <fullName>Land Management</fullName>
+                    <default>false</default>
+                    <label>Land Management</label>
+                </value>
+                <value>
+                    <fullName>Renewable energy production</fullName>
+                    <default>false</default>
+                    <label>Renewable energy production</label>
+                </value>
+                <value>
+                    <fullName>Conventional energy production</fullName>
+                    <default>false</default>
+                    <label>Conventional energy production</label>
+                </value>
+                <value>
+                    <fullName>Electricity transmission</fullName>
+                    <default>false</default>
+                    <label>Electricity transmission</label>
+                </value>
+                <value>
+                    <fullName>Surface transportation</fullName>
+                    <default>false</default>
+                    <label>Surface transportation</label>
+                </value>
+                <value>
+                    <fullName>Aviation</fullName>
+                    <default>false</default>
+                    <label>Aviation</label>
+                </value>
+                <value>
+                    <fullName>Ports and waterways</fullName>
+                    <default>false</default>
+                    <label>Ports and waterways</label>
+                </value>
+                <value>
+                    <fullName>Water resource projects</fullName>
+                    <default>false</default>
+                    <label>Water resource projects</label>
+                </value>
+                <value>
+                    <fullName>Broadband</fullName>
+                    <default>false</default>
+                    <label>Broadband</label>
+                </value>
+                <value>
+                    <fullName>Pipelines</fullName>
+                    <default>false</default>
+                    <label>Pipelines</label>
+                </value>
+                <value>
+                    <fullName>Manufacturing</fullName>
+                    <default>false</default>
+                    <label>Manufacturing</label>
+                </value>
+                <value>
+                    <fullName>Semiconductors</fullName>
+                    <default>false</default>
+                    <label>Semiconductors</label>
+                </value>
+                <value>
+                    <fullName>Artificial intelligence and machine learning</fullName>
+                    <default>false</default>
+                    <label>Artificial intelligence and machine learning</label>
+                </value>
+                <value>
+                    <fullName>High-performance computing, advanced computer hardware and software</fullName>
+                    <default>false</default>
+                    <label>High-performance computing, advanced computer hardware and software</label>
+                </value>
+                <value>
+                    <fullName>Quantum information science and technology</fullName>
+                    <default>false</default>
+                    <label>Quantum information science and technology</label>
+                </value>
+                <value>
+                    <fullName>Data storage and data management</fullName>
+                    <default>false</default>
+                    <label>Data storage and data management</label>
+                </value>
+                <value>
+                    <fullName>Cybersecurity</fullName>
+                    <default>false</default>
+                    <label>Cybersecurity</label>
+                </value>
+                <value>
+                    <fullName>Carbon capture</fullName>
+                    <default>false</default>
+                    <label>Carbon capture</label>
+                </value>
+                <value>
+                    <fullName>Energy storage</fullName>
+                    <default>false</default>
+                    <label>Energy storage</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_project_sponsor__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Name of responsible entity, organization, or person and contact card information. Value of this field can be black if led by the lead agency.</description>
+        <inlineHelpText>Name of responsible entity, organization, or person and contact card information. Value of this field can be black if led by the lead agency.</inlineHelpText>
+        <label>Project Sponsor</label>
+        <referenceTo>Contact</referenceTo>
+        <relationshipLabel>Projects</relationshipLabel>
+        <relationshipName>Projects</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_project_title__c</fullName>
+        <externalId>false</externalId>
+        <label>Project Title</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_start_date__c</fullName>
+        <description>Initiation date for the related review or permit process</description>
+        <inlineHelpText>Initiation date for the related review or permit process</inlineHelpText>
+        <label>Start Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </fields>
+</CustomObject>

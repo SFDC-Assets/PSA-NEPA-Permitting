@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <fullName>Method_of_Submission__c</fullName>
+        <description>Method used to submit the comment</description>
+        <inlineHelpText>Method used to submit the comment</inlineHelpText>
+        <label>Method of Submission</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>online,</fullName>
+                    <default>false</default>
+                    <label>online,</label>
+                </value>
+                <value>
+                    <fullName>email,</fullName>
+                    <default>false</default>
+                    <label>email,</label>
+                </value>
+                <value>
+                    <fullName>mail,</fullName>
+                    <default>false</default>
+                    <label>mail,</label>
+                </value>
+                <value>
+                    <fullName>in-person</fullName>
+                    <default>false</default>
+                    <label>in-person</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_agency_response__c</fullName>
+        <description>Formal reply from the agency, if applicable</description>
+        <inlineHelpText>Formal reply from the agency, if applicable</inlineHelpText>
+        <label>Agency Response</label>
+        <length>20000</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_public_access__c</fullName>
+        <description>Public access level for the comment</description>
+        <inlineHelpText>Public access level for the comment</inlineHelpText>
+        <label>Public Access</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Public</fullName>
+                    <default>false</default>
+                    <label>Public</label>
+                </value>
+                <value>
+                    <fullName>Internal</fullName>
+                    <default>false</default>
+                    <label>Internal</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+</CustomObject>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <fullName>nepa_completion_date__c</fullName>
+        <description>Conclusion date (may be aggregated from a related case event for the process, as
+defined by the agency); may be split into target date/actual date/original target date fields, although these
+are best stored in Case Events (see Entity 6: Case Events).</description>
+        <inlineHelpText>Conclusion date (may be aggregated from a related case event for the process, as
+defined by the agency); may be split into target date/actual date/original target date fields, although these
+are best stored in Case Events (see Entity 6: Case Events).</inlineHelpText>
+        <label>Completion Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>nepa_federal_unique_id__c</fullName>
+        <caseSensitive>false</caseSensitive>
+        <externalId>true</externalId>
+        <label>Federal Unique Id</label>
+        <length>32</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>true</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_joint_lead_agency__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Joint lead agency, if applicable</description>
+        <inlineHelpText>Joint lead agency, if applicable</inlineHelpText>
+        <label>Joint Lead Agency</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Individual Applications</relationshipLabel>
+        <relationshipName>NEPA_Applications</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_process_outcome__c</fullName>
+        <description>Result, if applicable (e.g., Record of Decision (ROD), permit issuance).</description>
+        <inlineHelpText>Result, if applicable (e.g., Record of Decision (ROD), permit issuance).</inlineHelpText>
+        <label>Process Outcome</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>nepa_process_stage__c</fullName>
+        <description>Current stage of process, may be derived from the last case event with this Process ID.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Current stage of process, may be derived from the last case event with this Process ID.</inlineHelpText>
+        <label>Process Stage</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_public_comment_period_end_date__c</fullName>
+        <description>End date and time of public comment period</description>
+        <inlineHelpText>End date and time of public comment period</inlineHelpText>
+        <label>Public Comment Period End Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>nepa_public_comment_period_start__c</fullName>
+        <description>Start date and time of public comment period</description>
+        <inlineHelpText>Start date and time of public comment period</inlineHelpText>
+        <label>Public Comment Period Start</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>nepa_purpose_need__c</fullName>
+        <description>Optional purpose and need of the process.</description>
+        <inlineHelpText>Optional purpose and need of the process.</inlineHelpText>
+        <label>Purpose and Need</label>
+        <length>1024</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_related_project__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Reference to Project ID of parent project</description>
+        <inlineHelpText>Reference to Project ID of parent project</inlineHelpText>
+        <label>Related Project</label>
+        <referenceTo>Program</referenceTo>
+        <relationshipLabel>Individual Applications</relationshipLabel>
+        <relationshipName>Individual_Applications</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_start_date__c</fullName>
+        <description>Initiation date (may be aggregated from a related case event for the process, as defined by the
+agency); may be split into target date/actual date/original target date fields, although these are best
+stored in Case Events (see Entity 6: Case Events).</description>
+        <inlineHelpText>Initiation date (may be aggregated from a related case event for the process, as defined by the
+agency); may be split into target date/actual date/original target date fields, although these are best
+stored in Case Events (see Entity 6: Case Events).</inlineHelpText>
+        <label>Start Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </fields>
+</CustomObject>

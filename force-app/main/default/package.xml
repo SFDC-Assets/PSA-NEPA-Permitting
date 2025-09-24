@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_permitting</fullName>
+    <description>Open source package used with Public Sector Solutions for a NEPA compliant data model</description>
+    <types>
+        <members>ContentVersion.nepa_document_revision__c</members>
+        <members>ContentVersion.nepa_document_type__c</members>
+        <members>ContentVersion.nepa_prepared_by__c</members>
+        <members>ContentVersion.nepa_public_access__c</members>
+        <members>ContentVersion.nepa_publish_date__c</members>
+        <members>ContentVersion.nepa_revision_number__c</members>
+        <members>ContentVersion.nepa_status__c</members>
+        <members>ContentVersion.nepa_supplement_number__c</members>
+        <members>ContentVersion.nepa_volume_title__c</members>
+        <members>IndividualApplication.nepa_completion_date__c</members>
+        <members>IndividualApplication.nepa_federal_unique_id__c</members>
+        <members>IndividualApplication.nepa_joint_lead_agency__c</members>
+        <members>IndividualApplication.nepa_process_outcome__c</members>
+        <members>IndividualApplication.nepa_process_stage__c</members>
+        <members>IndividualApplication.nepa_public_comment_period_end_date__c</members>
+        <members>IndividualApplication.nepa_public_comment_period_start__c</members>
+        <members>IndividualApplication.nepa_purpose_need__c</members>
+        <members>IndividualApplication.nepa_related_project__c</members>
+        <members>IndividualApplication.nepa_start_date__c</members>
+        <members>Program.nepa_current_status__c</members>
+        <members>Program.nepa_lead_agency__c</members>
+        <members>Program.nepa_location__c</members>
+        <members>Program.nepa_parent_project__c</members>
+        <members>Program.nepa_project_description__c</members>
+        <members>Program.nepa_project_id__c</members>
+        <members>Program.nepa_project_sector__c</members>
+        <members>Program.nepa_project_sponsor__c</members>
+        <members>Program.nepa_project_title__c</members>
+        <members>Program.nepa_start_date__c</members>
+        <members>PublicComplaint.Method_of_Submission__c</members>
+        <members>PublicComplaint.nepa_agency_response__c</members>
+        <members>PublicComplaint.nepa_public_access__c</members>
+        <members>nepa_process_related_agencies__c.Agency__c</members>
+        <members>nepa_process_related_agencies__c.Processes__c</members>
+        <members>nepa_process_related_agencies__c.nepa_role__c</members>
+        <members>nepa_project_agency_relationship__c.Agency__c</members>
+        <members>nepa_project_agency_relationship__c.nepa_Project__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>nepa_process_related_agencies__c</members>
+        <members>nepa_project_agency_relationship__c</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>Public_Comment_Record_Page</members>
+        <name>FlexiPage</name>
+    </types>
+    <types>
+        <members>ContentVersion-Permit Document</members>
+        <members>nepa_process_related_agencies__c-Permit Application Agency Relationship Layout</members>
+        <members>nepa_project_agency_relationship__c-Project Agency Relationship Layout</members>
+        <name>Layout</name>
+    </types>
+    <types>
+        <members>NEPA_Permitting</members>
+        <name>PermissionSet</name>
+    </types>
+    <types>
+        <members>NewEvent</members>
+        <members>NewTask</members>
+        <name>QuickAction</name>
+    </types>
+    <types>
+        <members>ContentVersion.nepa_permit_document</members>
+        <name>RecordType</name>
+    </types>
+    <version>62.0</version>
+</Package>
