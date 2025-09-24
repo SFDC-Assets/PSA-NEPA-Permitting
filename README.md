@@ -13,6 +13,8 @@ The NEPA and Permitting Data Model Accelerator helps U.S. federal and state agen
 
 This Accelerator extends the PSS [**Application and Authorization Data Model**](https://developer.salesforce.com/docs/atlas.en-us.psc_api.meta/psc_api/psc_data_model_application_authorization.htm) by mapping CEQ’s defined entities and attributes to Salesforce data components - adding fields to Public Sector Solutions core objects. It provides agencies with a concrete starting point to comply with Title II of the Evidence Act and open data guidance outlined in the Office of Management and Budget (OMB) Memorandum [**M-25-05**](https://www.whitehouse.gov/wp-content/uploads/2025/01/M-25-05-Phase-2-Implementation-of-the-Foundations-for-Evidence-Based-Policymaking-Act-of-2018-Open-Government-Data-Access-and-Management-Guidance.pdf).
 
+![NEPA to Application and Authorization Data Model Mapping](/docs/NEPA%20to%20Salesforce%20Mapping.jpeg)
+
 **Key benefits include**:
 - **Compliance out of the box**: Implements CEQ's NEPA and Permitting Data and Technology Standard using Salesforce-native components.
 - **Faster implementation**: Accelerates modernization efforts across permitting systems with ready-made metadata aligned to federal guidance.
