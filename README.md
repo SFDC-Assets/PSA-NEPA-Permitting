@@ -77,8 +77,8 @@ This Accelerator includes the following assets:
 
 Use the links below to install the unmanaged package into your org:
 
-* [Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tfn000001UoMz)
-* [Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tfn000001UoMz)
+* [Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tfn000001Uohx)
+* [Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tfn000001Uohx)
 
 ## Post-Install Setup & Configuration
 * Assign users the Permission Set `NEPA Permitting`
