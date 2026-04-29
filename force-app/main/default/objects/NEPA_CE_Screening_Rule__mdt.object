@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>CE classification rules seeded from NEPATEC v2.0 corpus (54,668 CE projects). Used by NEPA_CE_Screener Flow to classify IndividualApplication records into CE / EA / EIS and recommend the applicable CE code. Tier 1 = high-confidence agency+sector+type rules; Tier 2 = action-type discriminators; NAICS = applicant industry routing.</description>
+    <label>NEPA CE Screening Rule</label>
+    <pluralLabel>NEPA CE Screening Rules</pluralLabel>
+    <fields>
+        <fullName>Rule_Label__c</fullName>
+        <description>Human-readable rule name for display and debugging.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Rule Label</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Tier__c</fullName>
+        <description>Rule tier: 1 = high-confidence sector+type, 2 = action-type discriminator, NAICS = applicant industry routing.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Tier</label>
+        <length>10</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Agency__c</fullName>
+        <description>Lead agency abbreviation: DOE, BLM, USFS, DOD, or ALL.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Agency</label>
+        <length>10</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Sector_Key__c</fullName>
+        <description>Distinctive sector substring to match against Program.nepa_project_sector__c using Contains logic. For multi-key matching, separate with |.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Sector Key</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Type_Key__c</fullName>
+        <description>Distinctive project type substring to match against IndividualApplication nepa_project_type context using Contains logic.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Type Key</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Action_Types__c</fullName>
+        <description>Semicolon-separated action types this rule applies to. Empty = applies to all action types. Matches against IndividualApplication.nepa_action_type__c.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Action Types</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>CE_Code__c</fullName>
+        <description>Normalized CE code to assign when this rule matches. Populates IndividualApplication.nepa_process_code__c.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>CE Code</label>
+        <length>150</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Review_Type__c</fullName>
+        <description>Recommended NEPA review type: CE, EA, or EIS. Populates IndividualApplication.nepa_review_type__c.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Review Type</label>
+        <length>10</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Confidence__c</fullName>
+        <description>Screening confidence output: High, Medium-High, Medium, or Low. Populates IndividualApplication.nepa_screening_confidence__c.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Confidence</label>
+        <length>20</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Requires_Acreage_Check__c</fullName>
+        <description>If true, the flow must compare IndividualApplication.nepa_disturbance_acres__c against Acreage_Threshold__c before confirming this CE code.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Requires Acreage Check</label>
+        <type>Checkbox</type>
+        <defaultValue>false</defaultValue>
+    </fields>
+    <fields>
+        <fullName>Acreage_Threshold__c</fullName>
+        <description>Maximum surface disturbance in acres for this CE code to apply. 0 means no limit.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Acreage Threshold</label>
+        <precision>8</precision>
+        <scale>2</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Requires_GIS_Check__c</fullName>
+        <description>If true, the flow checks nepa_extraordinary_circumstances__c before confirming. Extraordinary circumstances flags downgrade confidence or disqualify CE.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Requires GIS Check</label>
+        <type>Checkbox</type>
+        <defaultValue>false</defaultValue>
+    </fields>
+    <fields>
+        <fullName>NAICS_Code__c</fullName>
+        <description>For Tier=NAICS rules only: NAICS code (2-6 digits) to match against Program.nepa_applicant_naics__c.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>NAICS Code</label>
+        <length>10</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>CE_Namespace__c</fullName>
+        <description>For Tier=NAICS rules: semicolon-separated CE code families applicable to this NAICS. Used to narrow the code search space before Tier 1/2 rules fire.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>CE Namespace</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Confidence_Modifier__c</fullName>
+        <description>For Tier=NAICS rules: Low = reduce confidence for high-risk industries (NAICS 211/212). Empty = no modification.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Confidence Modifier</label>
+        <length>20</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Classification_Basis__c</fullName>
+        <description>Template text appended to IndividualApplication.nepa_classification_basis__c when this rule fires. Documents the rule path for the administrative record.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Classification Basis</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Priority__c</fullName>
+        <description>Evaluation priority within the same tier and agency. Lower number = evaluated first. Tier 1 rules with higher record counts get lower (earlier) priority numbers.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Priority</label>
+        <precision>5</precision>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Active__c</fullName>
+        <description>Inactive rules are skipped by the screener flow. Set to false to disable a rule without deleting it.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Active</label>
+        <type>Checkbox</type>
+        <defaultValue>true</defaultValue>
+    </fields>
+    <fields>
+        <fullName>Record_Count_NEPATEC__c</fullName>
+        <description>Number of NEPATEC v2.0 corpus records this rule was derived from. Higher counts indicate higher empirical confidence.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>NEPATEC Record Count</label>
+        <precision>8</precision>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+</CustomObject>

@@ -2,8 +2,8 @@
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
     <fields>
         <fullName>Method_of_Submission__c</fullName>
-        <description>Method used to submit the comment</description>
-        <inlineHelpText>Method used to submit the comment</inlineHelpText>
+        <description>Method used to submit the comment.</description>
+        <inlineHelpText>How the comment was submitted (online, email, mail, or in-person).</inlineHelpText>
         <label>Method of Submission</label>
         <required>false</required>
         <trackHistory>false</trackHistory>
@@ -13,42 +13,42 @@
             <valueSetDefinition>
                 <sorted>false</sorted>
                 <value>
-                    <fullName>online,</fullName>
+                    <fullName>Online</fullName>
                     <default>false</default>
-                    <label>online,</label>
+                    <label>Online</label>
                 </value>
                 <value>
-                    <fullName>email,</fullName>
+                    <fullName>Email</fullName>
                     <default>false</default>
-                    <label>email,</label>
+                    <label>Email</label>
                 </value>
                 <value>
-                    <fullName>mail,</fullName>
+                    <fullName>Mail</fullName>
                     <default>false</default>
-                    <label>mail,</label>
+                    <label>Mail</label>
                 </value>
                 <value>
-                    <fullName>in-person</fullName>
+                    <fullName>In-Person</fullName>
                     <default>false</default>
-                    <label>in-person</label>
+                    <label>In-Person</label>
                 </value>
             </valueSetDefinition>
         </valueSet>
     </fields>
     <fields>
         <fullName>nepa_agency_response__c</fullName>
-        <description>Formal reply from the agency, if applicable</description>
-        <inlineHelpText>Formal reply from the agency, if applicable</inlineHelpText>
+        <description>Formal reply from the agency, if applicable.</description>
+        <inlineHelpText>Formal agency reply to this comment, if applicable.</inlineHelpText>
         <label>Agency Response</label>
-        <length>20000</length>
+        <length>32768</length>
         <trackHistory>false</trackHistory>
         <type>LongTextArea</type>
-        <visibleLines>3</visibleLines>
+        <visibleLines>5</visibleLines>
     </fields>
     <fields>
         <fullName>nepa_public_access__c</fullName>
-        <description>Public access level for the comment</description>
-        <inlineHelpText>Public access level for the comment</inlineHelpText>
+        <description>Public access level for the comment.</description>
+        <inlineHelpText>Public (externally visible) or Internal (agency only).</inlineHelpText>
         <label>Public Access</label>
         <required>false</required>
         <trackHistory>false</trackHistory>
@@ -69,5 +69,118 @@
                 </value>
             </valueSetDefinition>
         </valueSet>
+    </fields>
+    <!-- CEQ Standard v1.2 additions -->
+    <fields>
+        <fullName>nepa_organization__c</fullName>
+        <description>Optional organization affiliation of the commenter.</description>
+        <inlineHelpText>Organization or affiliation of the commenter (optional).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Organization</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_category__c</fullName>
+        <description>Optional category to organize types of comments or to tag comments based on the topics addressed in the comment. Supports AI-assisted comment analysis.</description>
+        <inlineHelpText>Topic category or tag for this comment (supports automated comment analysis).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Comment Category</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_date_submitted__c</fullName>
+        <description>Date the comment was submitted. Verify whether the standard PSS PublicComplaint object has a native date field before using this custom field.</description>
+        <inlineHelpText>Date this comment was submitted.</inlineHelpText>
+        <label>Date Submitted</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>nepa_document_location_ref__c</fullName>
+        <description>If applicable, the part of the document being referenced by the comment (e.g., section number, page number, or paragraph reference).</description>
+        <inlineHelpText>Section, page, or paragraph of the document this comment addresses.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Document Location Reference</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_public_source__c</fullName>
+        <description>Indicates whether this comment was submitted from a public source (vs. internal agency use).</description>
+        <inlineHelpText>Check if this comment was submitted from a public source.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Public Source</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <!-- Provenance fields (CEQ Standard v1.2 - required on all entities) -->
+    <fields>
+        <fullName>nepa_data_record_version__c</fullName>
+        <description>The version of the record, for tracking updates or changes to the data.</description>
+        <inlineHelpText>Version of this record for data exchange tracking.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Record Version</label>
+        <length>50</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_agency__c</fullName>
+        <description>The name of the agency or organization that provided the data.</description>
+        <inlineHelpText>Agency or organization that provided this data.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Source Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_system__c</fullName>
+        <description>The system or database where the data originally came from.</description>
+        <inlineHelpText>Source system or database for this record.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Source System</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_record_owner_agency__c</fullName>
+        <description>The agency responsible for maintaining or owning this record.</description>
+        <inlineHelpText>Agency responsible for owning and maintaining this record.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Record Owner Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_retrieved_timestamp__c</fullName>
+        <description>The date and time when this record was retrieved from its source.</description>
+        <inlineHelpText>Date and time this record was retrieved from its source system.</inlineHelpText>
+        <label>Retrieved Timestamp</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
     </fields>
 </CustomObject>

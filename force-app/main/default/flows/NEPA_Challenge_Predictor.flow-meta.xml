@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>Evaluates active NEPA_Challenge_Prediction_Rule__mdt records against the IndividualApplication's review type and related project's adjacent statutes. Writes predicted challenge grounds and plain-language notes to the process record.</description>
+    <label>NEPA Challenge Predictor</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Draft</status>
+
+    <!-- Assignments -->
+    <assignments>
+        <name>Assign_AdjacentStatutes</name>
+        <label>Capture Adjacent Statutes</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_AdjacentStatutes</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>rec_RelatedProject.nepa_adjacent_statutes__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_Rules</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_CurrentRule</name>
+        <label>Set Current Rule</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_CurrentRule</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_Rules</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_EvaluateRule</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Append_Prediction</name>
+        <label>Append Ground and Notes</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_PredictedGrounds</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>{!var_PredictedGrounds}{!var_CurrentRule.Challenge_Ground__c}; </stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_PredictionNotes</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>{!var_PredictionNotes}{!var_CurrentRule.Challenge_Ground__c}: {!var_CurrentRule.Explanation__c}
+</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_Rules</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Handle_Error</name>
+        <label>Handle Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+
+    <!-- Decisions -->
+    <decisions>
+        <name>Decision_HasRelatedProject</name>
+        <label>Has Related Project?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No Project</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Loop_Rules</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Has_Project</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_related_project__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_RelatedProject</targetReference>
+            </connector>
+            <label>Has Project</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_EvaluateRule</name>
+        <label>Does Rule Match?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Rule Does Not Match</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Loop_Rules</targetReference>
+        </defaultConnector>
+        <rules>
+            <!-- Rule matches if review type matches (or rule has no review type restriction) AND adjacent statute matches (or rule has no statute restriction) -->
+            <name>ReviewType_Match_NoStatute</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_review_type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>var_CurrentRule.Trigger_Review_Type__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>var_CurrentRule.Trigger_Adjacent_Statute__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Append_Prediction</targetReference>
+            </connector>
+            <label>Review Type Match (no statute req)</label>
+        </rules>
+        <rules>
+            <name>Statute_Match</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_AdjacentStatutes</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <elementReference>var_CurrentRule.Trigger_Adjacent_Statute__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>var_CurrentRule.Trigger_Adjacent_Statute__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Append_Prediction</targetReference>
+            </connector>
+            <label>Adjacent Statute Match</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_HasPredictions</name>
+        <label>Any Predictions?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No Predictions</defaultConnectorLabel>
+        <rules>
+            <name>Has_Predictions</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_PredictedGrounds</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_PredictionFields</targetReference>
+            </connector>
+            <label>Has Predictions</label>
+        </rules>
+    </decisions>
+
+    <!-- Loops -->
+    <loops>
+        <name>Loop_Rules</name>
+        <label>Loop Prediction Rules</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>col_PredictionRules</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_CurrentRule</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Decision_HasPredictions</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+
+    <!-- Record Lookups -->
+    <recordLookups>
+        <name>Get_PredictionRules</name>
+        <label>Get Active Prediction Rules</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_HasRelatedProject</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Active__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>NEPA_Challenge_Prediction_Rule__mdt</object>
+        <outputReference>col_PredictionRules</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Challenge_Ground__c</queriedFields>
+        <queriedFields>Trigger_Review_Type__c</queriedFields>
+        <queriedFields>Trigger_Adjacent_Statute__c</queriedFields>
+        <queriedFields>Explanation__c</queriedFields>
+        <queriedFields>Priority__c</queriedFields>
+        <sortField>Priority__c</sortField>
+        <sortOrder>Asc</sortOrder>
+    </recordLookups>
+
+    <recordLookups>
+        <name>Get_RelatedProject</name>
+        <label>Get Related Project</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Assign_AdjacentStatutes</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.nepa_related_project__c</elementReference>
+            </value>
+        </filters>
+        <object>Program</object>
+        <outputReference>rec_RelatedProject</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>nepa_adjacent_statutes__c</queriedFields>
+    </recordLookups>
+
+    <!-- Record Updates -->
+    <recordUpdates>
+        <name>Update_PredictionFields</name>
+        <label>Update Prediction Fields</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>nepa_predicted_challenge_grounds__c</field>
+            <value>
+                <elementReference>var_PredictedGrounds</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_challenge_prediction_notes__c</field>
+            <value>
+                <elementReference>var_PredictionNotes</elementReference>
+            </value>
+        </inputAssignments>
+        <object>IndividualApplication</object>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+    </recordUpdates>
+
+    <!-- Trigger -->
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <object>IndividualApplication</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+        <scheduledPaths>
+            <connector>
+                <targetReference>Get_PredictionRules</targetReference>
+            </connector>
+            <pathType>AsyncAfterCommit</pathType>
+        </scheduledPaths>
+        <filterLogic>or</filterLogic>
+        <filters>
+            <field>nepa_review_type__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_related_project__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+    </start>
+
+    <!-- Variables -->
+    <variables>
+        <name>col_PredictionRules</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>NEPA_Challenge_Prediction_Rule__mdt</objectType>
+    </variables>
+    <variables>
+        <name>var_CurrentRule</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>NEPA_Challenge_Prediction_Rule__mdt</objectType>
+    </variables>
+    <variables>
+        <name>var_PredictedGrounds</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_PredictionNotes</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>rec_RelatedProject</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Program</objectType>
+    </variables>
+    <variables>
+        <name>var_AdjacentStatutes</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

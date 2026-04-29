@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>NAICS 112 | Animal Production and Aquacu</label>
+    <protected>false</protected>
+    <values>
+        <field>Rule_Label__c</field>
+        <value xsi:type="xsd:string">NAICS 112 | Animal Production and Aquacult</value>
+    </values>
+    <values>
+        <field>Tier__c</field>
+        <value xsi:type="xsd:string">NAICS</value>
+    </values>
+    <values>
+        <field>Agency__c</field>
+        <value xsi:type="xsd:string">BLM</value>
+    </values>
+    <values>
+        <field>Sector_Key__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Type_Key__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Action_Types__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>CE_Code__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Review_Type__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Confidence__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Requires_Acreage_Check__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>Acreage_Threshold__c</field>
+        <value xsi:type="xsd:decimal">0</value>
+    </values>
+    <values>
+        <field>Requires_GIS_Check__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>NAICS_Code__c</field>
+        <value xsi:type="xsd:string">112</value>
+    </values>
+    <values>
+        <field>CE_Namespace__c</field>
+        <value xsi:type="xsd:string">FLPMA 402(h); 516 DM 11.9 D(1); 43 CFR 46.210</value>
+    </values>
+    <values>
+        <field>Confidence_Modifier__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Classification_Basis__c</field>
+        <value xsi:type="xsd:string">NAICS routing: Animal Production and Aquaculture (Livestock/Ranching) → BLM; USFS agency | namespace: FLPMA 402(h); 516 DM 11.9 D(1); 43 CFR 46.210</value>
+    </values>
+    <values>
+        <field>Priority__c</field>
+        <value xsi:type="xsd:decimal">1</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>Record_Count_NEPATEC__c</field>
+        <value xsi:type="xsd:decimal">0</value>
+    </values>
+</CustomMetadata>

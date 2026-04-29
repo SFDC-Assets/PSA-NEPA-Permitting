@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Per-agency NEPA litigation rate priors seeded from PermitTEC v0.1 corpus (761 cases). Used by the Litigation Risk Scoring Flow to weight the agency component of the composite score.</description>
+    <label>NEPA Agency Risk Rate</label>
+    <pluralLabel>NEPA Agency Risk Rates</pluralLabel>
+    <fields>
+        <fullName>Agency_Name__c</fullName>
+        <description>Display name of the federal agency (e.g., Forest Service, Bureau of Land Management).</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Agency Name</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Agency_Abbreviation__c</fullName>
+        <description>Short abbreviation used to match against nepa_lead_agency__c Account name (e.g., USFS, BLM, FERC).</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Agency Abbreviation</label>
+        <length>50</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Case_Count__c</fullName>
+        <description>Number of PermitTEC litigation cases attributed to this agency.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Case Count</label>
+        <precision>6</precision>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Risk_Points__c</fullName>
+        <description>Points added to the composite litigation risk score when this agency is the lead agency. Scale: 0-25 points.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Risk Points</label>
+        <precision>5</precision>
+        <scale>1</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+</CustomObject>

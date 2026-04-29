@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Catalog of normalized CE codes derived from NEPATEC v2.0 (292 unique codes, top 40 seeded here). Used by NEPA_CE_Screener flow and CLM clause selection logic to look up authority citation, description, and threshold constraints for a given CE code.</description>
+    <label>NEPA CE Code</label>
+    <pluralLabel>NEPA CE Codes</pluralLabel>
+    <fields>
+        <fullName>Code__c</fullName>
+        <description>Normalized CE code string, e.g. B1.3, 516 DM 11.9, Energy Policy Act 2005 Sec.390(b)(4).</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>CE Code</label>
+        <length>150</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Authority_CFR__c</fullName>
+        <description>CFR or statutory authority citation, e.g. DOE 10 CFR 1021 App.B §B1.3.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Authority / CFR Citation</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Plain_Language_Description__c</fullName>
+        <description>Plain-language description of the action types this CE covers. Used in CLM clause selection and applicant-facing portal messaging.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Plain Language Description</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Agency__c</fullName>
+        <description>Primary agency for this code: DOE, BLM, USFS, DOD, EPA, or ALL.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Agency</label>
+        <length>10</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Indoor_Only__c</fullName>
+        <description>If true, this CE applies only to indoor facility operations (e.g. B3.6). Outdoor or field activities do not qualify.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Indoor Only</label>
+        <type>Checkbox</type>
+        <defaultValue>false</defaultValue>
+    </fields>
+    <fields>
+        <fullName>Acreage_Threshold__c</fullName>
+        <description>Maximum surface disturbance in acres. 0 = no limit. Key value: 5.0 for Energy Policy Act Sec.390(b)(1).</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Acreage Threshold</label>
+        <precision>8</precision>
+        <scale>2</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Requires_GIS_Review__c</fullName>
+        <description>If true, GIS resource overlay must be run and extraordinary circumstances must be clear before this CE can be confirmed.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Requires GIS Review</label>
+        <type>Checkbox</type>
+        <defaultValue>false</defaultValue>
+    </fields>
+    <fields>
+        <fullName>Is_Multi_Code__c</fullName>
+        <description>If true, this record represents a compound CE authority (e.g. A9 + B3.6). The CE is valid under multiple independent authorities simultaneously.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Is Multi-Code</label>
+        <type>Checkbox</type>
+        <defaultValue>false</defaultValue>
+    </fields>
+    <fields>
+        <fullName>Record_Count_NEPATEC__c</fullName>
+        <description>Frequency count from NEPATEC v2.0 corpus. Higher counts indicate more established agency practice for this code.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>NEPATEC Record Count</label>
+        <precision>8</precision>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Active__c</fullName>
+        <description>Inactive codes are excluded from screener and CLM selection logic.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Active</label>
+        <type>Checkbox</type>
+        <defaultValue>true</defaultValue>
+    </fields>
+</CustomObject>

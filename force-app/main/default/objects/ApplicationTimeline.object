@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- CEQ Standard Entity 6: Case Events
+         These custom fields extend the PSS standard ApplicationTimeline object
+         (PSS Developer Guide p.85) for NEPA milestone tracking.
+         ApplicationTimeline is natively linked to IndividualApplication.
+         Do NOT add actionOverrides or object-level metadata here; those are
+         defined in the base PSS package. Only custom fields are declared. -->
+    <fields>
+        <fullName>nepa_event_type__c</fullName>
+        <description>NEPA event classification per CEQ standard Entity 6 Event Type property.</description>
+        <inlineHelpText>Type of NEPA milestone this case event represents.</inlineHelpText>
+        <label>NEPA Event Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>NOI</fullName>
+                    <default>false</default>
+                    <label>NOI</label>
+                </value>
+                <value>
+                    <fullName>Scoping Open</fullName>
+                    <default>false</default>
+                    <label>Scoping Open</label>
+                </value>
+                <value>
+                    <fullName>Scoping Complete</fullName>
+                    <default>false</default>
+                    <label>Scoping Complete</label>
+                </value>
+                <value>
+                    <fullName>Draft EIS Published</fullName>
+                    <default>false</default>
+                    <label>Draft EIS Published</label>
+                </value>
+                <value>
+                    <fullName>Comment Period Open</fullName>
+                    <default>false</default>
+                    <label>Comment Period Open</label>
+                </value>
+                <value>
+                    <fullName>Comment Period Closed</fullName>
+                    <default>false</default>
+                    <label>Comment Period Closed</label>
+                </value>
+                <value>
+                    <fullName>Final EIS Published</fullName>
+                    <default>false</default>
+                    <label>Final EIS Published</label>
+                </value>
+                <value>
+                    <fullName>ROD Issued</fullName>
+                    <default>false</default>
+                    <label>ROD Issued</label>
+                </value>
+                <value>
+                    <fullName>EA Initiated</fullName>
+                    <default>false</default>
+                    <label>EA Initiated</label>
+                </value>
+                <value>
+                    <fullName>FONSI Issued</fullName>
+                    <default>false</default>
+                    <label>FONSI Issued</label>
+                </value>
+                <value>
+                    <fullName>CE Determination</fullName>
+                    <default>false</default>
+                    <label>CE Determination</label>
+                </value>
+                <value>
+                    <fullName>Permit Issued</fullName>
+                    <default>false</default>
+                    <label>Permit Issued</label>
+                </value>
+                <value>
+                    <fullName>Process Paused</fullName>
+                    <default>false</default>
+                    <label>Process Paused</label>
+                </value>
+                <value>
+                    <fullName>Process Cancelled</fullName>
+                    <default>false</default>
+                    <label>Process Cancelled</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_event_description__c</fullName>
+        <description>Description of this case event.</description>
+        <inlineHelpText>Description of this case event milestone.</inlineHelpText>
+        <label>Event Description</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_source__c</fullName>
+        <description>Link to information about this event (e.g., Federal Register notice URL).</description>
+        <inlineHelpText>Link to information about this event (e.g., Federal Register notice).</inlineHelpText>
+        <label>Source URL</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>nepa_tier__c</fullName>
+        <description>Optional event hierarchy tier (e.g., Tier 1 NOI, Tier 2 Scoping Complete).</description>
+        <inlineHelpText>Optional hierarchy tier for this event (e.g., Tier 1, Tier 2).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Tier</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_status__c</fullName>
+        <description>Status of this case event.</description>
+        <inlineHelpText>Current status of this case event.</inlineHelpText>
+        <label>Event Status</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Pending</fullName>
+                    <default>false</default>
+                    <label>Pending</label>
+                </value>
+                <value>
+                    <fullName>In Progress</fullName>
+                    <default>false</default>
+                    <label>In Progress</label>
+                </value>
+                <value>
+                    <fullName>Completed</fullName>
+                    <default>false</default>
+                    <label>Completed</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_outcome__c</fullName>
+        <description>Result or action taken for this case event.</description>
+        <inlineHelpText>Result or action taken as a result of this milestone.</inlineHelpText>
+        <label>Outcome</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_assigned_entity__c</fullName>
+        <description>Responsible individual or agency assigned to this case event.</description>
+        <inlineHelpText>Responsible individual or agency for this milestone.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Assigned Entity</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_following_segment__c</fullName>
+        <description>Name of the process segment that follows this event (e.g., if this is "start of scoping" the next segment is "scoping").</description>
+        <inlineHelpText>Name of the process segment that follows this event.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Following Segment</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_public_access__c</fullName>
+        <defaultValue>true</defaultValue>
+        <description>Whether this case event can be displayed publicly.</description>
+        <inlineHelpText>Check if this milestone is publicly visible.</inlineHelpText>
+        <label>Public Access</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_parent_case_event__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Reference to the parent case event, if this is a sub-event.</description>
+        <inlineHelpText>Parent case event (for hierarchical milestone tracking).</inlineHelpText>
+        <label>Parent Case Event</label>
+        <referenceTo>ApplicationTimeline</referenceTo>
+        <relationshipLabel>Child Case Events</relationshipLabel>
+        <relationshipName>Child_Case_Events</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_related_engagement__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Reference to a related public engagement event, if applicable.</description>
+        <inlineHelpText>Related public engagement event for this milestone (e.g., scoping meeting tied to scoping open event).</inlineHelpText>
+        <label>Related Engagement Event</label>
+        <referenceTo>nepa_engagement__c</referenceTo>
+        <relationshipLabel>Related Case Events</relationshipLabel>
+        <relationshipName>Related_Case_Events</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <!-- Provenance fields (CEQ Standard v1.2 - required on all entities) -->
+    <fields>
+        <fullName>nepa_data_record_version__c</fullName>
+        <description>The version of the record, for tracking updates or changes to the data.</description>
+        <inlineHelpText>Version of this record for data exchange tracking.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Record Version</label>
+        <length>50</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_agency__c</fullName>
+        <description>The name of the agency or organization that provided the data.</description>
+        <inlineHelpText>Agency or organization that provided this data.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Source Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_system__c</fullName>
+        <description>The system or database where the data originally came from.</description>
+        <inlineHelpText>Source system or database for this record.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Source System</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_record_owner_agency__c</fullName>
+        <description>The agency responsible for maintaining or owning this record.</description>
+        <inlineHelpText>Agency responsible for owning and maintaining this record.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Record Owner Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_retrieved_timestamp__c</fullName>
+        <description>The date and time when this record was retrieved from its source.</description>
+        <inlineHelpText>Date and time this record was retrieved from its source system.</inlineHelpText>
+        <label>Retrieved Timestamp</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+</CustomObject>

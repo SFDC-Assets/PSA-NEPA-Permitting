@@ -1,0 +1,172 @@
+{
+  "Name": "NEPA_CEQExport",
+  "Type": "NEPA",
+  "SubType": "CEQExport",
+  "Language": "English",
+  "VersionNumber": 1,
+  "IsActive": false,
+  "IsIntegrationProcedure": true,
+  "Description": "Assembles a CEQ NEPA and Permitting Data and Technology Standard v1.2 compliant JSON payload for a given Project (Program). Inputs: projectId (Program.Id). Output: CEQPayload containing all 6 implemented entities: Project, Processes, Documents (with nested Comments), Public Engagement Events, and Case Events. Exposes MFR #2 data sharing capability when activated with an API Action.",
+  "PropertySetConfig": "{\"persistentComponent\":true,\"trackingCustomData\":{},\"enableLWCRuntime\":true}",
+  "WebComponentKey": "NEPA/CEQExport/English/1",
+  "Elements": [
+    {
+      "Name": "GetProject",
+      "Type": "DataRaptor Extract Action",
+      "SequenceNumber": 1,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "bundleName": "DR_Extract_NEPA_Project",
+        "inputMap": [
+          {"name": "projectId", "value": "%projectId%", "valueType": "reference"}
+        ],
+        "outputPath": "Project",
+        "chainOnStep": "",
+        "failOnStepError": true,
+        "postTransformBundle": "",
+        "remoteClass": "",
+        "remoteMethod": ""
+      }
+    },
+    {
+      "Name": "GetProcesses",
+      "Type": "DataRaptor Extract Action",
+      "SequenceNumber": 2,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "bundleName": "DR_Extract_NEPA_Process",
+        "inputMap": [
+          {"name": "projectId", "value": "%projectId%", "valueType": "reference"}
+        ],
+        "outputPath": "processes",
+        "chainOnStep": "",
+        "failOnStepError": false,
+        "postTransformBundle": "",
+        "remoteClass": "",
+        "remoteMethod": ""
+      }
+    },
+    {
+      "Name": "LoopProcesses",
+      "Type": "Loop",
+      "SequenceNumber": 3,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "loopInput": "%processes%",
+        "currentItemOutput": "currentProcess",
+        "indexOutput": "processIndex"
+      },
+      "Children": [
+        {
+          "Name": "GetDocuments",
+          "Type": "DataRaptor Extract Action",
+          "SequenceNumber": 1,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "bundleName": "DR_Extract_NEPA_Document",
+            "inputMap": [
+              {"name": "processId", "value": "%currentProcess:id%", "valueType": "reference"}
+            ],
+            "outputPath": "documents",
+            "failOnStepError": false,
+            "postTransformBundle": ""
+          }
+        },
+        {
+          "Name": "LoopDocuments",
+          "Type": "Loop",
+          "SequenceNumber": 2,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "loopInput": "%documents%",
+            "currentItemOutput": "currentDocument",
+            "indexOutput": "documentIndex"
+          },
+          "Children": [
+            {
+              "Name": "GetComments",
+              "Type": "DataRaptor Extract Action",
+              "SequenceNumber": 1,
+              "Level": 2,
+              "IsActive": true,
+              "PropertySetConfig": {
+                "bundleName": "DR_Extract_NEPA_Comment",
+                "inputMap": [
+                  {"name": "documentId", "value": "%currentDocument:id%", "valueType": "reference"}
+                ],
+                "outputPath": "currentDocument:comments",
+                "failOnStepError": false,
+                "postTransformBundle": ""
+              }
+            }
+          ]
+        },
+        {
+          "Name": "AssignDocumentsToProcess",
+          "Type": "Set Values",
+          "SequenceNumber": 3,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "ElementValueMap": {
+              "currentProcess:documents": "%documents%"
+            }
+          }
+        },
+        {
+          "Name": "GetEngagementEvents",
+          "Type": "DataRaptor Extract Action",
+          "SequenceNumber": 4,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "bundleName": "DR_Extract_NEPA_EngagementEvent",
+            "inputMap": [
+              {"name": "processId", "value": "%currentProcess:id%", "valueType": "reference"}
+            ],
+            "outputPath": "currentProcess:public_engagement_events",
+            "failOnStepError": false,
+            "postTransformBundle": ""
+          }
+        },
+        {
+          "Name": "GetCaseEvents",
+          "Type": "DataRaptor Extract Action",
+          "SequenceNumber": 5,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "bundleName": "DR_Extract_NEPA_CaseEvent",
+            "inputMap": [
+              {"name": "processId", "value": "%currentProcess:id%", "valueType": "reference"}
+            ],
+            "outputPath": "currentProcess:case_events",
+            "failOnStepError": false,
+            "postTransformBundle": ""
+          }
+        }
+      ]
+    },
+    {
+      "Name": "AssembleCEQPayload",
+      "Type": "Set Values",
+      "SequenceNumber": 4,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "ElementValueMap": {
+          "CEQPayload:schema_version": "1.2",
+          "CEQPayload:standard": "CEQ NEPA and Permitting Data and Technology Standard",
+          "CEQPayload:exported_at": "%System.CurrentDateTime%",
+          "CEQPayload:project": "%Project%",
+          "CEQPayload:project:processes": "%processes%"
+        }
+      }
+    }
+  ]
+}

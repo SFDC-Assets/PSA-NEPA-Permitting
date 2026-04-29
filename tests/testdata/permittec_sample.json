@@ -1,0 +1,479 @@
+[
+  {
+    "version": "0.1.0",
+    "data": {
+      "case_uuid": "case-2-f-4th-953",
+      "case_metadata": {
+        "case_title": {
+          "value": "ENVIRONMENTAL DEFENSE FUND v. FEDERAL ENERGY REGULATORY COMMISSION, Spire Missouri Inc., and Spire STL Pipeline LLC",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "citation": {
+          "value": "2 F. 4th 953",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "court": {
+          "value": "United States Court of Appeals, District of Columbia Circuit",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "circuit": {
+          "value": "District of Columbia",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "plaintiff": {
+          "value": "Environmental Defense Fund",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "defendant": {
+          "value": "FEDERAL ENERGY REGULATORY COMMISSION",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "ruling_date": {
+          "value": "2021-06-22 00:00:00",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "prevailing_party": {
+          "value": "Challenger",
+          "source": "llm_extracted_and_manually_validated"
+        }
+      },
+      "linked_to": {
+        "in_nepatec": "true",
+        "llm_extracted_keywords": [
+          "Spire STL Pipeline",
+          "FERC",
+          "Natural Gas Pipeline",
+          "St. Louis",
+          "Certificate of Public Convenience"
+        ],
+        "llm_extracted_title": "Spire STL Pipeline",
+        "contested_project_name": "Spire STL Pipeline Project",
+        "nepatec_project_uuid": "ddee6a29a3a06a44f495850065fcd664"
+      }
+    }
+  },
+  {
+    "version": "0.1.0",
+    "data": {
+      "case_uuid": "case-753-f-3d-1304",
+      "case_metadata": {
+        "case_title": {
+          "value": "DELAWARE RIVERKEEPER NETWORK, et al. v. FEDERAL ENERGY REGULATORY COMMISSION",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "citation": {
+          "value": "753 F.3d 1304",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "court": {
+          "value": "United States Court of Appeals, District of Columbia Circuit",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "circuit": {
+          "value": "District of Columbia",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "plaintiff": {
+          "value": "DELAWARE RIVERKEEPER NETWORK, et al.",
+          "source": "llm_extracted_and_manually_corrected"
+        },
+        "defendant": {
+          "value": "FEDERAL ENERGY REGULATORY COMMISSION, Respondent. Tennessee Gas Pipeline Company, LLC and Statoil Natural Gas, LLC",
+          "source": "llm_extracted_and_manually_corrected"
+        },
+        "ruling_date": {
+          "value": "2014-06-06 00:00:00",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "prevailing_party": {
+          "value": "Challenger",
+          "source": "llm_extracted_and_manually_validated"
+        }
+      },
+      "linked_to": {
+        "in_nepatec": "true",
+        "llm_extracted_keywords": [
+          "Tennessee Gas Pipeline",
+          "Northeast Upgrade",
+          "FERC",
+          "300 Line",
+          "natural gas pipeline"
+        ],
+        "llm_extracted_title": "Northeast Upgrade Project",
+        "contested_project_name": "East 300 Upgrade Project",
+        "nepatec_project_uuid": "faaa9f5275b4cad2356d2e2e70a1c05c"
+      }
+    }
+  },
+  {
+    "version": "0.1.0",
+    "data": {
+      "case_uuid": "case-28-f-4th-19",
+      "case_metadata": {
+        "case_title": {
+          "value": "FRIENDS OF ANIMALS v. UNITED STATES FISH AND WILDLIFE SERVICE, an agency of the United States; Patricia Reeves, in her official capacity as the Director of the United States Fish and Wildlife Service",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "citation": {
+          "value": "28 F. 4th 19",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "court": {
+          "value": "United States Court of Appeals, Ninth Circuit",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "circuit": {
+          "value": "9th",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "plaintiff": {
+          "value": "FRIENDS OF ANIMALS",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "defendant": {
+          "value": "UNITED STATES FISH AND WILDLIFE SERVICE",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "ruling_date": {
+          "value": "2022-03-04 00:00:00",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "prevailing_party": {
+          "value": "Agency",
+          "source": "llm_extracted_and_manually_validated"
+        }
+      },
+      "linked_to": {
+        "in_nepatec": "true",
+        "llm_extracted_keywords": [
+          "Barred Owl",
+          "FWS",
+          "Northern Spotted Owl",
+          "Lethal Removal",
+          "Safe Harbor Agreement"
+        ],
+        "llm_extracted_title": "Barred Owl Removal Experiment",
+        "contested_project_name": "Experimental Removal of Barred Owls to Benefit Threatened Northern Spotted Owls",
+        "nepatec_project_uuid": "57578a0d3d45d79bbbbe17a294cbaeeb"
+      }
+    }
+  },
+  {
+    "version": "0.1.0",
+    "data": {
+      "case_uuid": "case-29-f-4th-432",
+      "case_metadata": {
+        "case_title": {
+          "value": "Friends of Alaska National Wildlife Refuges, et al. v. Carol STANTON, et al.",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "citation": {
+          "value": "29 F. 4th 432",
+          "source": "llm_extracted_and_manually_corrected"
+        },
+        "court": {
+          "value": "United States Court of Appeals, Ninth Circuit",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "circuit": {
+          "value": "9th",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "plaintiff": {
+          "value": "FRIENDS OF ALASKA NATIONAL WILDLIFE REFUGES; The Wilderness Society; Defenders of Wildlife; National Audubon Society; Wilderness Watch; Center for Biological Diversity; National Wildlife Refuge Association; Alaska Wilderness League; Sierra Club",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "defendant": {
+          "value": "Carol STANTON as Secretary of the U.S. Department of the Interior; U.S. Department of the Interior; U.S. Fish and Wildlife Service; King Cove Corporation; Agdaagux Tribe of King Cove; Native Village of Belkofski; State of Alaska",
+          "source": "llm_extracted_and_manually_corrected"
+        },
+        "ruling_date": {
+          "value": "2022-03-16 00:00:00",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "prevailing_party": {
+          "value": "Agency",
+          "source": "llm_extracted_and_manually_validated"
+        }
+      },
+      "linked_to": {
+        "in_nepatec": "true",
+        "llm_extracted_keywords": [
+          "Izembek",
+          "King Cove",
+          "land exchange",
+          "ANILCA",
+          "road corridor"
+        ],
+        "llm_extracted_title": "Izembek National Wildlife Refuge Land Exchange/Road Corridor",
+        "contested_project_name": "Izembek National Wildlife Refuge Land Exchange/Road Corridor",
+        "nepatec_project_uuid": "dbda38f5b80ad4b88aa4f948fb29bd2c"
+      }
+    }
+  },
+  {
+    "version": "0.1.0",
+    "data": {
+      "case_uuid": "case-24-f-4th-915",
+      "case_metadata": {
+        "case_title": {
+          "value": "WILD VIRGINIA, et al. v. UNITED STATES FOREST SERVICE; James Teller; Robert Finch",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "citation": {
+          "value": "24 F. 4th 915",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "court": {
+          "value": "United States Court of Appeals, Fourth Circuit",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "circuit": {
+          "value": "4th",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "plaintiff": {
+          "value": "WILD VIRGINIA; Sierra Club; Appalachian Voices; Wilderness Society; Preserve Craig; Save Monroe; Indian Creek Watershed Association",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "defendant": {
+          "value": "UNITED STATES FOREST SERVICE; United States Bureau of Land Management",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "ruling_date": {
+          "value": "2022-01-25 00:00:00",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "prevailing_party": {
+          "value": "Challenger",
+          "source": "llm_extracted_and_manually_validated"
+        }
+      },
+      "linked_to": {
+        "in_nepatec": "true",
+        "llm_extracted_keywords": [
+          "Mountain Valley Pipeline",
+          "Jefferson National Forest",
+          "FERC",
+          "natural gas pipeline",
+          "sedimentation"
+        ],
+        "llm_extracted_title": "Mountain Valley Pipeline",
+        "contested_project_name": "Mountain Valley Pipeline and Equitrans Expansion Project",
+        "nepatec_project_uuid": "032a1333a863ad7ff1c77abe67b9325f"
+      }
+    }
+  },
+  {
+    "version": "0.1.0",
+    "data": {
+      "case_uuid": "case-313-f-supp-3d-1199",
+      "case_metadata": {
+        "case_title": {
+          "value": "N. Coast Rivers Alliance v. U.S. Dep't of the Interior",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "citation": {
+          "value": "313 F.Supp.3d 1199",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "court": {
+          "value": "United States District Court, E.D. California",
+          "source": "llm_extracted_and_manually_corrected"
+        },
+        "circuit": {
+          "value": "9th",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "plaintiff": {
+          "value": "N. Coast Rivers Alliance",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "defendant": {
+          "value": "U.S. Dep't of the Interior; United States Bureau of Reclamation; U.S. Department of Justice",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "ruling_date": {
+          "value": "2018-03-12 00:00:00",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "prevailing_party": {
+          "value": "Cannot be determined",
+          "source": "llm_extracted_and_manually_corrected"
+        }
+      },
+      "linked_to": {
+        "in_nepatec": "true",
+        "llm_extracted_keywords": [
+          "Central Valley Project",
+          "2016-18 Interim Contracts",
+          "Bureau of Reclamation",
+          "water delivery",
+          "NEPA"
+        ],
+        "llm_extracted_title": "Central Valley Project 2016-18 Interim Contracts",
+        "contested_project_name": "Reinitiation of Consultation on the Coordinated Long-Term Operation of the Central Valley Project and State Water Project",
+        "nepatec_project_uuid": "7e5f801d2489095272c0aa1be70d7170"
+      }
+    }
+  },
+  {
+    "version": "0.1.0",
+    "data": {
+      "case_uuid": "case-1-f-4th-738",
+      "case_metadata": {
+        "case_title": {
+          "value": "TROUT UNLIMITED, et al. v. Sandra KOWALSKI, et al.",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "citation": {
+          "value": "1 F. 4th 738",
+          "source": "llm_extracted_and_manually_corrected"
+        },
+        "court": {
+          "value": "United States Court of Appeals, Ninth Circuit",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "circuit": {
+          "value": "9th",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "plaintiff": {
+          "value": "TROUT UNLIMITED; Bristol Bay Economic Development Corporation; Bristol Bay Native Association, Inc.; United Tribes of Bristol Bay; Bristol Bay Regional Seafood Development Association, Inc.; Bristol Bay Reserve Association; SalmonState; Alaska Center; Alaska Community Action on Toxics; Alaska Wilderness League; Cook Inletkeeper; Defenders of Wildlife; Earthworks; Friends of McNeil River; National Parks Conservation Association; National Wildlife Federation; Natural Resources Defense Council; Sierra Club; Wild Salmon Center; McNeil River Alliance",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "defendant": {
+          "value": "U.S. Environmental Protection Agency; State of Alaska",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "ruling_date": {
+          "value": "2021-06-17 00:00:00",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "prevailing_party": {
+          "value": "Challenger",
+          "source": "llm_extracted_and_manually_validated"
+        }
+      },
+      "linked_to": {
+        "in_nepatec": "false",
+        "llm_extracted_keywords": [
+          "Pebble Mine",
+          "Bristol Bay Watershed",
+          "Clean Water Act 404(c)",
+          "Army Corps of Engineers",
+          "mining permit"
+        ],
+        "llm_extracted_title": "Pebble Mine Project",
+        "contested_project_name": null,
+        "nepatec_project_uuid": null
+      }
+    }
+  },
+  {
+    "version": "0.1.0",
+    "data": {
+      "case_uuid": "case-358-f-supp-3d-1238",
+      "case_metadata": {
+        "case_title": {
+          "value": "Powder River Basin Res. Council v. Crandall",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "citation": {
+          "value": "358 F.Supp.3d 1238",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "court": {
+          "value": "",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "circuit": {
+          "value": "10th",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "plaintiff": {
+          "value": "Powder River Basin Resource Council; Western Organization of Resource Councils",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "defendant": {
+          "value": "United States Secretary of Interior; United States Office of Surface Mining Reclamation and Enforcement; State of Wyoming; Peabody Powder River Mining, LLC",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "ruling_date": {
+          "value": "2018-12-06 00:00:00",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "prevailing_party": {
+          "value": "Agency",
+          "source": "llm_extracted_and_manually_validated"
+        }
+      },
+      "linked_to": {
+        "in_nepatec": "true",
+        "llm_extracted_keywords": [
+          "North Antelope Rochelle",
+          "NARM",
+          "Peabody",
+          "Powder River Basin",
+          "mining plan modification"
+        ],
+        "llm_extracted_title": "North Antelope Rochelle Mine (NARM) Expansion",
+        "contested_project_name": "Wright Area Coal Lease Applications",
+        "nepatec_project_uuid": "0834f986949d8c96fbe7d9ea443fa0f5"
+      }
+    }
+  },
+  {
+    "version": "0.1.0",
+    "data": {
+      "case_uuid": "case-47-f-supp-3d-1353",
+      "case_metadata": {
+        "case_title": {
+          "value": "ALAI, LLC, et al. v. SECRETARY OF FLORIDA DEPARTMENT OF TRANSPORTATION, et al.",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "citation": {
+          "value": "47 F.Supp.3d 1353",
+          "source": "llm_extracted_and_manually_corrected"
+        },
+        "court": {
+          "value": "",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "circuit": {
+          "value": "11th",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "plaintiff": {
+          "value": "RB JAI ALAI, LLC; Individual(s)",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "defendant": {
+          "value": "SECRETARY OF FLORIDA DEPARTMENT OF TRANSPORTATION; Federal Highway Administration",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "ruling_date": {
+          "value": "2014-09-22 00:00:00",
+          "source": "llm_extracted_and_manually_validated"
+        },
+        "prevailing_party": {
+          "value": "Challenger",
+          "source": "llm_extracted_and_manually_corrected"
+        }
+      },
+      "linked_to": {
+        "in_nepatec": "false",
+        "llm_extracted_keywords": [
+          "U.S. 17-92",
+          "S.R. 436",
+          "Seminole County Florida",
+          "FDOT",
+          "Type 2 categorical exclusion"
+        ],
+        "llm_extracted_title": "S.R. 15/600 (U.S. 17–92) Interchange Project Development and Environmental Study",
+        "contested_project_name": null,
+        "nepatec_project_uuid": null
+      }
+    }
+  }
+]

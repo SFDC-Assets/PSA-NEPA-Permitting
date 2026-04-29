@@ -1,0 +1,880 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>Calculates the composite litigation risk score on IndividualApplication using custom metadata weights for review type, lead agency, circuit, and adjacent statute exposure. Fires after save on IndividualApplication when key risk fields change.</description>
+    <label>NEPA Litigation Risk Scorer</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Draft</status>
+
+    <!-- Assignments -->
+    <assignments>
+        <name>Assign_ReviewType_EIS</name>
+        <label>Review Type EIS: 40 points</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ReviewTypePoints</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <numberValue>40.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_HasRelatedProject</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_ReviewType_EA</name>
+        <label>Review Type EA: 20 points</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ReviewTypePoints</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <numberValue>20.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_HasRelatedProject</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_ReviewType_CE</name>
+        <label>Review Type CE: 5 points</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ReviewTypePoints</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <numberValue>5.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_HasRelatedProject</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_ReviewType_Low</name>
+        <label>Review Type Other: 3 points</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ReviewTypePoints</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <numberValue>3.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_HasRelatedProject</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_AgencyPoints</name>
+        <label>Assign Agency Risk Points</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_AgencyPoints</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>rec_AgencyRiskRate.Risk_Points__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_CircuitRiskWeight</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_CircuitPoints</name>
+        <label>Assign Circuit Risk Points</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_CircuitPoints</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>rec_CircuitRiskWeight.Risk_Points__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_AdjacentStatutes</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_ESA_Points</name>
+        <label>Add ESA Statute Points</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_AdjacentStatutePoints</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <numberValue>5.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_CWA</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_CWA_Points</name>
+        <label>Add CWA Statute Points</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_AdjacentStatutePoints</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <numberValue>5.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_NHPA</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_NHPA_Points</name>
+        <label>Add NHPA Statute Points</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_AdjacentStatutePoints</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <numberValue>5.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Calculate_Total_Score</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Calculate_Total_Score</name>
+        <label>Calculate Total Risk Score</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_RiskScore</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_ReviewTypePoints</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_RiskScore</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>var_AgencyPoints</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_RiskScore</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>var_CircuitPoints</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_RiskScore</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>var_AdjacentStatutePoints</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_CapScore</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_Score_Cap</name>
+        <label>Cap Score at 100</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_RiskScore</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <numberValue>100.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_AssignTier</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_Tier_VeryHigh</name>
+        <label>Tier: Very High</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_RiskTier</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Very High</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Build_Score_Factors</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_Tier_High</name>
+        <label>Tier: High</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_RiskTier</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>High</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Build_Score_Factors</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_Tier_Moderate</name>
+        <label>Tier: Moderate</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_RiskTier</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Moderate</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Build_Score_Factors</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_Tier_Low</name>
+        <label>Tier: Low</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_RiskTier</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Low</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Build_Score_Factors</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Build_Score_Factors</name>
+        <label>Build Score Factors</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ScoreFactors</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Review Type ({!$Record.nepa_review_type__c}): {!var_ReviewTypePoints} pts; Agency: {!var_AgencyPoints} pts; Circuit: {!var_CircuitPoints} pts; Adjacent Statutes: {!var_AdjacentStatutePoints} pts; Total: {!var_RiskScore}</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_RiskFields</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Handle_Error</name>
+        <label>Handle Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+
+    <!-- Decisions -->
+    <!-- Step 1: Assign review type risk points -->
+    <decisions>
+        <name>Decision_ReviewType</name>
+        <label>Set Review Type Points</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Other Authorization or blank</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Assign_ReviewType_Low</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>ReviewType_EIS</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_review_type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>EIS</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_ReviewType_EIS</targetReference>
+            </connector>
+            <label>EIS</label>
+        </rules>
+        <rules>
+            <name>ReviewType_EA</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_review_type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>EA</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_ReviewType_EA</targetReference>
+            </connector>
+            <label>EA</label>
+        </rules>
+        <rules>
+            <name>ReviewType_CE</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_review_type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>CE</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_ReviewType_CE</targetReference>
+            </connector>
+            <label>CE</label>
+        </rules>
+    </decisions>
+
+    <!-- Step 2: Look up related project for agency and circuit -->
+    <decisions>
+        <name>Decision_HasRelatedProject</name>
+        <label>Has Related Project?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No Project</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Calculate_Total_Score</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Has_Related_Project</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_related_project__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_RelatedProject</targetReference>
+            </connector>
+            <label>Has Project</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_AgencyFound</name>
+        <label>Agency Rate Found?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Not Found - use default</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Get_CircuitRiskWeight</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Agency_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>rec_AgencyRiskRate</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_AgencyPoints</targetReference>
+            </connector>
+            <label>Agency Found</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_CircuitFound</name>
+        <label>Circuit Weight Found?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Not Found - use default</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Decision_AdjacentStatutes</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Circuit_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>rec_CircuitRiskWeight</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_CircuitPoints</targetReference>
+            </connector>
+            <label>Circuit Found</label>
+        </rules>
+    </decisions>
+
+    <!-- Step 5: Add adjacent statute bonus (5 pts each, max 15) -->
+    <decisions>
+        <name>Decision_AdjacentStatutes</name>
+        <label>Adjacent Statutes Present?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No Adjacent Statutes</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Calculate_Total_Score</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Has_ESA</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>rec_RelatedProject.nepa_adjacent_statutes__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>ESA</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_ESA_Points</targetReference>
+            </connector>
+            <label>Contains ESA</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_CWA</name>
+        <label>Contains CWA?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No CWA</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Decision_NHPA</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Has_CWA</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>rec_RelatedProject.nepa_adjacent_statutes__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>CWA</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_CWA_Points</targetReference>
+            </connector>
+            <label>Contains CWA</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_NHPA</name>
+        <label>Contains NHPA?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No NHPA</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Calculate_Total_Score</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Has_NHPA</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>rec_RelatedProject.nepa_adjacent_statutes__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>NHPA</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_NHPA_Points</targetReference>
+            </connector>
+            <label>Contains NHPA</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_CapScore</name>
+        <label>Cap Score at 100</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Score &lt;= 100</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Decision_AssignTier</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Score_Over_100</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_RiskScore</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>100.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Score_Cap</targetReference>
+            </connector>
+            <label>Score &gt; 100</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_AssignTier</name>
+        <label>Assign Risk Tier</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Low (0-24)</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Assign_Tier_Low</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Tier_VeryHigh</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_RiskScore</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>75.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Tier_VeryHigh</targetReference>
+            </connector>
+            <label>Very High (75-100)</label>
+        </rules>
+        <rules>
+            <name>Tier_High</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_RiskScore</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>50.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Tier_High</targetReference>
+            </connector>
+            <label>High (50-74)</label>
+        </rules>
+        <rules>
+            <name>Tier_Moderate</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_RiskScore</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>25.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Tier_Moderate</targetReference>
+            </connector>
+            <label>Moderate (25-49)</label>
+        </rules>
+    </decisions>
+
+    <!-- Record Lookups -->
+    <recordLookups>
+        <name>Get_RelatedProject</name>
+        <label>Get Related Project</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_AgencyRiskRate</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.nepa_related_project__c</elementReference>
+            </value>
+        </filters>
+        <object>Program</object>
+        <outputReference>rec_RelatedProject</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>nepa_circuit__c</queriedFields>
+        <queriedFields>nepa_adjacent_statutes__c</queriedFields>
+        <queriedFields>nepa_lead_agency__r.Name</queriedFields>
+    </recordLookups>
+
+    <!-- Step 3: Look up agency risk rate from custom metadata -->
+    <recordLookups>
+        <name>Get_AgencyRiskRate</name>
+        <label>Get Agency Risk Rate</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_AgencyFound</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Agency_Name__c</field>
+            <operator>Contains</operator>
+            <value>
+                <elementReference>rec_RelatedProject.nepa_lead_agency__r.Name</elementReference>
+            </value>
+        </filters>
+        <object>NEPA_Agency_Risk_Rate__mdt</object>
+        <outputReference>rec_AgencyRiskRate</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Agency_Name__c</queriedFields>
+        <queriedFields>Risk_Points__c</queriedFields>
+    </recordLookups>
+
+    <!-- Step 4: Look up circuit risk weight -->
+    <recordLookups>
+        <name>Get_CircuitRiskWeight</name>
+        <label>Get Circuit Risk Weight</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_CircuitFound</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Circuit_Key__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>rec_RelatedProject.nepa_circuit__c</elementReference>
+            </value>
+        </filters>
+        <object>NEPA_Circuit_Risk_Weight__mdt</object>
+        <outputReference>rec_CircuitRiskWeight</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Circuit_Key__c</queriedFields>
+        <queriedFields>Risk_Points__c</queriedFields>
+    </recordLookups>
+
+    <!-- Record Updates -->
+    <!-- Step 8: Write back to IndividualApplication -->
+    <recordUpdates>
+        <name>Update_RiskFields</name>
+        <label>Update Risk Fields</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>nepa_risk_score__c</field>
+            <value>
+                <elementReference>var_RiskScore</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_risk_tier__c</field>
+            <value>
+                <elementReference>var_RiskTier</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_risk_score_factors__c</field>
+            <value>
+                <elementReference>var_ScoreFactors</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_risk_score_updated__c</field>
+            <value>
+                <elementReference>$Flow.CurrentDateTime</elementReference>
+            </value>
+        </inputAssignments>
+        <object>IndividualApplication</object>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+    </recordUpdates>
+
+    <!-- Trigger -->
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <object>IndividualApplication</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+        <scheduledPaths>
+            <connector>
+                <targetReference>Decision_ReviewType</targetReference>
+            </connector>
+            <pathType>AsyncAfterCommit</pathType>
+        </scheduledPaths>
+        <filterLogic>or</filterLogic>
+        <filters>
+            <field>nepa_review_type__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_related_project__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+    </start>
+
+    <!-- Variables -->
+    <variables>
+        <name>var_AgencyName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_CircuitKey</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_RiskScore</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>1</scale>
+        <value>
+            <numberValue>0.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <name>var_ReviewTypePoints</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>1</scale>
+        <value>
+            <numberValue>0.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <name>var_AgencyPoints</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>1</scale>
+        <value>
+            <numberValue>5.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <name>var_CircuitPoints</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>1</scale>
+        <value>
+            <numberValue>5.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <name>var_AdjacentStatutePoints</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>1</scale>
+        <value>
+            <numberValue>0.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <name>var_RiskTier</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_ScoreFactors</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>rec_AgencyRiskRate</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>NEPA_Agency_Risk_Rate__mdt</objectType>
+    </variables>
+    <variables>
+        <name>rec_CircuitRiskWeight</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>NEPA_Circuit_Risk_Weight__mdt</objectType>
+    </variables>
+    <variables>
+        <name>rec_RelatedProject</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Program</objectType>
+    </variables>
+    <variables>
+        <name>var_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Rule table mapping process/project attributes to NEPA challenge ground predictions. Each record targets one challenge ground and specifies the conditions that trigger the prediction.</description>
+    <label>NEPA Challenge Prediction Rule</label>
+    <pluralLabel>NEPA Challenge Prediction Rules</pluralLabel>
+    <fields>
+        <fullName>Challenge_Ground__c</fullName>
+        <description>The NEPA challenge ground this rule predicts (e.g., EIS/EA Inadequacy, Failure to Supplement).</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Challenge Ground</label>
+        <length>100</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Trigger_Review_Type__c</fullName>
+        <description>Review type that activates this rule (EIS, EA, CE, Other Authorization, or blank for any).</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Trigger Review Type</label>
+        <length>50</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Trigger_Adjacent_Statute__c</fullName>
+        <description>Adjacent statute keyword that activates this rule (e.g., ESA, CWA, NHPA). Blank means not statute-dependent.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Trigger Adjacent Statute</label>
+        <length>50</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Explanation__c</fullName>
+        <description>Plain-language explanation written to nepa_challenge_prediction_notes__c when this rule fires.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Explanation</label>
+        <length>32768</length>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Priority__c</fullName>
+        <description>Sort order for display in predicted challenge grounds list. Lower number = listed first.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Priority</label>
+        <precision>3</precision>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Active__c</fullName>
+        <description>Whether this rule is currently active.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <defaultValue>true</defaultValue>
+        <label>Active</label>
+        <type>Checkbox</type>
+    </fields>
+</CustomObject>

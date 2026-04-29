@@ -2,12 +2,8 @@
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
     <fields>
         <fullName>nepa_completion_date__c</fullName>
-        <description>Conclusion date (may be aggregated from a related case event for the process, as
-defined by the agency); may be split into target date/actual date/original target date fields, although these
-are best stored in Case Events (see Entity 6: Case Events).</description>
-        <inlineHelpText>Conclusion date (may be aggregated from a related case event for the process, as
-defined by the agency); may be split into target date/actual date/original target date fields, although these
-are best stored in Case Events (see Entity 6: Case Events).</inlineHelpText>
+        <description>Conclusion date (may be aggregated from a related case event for the process, as defined by the agency).</description>
+        <inlineHelpText>Conclusion date (may be aggregated from a related case event for the process, as defined by the agency).</inlineHelpText>
         <label>Completion Date</label>
         <required>false</required>
         <trackHistory>false</trackHistory>
@@ -16,9 +12,10 @@ are best stored in Case Events (see Entity 6: Case Events).</inlineHelpText>
     <fields>
         <fullName>nepa_federal_unique_id__c</fullName>
         <caseSensitive>false</caseSensitive>
+        <description>Federal Unique ID for this process. Recommend UUID format for global uniqueness.</description>
         <externalId>true</externalId>
         <label>Federal Unique Id</label>
-        <length>32</length>
+        <length>36</length>
         <required>false</required>
         <trackHistory>false</trackHistory>
         <type>Text</type>
@@ -27,8 +24,8 @@ are best stored in Case Events (see Entity 6: Case Events).</inlineHelpText>
     <fields>
         <fullName>nepa_joint_lead_agency__c</fullName>
         <deleteConstraint>SetNull</deleteConstraint>
-        <description>Joint lead agency, if applicable</description>
-        <inlineHelpText>Joint lead agency, if applicable</inlineHelpText>
+        <description>Joint lead agency, if applicable.</description>
+        <inlineHelpText>Joint lead agency, if applicable.</inlineHelpText>
         <label>Joint Lead Agency</label>
         <referenceTo>Account</referenceTo>
         <relationshipLabel>Individual Applications</relationshipLabel>
@@ -48,9 +45,9 @@ are best stored in Case Events (see Entity 6: Case Events).</inlineHelpText>
     </fields>
     <fields>
         <fullName>nepa_process_stage__c</fullName>
-        <description>Current stage of process, may be derived from the last case event with this Process ID.</description>
+        <description>Current stage of process narrative; may be derived from the last case event with this Process ID.</description>
         <externalId>false</externalId>
-        <inlineHelpText>Current stage of process, may be derived from the last case event with this Process ID.</inlineHelpText>
+        <inlineHelpText>Current stage of process narrative; may be derived from the last case event with this Process ID.</inlineHelpText>
         <label>Process Stage</label>
         <length>255</length>
         <required>false</required>
@@ -60,8 +57,8 @@ are best stored in Case Events (see Entity 6: Case Events).</inlineHelpText>
     </fields>
     <fields>
         <fullName>nepa_public_comment_period_end_date__c</fullName>
-        <description>End date and time of public comment period</description>
-        <inlineHelpText>End date and time of public comment period</inlineHelpText>
+        <description>End date and time of public comment period.</description>
+        <inlineHelpText>End date and time of public comment period.</inlineHelpText>
         <label>Public Comment Period End Date</label>
         <required>false</required>
         <trackHistory>false</trackHistory>
@@ -69,8 +66,8 @@ are best stored in Case Events (see Entity 6: Case Events).</inlineHelpText>
     </fields>
     <fields>
         <fullName>nepa_public_comment_period_start__c</fullName>
-        <description>Start date and time of public comment period</description>
-        <inlineHelpText>Start date and time of public comment period</inlineHelpText>
+        <description>Start date and time of public comment period.</description>
+        <inlineHelpText>Start date and time of public comment period.</inlineHelpText>
         <label>Public Comment Period Start</label>
         <required>false</required>
         <trackHistory>false</trackHistory>
@@ -81,16 +78,16 @@ are best stored in Case Events (see Entity 6: Case Events).</inlineHelpText>
         <description>Optional purpose and need of the process.</description>
         <inlineHelpText>Optional purpose and need of the process.</inlineHelpText>
         <label>Purpose and Need</label>
-        <length>1024</length>
+        <length>32768</length>
         <trackHistory>false</trackHistory>
         <type>LongTextArea</type>
-        <visibleLines>3</visibleLines>
+        <visibleLines>5</visibleLines>
     </fields>
     <fields>
         <fullName>nepa_related_project__c</fullName>
         <deleteConstraint>SetNull</deleteConstraint>
-        <description>Reference to Project ID of parent project</description>
-        <inlineHelpText>Reference to Project ID of parent project</inlineHelpText>
+        <description>Reference to Project ID of parent project.</description>
+        <inlineHelpText>Reference to Project ID of parent project.</inlineHelpText>
         <label>Related Project</label>
         <referenceTo>Program</referenceTo>
         <relationshipLabel>Individual Applications</relationshipLabel>
@@ -101,15 +98,317 @@ are best stored in Case Events (see Entity 6: Case Events).</inlineHelpText>
     </fields>
     <fields>
         <fullName>nepa_start_date__c</fullName>
-        <description>Initiation date (may be aggregated from a related case event for the process, as defined by the
-agency); may be split into target date/actual date/original target date fields, although these are best
-stored in Case Events (see Entity 6: Case Events).</description>
-        <inlineHelpText>Initiation date (may be aggregated from a related case event for the process, as defined by the
-agency); may be split into target date/actual date/original target date fields, although these are best
-stored in Case Events (see Entity 6: Case Events).</inlineHelpText>
+        <description>Initiation date (may be aggregated from a related case event for the process).</description>
+        <inlineHelpText>Initiation date (may be aggregated from a related case event for the process).</inlineHelpText>
         <label>Start Date</label>
         <required>false</required>
         <trackHistory>false</trackHistory>
         <type>Date</type>
+    </fields>
+    <!-- CEQ Standard v1.2 additions -->
+    <fields>
+        <fullName>nepa_review_type__c</fullName>
+        <description>Level of NEPA review or other permit or authorization (Process Type per CEQ standard). For reference see Federal Environmental Review and Authorization Inventory.</description>
+        <inlineHelpText>Level of NEPA review: EIS, EA, CE, or Other Authorization.</inlineHelpText>
+        <label>NEPA Review Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>EIS</fullName>
+                    <default>false</default>
+                    <label>EIS</label>
+                </value>
+                <value>
+                    <fullName>EA</fullName>
+                    <default>false</default>
+                    <label>EA</label>
+                </value>
+                <value>
+                    <fullName>CE</fullName>
+                    <default>false</default>
+                    <label>CE</label>
+                </value>
+                <value>
+                    <fullName>Other Authorization</fullName>
+                    <default>false</default>
+                    <label>Other Authorization</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_process_status__c</fullName>
+        <description>Structured status of the NEPA review process per CEQ standard. Use Process Stage for narrative description.</description>
+        <inlineHelpText>Structured status: planned, pre-application, in progress, paused, completed, or cancelled.</inlineHelpText>
+        <label>Process Status</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>planned</fullName>
+                    <default>false</default>
+                    <label>planned</label>
+                </value>
+                <value>
+                    <fullName>pre-application</fullName>
+                    <default>false</default>
+                    <label>pre-application</label>
+                </value>
+                <value>
+                    <fullName>in progress</fullName>
+                    <default>false</default>
+                    <label>in progress</label>
+                </value>
+                <value>
+                    <fullName>paused</fullName>
+                    <default>false</default>
+                    <label>paused</label>
+                </value>
+                <value>
+                    <fullName>completed</fullName>
+                    <default>false</default>
+                    <label>completed</label>
+                </value>
+                <value>
+                    <fullName>cancelled</fullName>
+                    <default>false</default>
+                    <label>cancelled</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_agency_id__c</fullName>
+        <description>Process-specific ID assigned by the agency, distinct from the Federal Unique ID.</description>
+        <inlineHelpText>Agency-assigned process ID (distinct from the Federal Unique ID).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Agency Process ID</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_process_code__c</fullName>
+        <description>Code identifying the process instance (e.g., the categorical exclusion code pursuant to which the determination was made).</description>
+        <inlineHelpText>Short code identifying this process instance (e.g., CE code).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Process Code</label>
+        <length>50</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_description__c</fullName>
+        <description>Optional description of the process, distinct from the project description.</description>
+        <inlineHelpText>Optional description of the process (distinct from project description).</inlineHelpText>
+        <label>Process Description</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_parent_process__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Reference to Process ID of parent process (e.g., an earlier NEPA process that resulted in a programmatic analysis the agency is tiering from).</description>
+        <inlineHelpText>Parent process for nested or tiered NEPA reviews.</inlineHelpText>
+        <label>Parent Process</label>
+        <referenceTo>IndividualApplication</referenceTo>
+        <relationshipLabel>Child Processes</relationshipLabel>
+        <relationshipName>Child_Processes</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <!-- Phase 1 Risk Intelligence fields -->
+    <fields>
+        <fullName>nepa_risk_score__c</fullName>
+        <description>Composite litigation risk score (0-100) calculated from review type, lead agency litigation rate, circuit, and project sector. Recalculated by Flow on create/update.</description>
+        <inlineHelpText>Composite risk score 0–100. Higher = greater litigation exposure based on historical PermitTEC patterns.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Litigation Risk Score</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>1</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_risk_tier__c</fullName>
+        <description>Human-readable litigation risk tier derived from nepa_risk_score__c. Low (0-24), Moderate (25-49), High (50-74), Very High (75-100).</description>
+        <inlineHelpText>Risk tier: Low / Moderate / High / Very High.</inlineHelpText>
+        <label>Risk Tier</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Low</fullName>
+                    <default>false</default>
+                    <label>Low</label>
+                </value>
+                <value>
+                    <fullName>Moderate</fullName>
+                    <default>false</default>
+                    <label>Moderate</label>
+                </value>
+                <value>
+                    <fullName>High</fullName>
+                    <default>false</default>
+                    <label>High</label>
+                </value>
+                <value>
+                    <fullName>Very High</fullName>
+                    <default>false</default>
+                    <label>Very High</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_risk_score_factors__c</fullName>
+        <description>Semicolon-delimited list of contributing risk factor labels and their point values, written by the risk scoring Flow.</description>
+        <inlineHelpText>Factors that contributed to the risk score (e.g., Review Type: EIS +40; Agency: Forest Service +15).</inlineHelpText>
+        <label>Risk Score Factors</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_risk_score_updated__c</fullName>
+        <description>Timestamp of the last risk score calculation. Use to identify stale scores when metadata weights are updated.</description>
+        <inlineHelpText>When the risk score was last calculated.</inlineHelpText>
+        <label>Risk Score Updated</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>nepa_predicted_challenge_grounds__c</fullName>
+        <description>Semicolon-delimited list of predicted NEPA challenge grounds ordered by likelihood, derived from project attributes and PermitTEC patterns.</description>
+        <inlineHelpText>Predicted challenge grounds (e.g., EIS/EA Inadequacy; Failure to Supplement).</inlineHelpText>
+        <label>Predicted Challenge Grounds</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_challenge_prediction_notes__c</fullName>
+        <description>Plain-language explanation of each predicted challenge ground and the attributes that triggered it.</description>
+        <inlineHelpText>Why each challenge ground was predicted based on this process's attributes.</inlineHelpText>
+        <label>Challenge Prediction Notes</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_defensibility_score__c</fullName>
+        <description>Percentage (0-100) of expected administrative record elements present for this process type. Recalculated when documents, engagements, or timeline events change.</description>
+        <inlineHelpText>Record completeness score: percentage of required documents and milestones present.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Defensibility Score</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>1</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_defensibility_gaps__c</fullName>
+        <description>Semicolon-delimited list of missing record elements detected by the Defensibility Gap Flow (e.g., ROD Missing; No Public Engagement Events).</description>
+        <inlineHelpText>Missing record elements that could create defensibility risk.</inlineHelpText>
+        <label>Defensibility Gaps</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_defensibility_updated__c</fullName>
+        <description>Timestamp of the last defensibility gap check.</description>
+        <inlineHelpText>When the defensibility gaps were last evaluated.</inlineHelpText>
+        <label>Defensibility Updated</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <!-- Provenance fields (CEQ Standard v1.2 - required on all entities) -->
+    <fields>
+        <fullName>nepa_data_record_version__c</fullName>
+        <description>The version of the record, for tracking updates or changes to the data.</description>
+        <inlineHelpText>Version of this record for data exchange tracking.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Record Version</label>
+        <length>50</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_agency__c</fullName>
+        <description>The name of the agency or organization that provided the data.</description>
+        <inlineHelpText>Agency or organization that provided this data.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Source Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_system__c</fullName>
+        <description>The system or database where the data originally came from.</description>
+        <inlineHelpText>Source system or database for this record.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Source System</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_record_owner_agency__c</fullName>
+        <description>The agency responsible for maintaining or owning this record.</description>
+        <inlineHelpText>Agency responsible for owning and maintaining this record.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Record Owner Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_retrieved_timestamp__c</fullName>
+        <description>The date and time when this record was retrieved from its source.</description>
+        <inlineHelpText>Date and time this record was retrieved from its source system.</inlineHelpText>
+        <label>Retrieved Timestamp</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
     </fields>
 </CustomObject>

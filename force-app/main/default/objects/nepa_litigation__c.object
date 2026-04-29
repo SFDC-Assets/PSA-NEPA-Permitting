@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>PermitTEC-sourced federal litigation cases linked to NEPA projects. Each record represents one court case challenging a federal agency action under NEPA. Linked to Program via nepa_project_id__c (ExternalId join key).</description>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableLicensing>false</enableLicensing>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <externalSharingModel>Private</externalSharingModel>
+    <fields>
+        <fullName>nepa_case_title__c</fullName>
+        <description>Full case title as extracted from PermitTEC (e.g., "FRIENDS OF ANIMALS v. USFWS").</description>
+        <inlineHelpText>Full case title.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Case Title</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_citation__c</fullName>
+        <description>Legal citation for this case (e.g., "28 F. 4th 19").</description>
+        <inlineHelpText>Legal citation (reporter, volume, page).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Citation</label>
+        <length>100</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_court__c</fullName>
+        <description>Court that issued the ruling (e.g., "United States Court of Appeals, Ninth Circuit").</description>
+        <inlineHelpText>Court that issued the ruling.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Court</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_circuit__c</fullName>
+        <description>Federal circuit (e.g., "9th", "District of Columbia", "10th").</description>
+        <inlineHelpText>Federal circuit in which the case was decided.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Circuit</label>
+        <length>100</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_plaintiff__c</fullName>
+        <description>Plaintiff(s) — may be a semicolon-delimited list of multiple organizations or individuals.</description>
+        <inlineHelpText>Plaintiff(s) in the case. Multiple plaintiffs are semicolon-delimited.</inlineHelpText>
+        <label>Plaintiff</label>
+        <length>32768</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_defendant__c</fullName>
+        <description>Defendant(s) — may be a semicolon-delimited list of agencies and intervenors.</description>
+        <inlineHelpText>Defendant(s) in the case. Multiple defendants are semicolon-delimited.</inlineHelpText>
+        <label>Defendant</label>
+        <length>32768</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_ruling_date__c</fullName>
+        <description>Date the ruling was issued.</description>
+        <inlineHelpText>Date the ruling was issued.</inlineHelpText>
+        <label>Ruling Date</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>nepa_prevailing_party__c</fullName>
+        <description>Which party prevailed: Agency, Challenger, or Cannot be determined.</description>
+        <inlineHelpText>The prevailing party in the case.</inlineHelpText>
+        <label>Prevailing Party</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Agency</fullName>
+                    <default>false</default>
+                    <label>Agency</label>
+                </value>
+                <value>
+                    <fullName>Challenger</fullName>
+                    <default>false</default>
+                    <label>Challenger</label>
+                </value>
+                <value>
+                    <fullName>Cannot be determined</fullName>
+                    <default>false</default>
+                    <label>Cannot be determined</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_in_nepatec__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Whether the contested NEPA project was found in the NEPATEC2.0 corpus.</description>
+        <inlineHelpText>Checked when the related NEPA project exists in NEPATEC2.0.</inlineHelpText>
+        <label>In NEPATEC</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_contested_project_name__c</fullName>
+        <description>Name of the NEPA project contested in this litigation, as identified by PermitTEC matching.</description>
+        <inlineHelpText>Name of the contested NEPA project (populated when linked to NEPATEC).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Contested Project Name</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_llm_keywords__c</fullName>
+        <description>Keywords extracted by the PermitTEC LLM pipeline to identify the contested project. Semicolon-delimited.</description>
+        <inlineHelpText>LLM-extracted keywords used to identify the contested NEPA project.</inlineHelpText>
+        <label>LLM Keywords</label>
+        <length>32768</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_related_project__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Lookup to Program (NEPA project) linked via nepatec_project_uuid = Program.nepa_project_id__c.</description>
+        <inlineHelpText>The NEPA project record this litigation is associated with.</inlineHelpText>
+        <label>Related Project</label>
+        <referenceTo>Program</referenceTo>
+        <relationshipLabel>Litigation Cases</relationshipLabel>
+        <relationshipName>Litigation_Cases</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <!-- Provenance fields (CEQ Standard v1.2 pattern) -->
+    <fields>
+        <fullName>nepa_data_source_system__c</fullName>
+        <description>The system or database where the data originally came from.</description>
+        <inlineHelpText>Source system — PermitTEC for PermitTEC-sourced litigation records.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Source System</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_record_version__c</fullName>
+        <description>The version of the PermitTEC dataset record (e.g., "0.1").</description>
+        <inlineHelpText>Version of this record for data exchange tracking.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Record Version</label>
+        <length>50</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_extraction_quality__c</fullName>
+        <description>Lowest PermitTEC source quality tag across all fields in this record. Validated = all fields manually validated; Corrected = at least one field was corrected; Unreviewed = at least one field had no manual review.</description>
+        <inlineHelpText>Overall extraction quality for this record based on PermitTEC source tags.</inlineHelpText>
+        <label>Extraction Quality</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Validated</fullName>
+                    <default>false</default>
+                    <label>Validated</label>
+                </value>
+                <value>
+                    <fullName>Corrected</fullName>
+                    <default>false</default>
+                    <label>Corrected</label>
+                </value>
+                <value>
+                    <fullName>Unreviewed</fullName>
+                    <default>false</default>
+                    <label>Unreviewed</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <label>NEPA Litigation</label>
+    <nameField>
+        <label>Case UUID</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>NEPA Litigation Cases</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>Private</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Bureau of Land Management</label>
+    <protected>false</protected>
+    <values>
+        <field>Agency_Name__c</field>
+        <value xsi:type="xsd:string">Bureau of Land Management</value>
+    </values>
+    <values>
+        <field>Agency_Abbreviation__c</field>
+        <value xsi:type="xsd:string">BLM</value>
+    </values>
+    <values>
+        <field>Case_Count__c</field>
+        <value xsi:type="xsd:decimal">35</value>
+    </values>
+    <values>
+        <field>Risk_Points__c</field>
+        <value xsi:type="xsd:decimal">23</value>
+    </values>
+</CustomMetadata>

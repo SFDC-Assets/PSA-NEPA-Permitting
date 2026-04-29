@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Per-circuit litigation risk weights seeded from PermitTEC v0.1 corpus. Used by the Litigation Risk Scoring Flow to weight the geographic component of the composite score.</description>
+    <label>NEPA Circuit Risk Weight</label>
+    <pluralLabel>NEPA Circuit Risk Weights</pluralLabel>
+    <fields>
+        <fullName>Circuit_Label__c</fullName>
+        <description>Human-readable circuit label (e.g., 9th Circuit, D.C. Circuit, 4th Circuit).</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Circuit Label</label>
+        <length>100</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Circuit_Key__c</fullName>
+        <description>Short key matched against Program.nepa_circuit__c (e.g., 9th, DC, 4th).</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Circuit Key</label>
+        <length>20</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Case_Count__c</fullName>
+        <description>Number of PermitTEC litigation cases in this circuit.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Case Count</label>
+        <precision>6</precision>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Risk_Points__c</fullName>
+        <description>Points added to composite litigation risk score for this circuit. Scale: 0-20 points.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Risk Points</label>
+        <precision>5</precision>
+        <scale>1</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+</CustomObject>

@@ -1,0 +1,797 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>Evaluates defensibility gaps on an IndividualApplication by checking for required document types, public engagement events, and a minimum 30-day comment period. Triggered after save on ContentVersion (nepa_related_case_event__c changes), nepa_engagement__c, and IndividualApplication itself. Writes results to nepa_defensibility_gaps__c and nepa_defensibility_score__c.</description>
+    <label>NEPA Defensibility Gap Checker</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Draft</status>
+
+    <!-- Assignments -->
+    <assignments>
+        <name>Pass_ROD_FONSI</name>
+        <label>Pass: ROD/FONSI</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ChecksPassed</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <numberValue>1.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_CommentResponse</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Flag_ROD_FONSI_Missing</name>
+        <label>Gap: ROD/FONSI Missing</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_GapList</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>{!var_GapList}ROD/FONSI Document Missing; </stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_CommentResponse</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Pass_CommentResponse</name>
+        <label>Pass: Comment Response</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ChecksPassed</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <numberValue>1.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_AlternativesAnalysis</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Flag_CommentResponse_Missing</name>
+        <label>Gap: Comment Response Missing</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_GapList</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>{!var_GapList}Comment Response Document Missing; </stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_AlternativesAnalysis</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Pass_Alternatives</name>
+        <label>Pass: Alternatives Analysis</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ChecksPassed</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <numberValue>1.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_Engagement</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Flag_Alternatives_Missing</name>
+        <label>Gap: Alternatives Analysis Missing</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_GapList</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>{!var_GapList}Alternatives Analysis Document Missing; </stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_Engagement</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Pass_Engagement</name>
+        <label>Pass: Engagement Events</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ChecksPassed</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <numberValue>1.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_CommentPeriodDates</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Flag_Engagement_Missing</name>
+        <label>Gap: No Public Engagement Events</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_GapList</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>{!var_GapList}No Public Engagement Events Recorded; </stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_CommentPeriodDates</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Calc_CommentPeriodDays</name>
+        <label>Calculate Comment Period Days</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_CommentPeriodDays</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>rec_Process.nepa_public_comment_period_end_date__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_CommentPeriodLength</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Pass_CommentPeriod</name>
+        <label>Pass: Comment Period</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ChecksPassed</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <numberValue>1.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_NOI_Document</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Flag_CommentPeriod_Missing</name>
+        <label>Gap: Comment Period Dates Not Set</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_GapList</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>{!var_GapList}Public Comment Period Dates Not Set; </stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_NOI_Document</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Flag_CommentPeriod_Short</name>
+        <label>Gap: Comment Period Too Short</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_GapList</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>{!var_GapList}Public Comment Period May Be Insufficient; </stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_NOI_Document</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Pass_NOI</name>
+        <label>Pass: NOI</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ChecksPassed</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <numberValue>1.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Calculate_DefensibilityScore</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Flag_NOI_Missing</name>
+        <label>Gap: NOI Missing</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_GapList</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>{!var_GapList}Notice of Intent (NOI) Missing; </stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Calculate_DefensibilityScore</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Calculate_DefensibilityScore</name>
+        <label>Calculate Defensibility Score</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_DefensibilityScore</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula_DefensibilityScore</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_DefensibilityFields</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Handle_Error</name>
+        <label>Handle Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+
+    <!-- Decisions -->
+    <decisions>
+        <name>Decision_ROD_FONSI</name>
+        <label>ROD/FONSI Present?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Missing</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Flag_ROD_FONSI_Missing</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>ROD_FONSI_Present</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>col_ROD_FONSI</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Pass_ROD_FONSI</targetReference>
+            </connector>
+            <label>Present</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_CommentResponse</name>
+        <label>Comment Response Present?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Missing</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Flag_CommentResponse_Missing</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>CommentResponse_Present</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>col_CommentResponse</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Pass_CommentResponse</targetReference>
+            </connector>
+            <label>Present</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_AlternativesAnalysis</name>
+        <label>Alternatives Analysis Present?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Missing</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Flag_Alternatives_Missing</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Alternatives_Present</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>col_AlternativesAnalysis</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Pass_Alternatives</targetReference>
+            </connector>
+            <label>Present</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_Engagement</name>
+        <label>Engagement Events Present?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No Events</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Flag_Engagement_Missing</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Engagement_Present</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>col_EngagementEvents</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Pass_Engagement</targetReference>
+            </connector>
+            <label>Has Events</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Check_CommentPeriodDates</name>
+        <label>Comment Period Dates Set?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Dates Not Set</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Flag_CommentPeriod_Missing</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>CommentPeriod_Dates_Set</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>rec_Process.nepa_public_comment_period_start__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>rec_Process.nepa_public_comment_period_end_date__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Calc_CommentPeriodDays</targetReference>
+            </connector>
+            <label>Dates Set</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_CommentPeriodLength</name>
+        <label>Comment Period >= 30 Days?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Short Period</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Flag_CommentPeriod_Short</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>CommentPeriod_Sufficient</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>rec_Process.nepa_public_comment_period_end_date__c</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <elementReference>rec_Process.nepa_public_comment_period_start__c</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Pass_CommentPeriod</targetReference>
+            </connector>
+            <label>Sufficient</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_NOI</name>
+        <label>NOI Present?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Missing</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Flag_NOI_Missing</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>NOI_Present</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>col_ROD_FONSI</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Pass_NOI</targetReference>
+            </connector>
+            <label>Present</label>
+        </rules>
+    </decisions>
+
+    <!-- Record Lookups -->
+    <recordLookups>
+        <name>Get_Process</name>
+        <label>Get IndividualApplication</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_ROD_FONSI</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>inp_ProcessId</elementReference>
+            </value>
+        </filters>
+        <object>IndividualApplication</object>
+        <outputReference>rec_Process</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>nepa_review_type__c</queriedFields>
+        <queriedFields>nepa_public_comment_period_start__c</queriedFields>
+        <queriedFields>nepa_public_comment_period_end_date__c</queriedFields>
+    </recordLookups>
+
+    <recordLookups>
+        <name>Check_ROD_FONSI</name>
+        <label>Check: ROD or FONSI Document</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_ROD_FONSI</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>nepa_related_case_event__r.ApplicationId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>inp_ProcessId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_document_type__c</field>
+            <operator>In</operator>
+            <value>
+                <stringValue>ROD</stringValue>
+            </value>
+        </filters>
+        <object>ContentVersion</object>
+        <outputReference>col_ROD_FONSI</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>nepa_document_type__c</queriedFields>
+    </recordLookups>
+
+    <recordLookups>
+        <name>Check_CommentResponse</name>
+        <label>Check: Comment Response Document</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_CommentResponse</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>nepa_related_case_event__r.ApplicationId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>inp_ProcessId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_document_type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Comment Response</stringValue>
+            </value>
+        </filters>
+        <object>ContentVersion</object>
+        <outputReference>col_CommentResponse</outputReference>
+        <queriedFields>Id</queriedFields>
+    </recordLookups>
+
+    <recordLookups>
+        <name>Check_AlternativesAnalysis</name>
+        <label>Check: Alternatives Analysis Document</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_AlternativesAnalysis</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>nepa_related_case_event__r.ApplicationId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>inp_ProcessId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_document_type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Alternatives Analysis</stringValue>
+            </value>
+        </filters>
+        <object>ContentVersion</object>
+        <outputReference>col_AlternativesAnalysis</outputReference>
+        <queriedFields>Id</queriedFields>
+    </recordLookups>
+
+    <recordLookups>
+        <name>Check_Engagement</name>
+        <label>Check: Public Engagement Events</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_Engagement</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>nepa_process__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>inp_ProcessId</elementReference>
+            </value>
+        </filters>
+        <object>nepa_engagement__c</object>
+        <outputReference>col_EngagementEvents</outputReference>
+        <queriedFields>Id</queriedFields>
+    </recordLookups>
+
+    <recordLookups>
+        <name>Check_NOI_Document</name>
+        <label>Check: NOI Document</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_NOI</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>nepa_related_case_event__r.ApplicationId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>inp_ProcessId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_document_type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>NOI</stringValue>
+            </value>
+        </filters>
+        <object>ContentVersion</object>
+        <outputReference>col_ROD_FONSI</outputReference>
+        <queriedFields>Id</queriedFields>
+    </recordLookups>
+
+    <!-- Record Updates -->
+    <recordUpdates>
+        <name>Update_DefensibilityFields</name>
+        <label>Update Defensibility Fields</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>nepa_defensibility_score__c</field>
+            <value>
+                <elementReference>var_DefensibilityScore</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_defensibility_gaps__c</field>
+            <value>
+                <elementReference>var_GapList</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_defensibility_updated__c</field>
+            <value>
+                <elementReference>$Flow.CurrentDateTime</elementReference>
+            </value>
+        </inputAssignments>
+        <object>IndividualApplication</object>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>inp_ProcessId</elementReference>
+            </value>
+        </filters>
+    </recordUpdates>
+
+    <!-- Autolaunched: called by trigger flows on ContentVersion and nepa_engagement__c -->
+    <!-- Formula: (ChecksPassed / ChecksTotal) * 100 -->
+    <formulas>
+        <name>formula_DefensibilityScore</name>
+        <dataType>Number</dataType>
+        <expression>({!var_ChecksPassed} / {!var_ChecksTotal}) * 100</expression>
+        <scale>1</scale>
+    </formulas>
+
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Process</targetReference>
+        </connector>
+    </start>
+
+    <!-- Variables -->
+    <!-- Input: the IndividualApplication Id to evaluate -->
+    <variables>
+        <name>inp_ProcessId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <!-- Counters for score calculation -->
+    <variables>
+        <name>var_ChecksTotal</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+        <value>
+            <numberValue>6.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <name>var_ChecksPassed</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+        <value>
+            <numberValue>0.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <name>var_GapList</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_DefensibilityScore</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>1</scale>
+        <value>
+            <numberValue>0.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <name>rec_Process</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>IndividualApplication</objectType>
+    </variables>
+    <variables>
+        <name>col_ROD_FONSI</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ContentVersion</objectType>
+    </variables>
+    <variables>
+        <name>col_CommentResponse</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ContentVersion</objectType>
+    </variables>
+    <variables>
+        <name>col_AlternativesAnalysis</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ContentVersion</objectType>
+    </variables>
+    <variables>
+        <name>col_EngagementEvents</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>nepa_engagement__c</objectType>
+    </variables>
+    <variables>
+        <name>var_CommentPeriodDays</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+        <value>
+            <numberValue>0.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <name>var_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

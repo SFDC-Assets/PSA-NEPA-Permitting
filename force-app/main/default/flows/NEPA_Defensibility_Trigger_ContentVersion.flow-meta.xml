@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>Calls NEPA_Defensibility_Gap_Checker when a ContentVersion with a NEPA document type is linked to a case event. Resolves the parent IndividualApplication Id and passes it to the gap checker subflow.</description>
+    <label>NEPA Defensibility Trigger - Document</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Draft</status>
+
+    <!-- Assignments -->
+    <assignments>
+        <name>Assign_ProcessId</name>
+        <label>Set Process Id</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ProcessId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>rec_CaseEvent.ApplicationId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Call_GapChecker</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- Decisions -->
+    <decisions>
+        <name>Decision_HasDocumentType</name>
+        <label>Has NEPA Document Type and Case Event?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Not a NEPA document</defaultConnectorLabel>
+        <rules>
+            <name>Is_NEPA_Document</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_document_type__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.nepa_related_case_event__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_CaseEvent</targetReference>
+            </connector>
+            <label>Is NEPA Document with Case Event</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_HasApplication</name>
+        <label>Case Event Has Application?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No Application</defaultConnectorLabel>
+        <rules>
+            <name>Has_Application</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>rec_CaseEvent.ApplicationId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_ProcessId</targetReference>
+            </connector>
+            <label>Has Application</label>
+        </rules>
+    </decisions>
+
+    <!-- Record Lookups -->
+    <recordLookups>
+        <name>Get_CaseEvent</name>
+        <label>Get Case Event for Application Id</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_HasApplication</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.nepa_related_case_event__c</elementReference>
+            </value>
+        </filters>
+        <object>ApplicationTimeline</object>
+        <outputReference>rec_CaseEvent</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>ApplicationId</queriedFields>
+    </recordLookups>
+
+    <!-- Subflows -->
+    <subflows>
+        <name>Call_GapChecker</name>
+        <label>Call Defensibility Gap Checker</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>NEPA_Defensibility_Gap_Checker</flowName>
+        <inputAssignments>
+            <name>inp_ProcessId</name>
+            <value>
+                <elementReference>var_ProcessId</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <object>ContentVersion</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+        <scheduledPaths>
+            <connector>
+                <targetReference>Decision_HasDocumentType</targetReference>
+            </connector>
+            <pathType>AsyncAfterCommit</pathType>
+        </scheduledPaths>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>nepa_document_type__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+    </start>
+
+    <!-- Variables -->
+    <variables>
+        <name>var_ProcessId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>rec_CaseEvent</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ApplicationTimeline</objectType>
+    </variables>
+    <variables>
+        <name>var_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>CEQ Standard Entity 5: Public Engagement Events. Tracks opportunities for public interaction in the environmental review process, including public meetings, hearings, scoping sessions, and tribal consultations. Distinct from case events (which are milestones); this tracks windows of public involvement.</description>
+    <enableActivities>true</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableLicensing>false</enableLicensing>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <externalSharingModel>ControlledByParent</externalSharingModel>
+    <fields>
+        <fullName>nepa_process__c</fullName>
+        <description>The NEPA review process this engagement event is associated with.</description>
+        <inlineHelpText>The NEPA review process this engagement event is associated with.</inlineHelpText>
+        <label>Process</label>
+        <referenceTo>IndividualApplication</referenceTo>
+        <relationshipLabel>Public Engagement Events</relationshipLabel>
+        <relationshipName>Public_Engagement_Events</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+    <fields>
+        <fullName>nepa_engagement_type__c</fullName>
+        <description>Type of public engagement event per CEQ standard Entity 5 Type property.</description>
+        <inlineHelpText>Type of engagement: Public Meeting, Notice, Solicitation, Tribal Consultation, Scoping, or Other.</inlineHelpText>
+        <label>Engagement Type</label>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Public Meeting</fullName>
+                    <default>false</default>
+                    <label>Public Meeting</label>
+                </value>
+                <value>
+                    <fullName>Public Hearing</fullName>
+                    <default>false</default>
+                    <label>Public Hearing</label>
+                </value>
+                <value>
+                    <fullName>Notice</fullName>
+                    <default>false</default>
+                    <label>Notice</label>
+                </value>
+                <value>
+                    <fullName>Comment Solicitation</fullName>
+                    <default>false</default>
+                    <label>Comment Solicitation</label>
+                </value>
+                <value>
+                    <fullName>Scoping Meeting</fullName>
+                    <default>false</default>
+                    <label>Scoping Meeting</label>
+                </value>
+                <value>
+                    <fullName>Tribal Consultation</fullName>
+                    <default>false</default>
+                    <label>Tribal Consultation</label>
+                </value>
+                <value>
+                    <fullName>Open House</fullName>
+                    <default>false</default>
+                    <label>Open House</label>
+                </value>
+                <value>
+                    <fullName>Virtual Webinar</fullName>
+                    <default>false</default>
+                    <label>Virtual Webinar</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_start_datetime__c</fullName>
+        <description>Event start date and time.</description>
+        <inlineHelpText>Event start date and time.</inlineHelpText>
+        <label>Start Date/Time</label>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>nepa_end_datetime__c</fullName>
+        <description>Event end date and time, if applicable.</description>
+        <inlineHelpText>Event end date and time.</inlineHelpText>
+        <label>End Date/Time</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>nepa_location_format__c</fullName>
+        <description>Whether the engagement event is in-person, virtual, or hybrid.</description>
+        <inlineHelpText>Format of the engagement event: In-Person, Virtual, or Hybrid.</inlineHelpText>
+        <label>Location Format</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>In-Person</fullName>
+                    <default>false</default>
+                    <label>In-Person</label>
+                </value>
+                <value>
+                    <fullName>Virtual</fullName>
+                    <default>false</default>
+                    <label>Virtual</label>
+                </value>
+                <value>
+                    <fullName>Hybrid</fullName>
+                    <default>false</default>
+                    <label>Hybrid</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_location__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Physical or virtual location of the engagement event.</description>
+        <inlineHelpText>Physical or virtual location of the engagement event.</inlineHelpText>
+        <label>Location</label>
+        <referenceTo>Location</referenceTo>
+        <relationshipLabel>Engagement Events</relationshipLabel>
+        <relationshipName>Engagement_Events</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_attendance_count__c</fullName>
+        <description>Number of participants who attended this engagement event.</description>
+        <inlineHelpText>Participant count for this engagement event.</inlineHelpText>
+        <label>Attendance Count</label>
+        <precision>8</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_public_access__c</fullName>
+        <defaultValue>true</defaultValue>
+        <description>Whether this engagement event is publicly visible.</description>
+        <inlineHelpText>Check if this event is publicly visible.</inlineHelpText>
+        <label>Public Access</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_notes__c</fullName>
+        <description>Additional notes about this engagement event.</description>
+        <inlineHelpText>Additional notes or context for this engagement event.</inlineHelpText>
+        <label>Notes</label>
+        <length>32768</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <!-- Provenance fields (CEQ Standard v1.2 - required on all entities) -->
+    <fields>
+        <fullName>nepa_data_record_version__c</fullName>
+        <description>The version of the record, for tracking updates or changes to the data.</description>
+        <inlineHelpText>Version of this record for data exchange tracking.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Record Version</label>
+        <length>50</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_agency__c</fullName>
+        <description>The name of the agency or organization that provided the data.</description>
+        <inlineHelpText>Agency or organization that provided this data.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Source Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_system__c</fullName>
+        <description>The system or database where the data originally came from.</description>
+        <inlineHelpText>Source system or database for this record.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Source System</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_record_owner_agency__c</fullName>
+        <description>The agency responsible for maintaining or owning this record.</description>
+        <inlineHelpText>Agency responsible for owning and maintaining this record.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Record Owner Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_retrieved_timestamp__c</fullName>
+        <description>The date and time when this record was retrieved from its source.</description>
+        <inlineHelpText>Date and time this record was retrieved from its source system.</inlineHelpText>
+        <label>Retrieved Timestamp</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <label>NEPA Public Engagement Event</label>
+    <nameField>
+        <displayFormat>ENG-{00000000}</displayFormat>
+        <label>Engagement Event Name</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>NEPA Public Engagement Events</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ControlledByParent</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

@@ -2,9 +2,9 @@
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
     <fields>
         <fullName>nepa_document_revision__c</fullName>
-        <description>Indicates which revision of the document (e.g., first revised Draft EIS)</description>
+        <description>Indicates which revision of the document (e.g., first revised Draft EIS).</description>
         <externalId>false</externalId>
-        <inlineHelpText>Indicates which revision of the document (e.g., first revised Draft EIS)</inlineHelpText>
+        <inlineHelpText>Indicates which revision of the document (e.g., first revised Draft EIS).</inlineHelpText>
         <label>Document Revision</label>
         <length>255</length>
         <required>false</required>
@@ -14,8 +14,8 @@
     </fields>
     <fields>
         <fullName>nepa_document_type__c</fullName>
-        <description>Type of document (e.g., NOI, Draft EIS, Final EIS, ROD)</description>
-        <inlineHelpText>Type of document (e.g., NOI, Draft EIS, Final EIS, ROD)</inlineHelpText>
+        <description>Type of document (e.g., NOI, Draft EIS, Final EIS, ROD).</description>
+        <inlineHelpText>Type of NEPA document.</inlineHelpText>
         <label>Document Type</label>
         <required>false</required>
         <trackHistory>false</trackHistory>
@@ -25,33 +25,83 @@
             <valueSetDefinition>
                 <sorted>false</sorted>
                 <value>
-                    <fullName>NOI,</fullName>
+                    <fullName>NOI</fullName>
                     <default>false</default>
-                    <label>NOI,</label>
+                    <label>NOI</label>
                 </value>
                 <value>
-                    <fullName>Draft EIS,</fullName>
+                    <fullName>Draft EIS</fullName>
                     <default>false</default>
-                    <label>Draft EIS,</label>
+                    <label>Draft EIS</label>
                 </value>
                 <value>
-                    <fullName>Final EIS,</fullName>
+                    <fullName>Supplemental EIS</fullName>
                     <default>false</default>
-                    <label>Final EIS,</label>
+                    <label>Supplemental EIS</label>
+                </value>
+                <value>
+                    <fullName>Programmatic EIS</fullName>
+                    <default>false</default>
+                    <label>Programmatic EIS</label>
+                </value>
+                <value>
+                    <fullName>Final EIS</fullName>
+                    <default>false</default>
+                    <label>Final EIS</label>
                 </value>
                 <value>
                     <fullName>ROD</fullName>
                     <default>false</default>
                     <label>ROD</label>
                 </value>
+                <value>
+                    <fullName>Environmental Assessment</fullName>
+                    <default>false</default>
+                    <label>Environmental Assessment</label>
+                </value>
+                <value>
+                    <fullName>FONSI</fullName>
+                    <default>false</default>
+                    <label>FONSI</label>
+                </value>
+                <value>
+                    <fullName>CE Determination</fullName>
+                    <default>false</default>
+                    <label>CE Determination</label>
+                </value>
+                <value>
+                    <fullName>Memorandum to File</fullName>
+                    <default>false</default>
+                    <label>Memorandum to File</label>
+                </value>
+                <value>
+                    <fullName>Permit</fullName>
+                    <default>false</default>
+                    <label>Permit</label>
+                </value>
+                <value>
+                    <fullName>Comment Response</fullName>
+                    <default>false</default>
+                    <label>Comment Response</label>
+                </value>
+                <value>
+                    <fullName>Alternatives Analysis</fullName>
+                    <default>false</default>
+                    <label>Alternatives Analysis</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
             </valueSetDefinition>
         </valueSet>
     </fields>
     <fields>
         <fullName>nepa_prepared_by__c</fullName>
-        <description>Responsible entity</description>
+        <description>Responsible entity that prepared this document.</description>
         <externalId>false</externalId>
-        <inlineHelpText>Responsible entity</inlineHelpText>
+        <inlineHelpText>Responsible entity that prepared this document.</inlineHelpText>
         <label>Prepared By</label>
         <length>255</length>
         <required>false</required>
@@ -61,8 +111,8 @@
     </fields>
     <fields>
         <fullName>nepa_public_access__c</fullName>
-        <description>Public access level for the document</description>
-        <inlineHelpText>Public access level for the document</inlineHelpText>
+        <description>Public access level for the document.</description>
+        <inlineHelpText>Disclosable (public) or Non-disclosable (restricted).</inlineHelpText>
         <label>Public Access</label>
         <required>false</required>
         <trackHistory>false</trackHistory>
@@ -95,10 +145,10 @@
     </fields>
     <fields>
         <fullName>nepa_revision_number__c</fullName>
-        <description>Indicates which revision of the document (e.g., first revised Draft EIS)</description>
+        <description>Numeric revision sequence number of the document.</description>
         <externalId>false</externalId>
-        <inlineHelpText>Indicates which revision of the document (e.g., first revised Draft EIS)</inlineHelpText>
-        <label>Document Revision</label>
+        <inlineHelpText>Numeric revision sequence number.</inlineHelpText>
+        <label>Revision Number</label>
         <precision>18</precision>
         <required>false</required>
         <scale>0</scale>
@@ -108,8 +158,8 @@
     </fields>
     <fields>
         <fullName>nepa_status__c</fullName>
-        <description>Document production phase</description>
-        <inlineHelpText>Document production phase</inlineHelpText>
+        <description>Document production phase.</description>
+        <inlineHelpText>Current production phase of this document.</inlineHelpText>
         <label>Status</label>
         <required>false</required>
         <trackHistory>false</trackHistory>
@@ -124,11 +174,6 @@
                     <label>Draft</label>
                 </value>
                 <value>
-                    <fullName>Complete</fullName>
-                    <default>false</default>
-                    <label>Complete</label>
-                </value>
-                <value>
                     <fullName>Pending Review</fullName>
                     <default>false</default>
                     <label>Pending Review</label>
@@ -139,14 +184,19 @@
                     <label>Approved</label>
                 </value>
                 <value>
-                    <fullName>Rejected</fullName>
-                    <default>false</default>
-                    <label>Rejected</label>
-                </value>
-                <value>
                     <fullName>Published</fullName>
                     <default>false</default>
                     <label>Published</label>
+                </value>
+                <value>
+                    <fullName>Complete</fullName>
+                    <default>false</default>
+                    <label>Complete</label>
+                </value>
+                <value>
+                    <fullName>Rejected</fullName>
+                    <default>false</default>
+                    <label>Rejected</label>
                 </value>
             </valueSetDefinition>
         </valueSet>
@@ -155,7 +205,7 @@
         <fullName>nepa_supplement_number__c</fullName>
         <description>If the document is a supplement to another document, this indicates the sequence number of the supplement.</description>
         <externalId>false</externalId>
-        <inlineHelpText>If the document is a supplement to another document, this indicates the sequence number of the supplement.</inlineHelpText>
+        <inlineHelpText>Supplement sequence number (if this is a supplemental document).</inlineHelpText>
         <label>Supplement Number</label>
         <precision>18</precision>
         <required>false</required>
@@ -166,15 +216,180 @@
     </fields>
     <fields>
         <fullName>nepa_volume_title__c</fullName>
-        <description>Volume title (e.g., Appendix)</description>
+        <description>Title of a specific document section or volume (e.g., Appendix 1 - Location Maps, Chapter 3 - Affected Environment).</description>
+        <inlineHelpText>Title of this document section or volume.</inlineHelpText>
+        <label>Volume / Section Title</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <!-- CEQ Standard v1.2 additions -->
+    <fields>
+        <fullName>nepa_url__c</fullName>
+        <description>Online link to the document, if publicly available.</description>
+        <inlineHelpText>Public URL where this document can be accessed.</inlineHelpText>
+        <label>Document URL</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>nepa_related_case_event__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Reference to the Case Event (ApplicationTimeline) that this document is associated with (e.g., NOI publication event).</description>
+        <inlineHelpText>Case event milestone that produced or is associated with this document.</inlineHelpText>
+        <label>Related Case Event</label>
+        <referenceTo>ApplicationTimeline</referenceTo>
+        <relationshipLabel>Documents</relationshipLabel>
+        <relationshipName>NEPA_Documents</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_contributing_agencies__c</fullName>
+        <description>Agencies that contributed to preparation or review of this document.</description>
+        <inlineHelpText>Agencies that contributed to preparation or review of this document.</inlineHelpText>
+        <label>Contributing Agencies</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_document_summary__c</fullName>
+        <description>Machine-readable summary of the document structure, including table of contents and short descriptions of sections. Include at minimum: project, process, high-level case events, and associated GIS data.</description>
+        <inlineHelpText>Document table of contents and section summaries (structured data per CEQ Document Structures guidance).</inlineHelpText>
+        <label>Document Summary / TOC</label>
+        <length>131072</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_document_files__c</fullName>
+        <description>Optional JSON reference to document files associated with this record (per CEQ standard Document Files property added in v1.2).</description>
+        <inlineHelpText>JSON references to document file attachments or external file locations.</inlineHelpText>
+        <label>Document Files (JSON)</label>
+        <length>131072</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_record_category__c</fullName>
+        <description>Administrative record classification for this document, supporting FOIA and litigation needs.</description>
+        <inlineHelpText>Administrative record category for this document.</inlineHelpText>
+        <label>Record Category</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Supporting Analysis</fullName>
+                    <default>false</default>
+                    <label>Supporting Analysis</label>
+                </value>
+                <value>
+                    <fullName>Public Comment</fullName>
+                    <default>false</default>
+                    <label>Public Comment</label>
+                </value>
+                <value>
+                    <fullName>Agency Communication</fullName>
+                    <default>false</default>
+                    <label>Agency Communication</label>
+                </value>
+                <value>
+                    <fullName>Decision Record</fullName>
+                    <default>false</default>
+                    <label>Decision Record</label>
+                </value>
+                <value>
+                    <fullName>Permit</fullName>
+                    <default>false</default>
+                    <label>Permit</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <!-- Provenance fields (CEQ Standard v1.2 - required on all entities) -->
+    <fields>
+        <fullName>nepa_data_record_version__c</fullName>
+        <description>The version of the record, for tracking updates or changes to the data.</description>
+        <inlineHelpText>Version of this record for data exchange tracking.</inlineHelpText>
         <externalId>false</externalId>
-        <inlineHelpText>Volume title (e.g., Appendix)</inlineHelpText>
-        <label>Volume Title</label>
+        <label>Data Record Version</label>
+        <length>50</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_agency__c</fullName>
+        <description>The name of the agency or organization that provided the data.</description>
+        <inlineHelpText>Agency or organization that provided this data.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Source Agency</label>
         <length>255</length>
         <required>false</required>
         <trackHistory>false</trackHistory>
         <type>Text</type>
         <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_system__c</fullName>
+        <description>The system or database where the data originally came from.</description>
+        <inlineHelpText>Source system or database for this record.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Source System</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_record_owner_agency__c</fullName>
+        <description>The agency responsible for maintaining or owning this record.</description>
+        <inlineHelpText>Agency responsible for owning and maintaining this record.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Record Owner Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_retrieved_timestamp__c</fullName>
+        <description>The date and time when this record was retrieved from its source.</description>
+        <inlineHelpText>Date and time this record was retrieved from its source system.</inlineHelpText>
+        <label>Retrieved Timestamp</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>nepa_main_document__c</fullName>
+        <description>Indicates whether this file is the primary/main document (true) or supporting material such as an appendix, attachment, or supplemental file (false). Aligns with NEPATEC2.0 main_document flag.</description>
+        <inlineHelpText>Check if this is the main document. Leave unchecked for appendices, attachments, and supplemental files.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Main Document</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
     </fields>
     <recordTypes>
         <fullName>nepa_permit_document</fullName>
@@ -184,19 +399,59 @@
         <picklistValues>
             <picklist>nepa_document_type__c</picklist>
             <values>
-                <fullName>Draft EIS%2C</fullName>
+                <fullName>NOI</fullName>
                 <default>false</default>
             </values>
             <values>
-                <fullName>Final EIS%2C</fullName>
+                <fullName>Draft EIS</fullName>
                 <default>false</default>
             </values>
             <values>
-                <fullName>NOI%2C</fullName>
+                <fullName>Supplemental EIS</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Programmatic EIS</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Final EIS</fullName>
                 <default>false</default>
             </values>
             <values>
                 <fullName>ROD</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Environmental Assessment</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>FONSI</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>CE Determination</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Memorandum to File</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Comment Response</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Alternatives Analysis</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Permit</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Other</fullName>
                 <default>false</default>
             </values>
         </picklistValues>
@@ -214,14 +469,6 @@
         <picklistValues>
             <picklist>nepa_status__c</picklist>
             <values>
-                <fullName>Approved</fullName>
-                <default>false</default>
-            </values>
-            <values>
-                <fullName>Complete</fullName>
-                <default>false</default>
-            </values>
-            <values>
                 <fullName>Draft</fullName>
                 <default>false</default>
             </values>
@@ -230,11 +477,46 @@
                 <default>false</default>
             </values>
             <values>
+                <fullName>Approved</fullName>
+                <default>false</default>
+            </values>
+            <values>
                 <fullName>Published</fullName>
                 <default>false</default>
             </values>
             <values>
+                <fullName>Complete</fullName>
+                <default>false</default>
+            </values>
+            <values>
                 <fullName>Rejected</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>nepa_record_category__c</picklist>
+            <values>
+                <fullName>Supporting Analysis</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Public Comment</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Agency Communication</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Decision Record</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Permit</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Other</fullName>
                 <default>false</default>
             </values>
         </picklistValues>

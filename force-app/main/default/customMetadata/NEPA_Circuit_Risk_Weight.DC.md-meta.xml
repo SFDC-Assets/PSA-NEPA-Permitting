@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>D.C. Circuit</label>
+    <protected>false</protected>
+    <values>
+        <field>Circuit_Label__c</field>
+        <value xsi:type="xsd:string">D.C. Circuit</value>
+    </values>
+    <values>
+        <field>Circuit_Key__c</field>
+        <value xsi:type="xsd:string">DC</value>
+    </values>
+    <values>
+        <field>Case_Count__c</field>
+        <value xsi:type="xsd:decimal">175</value>
+    </values>
+    <values>
+        <field>Risk_Points__c</field>
+        <value xsi:type="xsd:decimal">16</value>
+    </values>
+</CustomMetadata>

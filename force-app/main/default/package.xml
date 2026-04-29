@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>nepa_permitting</fullName>
-    <description>Open source package used with Public Sector Solutions for a NEPA compliant data model</description>
+    <description>Open source package used with Public Sector Solutions for a NEPA compliant data model. Implements CEQ NEPA and Permitting Data and Technology Standard v1.2 (May 30, 2025, updated August 18, 2025).</description>
     <types>
-        <members>ContentVersion.nepa_document_revision__c</members>
-        <members>ContentVersion.nepa_document_type__c</members>
-        <members>ContentVersion.nepa_prepared_by__c</members>
-        <members>ContentVersion.nepa_public_access__c</members>
-        <members>ContentVersion.nepa_publish_date__c</members>
-        <members>ContentVersion.nepa_revision_number__c</members>
-        <members>ContentVersion.nepa_status__c</members>
-        <members>ContentVersion.nepa_supplement_number__c</members>
-        <members>ContentVersion.nepa_volume_title__c</members>
+        <!-- IndividualApplication (Entity 2: Process) -->
+        <members>IndividualApplication.nepa_risk_score__c</members>
+        <members>IndividualApplication.nepa_risk_tier__c</members>
+        <members>IndividualApplication.nepa_risk_score_factors__c</members>
+        <members>IndividualApplication.nepa_risk_score_updated__c</members>
+        <members>IndividualApplication.nepa_predicted_challenge_grounds__c</members>
+        <members>IndividualApplication.nepa_challenge_prediction_notes__c</members>
+        <members>IndividualApplication.nepa_defensibility_score__c</members>
+        <members>IndividualApplication.nepa_defensibility_gaps__c</members>
+        <members>IndividualApplication.nepa_defensibility_updated__c</members>
         <members>IndividualApplication.nepa_completion_date__c</members>
         <members>IndividualApplication.nepa_federal_unique_id__c</members>
         <members>IndividualApplication.nepa_joint_lead_agency__c</members>
@@ -22,6 +23,21 @@
         <members>IndividualApplication.nepa_purpose_need__c</members>
         <members>IndividualApplication.nepa_related_project__c</members>
         <members>IndividualApplication.nepa_start_date__c</members>
+        <members>IndividualApplication.nepa_review_type__c</members>
+        <members>IndividualApplication.nepa_process_status__c</members>
+        <members>IndividualApplication.nepa_agency_id__c</members>
+        <members>IndividualApplication.nepa_process_code__c</members>
+        <members>IndividualApplication.nepa_description__c</members>
+        <members>IndividualApplication.nepa_parent_process__c</members>
+        <members>IndividualApplication.nepa_data_record_version__c</members>
+        <members>IndividualApplication.nepa_data_source_agency__c</members>
+        <members>IndividualApplication.nepa_data_source_system__c</members>
+        <members>IndividualApplication.nepa_record_owner_agency__c</members>
+        <members>IndividualApplication.nepa_retrieved_timestamp__c</members>
+        <!-- Program (Entity 1: Project) -->
+        <members>Program.nepa_circuit__c</members>
+        <members>Program.nepa_adjacent_statutes__c</members>
+        <members>Program.nepa_litigation_count__c</members>
         <members>Program.nepa_current_status__c</members>
         <members>Program.nepa_lead_agency__c</members>
         <members>Program.nepa_location__c</members>
@@ -32,9 +48,85 @@
         <members>Program.nepa_project_sponsor__c</members>
         <members>Program.nepa_project_title__c</members>
         <members>Program.nepa_start_date__c</members>
+        <members>Program.nepa_project_type__c</members>
+        <members>Program.nepa_funding__c</members>
+        <members>Program.nepa_location_lat__c</members>
+        <members>Program.nepa_location_lon__c</members>
+        <members>Program.nepa_location_text__c</members>
+        <members>Program.nepa_data_record_version__c</members>
+        <members>Program.nepa_data_source_agency__c</members>
+        <members>Program.nepa_data_source_system__c</members>
+        <members>Program.nepa_record_owner_agency__c</members>
+        <members>Program.nepa_retrieved_timestamp__c</members>
+        <!-- ContentVersion (Entity 3: Documents) -->
+        <members>ContentVersion.nepa_document_revision__c</members>
+        <members>ContentVersion.nepa_document_type__c</members>
+        <members>ContentVersion.nepa_prepared_by__c</members>
+        <members>ContentVersion.nepa_public_access__c</members>
+        <members>ContentVersion.nepa_publish_date__c</members>
+        <members>ContentVersion.nepa_revision_number__c</members>
+        <members>ContentVersion.nepa_status__c</members>
+        <members>ContentVersion.nepa_supplement_number__c</members>
+        <members>ContentVersion.nepa_volume_title__c</members>
+        <members>ContentVersion.nepa_url__c</members>
+        <members>ContentVersion.nepa_related_case_event__c</members>
+        <members>ContentVersion.nepa_contributing_agencies__c</members>
+        <members>ContentVersion.nepa_document_summary__c</members>
+        <members>ContentVersion.nepa_document_files__c</members>
+        <members>ContentVersion.nepa_record_category__c</members>
+        <members>ContentVersion.nepa_main_document__c</members>
+        <members>ContentVersion.nepa_data_record_version__c</members>
+        <members>ContentVersion.nepa_data_source_agency__c</members>
+        <members>ContentVersion.nepa_data_source_system__c</members>
+        <members>ContentVersion.nepa_record_owner_agency__c</members>
+        <members>ContentVersion.nepa_retrieved_timestamp__c</members>
+        <!-- PublicComplaint (Entity 4: Comments) -->
         <members>PublicComplaint.Method_of_Submission__c</members>
         <members>PublicComplaint.nepa_agency_response__c</members>
         <members>PublicComplaint.nepa_public_access__c</members>
+        <members>PublicComplaint.nepa_organization__c</members>
+        <members>PublicComplaint.nepa_category__c</members>
+        <members>PublicComplaint.nepa_date_submitted__c</members>
+        <members>PublicComplaint.nepa_document_location_ref__c</members>
+        <members>PublicComplaint.nepa_public_source__c</members>
+        <members>PublicComplaint.nepa_data_record_version__c</members>
+        <members>PublicComplaint.nepa_data_source_agency__c</members>
+        <members>PublicComplaint.nepa_data_source_system__c</members>
+        <members>PublicComplaint.nepa_record_owner_agency__c</members>
+        <members>PublicComplaint.nepa_retrieved_timestamp__c</members>
+        <!-- nepa_engagement__c (Entity 5: Public Engagement Events) -->
+        <members>nepa_engagement__c.nepa_process__c</members>
+        <members>nepa_engagement__c.nepa_engagement_type__c</members>
+        <members>nepa_engagement__c.nepa_start_datetime__c</members>
+        <members>nepa_engagement__c.nepa_end_datetime__c</members>
+        <members>nepa_engagement__c.nepa_location_format__c</members>
+        <members>nepa_engagement__c.nepa_location__c</members>
+        <members>nepa_engagement__c.nepa_attendance_count__c</members>
+        <members>nepa_engagement__c.nepa_public_access__c</members>
+        <members>nepa_engagement__c.nepa_notes__c</members>
+        <members>nepa_engagement__c.nepa_data_record_version__c</members>
+        <members>nepa_engagement__c.nepa_data_source_agency__c</members>
+        <members>nepa_engagement__c.nepa_data_source_system__c</members>
+        <members>nepa_engagement__c.nepa_record_owner_agency__c</members>
+        <members>nepa_engagement__c.nepa_retrieved_timestamp__c</members>
+        <!-- ApplicationTimeline (Entity 6: Case Events) custom fields -->
+        <members>ApplicationTimeline.nepa_event_type__c</members>
+        <members>ApplicationTimeline.nepa_event_description__c</members>
+        <members>ApplicationTimeline.nepa_source__c</members>
+        <members>ApplicationTimeline.nepa_tier__c</members>
+        <members>ApplicationTimeline.nepa_status__c</members>
+        <members>ApplicationTimeline.nepa_outcome__c</members>
+        <members>ApplicationTimeline.nepa_assigned_entity__c</members>
+        <members>ApplicationTimeline.nepa_following_segment__c</members>
+        <members>ApplicationTimeline.nepa_public_access__c</members>
+        <members>ApplicationTimeline.nepa_parent_case_event__c</members>
+        <members>ApplicationTimeline.nepa_related_engagement__c</members>
+        <members>ApplicationTimeline.nepa_data_record_version__c</members>
+        <members>ApplicationTimeline.nepa_data_source_agency__c</members>
+        <members>ApplicationTimeline.nepa_data_source_system__c</members>
+        <members>ApplicationTimeline.nepa_record_owner_agency__c</members>
+        <members>ApplicationTimeline.nepa_retrieved_timestamp__c</members>
+        <!-- Junction objects -->
         <members>nepa_process_related_agencies__c.Agency__c</members>
         <members>nepa_process_related_agencies__c.Processes__c</members>
         <members>nepa_process_related_agencies__c.nepa_role__c</members>
@@ -43,16 +135,74 @@
         <name>CustomField</name>
     </types>
     <types>
+        <members>NEPA_Agency_Risk_Rate__mdt.Agency_Name__c</members>
+    <members>NEPA_Agency_Risk_Rate__mdt.Agency_Abbreviation__c</members>
+    <members>NEPA_Agency_Risk_Rate__mdt.Case_Count__c</members>
+    <members>NEPA_Agency_Risk_Rate__mdt.Risk_Points__c</members>
+    <members>NEPA_Circuit_Risk_Weight__mdt.Circuit_Label__c</members>
+    <members>NEPA_Circuit_Risk_Weight__mdt.Circuit_Key__c</members>
+    <members>NEPA_Circuit_Risk_Weight__mdt.Case_Count__c</members>
+    <members>NEPA_Circuit_Risk_Weight__mdt.Risk_Points__c</members>
+    <members>NEPA_Challenge_Prediction_Rule__mdt.Challenge_Ground__c</members>
+    <members>NEPA_Challenge_Prediction_Rule__mdt.Trigger_Review_Type__c</members>
+    <members>NEPA_Challenge_Prediction_Rule__mdt.Trigger_Adjacent_Statute__c</members>
+    <members>NEPA_Challenge_Prediction_Rule__mdt.Explanation__c</members>
+    <members>NEPA_Challenge_Prediction_Rule__mdt.Priority__c</members>
+    <members>NEPA_Challenge_Prediction_Rule__mdt.Active__c</members>
+    <!-- nepa_litigation__c (PermitTEC litigation cases) custom fields -->
+    <members>nepa_litigation__c.nepa_case_title__c</members>
+    <members>nepa_litigation__c.nepa_citation__c</members>
+    <members>nepa_litigation__c.nepa_court__c</members>
+    <members>nepa_litigation__c.nepa_circuit__c</members>
+    <members>nepa_litigation__c.nepa_plaintiff__c</members>
+    <members>nepa_litigation__c.nepa_defendant__c</members>
+    <members>nepa_litigation__c.nepa_ruling_date__c</members>
+    <members>nepa_litigation__c.nepa_prevailing_party__c</members>
+    <members>nepa_litigation__c.nepa_in_nepatec__c</members>
+    <members>nepa_litigation__c.nepa_contested_project_name__c</members>
+    <members>nepa_litigation__c.nepa_llm_keywords__c</members>
+    <members>nepa_litigation__c.nepa_related_project__c</members>
+    <members>nepa_litigation__c.nepa_data_source_system__c</members>
+    <members>nepa_litigation__c.nepa_data_record_version__c</members>
+    <members>nepa_litigation__c.nepa_extraction_quality__c</members>
+    <name>CustomField</name>
+    </types>
+    <types>
+        <members>nepa_engagement__c</members>
+        <members>nepa_litigation__c</members>
         <members>nepa_process_related_agencies__c</members>
         <members>nepa_project_agency_relationship__c</members>
         <name>CustomObject</name>
+    </types>
+    <types>
+        <members>NEPA_Agency_Risk_Rate__mdt</members>
+        <members>NEPA_Circuit_Risk_Weight__mdt</members>
+        <members>NEPA_Challenge_Prediction_Rule__mdt</members>
+        <name>CustomMetadata</name>
+    </types>
+    <types>
+        <!-- Phase 1 Risk Intelligence Flows -->
+        <members>NEPA_Litigation_Risk_Scorer</members>
+        <members>NEPA_Challenge_Predictor</members>
+        <members>NEPA_Defensibility_Gap_Checker</members>
+        <members>NEPA_Defensibility_Trigger_ContentVersion</members>
+        <members>NEPA_Defensibility_Trigger_Engagement</members>
+        <name>Flow</name>
+    </types>
+    <types>
+        <!-- Industries Action Plan Templates -->
+        <members>NEPA_EIS_Process_Milestones</members>
+        <members>NEPA_EA_Process_Milestones</members>
+        <name>ActionPlanTemplate</name>
     </types>
     <types>
         <members>Public_Comment_Record_Page</members>
         <name>FlexiPage</name>
     </types>
     <types>
+        <members>ApplicationTimeline-NEPA Case Event Layout</members>
         <members>ContentVersion-Permit Document</members>
+        <members>nepa_engagement__c-NEPA Public Engagement Event Layout</members>
         <members>nepa_process_related_agencies__c-Permit Application Agency Relationship Layout</members>
         <members>nepa_project_agency_relationship__c-Project Agency Relationship Layout</members>
         <name>Layout</name>
@@ -69,6 +219,20 @@
     <types>
         <members>ContentVersion.nepa_permit_document</members>
         <name>RecordType</name>
+    </types>
+    <types>
+        <!-- CEQ Export: DataRaptor Extracts (one per entity) -->
+        <members>DR_Extract_NEPA_Project</members>
+        <members>DR_Extract_NEPA_Process</members>
+        <members>DR_Extract_NEPA_Document</members>
+        <members>DR_Extract_NEPA_Comment</members>
+        <members>DR_Extract_NEPA_EngagementEvent</members>
+        <members>DR_Extract_NEPA_CaseEvent</members>
+        <name>OmniDataTransform</name>
+    </types>
+    <types>
+        <members>NEPA/CEQExport</members>
+        <name>OmniIntegrationProcedure</name>
     </types>
     <version>62.0</version>
 </Package>
