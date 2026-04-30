@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>CEQ Standard Entity 2 (Process Model) — Decision Elements. Stores the structured screening criteria that determine whether a CE, EA, or EIS applies, including legal references, thresholds, and spatial indicators. Supports MFR #3 (Automated Project Screening) and MFR #4 (Access to Screening Criteria). Decision elements can be published via Experience Cloud for public access per MFR #4 Leading-Edge.</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableLicensing>false</enableLicensing>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <externalSharingModel>Private</externalSharingModel>
+    <fields>
+        <fullName>nepa_legal_reference__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>The legal authority that defines or authorizes this decision criterion.</description>
+        <inlineHelpText>Legal authority that defines this criterion (e.g., 40 CFR 1501.4 for CE determination).</inlineHelpText>
+        <label>Legal Reference</label>
+        <referenceTo>nepa_legal_structure__c</referenceTo>
+        <relationshipLabel>Decision Elements</relationshipLabel>
+        <relationshipName>Decision_Elements</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_category__c</fullName>
+        <description>Classification of this decision element per CEQ standard: limitation, condition, core criterion, or extraordinary circumstance.</description>
+        <inlineHelpText>Type of decision criterion.</inlineHelpText>
+        <label>Category</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Core Criterion</fullName>
+                    <default>false</default>
+                    <label>Core Criterion</label>
+                </value>
+                <value>
+                    <fullName>Limitation</fullName>
+                    <default>false</default>
+                    <label>Limitation</label>
+                </value>
+                <value>
+                    <fullName>Condition</fullName>
+                    <default>false</default>
+                    <label>Condition</label>
+                </value>
+                <value>
+                    <fullName>Extraordinary Circumstance</fullName>
+                    <default>false</default>
+                    <label>Extraordinary Circumstance</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_review_type__c</fullName>
+        <description>The NEPA review type this decision element applies to (CE, EA, EIS, or all).</description>
+        <inlineHelpText>Review type this criterion applies to.</inlineHelpText>
+        <label>Applies To Review Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>CE</fullName>
+                    <default>false</default>
+                    <label>CE</label>
+                </value>
+                <value>
+                    <fullName>EA</fullName>
+                    <default>false</default>
+                    <label>EA</label>
+                </value>
+                <value>
+                    <fullName>EIS</fullName>
+                    <default>false</default>
+                    <label>EIS</label>
+                </value>
+                <value>
+                    <fullName>All</fullName>
+                    <default>false</default>
+                    <label>All</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_threshold__c</fullName>
+        <description>Numeric threshold value for quantitative criteria (e.g., acreage limit, decibel level). Leave blank for qualitative criteria.</description>
+        <inlineHelpText>Numeric threshold for quantitative criteria (e.g., 5.0 for acreage limit).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Threshold</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>4</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_threshold_unit__c</fullName>
+        <description>Unit of measure for the threshold value (e.g., acres, decibels, miles).</description>
+        <inlineHelpText>Unit of measure for the threshold (e.g., acres, decibels).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Threshold Unit</label>
+        <length>100</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_spatial_indicator__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>True when this decision element involves a geographic or spatial component (e.g., proximity to a protected area, floodplain, or tribal land).</description>
+        <inlineHelpText>Check if this criterion involves a spatial or geographic component.</inlineHelpText>
+        <label>Spatial Indicator</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_spatial_reference__c</fullName>
+        <description>Reference to the GIS layer, dataset, or geographic boundary relevant to this spatial criterion (e.g., USFWS critical habitat layer, FEMA floodplain).</description>
+        <inlineHelpText>GIS layer or dataset that defines the spatial boundary for this criterion.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Spatial Reference</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_evaluation_method__c</fullName>
+        <description>Description of how this criterion is evaluated, including DMN notation or plain-text decision logic. For complex logic, reference the associated Expression Set or Business Rule.</description>
+        <inlineHelpText>How this criterion is evaluated (DMN notation, rule description, or Expression Set reference).</inlineHelpText>
+        <label>Evaluation Method</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_expected_data__c</fullName>
+        <description>JSON specification of the input data fields required to evaluate this criterion (e.g., {"acreage": "Number", "action_type": "String"}).</description>
+        <inlineHelpText>JSON spec of input fields needed to evaluate this criterion.</inlineHelpText>
+        <label>Expected Evaluation Data (JSON)</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_active__c</fullName>
+        <defaultValue>true</defaultValue>
+        <description>When false, this decision element is excluded from active screening evaluations.</description>
+        <inlineHelpText>Uncheck to retire this decision element from active use.</inlineHelpText>
+        <label>Active</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <label>NEPA Decision Element</label>
+    <nameField>
+        <label>Decision Element Name</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>NEPA Decision Elements</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>Private</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

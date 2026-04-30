@@ -111,28 +111,12 @@
     </fields>
     <fields>
         <fullName>nepa_public_access__c</fullName>
-        <description>Public access level for the document.</description>
-        <inlineHelpText>Disclosable (public) or Non-disclosable (restricted).</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <description>Whether this document is publicly accessible. True = publicly visible; False = restricted to agency staff.</description>
+        <inlineHelpText>Check to make this document publicly visible on the portal.</inlineHelpText>
         <label>Public Access</label>
-        <required>false</required>
         <trackHistory>false</trackHistory>
-        <type>Picklist</type>
-        <valueSet>
-            <restricted>true</restricted>
-            <valueSetDefinition>
-                <sorted>false</sorted>
-                <value>
-                    <fullName>Disclosable</fullName>
-                    <default>false</default>
-                    <label>Disclosable</label>
-                </value>
-                <value>
-                    <fullName>Non-disclosable</fullName>
-                    <default>false</default>
-                    <label>Non-disclosable</label>
-                </value>
-            </valueSetDefinition>
-        </valueSet>
+        <type>Checkbox</type>
     </fields>
     <fields>
         <fullName>nepa_publish_date__c</fullName>
@@ -226,6 +210,28 @@
         <visibleLines>3</visibleLines>
     </fields>
     <!-- CEQ Standard v1.2 additions -->
+    <fields>
+        <fullName>nepa_related_document__c</fullName>
+        <description>ContentDocumentId of a related NEPA document (e.g., links a Final EIS to its Draft EIS). Stored as Text because Salesforce does not permit Lookup fields targeting ContentDocument/ContentVersion. Maps to CEQ standard Related Document IDs property.</description>
+        <inlineHelpText>ContentDocumentId of the related NEPA document (e.g., the Draft EIS this Final EIS responds to).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Related Document ID</label>
+        <length>18</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_notes__c</fullName>
+        <description>Additional notes or context for this document not captured by other fields.</description>
+        <inlineHelpText>Additional notes or context for this document.</inlineHelpText>
+        <label>Notes</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
     <fields>
         <fullName>nepa_url__c</fullName>
         <description>Online link to the document, if publicly available.</description>
@@ -452,17 +458,6 @@
             </values>
             <values>
                 <fullName>Other</fullName>
-                <default>false</default>
-            </values>
-        </picklistValues>
-        <picklistValues>
-            <picklist>nepa_public_access__c</picklist>
-            <values>
-                <fullName>Disclosable</fullName>
-                <default>false</default>
-            </values>
-            <values>
-                <fullName>Non-disclosable</fullName>
                 <default>false</default>
             </values>
         </picklistValues>

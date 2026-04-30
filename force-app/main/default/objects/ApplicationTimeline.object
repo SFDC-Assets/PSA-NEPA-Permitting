@@ -108,12 +108,15 @@
     </fields>
     <fields>
         <fullName>nepa_source__c</fullName>
-        <description>Link to information about this event (e.g., Federal Register notice URL).</description>
-        <inlineHelpText>Link to information about this event (e.g., Federal Register notice).</inlineHelpText>
-        <label>Source URL</label>
+        <description>Identifies the system or process that created this event (e.g., CE Screener, Timeline Risk Assessor), or a URL reference for manually created events.</description>
+        <inlineHelpText>System name or URL identifying the source of this case event.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Source</label>
+        <length>255</length>
         <required>false</required>
         <trackHistory>false</trackHistory>
-        <type>Url</type>
+        <type>Text</type>
+        <unique>false</unique>
     </fields>
     <fields>
         <fullName>nepa_tier__c</fullName>
@@ -199,6 +202,37 @@
         <label>Public Access</label>
         <trackHistory>false</trackHistory>
         <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_start_date__c</fullName>
+        <description>Date this NEPA milestone event started. Maps to CEQ Entity 6 Start Date property.</description>
+        <inlineHelpText>Date this milestone event started.</inlineHelpText>
+        <label>Start Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>nepa_end_date__c</fullName>
+        <description>Date this NEPA milestone event concluded. Maps to CEQ Entity 6 End Date property.</description>
+        <inlineHelpText>Date this milestone event concluded.</inlineHelpText>
+        <label>End Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>nepa_related_process__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Reference to the IndividualApplication (CEQ Process) this case event belongs to. Provides the NEPA process relationship where the PSS native IndividualApplicationId is not available in this org configuration.</description>
+        <inlineHelpText>The NEPA process this case event milestone belongs to.</inlineHelpText>
+        <label>Related Process</label>
+        <referenceTo>IndividualApplication</referenceTo>
+        <relationshipLabel>Case Events</relationshipLabel>
+        <relationshipName>Case_Events</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
     </fields>
     <fields>
         <fullName>nepa_parent_case_event__c</fullName>

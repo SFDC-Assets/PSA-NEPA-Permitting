@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- ApplicationTimeline nepa_event_type__c picklist values -->
+    <labels>
+        <fullName>NEPA_EventType_CE_Determination</fullName>
+        <categories>NEPA</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>CE Determination event type picklist value</shortDescription>
+        <value>CE Determination</value>
+    </labels>
+    <labels>
+        <fullName>NEPA_EventType_Process_Paused</fullName>
+        <categories>NEPA</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Process Paused event type picklist value</shortDescription>
+        <value>Process Paused</value>
+    </labels>
+    <!-- ApplicationTimeline nepa_status__c picklist values -->
+    <labels>
+        <fullName>NEPA_Status_Pending</fullName>
+        <categories>NEPA</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Pending status picklist value</shortDescription>
+        <value>Pending</value>
+    </labels>
+    <labels>
+        <fullName>NEPA_Status_In_Progress</fullName>
+        <categories>NEPA</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>In Progress status picklist value</shortDescription>
+        <value>In Progress</value>
+    </labels>
+    <!-- System source identifiers written to ApplicationTimeline nepa_source__c -->
+    <labels>
+        <fullName>NEPA_Source_CE_Screener</fullName>
+        <categories>NEPA</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>CE Screener system name for nepa_source__c</shortDescription>
+        <value>CE Screener</value>
+    </labels>
+    <labels>
+        <fullName>NEPA_Source_Timeline_Risk_Assessor</fullName>
+        <categories>NEPA</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Timeline Risk Assessor system name for nepa_source__c</shortDescription>
+        <value>Timeline Risk Assessor</value>
+    </labels>
+</CustomLabels>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Per-statute litigation risk weights for adjacent statutes that co-occur with NEPA challenges. Seeded from PermitTEC v0.1 corpus. Used by the Litigation Risk Scoring Flow to loop over statutes present on the project and accumulate points.</description>
+    <label>NEPA Statute Risk Weight</label>
+    <pluralLabel>NEPA Statute Risk Weights</pluralLabel>
+    <fields>
+        <fullName>Statute_Label__c</fullName>
+        <description>Human-readable statute name (e.g., Endangered Species Act, Clean Water Act).</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Statute Label</label>
+        <length>100</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Statute_Key__c</fullName>
+        <description>Short key matched against Program.nepa_adjacent_statutes__c using Contains (e.g., ESA, CWA, NHPA).</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Statute Key</label>
+        <length>20</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Case_Count__c</fullName>
+        <description>Number of PermitTEC litigation cases where this statute co-occurred with a NEPA challenge.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Case Count</label>
+        <precision>6</precision>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Risk_Points__c</fullName>
+        <description>Points added to composite litigation risk score when this statute is present. Scale: 0-10 points.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Risk Points</label>
+        <precision>5</precision>
+        <scale>1</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Active__c</fullName>
+        <description>When false, this statute record is excluded from scoring loop queries.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Active</label>
+        <type>Checkbox</type>
+        <defaultValue>true</defaultValue>
+    </fields>
+</CustomObject>

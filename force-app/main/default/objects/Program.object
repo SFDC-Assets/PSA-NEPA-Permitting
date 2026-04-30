@@ -226,6 +226,19 @@
         <type>Text</type>
         <unique>false</unique>
     </fields>
+    <fields>
+        <fullName>nepa_polygon__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>PSS Polygon record holding the GeoJSON/KML project boundary geometry for this NEPA project. Parent record for associated GIS Data Element records (nepa_gis_data_element__c). Supports MFR #6 (Integrated GIS Analysis Tools).</description>
+        <inlineHelpText>Project boundary polygon (PSS Polygon object). Links to GIS Data Element records for spatial datasets.</inlineHelpText>
+        <label>Project Boundary Polygon</label>
+        <referenceTo>Polygon</referenceTo>
+        <relationshipLabel>Projects</relationshipLabel>
+        <relationshipName>Projects_Polygon</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
     <!-- Phase 1 Risk Intelligence fields -->
     <fields>
         <fullName>nepa_circuit__c</fullName>

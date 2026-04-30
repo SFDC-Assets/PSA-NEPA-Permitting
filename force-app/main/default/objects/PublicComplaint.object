@@ -72,6 +72,18 @@
     </fields>
     <!-- CEQ Standard v1.2 additions -->
     <fields>
+        <fullName>nepa_parent_document__c</fullName>
+        <description>ContentDocumentId of the NEPA document this comment relates to (e.g., a Draft EIS). Stored as Text because Salesforce does not permit Lookup fields targeting ContentDocument/ContentVersion. Per CEQ standard Figure 1, comments are children of documents.</description>
+        <inlineHelpText>ContentDocumentId of the NEPA document (e.g., Draft EIS) this comment was submitted in response to.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Related Document ID</label>
+        <length>18</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
         <fullName>nepa_organization__c</fullName>
         <description>Optional organization affiliation of the commenter.</description>
         <inlineHelpText>Organization or affiliation of the commenter (optional).</inlineHelpText>
@@ -276,5 +288,27 @@
         <required>false</required>
         <trackHistory>false</trackHistory>
         <type>DateTime</type>
+    </fields>
+    <!-- Portal submission fields -->
+    <fields>
+        <fullName>nepa_comment_body__c</fullName>
+        <description>Full text of the public comment submitted via the portal or other channel.</description>
+        <inlineHelpText>Full text of this public comment.</inlineHelpText>
+        <label>Comment Body</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>8</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_email__c</fullName>
+        <description>Email address of the commenter, collected only when they opt in to receive notifications.</description>
+        <inlineHelpText>Commenter email for notification opt-in (collected only with consent).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Commenter Email</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Email</type>
+        <unique>false</unique>
     </fields>
 </CustomObject>

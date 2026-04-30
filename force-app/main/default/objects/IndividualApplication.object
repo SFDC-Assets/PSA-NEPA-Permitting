@@ -221,6 +221,16 @@
         <visibleLines>5</visibleLines>
     </fields>
     <fields>
+        <fullName>nepa_notes__c</fullName>
+        <description>Additional notes or context for this process not captured by other fields.</description>
+        <inlineHelpText>Additional notes or context for this process.</inlineHelpText>
+        <label>Notes</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
         <fullName>nepa_parent_process__c</fullName>
         <deleteConstraint>SetNull</deleteConstraint>
         <description>Reference to Process ID of parent process (e.g., an earlier NEPA process that resulted in a programmatic analysis the agency is tiering from).</description>
@@ -229,6 +239,32 @@
         <referenceTo>IndividualApplication</referenceTo>
         <relationshipLabel>Child Processes</relationshipLabel>
         <relationshipName>Child_Processes</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_polygon__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>PSS Polygon record holding the GeoJSON/KML process area geometry. May differ from the parent project polygon when the process has a more specific geographic scope. Supports MFR #6 (Integrated GIS Analysis Tools).</description>
+        <inlineHelpText>Process-level boundary polygon (PSS Polygon object). Links to GIS Data Element records.</inlineHelpText>
+        <label>Process Area Polygon</label>
+        <referenceTo>Polygon</referenceTo>
+        <relationshipLabel>Individual Applications</relationshipLabel>
+        <relationshipName>Individual_Applications_Polygon</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_legal_structure__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Primary legal authority governing this NEPA process (e.g., 40 CFR 1501.3 for CE determination). Links this process to the applicable Legal Structure record for compliance traceability per CEQ Standard Section 3.3.</description>
+        <inlineHelpText>Primary legal authority for this process. Links to NEPA Legal Structure record.</inlineHelpText>
+        <label>Primary Legal Authority</label>
+        <referenceTo>nepa_legal_structure__c</referenceTo>
+        <relationshipLabel>Processes</relationshipLabel>
+        <relationshipName>Processes</relationshipName>
         <required>false</required>
         <trackHistory>false</trackHistory>
         <type>Lookup</type>
@@ -574,6 +610,20 @@
         <required>false</required>
         <trackHistory>false</trackHistory>
         <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_comment_period_days__c</fullName>
+        <description>Number of calendar days between the public comment period start and end dates. Used by the Defensibility Gap Checker to verify the 30-day minimum required by 40 CFR 1503.1.</description>
+        <inlineHelpText>Calculated days for the public comment period. Must be 30 or more for EIS processes.</inlineHelpText>
+        <externalId>false</externalId>
+        <formula>nepa_public_comment_period_end_date__c - nepa_public_comment_period_start__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Comment Period Days</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
         <unique>false</unique>
     </fields>
     <fields>

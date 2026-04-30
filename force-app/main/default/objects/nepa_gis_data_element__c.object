@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>CEQ Standard GIS Data — GIS Data Element (child of PSS Polygon). Stores Container Inventory metadata for each spatial dataset associated with a NEPA project boundary: format, access method, coordinate system, bounding box, purpose, and access information. Supports MFR #6 (Integrated GIS Analysis Tools). The parent Polygon record holds the GeoJSON/KML geometry; this object holds the layer metadata per the CEQ standard.</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableLicensing>false</enableLicensing>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <externalSharingModel>Private</externalSharingModel>
+    <fields>
+        <fullName>nepa_polygon__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>The PSS Polygon record that holds the geometry (GeoJSON/KML) for this GIS dataset.</description>
+        <inlineHelpText>Parent Polygon record containing the spatial geometry for this dataset.</inlineHelpText>
+        <label>Polygon</label>
+        <referenceTo>Polygon</referenceTo>
+        <relationshipLabel>GIS Data Elements</relationshipLabel>
+        <relationshipName>GIS_Data_Elements</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_format__c</fullName>
+        <description>Spatial data format for this GIS dataset per CEQ standard Format property.</description>
+        <inlineHelpText>Spatial data format (e.g., GeoJSON, KML, GML, Shapefile, GeoTIFF).</inlineHelpText>
+        <label>Format</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>false</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>GeoJSON</fullName>
+                    <default>false</default>
+                    <label>GeoJSON</label>
+                </value>
+                <value>
+                    <fullName>KML</fullName>
+                    <default>false</default>
+                    <label>KML</label>
+                </value>
+                <value>
+                    <fullName>GML</fullName>
+                    <default>false</default>
+                    <label>GML</label>
+                </value>
+                <value>
+                    <fullName>Shapefile</fullName>
+                    <default>false</default>
+                    <label>Shapefile</label>
+                </value>
+                <value>
+                    <fullName>GeoTIFF</fullName>
+                    <default>false</default>
+                    <label>GeoTIFF</label>
+                </value>
+                <value>
+                    <fullName>WKT</fullName>
+                    <default>false</default>
+                    <label>WKT</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_access_method__c</fullName>
+        <description>How this GIS dataset is accessed per CEQ standard Access Method property.</description>
+        <inlineHelpText>How this dataset is accessed (URL, API, or direct upload).</inlineHelpText>
+        <label>Access Method</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>URL</fullName>
+                    <default>false</default>
+                    <label>URL</label>
+                </value>
+                <value>
+                    <fullName>API</fullName>
+                    <default>false</default>
+                    <label>API</label>
+                </value>
+                <value>
+                    <fullName>Direct Upload</fullName>
+                    <default>false</default>
+                    <label>Direct Upload</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_coordinate_system__c</fullName>
+        <description>Coordinate reference system used by this dataset (e.g., WGS84, NAD83, EPSG:4326).</description>
+        <inlineHelpText>Coordinate reference system (e.g., WGS84, EPSG:4326).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Coordinate System</label>
+        <length>100</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_bounding_box__c</fullName>
+        <description>Geographic bounding box for this dataset as WKT or comma-separated min/max coordinates (minLon, minLat, maxLon, maxLat).</description>
+        <inlineHelpText>Bounding box as WKT or minLon,minLat,maxLon,maxLat.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Bounding Box</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_purpose__c</fullName>
+        <description>Purpose classification for this GIS dataset per CEQ standard Purpose property.</description>
+        <inlineHelpText>How this dataset is used in the NEPA analysis.</inlineHelpText>
+        <label>Purpose</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Project Boundary</fullName>
+                    <default>false</default>
+                    <label>Project Boundary</label>
+                </value>
+                <value>
+                    <fullName>Analysis Area</fullName>
+                    <default>false</default>
+                    <label>Analysis Area</label>
+                </value>
+                <value>
+                    <fullName>Base Map</fullName>
+                    <default>false</default>
+                    <label>Base Map</label>
+                </value>
+                <value>
+                    <fullName>Resource Layer</fullName>
+                    <default>false</default>
+                    <label>Resource Layer</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_database_reference__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>True when this GIS element references an entry in an official GIS inventory or federal spatial database rather than a local upload.</description>
+        <inlineHelpText>Check if this dataset references an official federal GIS inventory entry.</inlineHelpText>
+        <label>References Official Database</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_access_information__c</fullName>
+        <description>URL, API endpoint, or instructions for accessing this GIS dataset externally.</description>
+        <inlineHelpText>URL, API endpoint, or access instructions for this dataset.</inlineHelpText>
+        <label>Access Information</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Url</type>
+    </fields>
+    <label>NEPA GIS Data Element</label>
+    <nameField>
+        <label>GIS Data Element Name</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>NEPA GIS Data Elements</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>Private</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>
