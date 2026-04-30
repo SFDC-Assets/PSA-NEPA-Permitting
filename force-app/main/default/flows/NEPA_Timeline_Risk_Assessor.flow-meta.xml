@@ -3,6 +3,7 @@
     <apiVersion>62.0</apiVersion>
     <description>Priority 4: Timeline risk assessment for IndividualApplication. Fires after-save async when nepa_process_stage__c, nepa_process_status__c, or nepa_last_stage_transition__c changes. Computes nepa_timeline_risk_tier__c (On Track / At Risk / Stalled / Overdue) by comparing nepa_days_in_current_stage__c to review-type stage baselines. Sets nepa_estimated_completion_date__c based on remaining days at current pace. When tier transitions to At Risk or worse, creates an ApplicationTimeline event (Process Paused) and a coordinator escalation Task.</description>
     <label>NEPA Timeline Risk Assessor</label>
+    <description>NEPA Timeline Risk Assessor</description>
     <processType>AutoLaunchedFlow</processType>
     <status>Draft</status>
 
@@ -11,7 +12,16 @@
     ============================================================ -->
 
     <variables>
+        <name>var_ErrorMessage</name>
+        <description>Captures $Flow.FaultMessage from a faulted element for error logging.</description>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
         <name>var_RiskTier</name>
+        <description>Computed risk tier string (On Track/At Risk/Stalled/Overdue) for the current stage.</description>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -20,6 +30,7 @@
     </variables>
     <variables>
         <name>var_BaselineDays</name>
+        <description>Expected days to complete the current stage at 100%, by review type.</description>
         <dataType>Number</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -29,6 +40,7 @@
     </variables>
     <variables>
         <name>var_OverdueDays</name>
+        <description>Threshold (150% of baseline) above which the stage is Overdue.</description>
         <dataType>Number</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -38,6 +50,7 @@
     </variables>
     <variables>
         <name>var_StalledDays</name>
+        <description>Threshold (125% of baseline) above which the stage is Stalled.</description>
         <dataType>Number</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -47,6 +60,7 @@
     </variables>
     <variables>
         <name>var_AtRiskDays</name>
+        <description>Threshold (110% of baseline) above which the stage is At Risk.</description>
         <dataType>Number</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -56,6 +70,7 @@
     </variables>
     <variables>
         <name>var_PreviousTier</name>
+        <description>Risk tier value before this execution, used to detect tier-worsening transitions.</description>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -66,18 +81,12 @@
          FORMULAS
     ============================================================ -->
 
-    <!-- Remaining days = baseline - days already spent; estimated date = today + remaining (floor at today) -->
-    <formulas>
-        <name>formula_RemainingDays</name>
-        <dataType>Number</dataType>
-        <expression>MAX(0, {!var_BaselineDays} - {!$Record.nepa_days_in_current_stage__c})</expression>
-        <scale>0</scale>
-    </formulas>
-
+    <!-- Estimated completion: today + remaining days (baseline minus days spent, floored at 0) -->
     <formulas>
         <name>formula_EstimatedDate</name>
+        <description>Estimates completion date as today plus remaining days (baseline minus days spent, floored at 0).</description>
         <dataType>Date</dataType>
-        <expression>TODAY() + {!formula_RemainingDays}</expression>
+        <expression>TODAY() + MAX(0, {!var_BaselineDays} - {!$Record.nepa_days_in_current_stage__c})</expression>
     </formulas>
 
     <!-- ============================================================
@@ -121,6 +130,7 @@
     <assignments>
         <name>Assign_PreviousTier</name>
         <label>Capture Previous Tier</label>
+        <description>Capture Previous Tier</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -143,6 +153,7 @@
     <decisions>
         <name>Decision_ReviewTypeBaseline</name>
         <label>Review Type for Baseline?</label>
+        <description>Review Type for Baseline?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>EA Default</defaultConnectorLabel>
@@ -161,6 +172,7 @@
                 <targetReference>Assign_Baseline_CE</targetReference>
             </connector>
             <label>CE</label>
+            <description>CE</description>
         </rules>
         <rules>
             <name>Baseline_EIS</name>
@@ -174,12 +186,14 @@
                 <targetReference>Assign_Baseline_EIS</targetReference>
             </connector>
             <label>EIS</label>
+            <description>EIS</description>
         </rules>
     </decisions>
 
     <assignments>
         <name>Assign_Baseline_CE</name>
         <label>CE Baselines</label>
+        <description>CE Baselines</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -210,6 +224,7 @@
     <assignments>
         <name>Assign_Baseline_EIS</name>
         <label>EIS Baselines</label>
+        <description>EIS Baselines</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -244,6 +259,7 @@
     <decisions>
         <name>Decision_RiskTier</name>
         <label>Classify Risk Tier</label>
+        <description>Classify Risk Tier</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>On Track</defaultConnectorLabel>
@@ -262,6 +278,7 @@
                 <targetReference>Assign_Tier_Overdue</targetReference>
             </connector>
             <label>Overdue (150%+ of baseline)</label>
+            <description>Overdue (150%+ of baseline)</description>
         </rules>
         <rules>
             <name>Tier_Stalled</name>
@@ -275,6 +292,7 @@
                 <targetReference>Assign_Tier_Stalled</targetReference>
             </connector>
             <label>Stalled (125–149% of baseline)</label>
+            <description>Stalled (125–149% of baseline)</description>
         </rules>
         <rules>
             <name>Tier_AtRisk</name>
@@ -288,12 +306,14 @@
                 <targetReference>Assign_Tier_AtRisk</targetReference>
             </connector>
             <label>At Risk (110–124% of baseline)</label>
+            <description>At Risk (110–124% of baseline)</description>
         </rules>
     </decisions>
 
     <assignments>
         <name>Assign_Tier_OnTrack</name>
         <label>Set On Track</label>
+        <description>Set On Track</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -309,6 +329,7 @@
     <assignments>
         <name>Assign_Tier_AtRisk</name>
         <label>Set At Risk</label>
+        <description>Set At Risk</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -324,6 +345,7 @@
     <assignments>
         <name>Assign_Tier_Stalled</name>
         <label>Set Stalled</label>
+        <description>Set Stalled</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -339,6 +361,7 @@
     <assignments>
         <name>Assign_Tier_Overdue</name>
         <label>Set Overdue</label>
+        <description>Set Overdue</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -359,6 +382,7 @@
     <recordUpdates>
         <name>Update_IndividualApplication</name>
         <label>Update Timeline Risk Fields</label>
+        <description>Update Timeline Risk Fields</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <filterLogic>and</filterLogic>
@@ -379,6 +403,9 @@
         <connector>
             <targetReference>Decision_EscalationNeeded</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
     </recordUpdates>
 
     <!-- ============================================================
@@ -389,6 +416,7 @@
     <decisions>
         <name>Decision_EscalationNeeded</name>
         <label>Escalation Needed?</label>
+        <description>Escalation Needed?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>No Escalation</defaultConnectorLabel>
@@ -409,6 +437,7 @@
                 <targetReference>Create_ProcessPausedEvent</targetReference>
             </connector>
             <label>Tier Worsened From On Track</label>
+            <description>Tier Worsened From On Track</description>
         </rules>
     </decisions>
 
@@ -419,6 +448,7 @@
     <recordCreates>
         <name>Create_ProcessPausedEvent</name>
         <label>Create Process Paused Timeline Event</label>
+        <description>Create Process Paused Timeline Event</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <inputAssignments>
@@ -427,11 +457,11 @@
         </inputAssignments>
         <inputAssignments>
             <field>nepa_event_type__c</field>
-            <value><stringValue>Process Paused</stringValue></value>
+            <value><elementReference>$Label.c.NEPA_EventType_Process_Paused</elementReference></value>
         </inputAssignments>
         <inputAssignments>
             <field>nepa_status__c</field>
-            <value><stringValue>In Progress</stringValue></value>
+            <value><elementReference>$Label.c.NEPA_Status_In_Progress</elementReference></value>
         </inputAssignments>
         <inputAssignments>
             <field>nepa_event_description__c</field>
@@ -439,12 +469,15 @@
         </inputAssignments>
         <inputAssignments>
             <field>nepa_source__c</field>
-            <value><stringValue>Timeline Risk Assessor</stringValue></value>
+            <value><elementReference>$Label.c.NEPA_Source_Timeline_Risk_Assessor</elementReference></value>
         </inputAssignments>
         <object>ApplicationTimeline</object>
         <connector>
             <targetReference>Create_EscalationTask</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
     </recordCreates>
 
     <!-- ============================================================
@@ -454,6 +487,7 @@
     <recordCreates>
         <name>Create_EscalationTask</name>
         <label>Create Timeline Risk Escalation Task</label>
+        <description>Create Timeline Risk Escalation Task</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <inputAssignments>
@@ -485,6 +519,9 @@
             <value><elementReference>$Record.OwnerId</elementReference></value>
         </inputAssignments>
         <object>Task</object>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
     </recordCreates>
 
     <!-- ============================================================
@@ -493,8 +530,48 @@
 
     <formulas>
         <name>formula_EscalationDueDate</name>
+        <description>Due date for the escalation task, set to 5 days from today.</description>
         <dataType>Date</dataType>
         <expression>TODAY() + 5</expression>
     </formulas>
+
+    <assignments>
+        <name>Handle_Error</name>
+        <label>Handle Error</label>
+        <description>Handle Error</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
+    </assignments>
+
+    <subflows>
+        <name>Call_ErrorLogger</name>
+        <label>Log Flow Error</label>
+        <description>Log Flow Error</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value><stringValue>NEPA_Timeline_Risk_Assessor</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value><elementReference>var_ErrorMessage</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value><elementReference>$Record.Id</elementReference></value>
+        </inputAssignments>
+    </subflows>
 
 </Flow>

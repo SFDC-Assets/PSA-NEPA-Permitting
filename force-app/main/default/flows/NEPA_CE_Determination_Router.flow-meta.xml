@@ -55,6 +55,13 @@
         <scale>0</scale>
         <value><numberValue>5.0</numberValue></value>
     </variables>
+    <variables>
+        <name>var_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
 
     <!-- ============================================================
          FORMULAS
@@ -181,6 +188,45 @@
         </rules>
     </decisions>
 
+    <!-- Error handling -->
+    <assignments>
+        <name>Handle_Error</name>
+        <label>Handle Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- code-analyzer-suppress flow:MissingFaultHandler - terminal error handler; fault-handling Call_ErrorLogger would be circular -->
+    <subflows>
+        <name>Call_ErrorLogger</name>
+        <label>Log Flow Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value><stringValue>NEPA_CE_Determination_Router</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value><elementReference>var_ErrorMessage</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value><elementReference>$Record.Id</elementReference></value>
+        </inputAssignments>
+    </subflows>
+
     <!-- ============================================================
          BRANCH 1: High-confidence CE
          Create an ApplicationTimeline CE Determination event, then a
@@ -198,11 +244,11 @@
         </inputAssignments>
         <inputAssignments>
             <field>nepa_event_type__c</field>
-            <value><stringValue>CE Determination</stringValue></value>
+            <value><elementReference>$Label.c.NEPA_EventType_CE_Determination</elementReference></value>
         </inputAssignments>
         <inputAssignments>
             <field>nepa_status__c</field>
-            <value><stringValue>Pending</stringValue></value>
+            <value><elementReference>$Label.c.NEPA_Status_Pending</elementReference></value>
         </inputAssignments>
         <inputAssignments>
             <field>nepa_event_description__c</field>
@@ -210,7 +256,7 @@
         </inputAssignments>
         <inputAssignments>
             <field>nepa_source__c</field>
-            <value><stringValue>CE Screener</stringValue></value>
+            <value><elementReference>$Label.c.NEPA_Source_CE_Screener</elementReference></value>
         </inputAssignments>
         <inputAssignments>
             <field>nepa_tier__c</field>
@@ -220,6 +266,9 @@
         <connector>
             <targetReference>Assign_HighConfidenceTask</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
     </recordCreates>
 
     <assignments>
@@ -358,6 +407,9 @@
             <value><elementReference>$Record.OwnerId</elementReference></value>
         </inputAssignments>
         <object>Task</object>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
     </recordCreates>
 
 </Flow>

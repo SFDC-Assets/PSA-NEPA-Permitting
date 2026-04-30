@@ -10,6 +10,7 @@
         <members>IndividualApplication.nepa_risk_score_updated__c</members>
         <members>IndividualApplication.nepa_predicted_challenge_grounds__c</members>
         <members>IndividualApplication.nepa_challenge_prediction_notes__c</members>
+        <members>IndividualApplication.nepa_comment_period_days__c</members>
         <members>IndividualApplication.nepa_defensibility_score__c</members>
         <members>IndividualApplication.nepa_defensibility_gaps__c</members>
         <members>IndividualApplication.nepa_defensibility_updated__c</members>
@@ -28,6 +29,7 @@
         <members>IndividualApplication.nepa_agency_id__c</members>
         <members>IndividualApplication.nepa_process_code__c</members>
         <members>IndividualApplication.nepa_description__c</members>
+        <members>IndividualApplication.nepa_notes__c</members>
         <members>IndividualApplication.nepa_parent_process__c</members>
         <members>IndividualApplication.nepa_data_record_version__c</members>
         <members>IndividualApplication.nepa_data_source_agency__c</members>
@@ -52,6 +54,9 @@
         <members>IndividualApplication.nepa_screening_confidence__c</members>
         <members>IndividualApplication.nepa_extraordinary_circumstances__c</members>
         <members>IndividualApplication.nepa_classification_basis__c</members>
+        <!-- Tier 3 CEQ wiring fields -->
+        <members>IndividualApplication.nepa_polygon__c</members>
+        <members>IndividualApplication.nepa_legal_structure__c</members>
         <!-- Program (Entity 1: Project) -->
         <members>Program.nepa_circuit__c</members>
         <members>Program.nepa_adjacent_statutes__c</members>
@@ -71,6 +76,7 @@
         <members>Program.nepa_location_lat__c</members>
         <members>Program.nepa_location_lon__c</members>
         <members>Program.nepa_location_text__c</members>
+        <members>Program.nepa_polygon__c</members>
         <members>Program.nepa_data_record_version__c</members>
         <members>Program.nepa_data_source_agency__c</members>
         <members>Program.nepa_data_source_system__c</members>
@@ -88,6 +94,8 @@
         <members>ContentVersion.nepa_status__c</members>
         <members>ContentVersion.nepa_supplement_number__c</members>
         <members>ContentVersion.nepa_volume_title__c</members>
+        <members>ContentVersion.nepa_related_document__c</members>
+        <members>ContentVersion.nepa_notes__c</members>
         <members>ContentVersion.nepa_url__c</members>
         <members>ContentVersion.nepa_related_case_event__c</members>
         <members>ContentVersion.nepa_contributing_agencies__c</members>
@@ -101,6 +109,7 @@
         <members>ContentVersion.nepa_record_owner_agency__c</members>
         <members>ContentVersion.nepa_retrieved_timestamp__c</members>
         <!-- PublicComplaint (Entity 4: Comments) -->
+        <members>PublicComplaint.nepa_parent_document__c</members>
         <members>PublicComplaint.Method_of_Submission__c</members>
         <members>PublicComplaint.nepa_agency_response__c</members>
         <members>PublicComplaint.nepa_public_access__c</members>
@@ -151,6 +160,116 @@
         <members>ApplicationTimeline.nepa_data_source_system__c</members>
         <members>ApplicationTimeline.nepa_record_owner_agency__c</members>
         <members>ApplicationTimeline.nepa_retrieved_timestamp__c</members>
+        <members>ApplicationTimeline.nepa_start_date__c</members>
+        <members>ApplicationTimeline.nepa_end_date__c</members>
+        <members>ApplicationTimeline.nepa_related_process__c</members>
+        <!-- PublicComplaint portal submission fields -->
+        <members>PublicComplaint.nepa_comment_body__c</members>
+        <members>PublicComplaint.nepa_email__c</members>
+        <!-- Custom metadata type fields (schema) -->
+        <members>NEPA_Agency_Risk_Rate__mdt.Agency_Name__c</members>
+        <members>NEPA_Agency_Risk_Rate__mdt.Agency_Abbreviation__c</members>
+        <members>NEPA_Agency_Risk_Rate__mdt.Case_Count__c</members>
+        <members>NEPA_Agency_Risk_Rate__mdt.Risk_Points__c</members>
+        <members>NEPA_Circuit_Risk_Weight__mdt.Circuit_Label__c</members>
+        <members>NEPA_Circuit_Risk_Weight__mdt.Circuit_Key__c</members>
+        <members>NEPA_Circuit_Risk_Weight__mdt.Case_Count__c</members>
+        <members>NEPA_Circuit_Risk_Weight__mdt.Risk_Points__c</members>
+        <members>NEPA_Challenge_Prediction_Rule__mdt.Challenge_Ground__c</members>
+        <members>NEPA_Challenge_Prediction_Rule__mdt.Trigger_Review_Type__c</members>
+        <members>NEPA_Challenge_Prediction_Rule__mdt.Trigger_Adjacent_Statute__c</members>
+        <members>NEPA_Challenge_Prediction_Rule__mdt.Explanation__c</members>
+        <members>NEPA_Challenge_Prediction_Rule__mdt.Priority__c</members>
+        <members>NEPA_Challenge_Prediction_Rule__mdt.Active__c</members>
+        <members>NEPA_CE_Screening_Rule__mdt.Rule_Label__c</members>
+        <members>NEPA_CE_Screening_Rule__mdt.Tier__c</members>
+        <members>NEPA_CE_Screening_Rule__mdt.Agency__c</members>
+        <members>NEPA_CE_Screening_Rule__mdt.Sector_Key__c</members>
+        <members>NEPA_CE_Screening_Rule__mdt.Type_Key__c</members>
+        <members>NEPA_CE_Screening_Rule__mdt.Action_Types__c</members>
+        <members>NEPA_CE_Screening_Rule__mdt.CE_Code__c</members>
+        <members>NEPA_CE_Screening_Rule__mdt.Review_Type__c</members>
+        <members>NEPA_CE_Screening_Rule__mdt.Confidence__c</members>
+        <members>NEPA_CE_Screening_Rule__mdt.Requires_Acreage_Check__c</members>
+        <members>NEPA_CE_Screening_Rule__mdt.Acreage_Threshold__c</members>
+        <members>NEPA_CE_Screening_Rule__mdt.Requires_GIS_Check__c</members>
+        <members>NEPA_CE_Screening_Rule__mdt.NAICS_Code__c</members>
+        <members>NEPA_CE_Screening_Rule__mdt.CE_Namespace__c</members>
+        <members>NEPA_CE_Screening_Rule__mdt.Confidence_Modifier__c</members>
+        <members>NEPA_CE_Screening_Rule__mdt.Classification_Basis__c</members>
+        <members>NEPA_CE_Screening_Rule__mdt.Priority__c</members>
+        <members>NEPA_CE_Screening_Rule__mdt.Active__c</members>
+        <members>NEPA_CE_Screening_Rule__mdt.Record_Count_NEPATEC__c</members>
+        <members>NEPA_CE_Code__mdt.Code__c</members>
+        <members>NEPA_CE_Code__mdt.Authority_CFR__c</members>
+        <members>NEPA_CE_Code__mdt.Plain_Language_Description__c</members>
+        <members>NEPA_CE_Code__mdt.Agency__c</members>
+        <members>NEPA_CE_Code__mdt.Indoor_Only__c</members>
+        <members>NEPA_CE_Code__mdt.Acreage_Threshold__c</members>
+        <members>NEPA_CE_Code__mdt.Requires_GIS_Review__c</members>
+        <members>NEPA_CE_Code__mdt.Is_Multi_Code__c</members>
+        <members>NEPA_CE_Code__mdt.Record_Count_NEPATEC__c</members>
+        <members>NEPA_CE_Code__mdt.Active__c</members>
+        <members>NEPA_Statute_Risk_Weight__mdt.Statute_Label__c</members>
+        <members>NEPA_Statute_Risk_Weight__mdt.Statute_Key__c</members>
+        <members>NEPA_Statute_Risk_Weight__mdt.Case_Count__c</members>
+        <members>NEPA_Statute_Risk_Weight__mdt.Risk_Points__c</members>
+        <members>NEPA_Statute_Risk_Weight__mdt.Active__c</members>
+        <members>NEPA_Required_Document__mdt.Review_Type__c</members>
+        <members>NEPA_Required_Document__mdt.Document_Type__c</members>
+        <members>NEPA_Required_Document__mdt.Is_Required__c</members>
+        <members>NEPA_Required_Document__mdt.Stage_Required_By__c</members>
+        <members>NEPA_Required_Document__mdt.Display_Order__c</members>
+        <members>NEPA_Required_Document__mdt.Active__c</members>
+        <!-- NEPA_Flow_Error__c fields -->
+        <members>NEPA_Flow_Error__c.nepa_flow_api_name__c</members>
+        <members>NEPA_Flow_Error__c.nepa_error_message__c</members>
+        <members>NEPA_Flow_Error__c.nepa_record_id__c</members>
+        <members>NEPA_Flow_Error__c.nepa_occurred_at__c</members>
+        <!-- nepa_litigation__c (PermitTEC litigation cases) custom fields -->
+        <members>nepa_litigation__c.nepa_case_title__c</members>
+        <members>nepa_litigation__c.nepa_citation__c</members>
+        <members>nepa_litigation__c.nepa_court__c</members>
+        <members>nepa_litigation__c.nepa_circuit__c</members>
+        <members>nepa_litigation__c.nepa_plaintiff__c</members>
+        <members>nepa_litigation__c.nepa_defendant__c</members>
+        <members>nepa_litigation__c.nepa_ruling_date__c</members>
+        <members>nepa_litigation__c.nepa_prevailing_party__c</members>
+        <members>nepa_litigation__c.nepa_in_nepatec__c</members>
+        <members>nepa_litigation__c.nepa_contested_project_name__c</members>
+        <members>nepa_litigation__c.nepa_llm_keywords__c</members>
+        <members>nepa_litigation__c.nepa_related_project__c</members>
+        <members>nepa_litigation__c.nepa_data_source_system__c</members>
+        <members>nepa_litigation__c.nepa_data_record_version__c</members>
+        <members>nepa_litigation__c.nepa_extraction_quality__c</members>
+        <!-- Tier 3 CEQ object fields: nepa_legal_structure__c -->
+        <members>nepa_legal_structure__c.nepa_citation__c</members>
+        <members>nepa_legal_structure__c.nepa_description__c</members>
+        <members>nepa_legal_structure__c.nepa_text_content__c</members>
+        <members>nepa_legal_structure__c.nepa_issuing_authority__c</members>
+        <members>nepa_legal_structure__c.nepa_effective_date__c</members>
+        <members>nepa_legal_structure__c.nepa_compliance_requirements__c</members>
+        <members>nepa_legal_structure__c.nepa_active__c</members>
+        <!-- nepa_decision_element__c -->
+        <members>nepa_decision_element__c.nepa_legal_reference__c</members>
+        <members>nepa_decision_element__c.nepa_category__c</members>
+        <members>nepa_decision_element__c.nepa_review_type__c</members>
+        <members>nepa_decision_element__c.nepa_threshold__c</members>
+        <members>nepa_decision_element__c.nepa_threshold_unit__c</members>
+        <members>nepa_decision_element__c.nepa_spatial_indicator__c</members>
+        <members>nepa_decision_element__c.nepa_spatial_reference__c</members>
+        <members>nepa_decision_element__c.nepa_evaluation_method__c</members>
+        <members>nepa_decision_element__c.nepa_expected_data__c</members>
+        <members>nepa_decision_element__c.nepa_active__c</members>
+        <!-- nepa_gis_data_element__c -->
+        <members>nepa_gis_data_element__c.nepa_polygon__c</members>
+        <members>nepa_gis_data_element__c.nepa_format__c</members>
+        <members>nepa_gis_data_element__c.nepa_access_method__c</members>
+        <members>nepa_gis_data_element__c.nepa_coordinate_system__c</members>
+        <members>nepa_gis_data_element__c.nepa_bounding_box__c</members>
+        <members>nepa_gis_data_element__c.nepa_purpose__c</members>
+        <members>nepa_gis_data_element__c.nepa_database_reference__c</members>
+        <members>nepa_gis_data_element__c.nepa_access_information__c</members>
         <!-- Junction objects -->
         <members>nepa_process_related_agencies__c.Agency__c</members>
         <members>nepa_process_related_agencies__c.Processes__c</members>
@@ -160,90 +279,161 @@
         <name>CustomField</name>
     </types>
     <types>
-        <members>NEPA_Agency_Risk_Rate__mdt.Agency_Name__c</members>
-    <members>NEPA_Agency_Risk_Rate__mdt.Agency_Abbreviation__c</members>
-    <members>NEPA_Agency_Risk_Rate__mdt.Case_Count__c</members>
-    <members>NEPA_Agency_Risk_Rate__mdt.Risk_Points__c</members>
-    <members>NEPA_Circuit_Risk_Weight__mdt.Circuit_Label__c</members>
-    <members>NEPA_Circuit_Risk_Weight__mdt.Circuit_Key__c</members>
-    <members>NEPA_Circuit_Risk_Weight__mdt.Case_Count__c</members>
-    <members>NEPA_Circuit_Risk_Weight__mdt.Risk_Points__c</members>
-    <members>NEPA_Challenge_Prediction_Rule__mdt.Challenge_Ground__c</members>
-    <members>NEPA_Challenge_Prediction_Rule__mdt.Trigger_Review_Type__c</members>
-    <members>NEPA_Challenge_Prediction_Rule__mdt.Trigger_Adjacent_Statute__c</members>
-    <members>NEPA_Challenge_Prediction_Rule__mdt.Explanation__c</members>
-    <members>NEPA_Challenge_Prediction_Rule__mdt.Priority__c</members>
-    <members>NEPA_Challenge_Prediction_Rule__mdt.Active__c</members>
-    <!-- CE Screening Rule CMT fields (Priority 2) -->
-    <members>NEPA_CE_Screening_Rule__mdt.Rule_Label__c</members>
-    <members>NEPA_CE_Screening_Rule__mdt.Tier__c</members>
-    <members>NEPA_CE_Screening_Rule__mdt.Agency__c</members>
-    <members>NEPA_CE_Screening_Rule__mdt.Sector_Key__c</members>
-    <members>NEPA_CE_Screening_Rule__mdt.Type_Key__c</members>
-    <members>NEPA_CE_Screening_Rule__mdt.Action_Types__c</members>
-    <members>NEPA_CE_Screening_Rule__mdt.CE_Code__c</members>
-    <members>NEPA_CE_Screening_Rule__mdt.Review_Type__c</members>
-    <members>NEPA_CE_Screening_Rule__mdt.Confidence__c</members>
-    <members>NEPA_CE_Screening_Rule__mdt.Requires_Acreage_Check__c</members>
-    <members>NEPA_CE_Screening_Rule__mdt.Acreage_Threshold__c</members>
-    <members>NEPA_CE_Screening_Rule__mdt.Requires_GIS_Check__c</members>
-    <members>NEPA_CE_Screening_Rule__mdt.NAICS_Code__c</members>
-    <members>NEPA_CE_Screening_Rule__mdt.CE_Namespace__c</members>
-    <members>NEPA_CE_Screening_Rule__mdt.Confidence_Modifier__c</members>
-    <members>NEPA_CE_Screening_Rule__mdt.Classification_Basis__c</members>
-    <members>NEPA_CE_Screening_Rule__mdt.Priority__c</members>
-    <members>NEPA_CE_Screening_Rule__mdt.Active__c</members>
-    <members>NEPA_CE_Screening_Rule__mdt.Record_Count_NEPATEC__c</members>
-    <!-- CE Code Catalog CMT fields (Priority 2) -->
-    <members>NEPA_CE_Code__mdt.Code__c</members>
-    <members>NEPA_CE_Code__mdt.Authority_CFR__c</members>
-    <members>NEPA_CE_Code__mdt.Plain_Language_Description__c</members>
-    <members>NEPA_CE_Code__mdt.Agency__c</members>
-    <members>NEPA_CE_Code__mdt.Indoor_Only__c</members>
-    <members>NEPA_CE_Code__mdt.Acreage_Threshold__c</members>
-    <members>NEPA_CE_Code__mdt.Requires_GIS_Review__c</members>
-    <members>NEPA_CE_Code__mdt.Is_Multi_Code__c</members>
-    <members>NEPA_CE_Code__mdt.Record_Count_NEPATEC__c</members>
-    <members>NEPA_CE_Code__mdt.Active__c</members>
-    <!-- Required Document Checklist CMT fields (Priority 9) -->
-    <members>NEPA_Required_Document__mdt.Review_Type__c</members>
-    <members>NEPA_Required_Document__mdt.Document_Type__c</members>
-    <members>NEPA_Required_Document__mdt.Is_Required__c</members>
-    <members>NEPA_Required_Document__mdt.Stage_Required_By__c</members>
-    <members>NEPA_Required_Document__mdt.Display_Order__c</members>
-    <members>NEPA_Required_Document__mdt.Active__c</members>
-    <!-- nepa_litigation__c (PermitTEC litigation cases) custom fields -->
-    <members>nepa_litigation__c.nepa_case_title__c</members>
-    <members>nepa_litigation__c.nepa_citation__c</members>
-    <members>nepa_litigation__c.nepa_court__c</members>
-    <members>nepa_litigation__c.nepa_circuit__c</members>
-    <members>nepa_litigation__c.nepa_plaintiff__c</members>
-    <members>nepa_litigation__c.nepa_defendant__c</members>
-    <members>nepa_litigation__c.nepa_ruling_date__c</members>
-    <members>nepa_litigation__c.nepa_prevailing_party__c</members>
-    <members>nepa_litigation__c.nepa_in_nepatec__c</members>
-    <members>nepa_litigation__c.nepa_contested_project_name__c</members>
-    <members>nepa_litigation__c.nepa_llm_keywords__c</members>
-    <members>nepa_litigation__c.nepa_related_project__c</members>
-    <members>nepa_litigation__c.nepa_data_source_system__c</members>
-    <members>nepa_litigation__c.nepa_data_record_version__c</members>
-    <members>nepa_litigation__c.nepa_extraction_quality__c</members>
-    <name>CustomField</name>
-    </types>
-    <types>
+        <!-- __c custom objects -->
+        <members>NEPA_Flow_Error__c</members>
         <members>nepa_engagement__c</members>
         <members>nepa_litigation__c</members>
         <members>nepa_process_related_agencies__c</members>
         <members>nepa_project_agency_relationship__c</members>
-        <name>CustomObject</name>
-    </types>
-    <types>
+        <members>nepa_legal_structure__c</members>
+        <members>nepa_decision_element__c</members>
+        <members>nepa_gis_data_element__c</members>
+        <!-- __mdt custom metadata type schemas -->
         <members>NEPA_Agency_Risk_Rate__mdt</members>
         <members>NEPA_Circuit_Risk_Weight__mdt</members>
         <members>NEPA_Challenge_Prediction_Rule__mdt</members>
         <members>NEPA_CE_Screening_Rule__mdt</members>
         <members>NEPA_CE_Code__mdt</members>
         <members>NEPA_Required_Document__mdt</members>
+        <members>NEPA_Statute_Risk_Weight__mdt</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <!-- NEPA_Agency_Risk_Rate seed records -->
+        <members>NEPA_Agency_Risk_Rate.Army_Corps</members>
+        <members>NEPA_Agency_Risk_Rate.BLM</members>
+        <members>NEPA_Agency_Risk_Rate.Default</members>
+        <members>NEPA_Agency_Risk_Rate.FERC</members>
+        <members>NEPA_Agency_Risk_Rate.Forest_Service</members>
+        <members>NEPA_Agency_Risk_Rate.FWS</members>
+        <!-- NEPA_Circuit_Risk_Weight seed records -->
+        <members>NEPA_Circuit_Risk_Weight.Circuit_10th</members>
+        <members>NEPA_Circuit_Risk_Weight.Circuit_4th</members>
+        <members>NEPA_Circuit_Risk_Weight.Circuit_9th</members>
+        <members>NEPA_Circuit_Risk_Weight.DC</members>
+        <members>NEPA_Circuit_Risk_Weight.Default</members>
+        <!-- NEPA_Challenge_Prediction_Rule seed records -->
+        <members>NEPA_Challenge_Prediction_Rule.Adjacent_Statute_ESA</members>
+        <members>NEPA_Challenge_Prediction_Rule.EIS_Inadequacy</members>
+        <members>NEPA_Challenge_Prediction_Rule.Failure_to_Prepare</members>
+        <members>NEPA_Challenge_Prediction_Rule.Failure_to_Supplement</members>
+        <members>NEPA_Challenge_Prediction_Rule.Improper_CE_Reliance</members>
+        <!-- NEPA_CE_Screening_Rule seed records -->
+        <members>NEPA_CE_Screening_Rule.NAICS_112</members>
+        <members>NEPA_CE_Screening_Rule.NAICS_1131</members>
+        <members>NEPA_CE_Screening_Rule.NAICS_1153</members>
+        <members>NEPA_CE_Screening_Rule.NAICS_211</members>
+        <members>NEPA_CE_Screening_Rule.NAICS_2111</members>
+        <members>NEPA_CE_Screening_Rule.NAICS_212</members>
+        <members>NEPA_CE_Screening_Rule.NAICS_221</members>
+        <members>NEPA_CE_Screening_Rule.NAICS_2211</members>
+        <members>NEPA_CE_Screening_Rule.NAICS_2212</members>
+        <members>NEPA_CE_Screening_Rule.NAICS_2213</members>
+        <members>NEPA_CE_Screening_Rule.NAICS_2362</members>
+        <members>NEPA_CE_Screening_Rule.NAICS_2371</members>
+        <members>NEPA_CE_Screening_Rule.NAICS_2379</members>
+        <members>NEPA_CE_Screening_Rule.NAICS_4859</members>
+        <members>NEPA_CE_Screening_Rule.NAICS_486</members>
+        <members>NEPA_CE_Screening_Rule.NAICS_5416</members>
+        <members>NEPA_CE_Screening_Rule.NAICS_5417</members>
+        <members>NEPA_CE_Screening_Rule.NAICS_8711</members>
+        <members>NEPA_CE_Screening_Rule.NAICS_9211</members>
+        <members>NEPA_CE_Screening_Rule.NAICS_9281</members>
+        <members>NEPA_CE_Screening_Rule.T1_BLM_13</members>
+        <members>NEPA_CE_Screening_Rule.T1_BLM_17</members>
+        <members>NEPA_CE_Screening_Rule.T1_BLM_22</members>
+        <members>NEPA_CE_Screening_Rule.T1_DOE_01</members>
+        <members>NEPA_CE_Screening_Rule.T1_DOE_02</members>
+        <members>NEPA_CE_Screening_Rule.T1_DOE_03</members>
+        <members>NEPA_CE_Screening_Rule.T1_DOE_04</members>
+        <members>NEPA_CE_Screening_Rule.T1_DOE_05</members>
+        <members>NEPA_CE_Screening_Rule.T1_DOE_06</members>
+        <members>NEPA_CE_Screening_Rule.T1_DOE_07</members>
+        <members>NEPA_CE_Screening_Rule.T1_DOE_08</members>
+        <members>NEPA_CE_Screening_Rule.T1_DOE_09</members>
+        <members>NEPA_CE_Screening_Rule.T1_DOE_10</members>
+        <members>NEPA_CE_Screening_Rule.T1_DOE_11</members>
+        <members>NEPA_CE_Screening_Rule.T1_DOE_12</members>
+        <members>NEPA_CE_Screening_Rule.T1_DOE_14</members>
+        <members>NEPA_CE_Screening_Rule.T1_DOE_15</members>
+        <members>NEPA_CE_Screening_Rule.T1_DOE_16</members>
+        <members>NEPA_CE_Screening_Rule.T1_DOE_18</members>
+        <members>NEPA_CE_Screening_Rule.T1_DOE_19</members>
+        <members>NEPA_CE_Screening_Rule.T1_DOE_20</members>
+        <members>NEPA_CE_Screening_Rule.T1_DOE_21</members>
+        <members>NEPA_CE_Screening_Rule.T2_BLM_AbandonWell</members>
+        <members>NEPA_CE_Screening_Rule.T2_BLM_DrilledField</members>
+        <members>NEPA_CE_Screening_Rule.T2_BLM_GrazingRenew</members>
+        <members>NEPA_CE_Screening_Rule.T2_BLM_GrazingTransfer</members>
+        <members>NEPA_CE_Screening_Rule.T2_BLM_NewDrillSmall</members>
+        <members>NEPA_CE_Screening_Rule.T2_BLM_PipelineROW</members>
+        <members>NEPA_CE_Screening_Rule.T2_BLM_RecreationSRP</members>
+        <members>NEPA_CE_Screening_Rule.T2_BLM_RenewROW</members>
+        <members>NEPA_CE_Screening_Rule.T2_BLM_ShortTermROW</members>
+        <members>NEPA_CE_Screening_Rule.T2_DOE_Decommission</members>
+        <members>NEPA_CE_Screening_Rule.T2_DOE_EnergyEff</members>
+        <members>NEPA_CE_Screening_Rule.T2_DOE_IndoorRD</members>
+        <members>NEPA_CE_Screening_Rule.T2_DOE_NewTransmission</members>
+        <members>NEPA_CE_Screening_Rule.T2_DOE_OAM</members>
+        <members>NEPA_CE_Screening_Rule.T2_DOE_ResearchFA</members>
+        <members>NEPA_CE_Screening_Rule.T2_DOE_SiteChar</members>
+        <members>NEPA_CE_Screening_Rule.T2_DOE_TransmissionMod</members>
+        <members>NEPA_CE_Screening_Rule.T2_DOE_TransmissionUpgrade</members>
+        <members>NEPA_CE_Screening_Rule.T2_GIS_Disqualify</members>
+        <members>NEPA_CE_Screening_Rule.T2_HighAcreage</members>
+        <!-- NEPA_CE_Code seed records -->
+        <members>NEPA_CE_Code.CEC_36_CFR_220_6</members>
+        <members>NEPA_CE_Code.CEC_43_CFR_46_210</members>
+        <members>NEPA_CE_Code.CEC_516_DM_11</members>
+        <members>NEPA_CE_Code.CEC_516_DM_11_9</members>
+        <members>NEPA_CE_Code.CEC_516_DM_2</members>
+        <members>NEPA_CE_Code.CEC_516_DM_6</members>
+        <members>NEPA_CE_Code.CEC_A11_A9</members>
+        <members>NEPA_CE_Code.CEC_A11_A9_B3_6</members>
+        <members>NEPA_CE_Code.CEC_A11_A9_B5_1</members>
+        <members>NEPA_CE_Code.CEC_A9</members>
+        <members>NEPA_CE_Code.CEC_A9_B3_6</members>
+        <members>NEPA_CE_Code.CEC_A9_B5_1</members>
+        <members>NEPA_CE_Code.CEC_B1_15</members>
+        <members>NEPA_CE_Code.CEC_B1_19</members>
+        <members>NEPA_CE_Code.CEC_B1_20</members>
+        <members>NEPA_CE_Code.CEC_B1_23</members>
+        <members>NEPA_CE_Code.CEC_B1_24</members>
+        <members>NEPA_CE_Code.CEC_B1_25</members>
+        <members>NEPA_CE_Code.CEC_B1_3</members>
+        <members>NEPA_CE_Code.CEC_B1_31</members>
+        <members>NEPA_CE_Code.CEC_B2_1</members>
+        <members>NEPA_CE_Code.CEC_B2_2</members>
+        <members>NEPA_CE_Code.CEC_B2_5</members>
+        <members>NEPA_CE_Code.CEC_B2_5_B5_1</members>
+        <members>NEPA_CE_Code.CEC_B3_1</members>
+        <members>NEPA_CE_Code.CEC_B3_6</members>
+        <members>NEPA_CE_Code.CEC_B4_11</members>
+        <members>NEPA_CE_Code.CEC_B4_2</members>
+        <members>NEPA_CE_Code.CEC_B4_6</members>
+        <members>NEPA_CE_Code.CEC_B4_7</members>
+        <members>NEPA_CE_Code.CEC_B4_9</members>
+        <members>NEPA_CE_Code.CEC_B5_1</members>
+        <members>NEPA_CE_Code.CEC_Energy_Policy_Act_2005_Sec_390</members>
+        <members>NEPA_CE_Code.CEC_Energy_Policy_Act_2005_Sec_390_b_3</members>
+        <members>NEPA_CE_Code.CEC_Energy_Policy_Act_2005_Sec_390_b_4</members>
+        <members>NEPA_CE_Code.CEC_Energy_Policy_Act_2005_Sec_390_Cat</members>
+        <members>NEPA_CE_Code.CEC_FLPMA_402_h</members>
+        <!-- NEPA_Required_Document seed records -->
+        <members>NEPA_Required_Document.CE_CE_Determination</members>
+        <members>NEPA_Required_Document.CE_Memorandum_to_File</members>
+        <members>NEPA_Required_Document.EA_Comment_Response</members>
+        <members>NEPA_Required_Document.EA_Environmental_Assessment</members>
+        <members>NEPA_Required_Document.EA_FONSI</members>
+        <members>NEPA_Required_Document.EIS_Comment_Response</members>
+        <members>NEPA_Required_Document.EIS_Draft_EIS</members>
+        <members>NEPA_Required_Document.EIS_Final_EIS</members>
+        <members>NEPA_Required_Document.EIS_NOI</members>
+        <members>NEPA_Required_Document.EIS_ROD</members>
+        <!-- NEPA_Statute_Risk_Weight seed records -->
+        <members>NEPA_Statute_Risk_Weight.ESA</members>
+        <members>NEPA_Statute_Risk_Weight.CWA</members>
+        <members>NEPA_Statute_Risk_Weight.NHPA</members>
         <name>CustomMetadata</name>
     </types>
     <types>
@@ -262,6 +452,8 @@
         <members>NEPA_Stage_Gate</members>
         <!-- Priority 9: Administrative Record Completeness -->
         <members>NEPA_Administrative_Record_Checker</members>
+        <!-- Error logging -->
+        <members>NEPA_Error_Logger</members>
         <name>Flow</name>
     </types>
     <types>
@@ -284,6 +476,10 @@
         <members>nepa_process_related_agencies__c-Permit Application Agency Relationship Layout</members>
         <members>nepa_project_agency_relationship__c-Project Agency Relationship Layout</members>
         <name>Layout</name>
+    </types>
+    <types>
+        <members>CustomLabels</members>
+        <name>CustomLabel</name>
     </types>
     <types>
         <members>NEPA_Permitting</members>
@@ -315,6 +511,20 @@
     <types>
         <members>NEPA_CEQExport_API</members>
         <name>ConnectedApp</name>
+    </types>
+    <types>
+        <members>NepaProjectController</members>
+        <members>NepaDocumentController</members>
+        <members>NepaEngagementController</members>
+        <members>NepaCommentController</members>
+        <members>NepaTimelineController</members>
+        <members>NepaTestFactory</members>
+        <members>NepaProjectControllerTest</members>
+        <members>NepaDocumentControllerTest</members>
+        <members>NepaEngagementControllerTest</members>
+        <members>NepaCommentControllerTest</members>
+        <members>NepaTimelineControllerTest</members>
+        <name>ApexClass</name>
     </types>
     <version>62.0</version>
 </Package>

@@ -3,6 +3,7 @@
     <apiVersion>62.0</apiVersion>
     <description>Priority 9: Recalculates IndividualApplication.nepa_record_completeness__c and nepa_missing_documents__c whenever a ContentVersion record with the nepa_permit_document record type is created or updated. Queries NEPA_Required_Document__mdt for the required document types for the process's review type. Fetches ALL approved/published documents for the process in a single pre-loop query, then checks presence in-memory (no DB-in-loop). Writes percentage and missing-document list back to the parent IndividualApplication. Fires after-save async on ContentVersion create/update.</description>
     <label>NEPA Administrative Record Checker</label>
+    <description>NEPA Administrative Record Checker</description>
     <processType>AutoLaunchedFlow</processType>
     <status>Draft</status>
 
@@ -12,6 +13,7 @@
 
     <variables>
         <name>var_RequiredCount</name>
+        <description>Running count of required document types for the process review type.</description>
         <dataType>Number</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -21,6 +23,7 @@
     </variables>
     <variables>
         <name>var_PresentCount</name>
+        <description>Running count of required document types found among approved documents.</description>
         <dataType>Number</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -30,6 +33,7 @@
     </variables>
     <variables>
         <name>var_CompletenessScore</name>
+        <description>Computed completeness percentage written to nepa_record_completeness__c.</description>
         <dataType>Number</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -39,6 +43,7 @@
     </variables>
     <variables>
         <name>var_MissingDocs</name>
+        <description>Semicolon-delimited list of required document types not yet present.</description>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -46,6 +51,7 @@
     </variables>
     <variables>
         <name>var_ReviewType</name>
+        <description>Screening result review type (CE/EA/EIS) being assembled.</description>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -53,6 +59,7 @@
     </variables>
     <variables>
         <name>var_ProcessId</name>
+        <description>Id of the parent IndividualApplication resolved from the related case event.</description>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -60,6 +67,7 @@
     </variables>
     <variables>
         <name>rec_Timeline</name>
+        <description>ApplicationTimeline record used to resolve the parent IndividualApplication Id.</description>
         <dataType>SObject</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -67,7 +75,8 @@
         <objectType>ApplicationTimeline</objectType>
     </variables>
     <variables>
-        <name>rec_Process</name>
+        <name>rec_IndividualApplication</name>
+        <description>IndividualApplication record fetched to obtain nepa_review_type__c.</description>
         <dataType>SObject</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -76,6 +85,7 @@
     </variables>
     <variables>
         <name>col_RequiredRules</name>
+        <description>Collection of NEPA_Required_Document__mdt records for the process review type.</description>
         <dataType>SObject</dataType>
         <isCollection>true</isCollection>
         <isInput>false</isInput>
@@ -84,6 +94,7 @@
     </variables>
     <variables>
         <name>var_CurrentRule</name>
+        <description>Current NEPA_Required_Document__mdt record in the outer loop iteration.</description>
         <dataType>SObject</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -93,6 +104,7 @@
     <!-- Pre-fetched collection of ALL approved/published docs for this process — queried once before the loop -->
     <variables>
         <name>col_ApprovedDocs</name>
+        <description>Pre-fetched collection of all approved/published ContentVersion records for this process — queried once before the loop.</description>
         <dataType>SObject</dataType>
         <isCollection>true</isCollection>
         <isInput>false</isInput>
@@ -102,6 +114,7 @@
     <!-- Single doc pulled from col_ApprovedDocs during inner loop for type-matching -->
     <variables>
         <name>var_CurrentDoc</name>
+        <description>Current ContentVersion record in the inner in-memory loop iteration.</description>
         <dataType>SObject</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -111,6 +124,7 @@
     <!-- Flag: set to true when a matching doc is found for the current rule -->
     <variables>
         <name>var_DocFound</name>
+        <description>Flag set to true when a matching approved document is found for the current required rule.</description>
         <dataType>Boolean</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -119,6 +133,7 @@
     </variables>
     <variables>
         <name>var_ErrorMessage</name>
+        <description>Captures $Flow.FaultMessage from a faulted element for error logging.</description>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -131,6 +146,7 @@
 
     <formulas>
         <name>formula_CompletenessScore</name>
+        <description>Computes (present / required) * 100, returning 0 when no required rules exist.</description>
         <dataType>Number</dataType>
         <scale>1</scale>
         <expression>IF({!var_RequiredCount} > 0, ({!var_PresentCount} / {!var_RequiredCount}) * 100, 0)</expression>
@@ -172,6 +188,7 @@
     <decisions>
         <name>Decision_HasRelatedCaseEvent</name>
         <label>Has Related Case Event?</label>
+        <description>Has Related Case Event?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>No Case Event — cannot resolve process</defaultConnectorLabel>
@@ -187,12 +204,14 @@
                 <targetReference>Get_ApplicationTimeline</targetReference>
             </connector>
             <label>Has Case Event</label>
+            <description>Has Case Event</description>
         </rules>
     </decisions>
 
     <recordLookups>
         <name>Get_ApplicationTimeline</name>
         <label>Get ApplicationTimeline (to find IndividualApplication)</label>
+        <description>Get ApplicationTimeline (to find IndividualApplication)</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
@@ -214,6 +233,7 @@
     <decisions>
         <name>Decision_TimelineFound</name>
         <label>Timeline Found?</label>
+        <description>Timeline Found?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>No Timeline Record</defaultConnectorLabel>
@@ -229,12 +249,14 @@
                 <targetReference>Assign_ProcessId</targetReference>
             </connector>
             <label>Timeline Found</label>
+            <description>Timeline Found</description>
         </rules>
     </decisions>
 
     <assignments>
         <name>Assign_ProcessId</name>
         <label>Store Process Id</label>
+        <description>Store Process Id</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -250,6 +272,7 @@
     <recordLookups>
         <name>Get_Process</name>
         <label>Get IndividualApplication (for review type)</label>
+        <description>Get IndividualApplication (for review type)</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
@@ -263,7 +286,7 @@
             <value><elementReference>var_ProcessId</elementReference></value>
         </filters>
         <object>IndividualApplication</object>
-        <outputReference>rec_Process</outputReference>
+        <outputReference>rec_IndividualApplication</outputReference>
         <queriedFields>Id</queriedFields>
         <queriedFields>nepa_review_type__c</queriedFields>
     </recordLookups>
@@ -271,6 +294,7 @@
     <decisions>
         <name>Decision_ProcessHasReviewType</name>
         <label>Process Has Review Type?</label>
+        <description>Process Has Review Type?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>No Review Type — skip</defaultConnectorLabel>
@@ -278,7 +302,7 @@
             <name>Has_ReviewType</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>rec_Process.nepa_review_type__c</leftValueReference>
+                <leftValueReference>rec_IndividualApplication.nepa_review_type__c</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue><booleanValue>false</booleanValue></rightValue>
             </conditions>
@@ -286,18 +310,20 @@
                 <targetReference>Assign_ReviewType</targetReference>
             </connector>
             <label>Has Review Type</label>
+            <description>Has Review Type</description>
         </rules>
     </decisions>
 
     <assignments>
         <name>Assign_ReviewType</name>
         <label>Store Review Type</label>
+        <description>Store Review Type</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
             <assignToReference>var_ReviewType</assignToReference>
             <operator>Assign</operator>
-            <value><elementReference>rec_Process.nepa_review_type__c</elementReference></value>
+            <value><elementReference>rec_IndividualApplication.nepa_review_type__c</elementReference></value>
         </assignmentItems>
         <connector>
             <targetReference>Get_RequiredDocRules</targetReference>
@@ -311,6 +337,7 @@
     <recordLookups>
         <name>Get_RequiredDocRules</name>
         <label>Get Required Document Rules for Review Type</label>
+        <description>Get Required Document Rules for Review Type</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
@@ -345,6 +372,7 @@
     <decisions>
         <name>Decision_RulesFound</name>
         <label>Required Document Rules Found?</label>
+        <description>Required Document Rules Found?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>No Rules — write 0 score</defaultConnectorLabel>
@@ -363,6 +391,7 @@
                 <targetReference>Get_AllApprovedDocs</targetReference>
             </connector>
             <label>Rules Found</label>
+            <description>Rules Found</description>
         </rules>
     </decisions>
 
@@ -374,6 +403,7 @@
     <recordLookups>
         <name>Get_AllApprovedDocs</name>
         <label>Fetch All Approved or Published Documents for This Process</label>
+        <description>Fetch All Approved or Published Documents for This Process</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
@@ -404,6 +434,7 @@
     <loops>
         <name>Loop_RequiredRules</name>
         <label>Loop Required Document Rules</label>
+        <description>Loop Required Document Rules</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <collectionReference>col_RequiredRules</collectionReference>
@@ -419,6 +450,7 @@
     <assignments>
         <name>Assign_CurrentRule</name>
         <label>Set Current Rule and Reset Doc Found Flag</label>
+        <description>Set Current Rule and Reset Doc Found Flag</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -449,6 +481,7 @@
     <loops>
         <name>Loop_ApprovedDocs</name>
         <label>Scan Pre-Fetched Docs for Type Match (in-memory)</label>
+        <description>Scan Pre-Fetched Docs for Type Match (in-memory)</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <collectionReference>col_ApprovedDocs</collectionReference>
@@ -464,6 +497,7 @@
     <assignments>
         <name>Assign_CurrentDoc</name>
         <label>Set Current Doc Iteration Variable</label>
+        <description>Set Current Doc Iteration Variable</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -479,6 +513,7 @@
     <decisions>
         <name>Decision_TypeMatch</name>
         <label>Doc Type Matches Required Rule?</label>
+        <description>Doc Type Matches Required Rule?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>No Match</defaultConnectorLabel>
@@ -494,12 +529,14 @@
                 <targetReference>Assign_DocFound</targetReference>
             </connector>
             <label>Type Matches</label>
+            <description>Type Matches</description>
         </rules>
     </decisions>
 
     <assignments>
         <name>Assign_DocFound</name>
         <label>Mark Doc Found and Exit Inner Loop</label>
+        <description>Mark Doc Found and Exit Inner Loop</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -516,6 +553,7 @@
     <decisions>
         <name>Decision_DocFound</name>
         <label>Was Required Document Found?</label>
+        <description>Was Required Document Found?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>Missing — add to gap list</defaultConnectorLabel>
@@ -534,12 +572,14 @@
                 <targetReference>Assign_IncrementPresentCount</targetReference>
             </connector>
             <label>Document Present</label>
+            <description>Document Present</description>
         </rules>
     </decisions>
 
     <assignments>
         <name>Assign_IncrementPresentCount</name>
         <label>Increment Present Count</label>
+        <description>Increment Present Count</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -552,6 +592,7 @@
     <assignments>
         <name>Assign_AddToMissingList</name>
         <label>Add to Missing Documents List</label>
+        <description>Add to Missing Documents List</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -573,6 +614,7 @@
     <assignments>
         <name>Calculate_CompletenessScore</name>
         <label>Calculate Completeness Score</label>
+        <description>Calculate Completeness Score</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -589,6 +631,7 @@
     <recordUpdates>
         <name>Update_CompletenessFields</name>
         <label>Update Completeness Fields on IndividualApplication</label>
+        <description>Update Completeness Fields on IndividualApplication</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <faultConnector>
@@ -617,6 +660,7 @@
     <assignments>
         <name>Handle_Error</name>
         <label>Handle Error</label>
+        <description>Handle Error</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -624,6 +668,30 @@
             <operator>Assign</operator>
             <value><elementReference>$Flow.FaultMessage</elementReference></value>
         </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
     </assignments>
+
+    <subflows>
+        <name>Call_ErrorLogger</name>
+        <label>Log Flow Error</label>
+        <description>Log Flow Error</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value><stringValue>NEPA_Administrative_Record_Checker</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value><elementReference>var_ErrorMessage</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value><elementReference>$Record.Id</elementReference></value>
+        </inputAssignments>
+    </subflows>
 
 </Flow>

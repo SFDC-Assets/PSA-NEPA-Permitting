@@ -143,22 +143,6 @@
         </connector>
     </assignments>
 
-    <assignments>
-        <name>Calc_CommentPeriodDays</name>
-        <label>Calculate Comment Period Days</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_CommentPeriodDays</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>rec_Process.nepa_public_comment_period_end_date__c</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Decision_CommentPeriodLength</targetReference>
-        </connector>
-    </assignments>
 
     <assignments>
         <name>Pass_CommentPeriod</name>
@@ -274,7 +258,31 @@
                 <elementReference>$Flow.FaultMessage</elementReference>
             </value>
         </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
     </assignments>
+
+    <!-- code-analyzer-suppress flow:MissingFaultHandler - terminal error handler; fault-handling Call_ErrorLogger would be circular -->
+    <subflows>
+        <name>Call_ErrorLogger</name>
+        <label>Log Flow Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value><stringValue>NEPA_Defensibility_Gap_Checker</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value><elementReference>var_ErrorMessage</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value><elementReference>inp_ProcessId</elementReference></value>
+        </inputAssignments>
+    </subflows>
 
     <!-- Decisions -->
     <decisions>
@@ -394,21 +402,21 @@
             <name>CommentPeriod_Dates_Set</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>rec_Process.nepa_public_comment_period_start__c</leftValueReference>
+                <leftValueReference>rec_IndividualApplication.nepa_public_comment_period_start__c</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
             <conditions>
-                <leftValueReference>rec_Process.nepa_public_comment_period_end_date__c</leftValueReference>
+                <leftValueReference>rec_IndividualApplication.nepa_public_comment_period_end_date__c</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Calc_CommentPeriodDays</targetReference>
+                <targetReference>Decision_CommentPeriodLength</targetReference>
             </connector>
             <label>Dates Set</label>
         </rules>
@@ -427,10 +435,10 @@
             <name>CommentPeriod_Sufficient</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>rec_Process.nepa_public_comment_period_end_date__c</leftValueReference>
+                <leftValueReference>rec_IndividualApplication.nepa_comment_period_days__c</leftValueReference>
                 <operator>GreaterThanOrEqualTo</operator>
                 <rightValue>
-                    <elementReference>rec_Process.nepa_public_comment_period_start__c</elementReference>
+                    <numberValue>30.0</numberValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -453,7 +461,7 @@
             <name>NOI_Present</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>col_ROD_FONSI</leftValueReference>
+                <leftValueReference>col_NOI</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
@@ -468,7 +476,7 @@
 
     <!-- Record Lookups -->
     <recordLookups>
-        <name>Get_Process</name>
+        <name>Get_IndividualApplication</name>
         <label>Get IndividualApplication</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
@@ -485,11 +493,12 @@
             </value>
         </filters>
         <object>IndividualApplication</object>
-        <outputReference>rec_Process</outputReference>
+        <outputReference>rec_IndividualApplication</outputReference>
         <queriedFields>Id</queriedFields>
         <queriedFields>nepa_review_type__c</queriedFields>
         <queriedFields>nepa_public_comment_period_start__c</queriedFields>
         <queriedFields>nepa_public_comment_period_end_date__c</queriedFields>
+        <queriedFields>nepa_comment_period_days__c</queriedFields>
     </recordLookups>
 
     <recordLookups>
@@ -627,7 +636,7 @@
             </value>
         </filters>
         <object>ContentVersion</object>
-        <outputReference>col_ROD_FONSI</outputReference>
+        <outputReference>col_NOI</outputReference>
         <queriedFields>Id</queriedFields>
     </recordLookups>
 
@@ -669,11 +678,10 @@
     </recordUpdates>
 
     <!-- Autolaunched: called by trigger flows on ContentVersion and nepa_engagement__c -->
-    <!-- Formula: (ChecksPassed / ChecksTotal) * 100 -->
     <formulas>
         <name>formula_DefensibilityScore</name>
         <dataType>Number</dataType>
-        <expression>({!var_ChecksPassed} / {!var_ChecksTotal}) * 100</expression>
+        <expression>({!var_ChecksPassed} / 6) * 100</expression>
         <scale>1</scale>
     </formulas>
 
@@ -681,7 +689,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Get_Process</targetReference>
+            <targetReference>Get_IndividualApplication</targetReference>
         </connector>
     </start>
 
@@ -696,17 +704,6 @@
     </variables>
 
     <!-- Counters for score calculation -->
-    <variables>
-        <name>var_ChecksTotal</name>
-        <dataType>Number</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <scale>0</scale>
-        <value>
-            <numberValue>6.0</numberValue>
-        </value>
-    </variables>
     <variables>
         <name>var_ChecksPassed</name>
         <dataType>Number</dataType>
@@ -737,7 +734,7 @@
         </value>
     </variables>
     <variables>
-        <name>rec_Process</name>
+        <name>rec_IndividualApplication</name>
         <dataType>SObject</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -777,15 +774,12 @@
         <objectType>nepa_engagement__c</objectType>
     </variables>
     <variables>
-        <name>var_CommentPeriodDays</name>
-        <dataType>Number</dataType>
-        <isCollection>false</isCollection>
+        <name>col_NOI</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
-        <scale>0</scale>
-        <value>
-            <numberValue>0.0</numberValue>
-        </value>
+        <objectType>ContentVersion</objectType>
     </variables>
     <variables>
         <name>var_ErrorMessage</name>

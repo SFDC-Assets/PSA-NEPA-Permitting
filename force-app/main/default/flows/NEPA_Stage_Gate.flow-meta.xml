@@ -3,19 +3,14 @@
     <apiVersion>62.0</apiVersion>
     <description>Priority 6: Stage-gate automation for IndividualApplication. Fires before-save when nepa_process_stage__c changes. Updates nepa_last_stage_transition__c. Fires after-save async when nepa_process_status__c transitions to completed: sets nepa_completion_date__c if blank. A separate after-save path fires when a key document-type ApplicationTimeline event status becomes Completed: advances nepa_process_stage__c and sends notification. Also triggers on nepa_review_type__c set for the first time to stamp nepa_target_completion_date__c based on review type defaults (CE: 30d, EA: 180d, EIS: 730d).</description>
     <label>NEPA Stage Gate</label>
+    <description>NEPA Stage Gate</description>
     <processType>AutoLaunchedFlow</processType>
     <status>Draft</status>
 
     <!-- Variables -->
     <variables>
-        <name>var_ErrorMessage</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-    <variables>
         <name>var_TargetDays</name>
+        <description>Number of days used to compute the target completion date from today.</description>
         <dataType>Number</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -57,6 +52,7 @@
     <decisions>
         <name>Decision_StageChanged</name>
         <label>Which Field Changed?</label>
+        <description>Which Field Changed?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>Status or Review Type Change</defaultConnectorLabel>
@@ -75,6 +71,7 @@
                 <targetReference>Assign_StageTransitionTimestamp</targetReference>
             </connector>
             <label>Stage Changed</label>
+            <description>Stage Changed</description>
         </rules>
     </decisions>
 
@@ -82,6 +79,7 @@
     <assignments>
         <name>Assign_StageTransitionTimestamp</name>
         <label>Stamp Last Stage Transition Timestamp</label>
+        <description>Stamp Last Stage Transition Timestamp</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -100,6 +98,7 @@
     <decisions>
         <name>Decision_ReviewTypeFirstSet</name>
         <label>Review Type First Set?</label>
+        <description>Review Type First Set?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>Not First Set or No Review Type</defaultConnectorLabel>
@@ -123,12 +122,14 @@
                 <targetReference>Decision_ReviewTypeForTarget</targetReference>
             </connector>
             <label>Review Type First Set and No Target Date Yet</label>
+            <description>Review Type First Set and No Target Date Yet</description>
         </rules>
     </decisions>
 
     <decisions>
         <name>Decision_ReviewTypeForTarget</name>
         <label>Which Review Type for Target Date?</label>
+        <description>Which Review Type for Target Date?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>EA Default (180 days)</defaultConnectorLabel>
@@ -147,6 +148,7 @@
                 <targetReference>Assign_TargetDays_CE</targetReference>
             </connector>
             <label>CE (30 days)</label>
+            <description>CE (30 days)</description>
         </rules>
         <rules>
             <name>ReviewType_EIS</name>
@@ -160,12 +162,14 @@
                 <targetReference>Assign_TargetDays_EIS</targetReference>
             </connector>
             <label>EIS (730 days)</label>
+            <description>EIS (730 days)</description>
         </rules>
     </decisions>
 
     <assignments>
         <name>Assign_TargetDays_CE</name>
         <label>CE: 30 Days</label>
+        <description>CE: 30 Days</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -181,6 +185,7 @@
     <assignments>
         <name>Assign_TargetDays_EA</name>
         <label>EA: 180 Days</label>
+        <description>EA: 180 Days</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -196,6 +201,7 @@
     <assignments>
         <name>Assign_TargetDays_EIS</name>
         <label>EIS: 730 Days</label>
+        <description>EIS: 730 Days</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -211,6 +217,7 @@
     <!-- Add var_TargetDays days to today using a formula via a formula variable -->
     <formulas>
         <name>formula_TargetDate</name>
+        <description>Computes target completion date as TODAY() + var_TargetDays.</description>
         <dataType>Date</dataType>
         <expression>TODAY() + {!var_TargetDays}</expression>
     </formulas>
@@ -218,6 +225,7 @@
     <assignments>
         <name>Assign_TargetDate</name>
         <label>Set Target Completion Date</label>
+        <description>Set Target Completion Date</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -236,6 +244,7 @@
     <decisions>
         <name>Decision_ProcessCompleted</name>
         <label>Process Status Transitioning to Completed?</label>
+        <description>Process Status Transitioning to Completed?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>Not Completing</defaultConnectorLabel>
@@ -256,12 +265,14 @@
                 <targetReference>Assign_CompletionDate</targetReference>
             </connector>
             <label>Status = completed and No Completion Date</label>
+            <description>Status = completed and No Completion Date</description>
         </rules>
     </decisions>
 
     <assignments>
         <name>Assign_CompletionDate</name>
         <label>Stamp Completion Date</label>
+        <description>Stamp Completion Date</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>

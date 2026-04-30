@@ -3,6 +3,7 @@
     <apiVersion>62.0</apiVersion>
     <description>Three-tier CE screening for IndividualApplication. Stage 0: NAICS routing (sets agency namespace + confidence modifier). Stage 1: Tier 1 high-confidence sector+type rules. Stage 2: Tier 2 action-type discriminators. Post-match: acreage threshold and GIS extraordinary circumstances checks. Writes nepa_review_type__c, nepa_process_code__c, nepa_screening_confidence__c, nepa_classification_basis__c back to IndividualApplication. Fires after-save on create/update when screening input fields change.</description>
     <label>NEPA CE Screener</label>
+    <description>NEPA CE Screener</description>
     <processType>AutoLaunchedFlow</processType>
     <status>Draft</status>
 
@@ -13,6 +14,7 @@
     <!-- Working variables -->
     <variables>
         <name>var_AgencyAbbr</name>
+        <description>Lead agency abbreviation used to match CE screening rules.</description>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -20,6 +22,7 @@
     </variables>
     <variables>
         <name>var_SectorKey</name>
+        <description>Project sector key from the related Program record.</description>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -27,6 +30,7 @@
     </variables>
     <variables>
         <name>var_TypeKey</name>
+        <description>Project type key from the related Program record.</description>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -34,6 +38,7 @@
     </variables>
     <variables>
         <name>var_ReviewType</name>
+        <description>Screening result review type (CE/EA/EIS) being assembled.</description>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -42,6 +47,7 @@
     </variables>
     <variables>
         <name>var_CECode</name>
+        <description>CE authority code selected by the matching screening rule.</description>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -49,6 +55,7 @@
     </variables>
     <variables>
         <name>var_Confidence</name>
+        <description>Screening confidence level (High/Medium/Low).</description>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -57,6 +64,7 @@
     </variables>
     <variables>
         <name>var_ClassificationBasis</name>
+        <description>Audit trail string explaining the classification decision.</description>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -64,21 +72,16 @@
     </variables>
     <variables>
         <name>var_NAICSConfidenceModifier</name>
+        <description>NAICS-based confidence modifier (Low/Medium/High) from Stage 0.</description>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
-    <variables>
-        <name>var_Tier1Matched</name>
-        <dataType>Boolean</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <value><booleanValue>false</booleanValue></value>
-    </variables>
+
     <variables>
         <name>var_ErrorMessage</name>
+        <description>Captures $Flow.FaultMessage from a faulted element for error logging.</description>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -88,6 +91,7 @@
     <!-- SObject record variables -->
     <variables>
         <name>rec_RelatedProject</name>
+        <description>Related Program record fetched to obtain agency, sector, type, and NAICS.</description>
         <dataType>SObject</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -96,6 +100,7 @@
     </variables>
     <variables>
         <name>rec_NAICSRule</name>
+        <description>NAICS-tier NEPA_CE_Screening_Rule__mdt record providing namespace/confidence modifier.</description>
         <dataType>SObject</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -104,6 +109,7 @@
     </variables>
     <variables>
         <name>rec_Tier1Rule</name>
+        <description>Best-matching Tier 1 NEPA_CE_Screening_Rule__mdt record.</description>
         <dataType>SObject</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -112,22 +118,7 @@
     </variables>
     <variables>
         <name>rec_Tier2Rule</name>
-        <dataType>SObject</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>NEPA_CE_Screening_Rule__mdt</objectType>
-    </variables>
-    <variables>
-        <name>rec_AcreageRule</name>
-        <dataType>SObject</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>NEPA_CE_Screening_Rule__mdt</objectType>
-    </variables>
-    <variables>
-        <name>rec_GISDisqualifyRule</name>
+        <description>Best-matching Tier 2 NEPA_CE_Screening_Rule__mdt record.</description>
         <dataType>SObject</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -180,6 +171,7 @@
     <decisions>
         <name>Decision_HasRelatedProject</name>
         <label>Has Related Project?</label>
+        <description>Has Related Project?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>No Project — skip to GIS check</defaultConnectorLabel>
@@ -198,6 +190,7 @@
                 <targetReference>Get_RelatedProject</targetReference>
             </connector>
             <label>Has Project</label>
+            <description>Has Project</description>
         </rules>
     </decisions>
 
@@ -207,6 +200,7 @@
     <recordLookups>
         <name>Get_RelatedProject</name>
         <label>Get Related Project</label>
+        <description>Get Related Project</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
@@ -234,6 +228,7 @@
     <assignments>
         <name>Assign_AgencyFromProject</name>
         <label>Set Agency Abbreviation</label>
+        <description>Set Agency Abbreviation</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -268,6 +263,7 @@
     <decisions>
         <name>Decision_HasNAICS</name>
         <label>Has Applicant NAICS Code?</label>
+        <description>Has Applicant NAICS Code?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>No NAICS — skip routing</defaultConnectorLabel>
@@ -286,12 +282,14 @@
                 <targetReference>Get_NAICSRule</targetReference>
             </connector>
             <label>Has NAICS</label>
+            <description>Has NAICS</description>
         </rules>
     </decisions>
 
     <recordLookups>
         <name>Get_NAICSRule</name>
         <label>Get NAICS Routing Rule</label>
+        <description>Get NAICS Routing Rule</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
@@ -327,6 +325,7 @@
     <decisions>
         <name>Decision_NAICSFound</name>
         <label>NAICS Rule Found?</label>
+        <description>NAICS Rule Found?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>Not Found</defaultConnectorLabel>
@@ -345,12 +344,14 @@
                 <targetReference>Assign_NAICSModifier</targetReference>
             </connector>
             <label>NAICS Rule Found</label>
+            <description>NAICS Rule Found</description>
         </rules>
     </decisions>
 
     <assignments>
         <name>Assign_NAICSModifier</name>
         <label>Store NAICS Confidence Modifier</label>
+        <description>Store NAICS Confidence Modifier</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -380,6 +381,7 @@
     <recordLookups>
         <name>Get_Tier1Rule</name>
         <label>Get Tier 1 Screening Rule</label>
+        <description>Get Tier 1 Screening Rule</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
@@ -430,6 +432,7 @@
     <decisions>
         <name>Decision_Tier1Found</name>
         <label>Tier 1 Rule Matched?</label>
+        <description>Tier 1 Rule Matched?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>No Match — proceed to Tier 2</defaultConnectorLabel>
@@ -448,12 +451,14 @@
                 <targetReference>Assign_Tier1Result</targetReference>
             </connector>
             <label>Tier 1 Matched</label>
+            <description>Tier 1 Matched</description>
         </rules>
     </decisions>
 
     <assignments>
         <name>Assign_Tier1Result</name>
         <label>Apply Tier 1 Rule Results</label>
+        <description>Apply Tier 1 Rule Results</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -484,11 +489,6 @@
                 <elementReference>rec_Tier1Rule.Classification_Basis__c</elementReference>
             </value>
         </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_Tier1Matched</assignToReference>
-            <operator>Assign</operator>
-            <value><booleanValue>true</booleanValue></value>
-        </assignmentItems>
         <connector>
             <targetReference>Decision_Tier1RequiresAcreage</targetReference>
         </connector>
@@ -498,6 +498,7 @@
     <decisions>
         <name>Decision_Tier1RequiresAcreage</name>
         <label>Tier 1: Requires Acreage Check?</label>
+        <description>Tier 1: Requires Acreage Check?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>No Acreage Check</defaultConnectorLabel>
@@ -521,12 +522,14 @@
                 <targetReference>Decision_Tier1AcreageExceeded</targetReference>
             </connector>
             <label>Needs Acreage Check and Acres Provided</label>
+            <description>Needs Acreage Check and Acres Provided</description>
         </rules>
     </decisions>
 
     <decisions>
         <name>Decision_Tier1AcreageExceeded</name>
         <label>Tier 1: Acreage Threshold Exceeded?</label>
+        <description>Tier 1: Acreage Threshold Exceeded?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>Within Threshold</defaultConnectorLabel>
@@ -547,12 +550,14 @@
                 <targetReference>Assign_AcreageDowngrade</targetReference>
             </connector>
             <label>Acreage Exceeded</label>
+            <description>Acreage Exceeded</description>
         </rules>
     </decisions>
 
     <assignments>
         <name>Assign_AcreageDowngrade</name>
         <label>Downgrade to EA: Acreage Exceeded</label>
+        <description>Downgrade to EA: Acreage Exceeded</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -584,6 +589,7 @@
     <decisions>
         <name>Decision_Tier1RequiresGIS</name>
         <label>Tier 1: Requires GIS Check?</label>
+        <description>Tier 1: Requires GIS Check?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>No GIS Check — apply NAICS modifier then write</defaultConnectorLabel>
@@ -602,6 +608,7 @@
                 <targetReference>Decision_GISCircumstances</targetReference>
             </connector>
             <label>Needs GIS Check</label>
+            <description>Needs GIS Check</description>
         </rules>
     </decisions>
 
@@ -612,6 +619,7 @@
     <recordLookups>
         <name>Get_Tier2Rule</name>
         <label>Get Tier 2 Screening Rule</label>
+        <description>Get Tier 2 Screening Rule</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
@@ -662,6 +670,7 @@
     <decisions>
         <name>Decision_Tier2Found</name>
         <label>Tier 2 Rule Matched?</label>
+        <description>Tier 2 Rule Matched?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>No Match — default EA/Low</defaultConnectorLabel>
@@ -680,12 +689,14 @@
                 <targetReference>Assign_Tier2Result</targetReference>
             </connector>
             <label>Tier 2 Matched</label>
+            <description>Tier 2 Matched</description>
         </rules>
     </decisions>
 
     <assignments>
         <name>Assign_Tier2Result</name>
         <label>Apply Tier 2 Rule Results</label>
+        <description>Apply Tier 2 Rule Results</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -725,6 +736,7 @@
     <decisions>
         <name>Decision_Tier2RequiresAcreage</name>
         <label>Tier 2: Requires Acreage Check?</label>
+        <description>Tier 2: Requires Acreage Check?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>No Acreage Check</defaultConnectorLabel>
@@ -748,12 +760,14 @@
                 <targetReference>Decision_Tier2AcreageExceeded</targetReference>
             </connector>
             <label>Needs Acreage Check and Acres Provided</label>
+            <description>Needs Acreage Check and Acres Provided</description>
         </rules>
     </decisions>
 
     <decisions>
         <name>Decision_Tier2AcreageExceeded</name>
         <label>Tier 2: Acreage Threshold Exceeded?</label>
+        <description>Tier 2: Acreage Threshold Exceeded?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>Within Threshold</defaultConnectorLabel>
@@ -774,12 +788,14 @@
                 <targetReference>Assign_Tier2AcreageDowngrade</targetReference>
             </connector>
             <label>Acreage Exceeded</label>
+            <description>Acreage Exceeded</description>
         </rules>
     </decisions>
 
     <assignments>
         <name>Assign_Tier2AcreageDowngrade</name>
         <label>Tier 2: Downgrade to EA — Acreage Exceeded</label>
+        <description>Tier 2: Downgrade to EA — Acreage Exceeded</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -810,6 +826,7 @@
     <decisions>
         <name>Decision_Tier2RequiresGIS</name>
         <label>Tier 2: Requires GIS Check?</label>
+        <description>Tier 2: Requires GIS Check?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>No GIS Check</defaultConnectorLabel>
@@ -828,6 +845,7 @@
                 <targetReference>Decision_GISCircumstances</targetReference>
             </connector>
             <label>Needs GIS Check</label>
+            <description>Needs GIS Check</description>
         </rules>
     </decisions>
 
@@ -835,6 +853,7 @@
     <assignments>
         <name>Assign_DefaultEA</name>
         <label>Default: EA / Low Confidence</label>
+        <description>Default: EA / Low Confidence</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -870,6 +889,7 @@
     <decisions>
         <name>Decision_GISCircumstances</name>
         <label>Extraordinary Circumstances Present?</label>
+        <description>Extraordinary Circumstances Present?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>No Extraordinary Circumstances</defaultConnectorLabel>
@@ -888,12 +908,14 @@
                 <targetReference>Assign_GISDowngrade</targetReference>
             </connector>
             <label>Extraordinary Circumstances Present</label>
+            <description>Extraordinary Circumstances Present</description>
         </rules>
     </decisions>
 
     <assignments>
         <name>Assign_GISDowngrade</name>
         <label>GIS Disqualify: Override to EA</label>
+        <description>GIS Disqualify: Override to EA</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -927,6 +949,7 @@
     <decisions>
         <name>Decision_ApplyNAICSModifier</name>
         <label>Apply NAICS Confidence Modifier?</label>
+        <description>Apply NAICS Confidence Modifier?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>No Modifier</defaultConnectorLabel>
@@ -950,12 +973,14 @@
                 <targetReference>Assign_DowngradeConfidenceLow</targetReference>
             </connector>
             <label>NAICS Modifier = Low and Current Confidence Is Not Low</label>
+            <description>NAICS Modifier = Low and Current Confidence Is Not Low</description>
         </rules>
     </decisions>
 
     <assignments>
         <name>Assign_DowngradeConfidenceLow</name>
         <label>Downgrade Confidence to Low (NAICS)</label>
+        <description>Downgrade Confidence to Low (NAICS)</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -979,6 +1004,7 @@
     <assignments>
         <name>Build_ClassificationBasis</name>
         <label>Finalize Classification Basis</label>
+        <description>Finalize Classification Basis</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -998,6 +1024,7 @@
     <recordUpdates>
         <name>Update_ScreeningFields</name>
         <label>Update CE Screening Fields</label>
+        <description>Update CE Screening Fields</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <faultConnector>
@@ -1040,6 +1067,7 @@
     <assignments>
         <name>Handle_Error</name>
         <label>Handle Error</label>
+        <description>Handle Error</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -1049,6 +1077,30 @@
                 <elementReference>$Flow.FaultMessage</elementReference>
             </value>
         </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
     </assignments>
+
+    <subflows>
+        <name>Call_ErrorLogger</name>
+        <label>Log Flow Error</label>
+        <description>Log Flow Error</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value><stringValue>NEPA_CE_Screener</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value><elementReference>var_ErrorMessage</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value><elementReference>$Record.Id</elementReference></value>
+        </inputAssignments>
+    </subflows>
 
 </Flow>

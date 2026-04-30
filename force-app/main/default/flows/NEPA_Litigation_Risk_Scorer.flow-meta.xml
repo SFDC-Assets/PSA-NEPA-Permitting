@@ -105,58 +105,24 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Decision_AdjacentStatutes</targetReference>
+            <targetReference>Get_StatuteWeights</targetReference>
         </connector>
     </assignments>
 
     <assignments>
-        <name>Assign_ESA_Points</name>
-        <label>Add ESA Statute Points</label>
+        <name>Assign_StatutePoints</name>
+        <label>Add Statute Risk Points</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
             <assignToReference>var_AdjacentStatutePoints</assignToReference>
             <operator>Add</operator>
             <value>
-                <numberValue>5.0</numberValue>
+                <elementReference>rec_StatuteWeight.Risk_Points__c</elementReference>
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Decision_CWA</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Assign_CWA_Points</name>
-        <label>Add CWA Statute Points</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_AdjacentStatutePoints</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <numberValue>5.0</numberValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Decision_NHPA</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Assign_NHPA_Points</name>
-        <label>Add NHPA Statute Points</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_AdjacentStatutePoints</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <numberValue>5.0</numberValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Calculate_Total_Score</targetReference>
+            <targetReference>Loop_StatuteWeights</targetReference>
         </connector>
     </assignments>
 
@@ -312,7 +278,31 @@
                 <elementReference>$Flow.FaultMessage</elementReference>
             </value>
         </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
     </assignments>
+
+    <!-- code-analyzer-suppress flow:MissingFaultHandler - terminal error handler; fault-handling Call_ErrorLogger would be circular -->
+    <subflows>
+        <name>Call_ErrorLogger</name>
+        <label>Log Flow Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value><stringValue>NEPA_Litigation_Risk_Scorer</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value><elementReference>var_ErrorMessage</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value><elementReference>$Record.Id</elementReference></value>
+        </inputAssignments>
+    </subflows>
 
     <!-- Decisions -->
     <!-- Step 1: Assign review type risk points -->
@@ -432,7 +422,7 @@
         <locationY>0</locationY>
         <defaultConnectorLabel>Not Found - use default</defaultConnectorLabel>
         <defaultConnector>
-            <targetReference>Decision_AdjacentStatutes</targetReference>
+            <targetReference>Get_StatuteWeights</targetReference>
         </defaultConnector>
         <rules>
             <name>Circuit_Found</name>
@@ -451,82 +441,31 @@
         </rules>
     </decisions>
 
-    <!-- Step 5: Add adjacent statute bonus (5 pts each, max 15) -->
+    <!-- Step 5: Add adjacent statute bonus — driven by NEPA_Statute_Risk_Weight__mdt records -->
+    <!-- Adding a new statute requires only a new metadata record; no flow edit needed -->
     <decisions>
-        <name>Decision_AdjacentStatutes</name>
-        <label>Adjacent Statutes Present?</label>
+        <name>Decision_StatutePresent</name>
+        <label>Project Contains This Statute?</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <defaultConnectorLabel>No Adjacent Statutes</defaultConnectorLabel>
+        <defaultConnectorLabel>Statute Not Present</defaultConnectorLabel>
         <defaultConnector>
-            <targetReference>Calculate_Total_Score</targetReference>
+            <targetReference>Loop_StatuteWeights</targetReference>
         </defaultConnector>
         <rules>
-            <name>Has_ESA</name>
+            <name>Statute_Present</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
                 <leftValueReference>rec_RelatedProject.nepa_adjacent_statutes__c</leftValueReference>
                 <operator>Contains</operator>
                 <rightValue>
-                    <stringValue>ESA</stringValue>
+                    <elementReference>rec_StatuteWeight.Statute_Key__c</elementReference>
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Assign_ESA_Points</targetReference>
+                <targetReference>Assign_StatutePoints</targetReference>
             </connector>
-            <label>Contains ESA</label>
-        </rules>
-    </decisions>
-
-    <decisions>
-        <name>Decision_CWA</name>
-        <label>Contains CWA?</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>No CWA</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Decision_NHPA</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>Has_CWA</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>rec_RelatedProject.nepa_adjacent_statutes__c</leftValueReference>
-                <operator>Contains</operator>
-                <rightValue>
-                    <stringValue>CWA</stringValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Assign_CWA_Points</targetReference>
-            </connector>
-            <label>Contains CWA</label>
-        </rules>
-    </decisions>
-
-    <decisions>
-        <name>Decision_NHPA</name>
-        <label>Contains NHPA?</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>No NHPA</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Calculate_Total_Score</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>Has_NHPA</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>rec_RelatedProject.nepa_adjacent_statutes__c</leftValueReference>
-                <operator>Contains</operator>
-                <rightValue>
-                    <stringValue>NHPA</stringValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Assign_NHPA_Points</targetReference>
-            </connector>
-            <label>Contains NHPA</label>
+            <label>Statute Present</label>
         </rules>
     </decisions>
 
@@ -687,6 +626,49 @@
         <queriedFields>Circuit_Key__c</queriedFields>
         <queriedFields>Risk_Points__c</queriedFields>
     </recordLookups>
+
+    <!-- Step 5: Load active statute risk weights -->
+    <recordLookups>
+        <name>Get_StatuteWeights</name>
+        <label>Get Active Statute Risk Weights</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_StatuteWeights</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Active__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>NEPA_Statute_Risk_Weight__mdt</object>
+        <outputReference>col_StatuteWeights</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Statute_Key__c</queriedFields>
+        <queriedFields>Risk_Points__c</queriedFields>
+    </recordLookups>
+
+    <!-- Step 5 loop: iterate each statute record, check presence, accumulate points -->
+    <loops>
+        <name>Loop_StatuteWeights</name>
+        <label>Loop: Statute Risk Weights</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>col_StatuteWeights</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Decision_StatutePresent</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Calculate_Total_Score</targetReference>
+        </noMoreValuesConnector>
+        <outputReference>rec_StatuteWeight</outputReference>
+    </loops>
 
     <!-- Record Updates -->
     <!-- Step 8: Write back to IndividualApplication -->
@@ -870,6 +852,22 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
         <objectType>Program</objectType>
+    </variables>
+    <variables>
+        <name>col_StatuteWeights</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>NEPA_Statute_Risk_Weight__mdt</objectType>
+    </variables>
+    <variables>
+        <name>rec_StatuteWeight</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>NEPA_Statute_Risk_Weight__mdt</objectType>
     </variables>
     <variables>
         <name>var_ErrorMessage</name>
