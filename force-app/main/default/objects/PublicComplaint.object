@@ -125,6 +125,100 @@
         <trackHistory>false</trackHistory>
         <type>Checkbox</type>
     </fields>
+    <!-- Priority 1: AI-Assisted Comment Analysis fields -->
+    <fields>
+        <fullName>nepa_sentiment__c</fullName>
+        <description>AI-assigned sentiment classification for this comment.</description>
+        <inlineHelpText>Sentiment of this comment as classified by AI analysis (human-validated).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Sentiment</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Supportive</fullName>
+                    <default>false</default>
+                    <label>Supportive</label>
+                </value>
+                <value>
+                    <fullName>Neutral</fullName>
+                    <default>false</default>
+                    <label>Neutral</label>
+                </value>
+                <value>
+                    <fullName>Opposed</fullName>
+                    <default>false</default>
+                    <label>Opposed</label>
+                </value>
+                <value>
+                    <fullName>Mixed</fullName>
+                    <default>false</default>
+                    <label>Mixed</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_is_substantive__c</fullName>
+        <description>Indicates whether this comment is substantive and requires an individual agency response. AI-assigned, human-validated.</description>
+        <inlineHelpText>Check if this comment is substantive and requires an individual response per NEPA requirements.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Is Substantive</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_cluster_id__c</fullName>
+        <description>Groups near-duplicate form-letter comments for unified response. AI-assigned cluster identifier.</description>
+        <inlineHelpText>Cluster ID grouping near-duplicate form letters for consolidated response tracking.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Cluster ID</label>
+        <length>50</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_response_status__c</fullName>
+        <description>Tracks the lifecycle of the agency response for this comment from draft through final.</description>
+        <inlineHelpText>Current status of the agency response for this comment.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Response Status</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Pending</fullName>
+                    <default>true</default>
+                    <label>Pending</label>
+                </value>
+                <value>
+                    <fullName>Draft</fullName>
+                    <default>false</default>
+                    <label>Draft</label>
+                </value>
+                <value>
+                    <fullName>Reviewed</fullName>
+                    <default>false</default>
+                    <label>Reviewed</label>
+                </value>
+                <value>
+                    <fullName>Finalized</fullName>
+                    <default>false</default>
+                    <label>Finalized</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
     <!-- Provenance fields (CEQ Standard v1.2 - required on all entities) -->
     <fields>
         <fullName>nepa_data_record_version__c</fullName>

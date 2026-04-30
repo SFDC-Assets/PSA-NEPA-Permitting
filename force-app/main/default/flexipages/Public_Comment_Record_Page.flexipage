@@ -153,6 +153,81 @@
         <name>Facet-58110116-92a1-485d-9ec6-632f8ce1d1b2</name>
         <type>Facet</type>
     </flexiPageRegions>
+    <!-- AI Analysis section: left column -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_sentiment__c</fieldItem>
+                <identifier>Recordnepa_sentiment_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_is_substantive__c</fieldItem>
+                <identifier>Recordnepa_is_substantive_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>Facet-ai-left</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <!-- AI Analysis section: right column -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_response_status__c</fieldItem>
+                <identifier>Recordnepa_response_status_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_cluster_id__c</fieldItem>
+                <identifier>Recordnepa_cluster_id_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>Facet-ai-right</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <!-- AI Analysis section: two-column row -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>Facet-ai-left</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>flexipage_column_ai_left</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>Facet-ai-right</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>flexipage_column_ai_right</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>Facet-ai-row</name>
+        <type>Facet</type>
+    </flexiPageRegions>
     <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
@@ -234,6 +309,24 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>flexipage_fieldSection</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>Facet-ai-row</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>AI Analysis</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>flexipage_fieldSection_ai</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>

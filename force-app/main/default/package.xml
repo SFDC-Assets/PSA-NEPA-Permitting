@@ -110,6 +110,11 @@
         <members>PublicComplaint.nepa_data_source_system__c</members>
         <members>PublicComplaint.nepa_record_owner_agency__c</members>
         <members>PublicComplaint.nepa_retrieved_timestamp__c</members>
+        <!-- Priority 1: AI-Assisted Comment Analysis fields -->
+        <members>PublicComplaint.nepa_sentiment__c</members>
+        <members>PublicComplaint.nepa_is_substantive__c</members>
+        <members>PublicComplaint.nepa_cluster_id__c</members>
+        <members>PublicComplaint.nepa_response_status__c</members>
         <!-- nepa_engagement__c (Entity 5: Public Engagement Events) -->
         <members>nepa_engagement__c.nepa_process__c</members>
         <members>nepa_engagement__c.nepa_engagement_type__c</members>

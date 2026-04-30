@@ -437,6 +437,27 @@
         <field>PublicComplaint.nepa_retrieved_timestamp__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <!-- Priority 1: AI-Assisted Comment Analysis fields -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>PublicComplaint.nepa_sentiment__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>PublicComplaint.nepa_is_substantive__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>PublicComplaint.nepa_cluster_id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_response_status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <!-- nepa_engagement__c (Entity 5: Public Engagement Events) -->
     <fieldPermissions>
         <editable>true</editable>
