@@ -152,6 +152,104 @@
         <type>Facet</type>
     </flexiPageRegions>
 
+    <!-- SECTION CE: CE Determination — Column 1 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_screening_confidence__c</fieldItem>
+                <identifier>ia_ce_screening_confidence</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_process_code__c</fieldItem>
+                <identifier>ia_ce_process_code</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_action_type__c</fieldItem>
+                <identifier>ia_ce_action_type</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_disturbance_acres__c</fieldItem>
+                <identifier>ia_ce_disturbance_acres</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>ia-ce-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION CE: CE Determination — Column 2 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_extraordinary_circumstances__c</fieldItem>
+                <identifier>ia_ce_extraordinary_circumstances</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_classification_basis__c</fieldItem>
+                <identifier>ia_ce_classification_basis</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>ia-ce-c2</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION CE: CE Determination — Columns Wrapper -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>ia-ce-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>ia_ce_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>ia-ce-c2</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>ia_ce_col2</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>ia-ce-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
     <!-- SECTION 2: Process Details — Column 1 -->
     <flexiPageRegions>
         <itemInstances>
@@ -604,6 +702,24 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>ia_section_overview</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>ia-ce-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>CE Determination</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>ia_section_ce</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>

@@ -443,9 +443,10 @@
         <members>NEPA_Defensibility_Gap_Checker</members>
         <members>NEPA_Defensibility_Trigger_ContentVersion</members>
         <members>NEPA_Defensibility_Trigger_Engagement</members>
-        <!-- Priority 2: CE Screening + Routing Flows -->
+        <!-- Priority 2: CE Screening + Routing Flows + Guided Intake Screen Flow -->
         <members>NEPA_CE_Screener</members>
         <members>NEPA_CE_Determination_Router</members>
+        <members>NEPA_CE_Intake</members>
         <!-- Priority 4: Timeline Risk Assessment -->
         <members>NEPA_Timeline_Risk_Assessor</members>
         <!-- Priority 6: Workflow Orchestration -->

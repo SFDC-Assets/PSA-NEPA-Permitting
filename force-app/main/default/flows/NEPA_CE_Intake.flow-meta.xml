@@ -1,0 +1,747 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+
+    <!-- ============================================================
+         ASSIGNMENTS (alphabetical within group: a before c/d/f/...)
+    ============================================================ -->
+
+    <!-- Capture fault message and route to error screen -->
+    <assignments>
+        <name>Assign_DmlError</name>
+        <label>Capture Error Message</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Screen_Error</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- ============================================================
+         CHOICES — Action Type picklist (all choices grouped, alphabetical by name)
+    ============================================================ -->
+
+    <choices>
+        <name>choice_ActionType_AbandonOrDecommission</name>
+        <choiceText>Abandon or Decommission</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Abandon or Decommission</stringValue>
+        </value>
+    </choices>
+
+    <choices>
+        <name>choice_ActionType_ConstructNew</name>
+        <choiceText>Construct New</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Construct New</stringValue>
+        </value>
+    </choices>
+
+    <choices>
+        <name>choice_ActionType_ModifyExisting</name>
+        <choiceText>Modify Existing</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Modify Existing</stringValue>
+        </value>
+    </choices>
+
+    <choices>
+        <name>choice_ActionType_OperateOrMaintain</name>
+        <choiceText>Operate or Maintain Existing</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Operate or Maintain Existing</stringValue>
+        </value>
+    </choices>
+
+    <choices>
+        <name>choice_ActionType_Other</name>
+        <choiceText>Other</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Other</stringValue>
+        </value>
+    </choices>
+
+    <choices>
+        <name>choice_ActionType_RenewOrExtend</name>
+        <choiceText>Renew or Extend Existing</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Renew or Extend Existing</stringValue>
+        </value>
+    </choices>
+
+    <choices>
+        <name>choice_ActionType_ResearchOrStudy</name>
+        <choiceText>Research or Study</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Research or Study</stringValue>
+        </value>
+    </choices>
+
+    <!-- ============================================================
+         DECISIONS (d-ec before d-es/description, before formulas)
+    ============================================================ -->
+
+    <!-- After loading process record: load parent Program if one exists -->
+    <decisions>
+        <name>Decision_HasProgram</name>
+        <label>Has Related Program?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No Program — proceed to intake</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Screen_Step1_AgencyIdentity</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Decision_HasProgram_Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>rec_Process.nepa_related_project__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_ProgramRecord</targetReference>
+            </connector>
+            <label>Yes — load Program data</label>
+        </rules>
+    </decisions>
+
+    <!-- After saving IA: update Program record only if a Program is linked -->
+    <decisions>
+        <name>Decision_ShouldSaveProgram</name>
+        <label>Has Program to Update?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No Program — skip to result</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Get_ProcessResult</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Decision_ShouldSaveProgram_Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>rec_Process.nepa_related_project__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_ProgramRecord</targetReference>
+            </connector>
+            <label>Yes — update Program sector and NAICS</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         DESCRIPTION
+    ============================================================ -->
+
+    <description>Priority 2: Guided CE intake screen flow for IndividualApplication. Step 1: Confirm project identity. Step 2: Sector, type, and action type. Step 3: Disturbance acreage. Step 4: Applicant NAICS code and optional CFR citation. Step 5: Review and submit. Step 6: CE classification result. On submit the CE Screener RTF fires asynchronously and writes nepa_review_type__c, nepa_screening_confidence__c, nepa_process_code__c, and nepa_classification_basis__c. Required input: inp_ProcessId (Id of an existing IndividualApplication).</description>
+
+    <!-- ============================================================
+         FORMULAS
+    ============================================================ -->
+
+    <formulas>
+        <name>formula_ScreeningResult</name>
+        <dataType>String</dataType>
+        <expression>IF(
+    NOT(ISBLANK({!rec_ProcessResult.nepa_review_type__c})),
+    {!rec_ProcessResult.nepa_review_type__c} &amp; " — " &amp; IF(
+        NOT(ISBLANK({!rec_ProcessResult.nepa_screening_confidence__c})),
+        {!rec_ProcessResult.nepa_screening_confidence__c} &amp; " confidence",
+        "confidence not yet scored"
+    ),
+    "Classification pending — the CE Screener is processing. Refresh the record in a moment."
+)</expression>
+    </formulas>
+
+    <!-- ============================================================
+         LABEL / PROCESS TYPE
+    ============================================================ -->
+
+    <label>NEPA CE Intake</label>
+    <processType>Flow</processType>
+
+    <!-- ============================================================
+         RECORD LOOKUPS (all grouped together)
+    ============================================================ -->
+
+    <!-- Load the IndividualApplication record to pre-populate screen fields -->
+    <recordLookups>
+        <name>Get_ProcessRecord</name>
+        <label>Load IndividualApplication Record</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_HasProgram</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Assign_DmlError</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>inp_ProcessId</elementReference>
+            </value>
+        </filters>
+        <object>IndividualApplication</object>
+        <outputReference>rec_Process</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>nepa_related_project__c</queriedFields>
+        <queriedFields>nepa_review_type__c</queriedFields>
+        <queriedFields>nepa_process_status__c</queriedFields>
+        <queriedFields>nepa_action_type__c</queriedFields>
+        <queriedFields>nepa_disturbance_acres__c</queriedFields>
+        <queriedFields>nepa_regulatory_citation__c</queriedFields>
+        <queriedFields>nepa_screening_confidence__c</queriedFields>
+        <queriedFields>nepa_process_code__c</queriedFields>
+        <queriedFields>nepa_classification_basis__c</queriedFields>
+    </recordLookups>
+
+    <!-- Load the parent Program to pre-populate sector/type/NAICS -->
+    <recordLookups>
+        <name>Get_ProgramRecord</name>
+        <label>Load Program Record</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Screen_Step1_AgencyIdentity</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Screen_Step1_AgencyIdentity</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>rec_Process.nepa_related_project__c</elementReference>
+            </value>
+        </filters>
+        <object>Program</object>
+        <outputReference>rec_Program</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Name</queriedFields>
+        <queriedFields>nepa_project_sector__c</queriedFields>
+        <queriedFields>nepa_project_type__c</queriedFields>
+        <queriedFields>nepa_applicant_naics__c</queriedFields>
+    </recordLookups>
+
+    <!-- Re-load the IndividualApplication after save to display the screener result -->
+    <recordLookups>
+        <name>Get_ProcessResult</name>
+        <label>Reload Process After Save</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Screen_Step6_Result</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Screen_Step6_Result</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>inp_ProcessId</elementReference>
+            </value>
+        </filters>
+        <object>IndividualApplication</object>
+        <outputReference>rec_ProcessResult</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>nepa_review_type__c</queriedFields>
+        <queriedFields>nepa_screening_confidence__c</queriedFields>
+        <queriedFields>nepa_process_code__c</queriedFields>
+        <queriedFields>nepa_classification_basis__c</queriedFields>
+        <queriedFields>nepa_extraordinary_circumstances__c</queriedFields>
+    </recordLookups>
+
+    <!-- ============================================================
+         RECORD UPDATES (all grouped together)
+    ============================================================ -->
+
+    <!-- Save intake fields to IndividualApplication; triggers CE Screener RTF async -->
+    <recordUpdates>
+        <name>Update_ProcessRecord</name>
+        <label>Save IndividualApplication Intake Fields</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Decision_ShouldSaveProgram</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Assign_DmlError</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>inp_ProcessId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>nepa_action_type__c</field>
+            <value>
+                <elementReference>inp_ActionType</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_disturbance_acres__c</field>
+            <value>
+                <elementReference>inp_DisturbanceAcres</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_regulatory_citation__c</field>
+            <value>
+                <elementReference>inp_RegulatoryCitation</elementReference>
+            </value>
+        </inputAssignments>
+        <object>IndividualApplication</object>
+    </recordUpdates>
+
+    <!-- Save sector/type/NAICS to the parent Program record -->
+    <recordUpdates>
+        <name>Update_ProgramRecord</name>
+        <label>Save Program Sector and NAICS</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_ProcessResult</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Assign_DmlError</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>rec_Process.nepa_related_project__c</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>nepa_applicant_naics__c</field>
+            <value>
+                <elementReference>inp_ApplicantNaics</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_project_sector__c</field>
+            <value>
+                <elementReference>inp_ProjectSector</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_project_type__c</field>
+            <value>
+                <elementReference>inp_ProjectType</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Program</object>
+    </recordUpdates>
+
+    <!-- ============================================================
+         SCREENS (all grouped together)
+    ============================================================ -->
+
+    <!--
+    ══════════════════════════════════════════════════════════════════
+    STEP 1: Confirm Project Identity
+    Read-only context display. allowBack=false (first screen).
+    ══════════════════════════════════════════════════════════════════
+    -->
+    <screens>
+        <name>Screen_Step1_AgencyIdentity</name>
+        <label>Step 1: Project Identity</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Screen_Step2_SectorTypeAction</targetReference>
+        </connector>
+        <fields>
+            <name>Step1_Header</name>
+            <fieldText>&lt;p&gt;&lt;b style="font-size: 18px;"&gt;CE Intake — Step 1 of 5&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style="color: rgb(68, 68, 68);"&gt;Confirm Project Identity&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Step1_ProjectInfo</name>
+            <fieldText>&lt;p&gt;&lt;b&gt;Project:&lt;/b&gt; {!rec_Program.Name}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Step1_Instructions</name>
+            <fieldText>&lt;p&gt;Confirm the project identity before screening for Categorical Exclusion (CE) eligibility. The project name is read-only — update it on the parent project record if needed. Click &lt;b&gt;Next&lt;/b&gt; to continue.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+
+    <!--
+    ══════════════════════════════════════════════════════════════════
+    STEP 2: Project Sector, Type, and Action Type
+    Collects nepa_project_sector__c and nepa_project_type__c (Program)
+    plus nepa_action_type__c (IndividualApplication).
+    ══════════════════════════════════════════════════════════════════
+    -->
+    <screens>
+        <name>Screen_Step2_SectorTypeAction</name>
+        <label>Step 2: Sector, Type, and Action</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Screen_Step3_PhysicalParams</targetReference>
+        </connector>
+        <fields>
+            <name>Step2_Header</name>
+            <fieldText>&lt;p&gt;&lt;b style="font-size: 18px;"&gt;CE Intake — Step 2 of 5&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style="color: rgb(68, 68, 68);"&gt;Project Sector, Type, and Action&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Step2_Instructions</name>
+            <fieldText>&lt;p&gt;The CE Screener uses sector and project type as primary classification inputs (Tier 1). Action type refines the result when sector and type alone are ambiguous (Tier 2). Be as specific as possible.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>inp_ProjectSector</name>
+            <defaultValue>
+                <elementReference>rec_Program.nepa_project_sector__c</elementReference>
+            </defaultValue>
+            <fieldText>Project Sector *</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <helpText>High-level project sector(s). Separate multiple values with semicolons (e.g., Energy Production and Management; Transportation and Infrastructure).</helpText>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>inp_ProjectType</name>
+            <defaultValue>
+                <elementReference>rec_Program.nepa_project_type__c</elementReference>
+            </defaultValue>
+            <fieldText>Project Type *</fieldText>
+            <fieldType>LargeTextArea</fieldType>
+            <helpText>Sub-type(s) of project sector (e.g., Renewable Energy Production - Solar; Electricity Transmission). Separate multiple values with semicolons.</helpText>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>inp_ActionType</name>
+            <choiceReferences>choice_ActionType_ConstructNew</choiceReferences>
+            <choiceReferences>choice_ActionType_ModifyExisting</choiceReferences>
+            <choiceReferences>choice_ActionType_RenewOrExtend</choiceReferences>
+            <choiceReferences>choice_ActionType_AbandonOrDecommission</choiceReferences>
+            <choiceReferences>choice_ActionType_OperateOrMaintain</choiceReferences>
+            <choiceReferences>choice_ActionType_ResearchOrStudy</choiceReferences>
+            <choiceReferences>choice_ActionType_Other</choiceReferences>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>rec_Process.nepa_action_type__c</elementReference>
+            </defaultValue>
+            <fieldText>Action Type *</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <helpText>Primary action verb describing what the applicant proposes to do. This is the primary Tier 2 discriminator when sector and type are ambiguous.</helpText>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+
+    <!--
+    ══════════════════════════════════════════════════════════════════
+    STEP 3: Physical Parameters
+    Collects nepa_disturbance_acres__c (IndividualApplication).
+    ══════════════════════════════════════════════════════════════════
+    -->
+    <screens>
+        <name>Screen_Step3_PhysicalParams</name>
+        <label>Step 3: Physical Parameters</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Screen_Step4_NaicsCitation</targetReference>
+        </connector>
+        <fields>
+            <name>Step3_Header</name>
+            <fieldText>&lt;p&gt;&lt;b style="font-size: 18px;"&gt;CE Intake — Step 3 of 5&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style="color: rgb(68, 68, 68);"&gt;Physical Parameters&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Step3_Instructions</name>
+            <fieldText>&lt;p&gt;Acreage is required for the CE acreage threshold check. Exceedance of agency-specific thresholds (e.g., &amp;le;5 acres for EPA Sec. 390(b)(1)) automatically downgrades a preliminary CE to EA.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>inp_DisturbanceAcres</name>
+            <dataType>Number</dataType>
+            <defaultValue>
+                <elementReference>rec_Process.nepa_disturbance_acres__c</elementReference>
+            </defaultValue>
+            <fieldText>Estimated Surface Disturbance (acres) *</fieldText>
+            <fieldType>InputField</fieldType>
+            <helpText>Total estimated surface disturbance in acres. Enter 0 if the action has no physical footprint (e.g., regulatory action, research activity).</helpText>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <scale>2</scale>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+
+    <!--
+    ══════════════════════════════════════════════════════════════════
+    STEP 4: NAICS Code and Optional CFR Citation
+    Collects nepa_applicant_naics__c (Program, optional) and
+    nepa_regulatory_citation__c (IndividualApplication, optional).
+    ══════════════════════════════════════════════════════════════════
+    -->
+    <screens>
+        <name>Screen_Step4_NaicsCitation</name>
+        <label>Step 4: NAICS Code and Citation</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Screen_Step5_ReviewAndSubmit</targetReference>
+        </connector>
+        <fields>
+            <name>Step4_Header</name>
+            <fieldText>&lt;p&gt;&lt;b style="font-size: 18px;"&gt;CE Intake — Step 4 of 5&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style="color: rgb(68, 68, 68);"&gt;Applicant NAICS Code and Regulatory Citation&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Step4_Instructions</name>
+            <fieldText>&lt;p&gt;The 6-digit NAICS code routes the CE Screener to the correct agency namespace and applies industry-based confidence modifiers. Both fields are optional — the screener will proceed without them.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>inp_ApplicantNaics</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>rec_Program.nepa_applicant_naics__c</elementReference>
+            </defaultValue>
+            <fieldText>Applicant NAICS Code (6 digits)</fieldText>
+            <fieldType>InputField</fieldType>
+            <helpText>Six-digit NAICS code for the project sponsor's primary business activity. Used to route CE namespace and flag high-risk industries (e.g., 211/212 extraction).</helpText>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>false</isRequired>
+        </fields>
+        <fields>
+            <name>inp_RegulatoryCitation</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <elementReference>rec_Process.nepa_regulatory_citation__c</elementReference>
+            </defaultValue>
+            <fieldText>Regulatory Citation (optional)</fieldText>
+            <fieldType>InputField</fieldType>
+            <helpText>Optional: the CFR citation the applicant believes applies (e.g., 10 CFR 1021 Appendix B, B1.3). The CE Screener may override this with a matched citation.</helpText>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>false</isRequired>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+
+    <!--
+    ══════════════════════════════════════════════════════════════════
+    STEP 5: Review and Submit
+    Displays a summary of all collected inputs before saving.
+    On Next: saves IndividualApplication + Program, triggers CE Screener RTF.
+    ══════════════════════════════════════════════════════════════════
+    -->
+    <screens>
+        <name>Screen_Step5_ReviewAndSubmit</name>
+        <label>Step 5: Review and Submit</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Update_ProcessRecord</targetReference>
+        </connector>
+        <fields>
+            <name>Step5_Header</name>
+            <fieldText>&lt;p&gt;&lt;b style="font-size: 18px;"&gt;CE Intake — Step 5 of 5&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style="color: rgb(68, 68, 68);"&gt;Review and Submit&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Step5_Instructions</name>
+            <fieldText>&lt;p&gt;Review the values below. Click &lt;b&gt;Previous&lt;/b&gt; to make changes, or &lt;b&gt;Next&lt;/b&gt; to save and trigger CE screening. The CE Screener runs asynchronously — results will appear on the record within seconds.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Step5_Summary</name>
+            <fieldText>&lt;p&gt;&lt;b&gt;Project Sector:&lt;/b&gt; {!inp_ProjectSector}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Project Type:&lt;/b&gt; {!inp_ProjectType}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Action Type:&lt;/b&gt; {!inp_ActionType}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Disturbance Acres:&lt;/b&gt; {!inp_DisturbanceAcres}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Applicant NAICS:&lt;/b&gt; {!inp_ApplicantNaics}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Regulatory Citation:&lt;/b&gt; {!inp_RegulatoryCitation}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+
+    <!--
+    ══════════════════════════════════════════════════════════════════
+    STEP 6: CE Classification Result
+    Shows the screener output. No connector → Finish button only.
+    allowBack=false — record already saved, prevent duplicate save.
+    ══════════════════════════════════════════════════════════════════
+    -->
+    <screens>
+        <name>Screen_Step6_Result</name>
+        <label>Step 6: CE Classification Result</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Step6_Header</name>
+            <fieldText>&lt;p&gt;&lt;b style="font-size: 18px; color: rgb(46, 132, 74);"&gt;Intake Submitted&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;span style="color: rgb(68, 68, 68);"&gt;Preliminary CE Classification Result&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Step6_Result</name>
+            <fieldText>&lt;p&gt;&lt;b&gt;Preliminary Classification:&lt;/b&gt; {!formula_ScreeningResult}&lt;/p&gt;&lt;p&gt;&lt;b&gt;CE Code:&lt;/b&gt; {!rec_ProcessResult.nepa_process_code__c}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Extraordinary Circumstances:&lt;/b&gt; {!rec_ProcessResult.nepa_extraordinary_circumstances__c}&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;Classification Basis:&lt;/b&gt; {!rec_ProcessResult.nepa_classification_basis__c}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Step6_NextSteps</name>
+            <fieldText>&lt;p&gt;Click &lt;b&gt;Finish&lt;/b&gt; to return to the process record. If classification is still pending, wait a moment and refresh — the CE Screener processes asynchronously after the record save.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+
+    <!--
+    ══════════════════════════════════════════════════════════════════
+    ERROR SCREEN: DML or record lookup failure
+    allowBack=false — record may be in unknown state after DML error.
+    ══════════════════════════════════════════════════════════════════
+    -->
+    <screens>
+        <name>Screen_Error</name>
+        <label>Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Error_Header</name>
+            <fieldText>&lt;p&gt;&lt;b style="font-size: 18px; color: rgb(194, 57, 52);"&gt;Error&lt;/b&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Error_Message</name>
+            <fieldText>&lt;p&gt;An error occurred while processing your CE intake:&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;i&gt;{!var_ErrorMessage}&lt;/i&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Click &lt;b&gt;Finish&lt;/b&gt; to close. Contact your system administrator if the error persists.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+
+    <!-- ============================================================
+         START
+    ============================================================ -->
+
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_ProcessRecord</targetReference>
+        </connector>
+    </start>
+
+    <status>Draft</status>
+
+    <!-- ============================================================
+         VARIABLES (all grouped together)
+    ============================================================ -->
+
+    <!-- Required input: Id of the IndividualApplication to screen -->
+    <variables>
+        <name>inp_ProcessId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <!-- Parent Program record (pre-populates sector/type/NAICS) -->
+    <variables>
+        <name>rec_Program</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Program</objectType>
+    </variables>
+
+    <!-- IndividualApplication loaded at flow start for pre-population -->
+    <variables>
+        <name>rec_Process</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>IndividualApplication</objectType>
+    </variables>
+
+    <!-- IndividualApplication re-loaded after save to display screener result -->
+    <variables>
+        <name>rec_ProcessResult</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>IndividualApplication</objectType>
+    </variables>
+
+    <!-- Error message from $Flow.FaultMessage displayed on the error screen -->
+    <variables>
+        <name>var_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+</Flow>
