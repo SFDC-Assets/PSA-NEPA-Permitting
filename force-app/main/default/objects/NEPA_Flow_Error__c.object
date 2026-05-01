@@ -47,4 +47,25 @@
         <type>DateTime</type>
         <required>false</required>
     </fields>
+
+    <fields>
+        <fullName>nepa_running_user__c</fullName>
+        <label>Running User</label>
+        <type>Lookup</type>
+        <referenceTo>User</referenceTo>
+        <relationshipLabel>NEPA Flow Errors</relationshipLabel>
+        <relationshipName>NEPA_Flow_Errors</relationshipName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <required>false</required>
+    </fields>
+
+    <fields>
+        <fullName>nepa_failed_step__c</fullName>
+        <label>Last Known Step</label>
+        <type>Text</type>
+        <length>255</length>
+        <required>false</required>
+        <externalId>false</externalId>
+        <unique>false</unique>
+    </fields>
 </CustomObject>

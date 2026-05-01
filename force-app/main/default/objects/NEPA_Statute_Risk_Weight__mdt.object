@@ -33,8 +33,8 @@
     </fields>
     <fields>
         <fullName>Risk_Points__c</fullName>
-        <description>Points added to composite litigation risk score when this statute is present. Scale: 0-10 points.</description>
-        <fieldManageability>DeveloperControlled</fieldManageability>
+        <description>Points added to composite litigation risk score when this statute is present. Scale: 0-10 points. SubscriberControlled so agencies can tune weights without a package update.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
         <label>Risk Points</label>
         <precision>5</precision>
         <scale>1</scale>
@@ -43,8 +43,8 @@
     </fields>
     <fields>
         <fullName>Active__c</fullName>
-        <description>When false, this statute record is excluded from scoring loop queries.</description>
-        <fieldManageability>DeveloperControlled</fieldManageability>
+        <description>When false, this statute record is excluded from scoring loop queries. SubscriberControlled so agencies can enable/disable statutes without a package update.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
         <label>Active</label>
         <type>Checkbox</type>
         <defaultValue>true</defaultValue>

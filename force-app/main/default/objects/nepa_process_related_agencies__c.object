@@ -202,6 +202,55 @@
                     <default>false</default>
                     <label>Participating</label>
                 </value>
+                <value>
+                    <fullName>Proponent</fullName>
+                    <default>false</default>
+                    <label>Proponent</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_input_due_date__c</fullName>
+        <description>Deadline by which this agency must submit their formal input (e.g., biological opinion, Section 106 letter, Water Quality Certification). Used by Priority 7 Interagency Coordination Hub.</description>
+        <inlineHelpText>Deadline for this agency's formal input submission.</inlineHelpText>
+        <label>Input Due Date</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>nepa_input_status__c</fullName>
+        <description>Status of this agency's formal input submission. Used by Priority 7 Interagency Coordination Hub for task tracking.</description>
+        <inlineHelpText>Submission status of this agency's formal input.</inlineHelpText>
+        <label>Input Status</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Pending</fullName>
+                    <default>true</default>
+                    <label>Pending</label>
+                </value>
+                <value>
+                    <fullName>In Progress</fullName>
+                    <default>false</default>
+                    <label>In Progress</label>
+                </value>
+                <value>
+                    <fullName>Submitted</fullName>
+                    <default>false</default>
+                    <label>Submitted</label>
+                </value>
+                <value>
+                    <fullName>Accepted</fullName>
+                    <default>false</default>
+                    <label>Accepted</label>
+                </value>
             </valueSetDefinition>
         </valueSet>
     </fields>

@@ -23,12 +23,44 @@
     </fields>
     <fields>
         <fullName>Agency__c</fullName>
-        <description>Lead agency abbreviation: DOE, BLM, USFS, DOD, or ALL.</description>
+        <description>Lead agency this rule applies to. ALL = applies to all agencies regardless of lead. Must match exactly against the agency abbreviation extracted from the related Program's lead agency Account name.</description>
         <fieldManageability>DeveloperControlled</fieldManageability>
         <label>Agency</label>
-        <length>10</length>
-        <type>Text</type>
-        <unique>false</unique>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>true</sorted>
+                <value><fullName>ALL</fullName><default>false</default><label>ALL (All Agencies)</label></value>
+                <value><fullName>BLM</fullName><default>false</default><label>BLM</label></value>
+                <value><fullName>DOD</fullName><default>false</default><label>DOD</label></value>
+                <value><fullName>DOE</fullName><default>false</default><label>DOE</label></value>
+                <value><fullName>FERC</fullName><default>false</default><label>FERC</label></value>
+                <value><fullName>FWS</fullName><default>false</default><label>FWS</label></value>
+                <value><fullName>USACE</fullName><default>false</default><label>USACE</label></value>
+                <value><fullName>USFS</fullName><default>false</default><label>USFS</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+
+    <fields>
+        <fullName>Effective_Date__c</fullName>
+        <description>Date from which this rule version is effective. The screener uses the most recent active record with Effective_Date__c on or before today. Required for administrative record traceability when PermitTEC weights are updated.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Effective Date</label>
+        <required>false</required>
+        <type>Date</type>
+    </fields>
+
+    <fields>
+        <fullName>Update_Notes__c</fullName>
+        <description>Free-text notes on why this rule was created or last changed (e.g., updated per PermitTEC v3.0 analysis, 2026-06). Required for audit trail on weight changes.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
+        <label>Update Notes</label>
+        <length>1000</length>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
     </fields>
     <fields>
         <fullName>Sector_Key__c</fullName>
@@ -77,8 +109,8 @@
     </fields>
     <fields>
         <fullName>Confidence__c</fullName>
-        <description>Screening confidence output: High, Medium-High, Medium, or Low. Populates IndividualApplication.nepa_screening_confidence__c.</description>
-        <fieldManageability>DeveloperControlled</fieldManageability>
+        <description>Screening confidence output: High, Medium-High, Medium, or Low. Populates IndividualApplication.nepa_screening_confidence__c. SubscriberControlled so agencies can tune confidence levels.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
         <label>Confidence</label>
         <length>20</length>
         <type>Text</type>
@@ -94,8 +126,8 @@
     </fields>
     <fields>
         <fullName>Acreage_Threshold__c</fullName>
-        <description>Maximum surface disturbance in acres for this CE code to apply. 0 means no limit.</description>
-        <fieldManageability>DeveloperControlled</fieldManageability>
+        <description>Maximum surface disturbance in acres for this CE code to apply. 0 means no limit. SubscriberControlled so agencies can adjust thresholds to match their CFR.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
         <label>Acreage Threshold</label>
         <precision>8</precision>
         <scale>2</scale>
@@ -148,8 +180,8 @@
     </fields>
     <fields>
         <fullName>Priority__c</fullName>
-        <description>Evaluation priority within the same tier and agency. Lower number = evaluated first. Tier 1 rules with higher record counts get lower (earlier) priority numbers.</description>
-        <fieldManageability>DeveloperControlled</fieldManageability>
+        <description>Evaluation priority within the same tier and agency. Lower number = evaluated first. Tier 1 rules with higher record counts get lower (earlier) priority numbers. SubscriberControlled so agencies can reorder rules.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
         <label>Priority</label>
         <precision>5</precision>
         <scale>0</scale>
@@ -158,8 +190,8 @@
     </fields>
     <fields>
         <fullName>Active__c</fullName>
-        <description>Inactive rules are skipped by the screener flow. Set to false to disable a rule without deleting it.</description>
-        <fieldManageability>DeveloperControlled</fieldManageability>
+        <description>Inactive rules are skipped by the screener flow. Set to false to disable a rule without deleting it. SubscriberControlled so agencies can enable/disable rules without a package update.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
         <label>Active</label>
         <type>Checkbox</type>
         <defaultValue>true</defaultValue>

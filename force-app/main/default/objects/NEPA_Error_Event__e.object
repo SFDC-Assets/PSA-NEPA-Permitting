@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Platform Event published by NEPA_Error_Logger subflow on fault. Platform Events survive transaction rollbacks, ensuring error records are always captured even when the triggering transaction rolls back. A separate platform-event-triggered flow (NEPA_Error_Event_Handler) subscribes to this event and writes NEPA_Flow_Error__c records in a clean transaction context.</description>
+    <label>NEPA Error Event</label>
+    <pluralLabel>NEPA Error Events</pluralLabel>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <fields>
+        <fullName>Flow_Name__c</fullName>
+        <description>API name of the flow that encountered the fault.</description>
+        <label>Flow Name</label>
+        <length>255</length>
+        <type>Text</type>
+    </fields>
+    <fields>
+        <fullName>Error_Message__c</fullName>
+        <description>Full fault message from {!$Flow.FaultMessage} at the time of failure.</description>
+        <label>Error Message</label>
+        <length>32768</length>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Record_Id__c</fullName>
+        <description>Salesforce record ID of the triggering record (IndividualApplication, ContentVersion, etc.).</description>
+        <label>Record Id</label>
+        <length>18</length>
+        <type>Text</type>
+    </fields>
+    <fields>
+        <fullName>Running_User_Id__c</fullName>
+        <description>Salesforce User ID of the user whose action triggered the flow. Populated from $User.Id in the caller flow.</description>
+        <label>Running User Id</label>
+        <length>18</length>
+        <type>Text</type>
+    </fields>
+    <fields>
+        <fullName>Failed_Step__c</fullName>
+        <description>Last known flow step at the time of failure. Set by the caller's var_CurrentStep tracking variable and passed to the logger.</description>
+        <label>Failed Step</label>
+        <length>255</length>
+        <type>Text</type>
+    </fields>
+    <fields>
+        <fullName>Occurred_At__c</fullName>
+        <description>DateTime when the fault occurred. Populated from $Flow.CurrentDateTime in the logger subflow.</description>
+        <label>Occurred At</label>
+        <type>DateTime</type>
+    </fields>
+</CustomObject>

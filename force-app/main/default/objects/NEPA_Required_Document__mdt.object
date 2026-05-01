@@ -23,16 +23,16 @@
     </fields>
     <fields>
         <fullName>Is_Required__c</fullName>
-        <description>When true, the document must be present in Approved or Published status for the process to reach full completeness. When false, the document is recommended but not counted in the score.</description>
-        <fieldManageability>DeveloperControlled</fieldManageability>
+        <description>When true, the document must be present in Approved or Published status for the process to reach full completeness. When false, the document is recommended but not counted in the score. SubscriberControlled so agencies can adjust requirements to their process.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
         <label>Is Required</label>
         <type>Checkbox</type>
         <defaultValue>true</defaultValue>
     </fields>
     <fields>
         <fullName>Stage_Required_By__c</fullName>
-        <description>Process stage by which this document must be present (informational). Used to generate missing-document alert context.</description>
-        <fieldManageability>DeveloperControlled</fieldManageability>
+        <description>Process stage by which this document must be present (informational). Used to generate missing-document alert context. SubscriberControlled so agencies can tune stage gates.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
         <label>Stage Required By</label>
         <length>100</length>
         <type>Text</type>
@@ -40,8 +40,8 @@
     </fields>
     <fields>
         <fullName>Display_Order__c</fullName>
-        <description>Sort order for display in completeness gap messages.</description>
-        <fieldManageability>DeveloperControlled</fieldManageability>
+        <description>Sort order for display in completeness gap messages. SubscriberControlled so agencies can reorder their document checklist.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
         <label>Display Order</label>
         <precision>3</precision>
         <scale>0</scale>
@@ -50,8 +50,8 @@
     </fields>
     <fields>
         <fullName>Active__c</fullName>
-        <description>Inactive rules are excluded from completeness calculations.</description>
-        <fieldManageability>DeveloperControlled</fieldManageability>
+        <description>Inactive rules are excluded from completeness calculations. SubscriberControlled so agencies can enable/disable requirements without a package update.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
         <label>Active</label>
         <type>Checkbox</type>
         <defaultValue>true</defaultValue>

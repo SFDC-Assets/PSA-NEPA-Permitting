@@ -671,4 +671,54 @@
         <trackHistory>false</trackHistory>
         <type>DateTime</type>
     </fields>
+
+    <!-- Screener run timestamp — prevents CE Screener write-back from re-triggering Risk Scorer -->
+    <fields>
+        <fullName>nepa_screener_last_run__c</fullName>
+        <description>Timestamp stamped by NEPA_CE_Screener immediately before it writes screening results. NEPA_Litigation_Risk_Scorer reads this to skip re-firing when nepa_review_type__c was changed by the screener rather than by a human. Guards against the CE Screener → Risk Scorer → CE Screener recursion chain.</description>
+        <inlineHelpText>Populated automatically by the CE Screener. Do not edit manually.</inlineHelpText>
+        <label>Screener Last Run</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+
+    <!-- Priority 5: Applicant intake completeness fields -->
+    <fields>
+        <fullName>nepa_applicant_contact__c</fullName>
+        <description>Primary contact for the applicant organization. Used to route RFIs and correspondence during the intake phase.</description>
+        <inlineHelpText>Primary contact for this applicant.</inlineHelpText>
+        <label>Applicant Contact</label>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <referenceTo>Contact</referenceTo>
+        <relationshipLabel>NEPA Applications (Applicant Contact)</relationshipLabel>
+        <relationshipName>NEPA_Applications_ApplicantContact</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+
+    <fields>
+        <fullName>nepa_submission_complete__c</fullName>
+        <description>Set to true when the application package is confirmed complete by agency staff. Triggers downstream intake workflow and stops RFI creation.</description>
+        <inlineHelpText>Check when the application package has been confirmed complete.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Submission Complete</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+
+    <fields>
+        <fullName>nepa_rfi_count__c</fullName>
+        <description>Count of open RFI tasks against this application. Populated by record-triggered flow when nepa_submission_complete__c is false. Used by the intake completeness score and portal display.</description>
+        <inlineHelpText>Number of open requests for information on this application.</inlineHelpText>
+        <label>Open RFI Count</label>
+        <precision>4</precision>
+        <scale>0</scale>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
 </CustomObject>

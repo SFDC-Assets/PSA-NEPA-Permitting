@@ -394,4 +394,14 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
+    <variables>
+        <name>var_CurrentStep</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <stringValue>Start</stringValue>
+        </value>
+    </variables>
 </Flow>

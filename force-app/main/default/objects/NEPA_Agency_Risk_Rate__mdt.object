@@ -33,8 +33,8 @@
     </fields>
     <fields>
         <fullName>Risk_Points__c</fullName>
-        <description>Points added to the composite litigation risk score when this agency is the lead agency. Scale: 0-25 points.</description>
-        <fieldManageability>DeveloperControlled</fieldManageability>
+        <description>Points added to the composite litigation risk score when this agency is the lead agency. Scale: 0-25 points. SubscriberControlled so agencies can tune weights without a package update.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
         <label>Risk Points</label>
         <precision>5</precision>
         <scale>1</scale>

@@ -80,12 +80,32 @@
     </variables>
 
     <variables>
+        <name>var_ScreenerRunTimestamp</name>
+        <description>Timestamp captured just before the write-back update. Written to nepa_screener_last_run__c so NEPA_Litigation_Risk_Scorer can detect that nepa_review_type__c was changed by this flow rather than by a human, and skip its re-fire.</description>
+        <dataType>DateTime</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <variables>
         <name>var_ErrorMessage</name>
         <description>Captures $Flow.FaultMessage from a faulted element for error logging.</description>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_CurrentStep</name>
+        <description>Tracks the last-reached major step. Passed to NEPA_Error_Logger as inp_FailedStep on fault.</description>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <stringValue>Start</stringValue>
+        </value>
     </variables>
 
     <!-- SObject record variables -->
@@ -368,6 +388,13 @@
                 <elementReference>rec_NAICSRule.Classification_Basis__c</elementReference>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CurrentStep</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>NAICS_Routed</stringValue>
+            </value>
+        </assignmentItems>
         <connector>
             <targetReference>Get_Tier1Rule</targetReference>
         </connector>
@@ -375,13 +402,15 @@
 
     <!-- ============================================================
          STAGE 1: Tier 1 — high-confidence sector+type lookup
-         Matches on Agency + Sector_Key (Contains) via record lookup
-         ordered by Priority ASC, LIMIT 1.
+         Uses EqualTo on Agency__c (picklist). To cover ALL-agency rules
+         the query runs twice: once for the specific agency, once for ALL.
+         The specific-agency query fires first; if it matches, ALL-rules
+         are skipped, giving agency-specific rules precedence.
     ============================================================ -->
     <recordLookups>
         <name>Get_Tier1Rule</name>
-        <label>Get Tier 1 Screening Rule</label>
-        <description>Get Tier 1 Screening Rule</description>
+        <label>Get Tier 1 Screening Rule (Agency-specific)</label>
+        <description>Get Tier 1 Screening Rule (Agency-specific)</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
@@ -396,7 +425,7 @@
         </filters>
         <filters>
             <field>Agency__c</field>
-            <operator>Contains</operator>
+            <operator>EqualTo</operator>
             <value>
                 <elementReference>var_AgencyAbbr</elementReference>
             </value>
@@ -429,15 +458,65 @@
         <sortOrder>Asc</sortOrder>
     </recordLookups>
 
+    <!-- Tier 1 ALL-agency fallback: only reached when the agency-specific query returned nothing -->
+    <recordLookups>
+        <name>Get_Tier1Rule_ALL</name>
+        <label>Get Tier 1 Screening Rule (ALL agencies)</label>
+        <description>Get Tier 1 Screening Rule (ALL agencies)</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_Tier1Found</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Tier__c</field>
+            <operator>EqualTo</operator>
+            <value><stringValue>1</stringValue></value>
+        </filters>
+        <filters>
+            <field>Agency__c</field>
+            <operator>EqualTo</operator>
+            <value><stringValue>ALL</stringValue></value>
+        </filters>
+        <filters>
+            <field>Sector_Key__c</field>
+            <operator>Contains</operator>
+            <value>
+                <elementReference>var_SectorKey</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Active__c</field>
+            <operator>EqualTo</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </filters>
+        <limit>1</limit>
+        <object>NEPA_CE_Screening_Rule__mdt</object>
+        <outputReference>rec_Tier1Rule</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>CE_Code__c</queriedFields>
+        <queriedFields>Review_Type__c</queriedFields>
+        <queriedFields>Confidence__c</queriedFields>
+        <queriedFields>Requires_Acreage_Check__c</queriedFields>
+        <queriedFields>Acreage_Threshold__c</queriedFields>
+        <queriedFields>Requires_GIS_Check__c</queriedFields>
+        <queriedFields>Classification_Basis__c</queriedFields>
+        <queriedFields>Rule_Label__c</queriedFields>
+        <sortField>Priority__c</sortField>
+        <sortOrder>Asc</sortOrder>
+    </recordLookups>
+
     <decisions>
         <name>Decision_Tier1Found</name>
         <label>Tier 1 Rule Matched?</label>
-        <description>Tier 1 Rule Matched?</description>
+        <description>Tier 1 Rule Matched? If agency-specific query returned nothing, try ALL-agency rules before proceeding to Tier 2.</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <defaultConnectorLabel>No Match — proceed to Tier 2</defaultConnectorLabel>
+        <defaultConnectorLabel>No Match — try ALL-agency rules</defaultConnectorLabel>
         <defaultConnector>
-            <targetReference>Get_Tier2Rule</targetReference>
+            <targetReference>Decision_AlreadyTriedALL_T1</targetReference>
         </defaultConnector>
         <rules>
             <name>Tier1_Matched</name>
@@ -452,6 +531,32 @@
             </connector>
             <label>Tier 1 Matched</label>
             <description>Tier 1 Matched</description>
+        </rules>
+    </decisions>
+
+    <!-- Guard: only run the ALL fallback once — skip it when var_AgencyAbbr is already ALL -->
+    <decisions>
+        <name>Decision_AlreadyTriedALL_T1</name>
+        <label>Tier 1: Agency Is Already ALL?</label>
+        <description>Prevents a second ALL lookup when the lead agency IS ALL (would duplicate Get_Tier1Rule).</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Agency-specific — try ALL fallback</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Get_Tier1Rule_ALL</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>T1_Agency_Is_ALL</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_AgencyAbbr</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><stringValue>ALL</stringValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Tier2Rule</targetReference>
+            </connector>
+            <label>Agency Is ALL — skip duplicate lookup</label>
         </rules>
     </decisions>
 
@@ -487,6 +592,13 @@
             <operator>Assign</operator>
             <value>
                 <elementReference>rec_Tier1Rule.Classification_Basis__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CurrentStep</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Tier1_Matched</stringValue>
             </value>
         </assignmentItems>
         <connector>
@@ -615,11 +727,12 @@
     <!-- ============================================================
          STAGE 2: Tier 2 — action-type discriminator
          Only reached when Tier 1 had no match.
+         Same agency-specific → ALL fallback pattern as Tier 1.
     ============================================================ -->
     <recordLookups>
         <name>Get_Tier2Rule</name>
-        <label>Get Tier 2 Screening Rule</label>
-        <description>Get Tier 2 Screening Rule</description>
+        <label>Get Tier 2 Screening Rule (Agency-specific)</label>
+        <description>Get Tier 2 Screening Rule (Agency-specific)</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
@@ -634,7 +747,7 @@
         </filters>
         <filters>
             <field>Agency__c</field>
-            <operator>Contains</operator>
+            <operator>EqualTo</operator>
             <value>
                 <elementReference>var_AgencyAbbr</elementReference>
             </value>
@@ -667,15 +780,64 @@
         <sortOrder>Asc</sortOrder>
     </recordLookups>
 
+    <recordLookups>
+        <name>Get_Tier2Rule_ALL</name>
+        <label>Get Tier 2 Screening Rule (ALL agencies)</label>
+        <description>Get Tier 2 Screening Rule (ALL agencies)</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_Tier2Found</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Tier__c</field>
+            <operator>EqualTo</operator>
+            <value><stringValue>2</stringValue></value>
+        </filters>
+        <filters>
+            <field>Agency__c</field>
+            <operator>EqualTo</operator>
+            <value><stringValue>ALL</stringValue></value>
+        </filters>
+        <filters>
+            <field>Action_Types__c</field>
+            <operator>Contains</operator>
+            <value>
+                <elementReference>$Record.nepa_action_type__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Active__c</field>
+            <operator>EqualTo</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </filters>
+        <limit>1</limit>
+        <object>NEPA_CE_Screening_Rule__mdt</object>
+        <outputReference>rec_Tier2Rule</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>CE_Code__c</queriedFields>
+        <queriedFields>Review_Type__c</queriedFields>
+        <queriedFields>Confidence__c</queriedFields>
+        <queriedFields>Requires_Acreage_Check__c</queriedFields>
+        <queriedFields>Acreage_Threshold__c</queriedFields>
+        <queriedFields>Requires_GIS_Check__c</queriedFields>
+        <queriedFields>Classification_Basis__c</queriedFields>
+        <queriedFields>Rule_Label__c</queriedFields>
+        <sortField>Priority__c</sortField>
+        <sortOrder>Asc</sortOrder>
+    </recordLookups>
+
     <decisions>
         <name>Decision_Tier2Found</name>
         <label>Tier 2 Rule Matched?</label>
-        <description>Tier 2 Rule Matched?</description>
+        <description>Tier 2 Rule Matched? If agency-specific query returned nothing, try ALL-agency rules before defaulting to EA.</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <defaultConnectorLabel>No Match — default EA/Low</defaultConnectorLabel>
+        <defaultConnectorLabel>No Match — try ALL-agency rules</defaultConnectorLabel>
         <defaultConnector>
-            <targetReference>Assign_DefaultEA</targetReference>
+            <targetReference>Decision_AlreadyTriedALL_T2</targetReference>
         </defaultConnector>
         <rules>
             <name>Tier2_Matched</name>
@@ -690,6 +852,31 @@
             </connector>
             <label>Tier 2 Matched</label>
             <description>Tier 2 Matched</description>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_AlreadyTriedALL_T2</name>
+        <label>Tier 2: Agency Is Already ALL?</label>
+        <description>Prevents a second ALL lookup when the lead agency IS ALL.</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Agency-specific — try ALL fallback</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Get_Tier2Rule_ALL</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>T2_Agency_Is_ALL</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_AgencyAbbr</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><stringValue>ALL</stringValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_DefaultEA</targetReference>
+            </connector>
+            <label>Agency Is ALL — skip duplicate lookup</label>
         </rules>
     </decisions>
 
@@ -725,6 +912,13 @@
             <operator>Assign</operator>
             <value>
                 <elementReference>rec_Tier2Rule.Classification_Basis__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CurrentStep</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Tier2_Matched</stringValue>
             </value>
         </assignmentItems>
         <connector>
@@ -938,6 +1132,11 @@
             <operator>Add</operator>
             <value><stringValue> | OVERRIDDEN to EA: extraordinary circumstances flagged ({!$Record.nepa_extraordinary_circumstances__c}). CE disqualified per CEQ regulations.</stringValue></value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CurrentStep</assignToReference>
+            <operator>Assign</operator>
+            <value><stringValue>GIS_Downgrade</stringValue></value>
+        </assignmentItems>
         <connector>
             <targetReference>Decision_ApplyNAICSModifier</targetReference>
         </connector>
@@ -1012,6 +1211,18 @@
             <operator>Add</operator>
             <value><stringValue> | Screened: {!$Flow.CurrentDateTime} | Review Type: {!var_ReviewType} | CE Code: {!var_CECode} | Confidence: {!var_Confidence}</stringValue></value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_ScreenerRunTimestamp</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.CurrentDateTime</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CurrentStep</assignToReference>
+            <operator>Assign</operator>
+            <value><stringValue>Update_ScreeningFields</stringValue></value>
+        </assignmentItems>
         <connector>
             <targetReference>Update_ScreeningFields</targetReference>
         </connector>
@@ -1052,6 +1263,12 @@
             <field>nepa_classification_basis__c</field>
             <value>
                 <elementReference>var_ClassificationBasis</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_screener_last_run__c</field>
+            <value>
+                <elementReference>var_ScreenerRunTimestamp</elementReference>
             </value>
         </inputAssignments>
         <object>IndividualApplication</object>
@@ -1100,6 +1317,14 @@
         <inputAssignments>
             <name>inp_RecordId</name>
             <value><elementReference>$Record.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RunningUserId</name>
+            <value><elementReference>$User.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_FailedStep</name>
+            <value><elementReference>var_CurrentStep</elementReference></value>
         </inputAssignments>
     </subflows>
 

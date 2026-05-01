@@ -311,6 +311,19 @@
         <type>Checkbox</type>
     </fields>
     <fields>
+        <fullName>nepa_document__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Document released or referenced at this engagement event (e.g., Draft EIS published for public comment). Satisfies CEQ Entity 5 Related Document ID property.</description>
+        <inlineHelpText>Document associated with this engagement event (e.g., the Draft EIS open for comment).</inlineHelpText>
+        <label>Related Document</label>
+        <referenceTo>ContentVersion</referenceTo>
+        <relationshipLabel>Engagement Events</relationshipLabel>
+        <relationshipName>Engagement_Events</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
         <fullName>nepa_notes__c</fullName>
         <description>Additional notes about this engagement event.</description>
         <inlineHelpText>Additional notes or context for this engagement event.</inlineHelpText>

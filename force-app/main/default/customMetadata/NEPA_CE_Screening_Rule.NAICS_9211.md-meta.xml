@@ -12,7 +12,7 @@
     </values>
     <values>
         <field>Agency__c</field>
-        <value xsi:type="xsd:string">All agencies</value>
+        <value xsi:type="xsd:string">ALL</value>
     </values>
     <values>
         <field>Sector_Key__c</field>

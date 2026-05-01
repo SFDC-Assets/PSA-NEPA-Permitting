@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>Subflow called by all NEPA record-triggered flows on fault. Creates a NEPA_Flow_Error__c record capturing the flow name, fault message, and triggering record Id. Migration path: when Nebula Logger is installed, replace the recordCreates element here with a Nebula Logger Apex action call — no caller changes required.</description>
+    <description>Subflow called by all NEPA record-triggered flows on fault. Publishes a NEPA_Error_Event__e platform event — platform events survive transaction rollbacks, so error telemetry is always captured even when the triggering transaction rolls back. NEPA_Error_Event_Handler (platform-event-triggered flow) subscribes and writes the NEPA_Flow_Error__c record in a clean transaction context. Migration path: when Nebula Logger is installed, replace the recordCreates in NEPA_Error_Event_Handler with a Nebula Logger Apex action call — no caller changes required.</description>
     <label>NEPA Error Logger</label>
     <processType>AutoLaunchedFlow</processType>
     <status>Active</status>
@@ -9,6 +9,7 @@
     <!-- ============================================================
          INPUT VARIABLES
          All callers pass: inp_FlowName, inp_ErrorMessage, inp_RecordId
+         Callers should also pass: inp_RunningUserId ($User.Id), inp_FailedStep (var_CurrentStep)
     ============================================================ -->
 
     <variables>
@@ -32,6 +33,20 @@
         <isInput>true</isInput>
         <isOutput>false</isOutput>
     </variables>
+    <variables>
+        <name>inp_RunningUserId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>inp_FailedStep</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
 
     <!-- ============================================================
          START
@@ -41,47 +56,61 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Create_FlowErrorRecord</targetReference>
+            <targetReference>Publish_ErrorEvent</targetReference>
         </connector>
     </start>
 
     <!-- ============================================================
-         CREATE LOG RECORD
-         Nebula Logger migration: replace this recordCreates with an
-         Apex action targeting Logger.error() — inputs map directly.
+         PUBLISH PLATFORM EVENT
+         Platform Events are published outside the transaction boundary —
+         they survive rollbacks. NEPA_Error_Event_Handler writes the
+         NEPA_Flow_Error__c record in a separate clean transaction.
+         No fault path here: a fault in the logger itself would create
+         an infinite loop. Terminal failure is acceptable at this point.
     ============================================================ -->
 
-    <!-- code-analyzer-suppress flow:MissingFaultHandler - terminal error handler; adding a fault path here would require a second logger creating an infinite loop -->
     <recordCreates>
-        <name>Create_FlowErrorRecord</name>
-        <label>Create Flow Error Record</label>
+        <name>Publish_ErrorEvent</name>
+        <label>Publish Error Event</label>
         <locationX>0</locationX>
-        <locationY>0</locationY>
+        <locationY>120</locationY>
         <inputAssignments>
-            <field>nepa_flow_api_name__c</field>
+            <field>Flow_Name__c</field>
             <value>
                 <elementReference>inp_FlowName</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
-            <field>nepa_error_message__c</field>
+            <field>Error_Message__c</field>
             <value>
                 <elementReference>inp_ErrorMessage</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
-            <field>nepa_record_id__c</field>
+            <field>Record_Id__c</field>
             <value>
                 <elementReference>inp_RecordId</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
-            <field>nepa_occurred_at__c</field>
+            <field>Running_User_Id__c</field>
+            <value>
+                <elementReference>inp_RunningUserId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Failed_Step__c</field>
+            <value>
+                <elementReference>inp_FailedStep</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Occurred_At__c</field>
             <value>
                 <elementReference>$Flow.CurrentDateTime</elementReference>
             </value>
         </inputAssignments>
-        <object>NEPA_Flow_Error__c</object>
+        <object>NEPA_Error_Event__e</object>
     </recordCreates>
 
 </Flow>

@@ -85,8 +85,8 @@
     </fields>
     <fields>
         <fullName>Active__c</fullName>
-        <description>Inactive codes are excluded from screener and CLM selection logic.</description>
-        <fieldManageability>DeveloperControlled</fieldManageability>
+        <description>Inactive codes are excluded from screener and CLM selection logic. SubscriberControlled so agencies can enable/disable codes without a package update.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
         <label>Active</label>
         <type>Checkbox</type>
         <defaultValue>true</defaultValue>

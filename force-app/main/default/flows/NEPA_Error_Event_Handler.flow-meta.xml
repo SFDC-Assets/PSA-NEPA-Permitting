@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>Platform-event-triggered subscriber for NEPA_Error_Event__e. Runs in a clean transaction context independent of the faulting flow, so NEPA_Flow_Error__c records are always written even when the triggering transaction rolled back. Called indirectly by all NEPA record-triggered flows via NEPA_Error_Logger subflow.</description>
+    <label>NEPA Error Event Handler</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Active</status>
+
+    <!-- ============================================================
+         TRIGGER: Platform Event
+         Subscribes to every NEPA_Error_Event__e publish.
+         $Record fields map directly to the event payload.
+    ============================================================ -->
+
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <object>NEPA_Error_Event__e</object>
+        <triggerType>PlatformEvent</triggerType>
+        <connector>
+            <targetReference>Create_FlowErrorRecord</targetReference>
+        </connector>
+    </start>
+
+    <!-- ============================================================
+         CREATE LOG RECORD
+         nepa_running_user__c is a Lookup(User) — the handler sets it
+         directly from the Running_User_Id__c string field on the event.
+         Salesforce accepts a valid 18-char User ID for Lookup assignment
+         in recordCreates.
+         No fault path: a fault here would loop back into the logger.
+    ============================================================ -->
+
+    <!-- code-analyzer-suppress flow:MissingFaultHandler - terminal error handler; adding a fault path here creates an infinite logging loop -->
+    <recordCreates>
+        <name>Create_FlowErrorRecord</name>
+        <label>Create Flow Error Record</label>
+        <locationX>0</locationX>
+        <locationY>120</locationY>
+        <inputAssignments>
+            <field>nepa_flow_api_name__c</field>
+            <value>
+                <elementReference>$Record.Flow_Name__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_error_message__c</field>
+            <value>
+                <elementReference>$Record.Error_Message__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_record_id__c</field>
+            <value>
+                <elementReference>$Record.Record_Id__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_running_user__c</field>
+            <value>
+                <elementReference>$Record.Running_User_Id__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_failed_step__c</field>
+            <value>
+                <elementReference>$Record.Failed_Step__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_occurred_at__c</field>
+            <value>
+                <elementReference>$Record.Occurred_At__c</elementReference>
+            </value>
+        </inputAssignments>
+        <object>NEPA_Flow_Error__c</object>
+    </recordCreates>
+
+</Flow>

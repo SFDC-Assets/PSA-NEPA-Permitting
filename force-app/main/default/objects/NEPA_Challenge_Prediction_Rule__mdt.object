@@ -42,7 +42,7 @@
     <fields>
         <fullName>Priority__c</fullName>
         <description>Sort order for display in predicted challenge grounds list. Lower number = listed first.</description>
-        <fieldManageability>DeveloperControlled</fieldManageability>
+        <fieldManageability>SubscriberControlled</fieldManageability>
         <label>Priority</label>
         <precision>3</precision>
         <scale>0</scale>
@@ -51,8 +51,8 @@
     </fields>
     <fields>
         <fullName>Active__c</fullName>
-        <description>Whether this rule is currently active.</description>
-        <fieldManageability>DeveloperControlled</fieldManageability>
+        <description>Whether this rule is currently active. SubscriberControlled so agencies can enable/disable rules without a package update.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
         <defaultValue>true</defaultValue>
         <label>Active</label>
         <type>Checkbox</type>

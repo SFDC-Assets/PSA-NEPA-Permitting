@@ -19,6 +19,13 @@
                 <numberValue>40.0</numberValue>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CurrentStep</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>ReviewType_Scored</stringValue>
+            </value>
+        </assignmentItems>
         <connector>
             <targetReference>Decision_HasRelatedProject</targetReference>
         </connector>
@@ -34,6 +41,13 @@
             <operator>Assign</operator>
             <value>
                 <numberValue>20.0</numberValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CurrentStep</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>ReviewType_Scored</stringValue>
             </value>
         </assignmentItems>
         <connector>
@@ -53,6 +67,13 @@
                 <numberValue>5.0</numberValue>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CurrentStep</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>ReviewType_Scored</stringValue>
+            </value>
+        </assignmentItems>
         <connector>
             <targetReference>Decision_HasRelatedProject</targetReference>
         </connector>
@@ -68,6 +89,13 @@
             <operator>Assign</operator>
             <value>
                 <numberValue>3.0</numberValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CurrentStep</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>ReviewType_Scored</stringValue>
             </value>
         </assignmentItems>
         <connector>
@@ -87,6 +115,13 @@
                 <elementReference>rec_AgencyRiskRate.Risk_Points__c</elementReference>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CurrentStep</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Agency_Scored</stringValue>
+            </value>
+        </assignmentItems>
         <connector>
             <targetReference>Get_CircuitRiskWeight</targetReference>
         </connector>
@@ -102,6 +137,13 @@
             <operator>Assign</operator>
             <value>
                 <elementReference>rec_CircuitRiskWeight.Risk_Points__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CurrentStep</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Circuit_Scored</stringValue>
             </value>
         </assignmentItems>
         <connector>
@@ -261,6 +303,13 @@
                 <stringValue>Review Type ({!$Record.nepa_review_type__c}): {!var_ReviewTypePoints} pts; Agency: {!var_AgencyPoints} pts; Circuit: {!var_CircuitPoints} pts; Adjacent Statutes: {!var_AdjacentStatutePoints} pts; Total: {!var_RiskScore}</stringValue>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CurrentStep</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Update_RiskFields</stringValue>
+            </value>
+        </assignmentItems>
         <connector>
             <targetReference>Update_RiskFields</targetReference>
         </connector>
@@ -301,6 +350,14 @@
         <inputAssignments>
             <name>inp_RecordId</name>
             <value><elementReference>$Record.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RunningUserId</name>
+            <value><elementReference>$User.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_FailedStep</name>
+            <value><elementReference>var_CurrentStep</elementReference></value>
         </inputAssignments>
     </subflows>
 
@@ -728,7 +785,14 @@
             </connector>
             <pathType>AsyncAfterCommit</pathType>
         </scheduledPaths>
-        <filterLogic>or</filterLogic>
+        <!-- filterLogic: (1 OR 2) AND 3
+             Condition 3 guards against the CE Screener re-fire loop:
+             nepa_screener_last_run__c is stamped by NEPA_CE_Screener
+             immediately before it writes nepa_review_type__c. If that
+             field changed in the same save, the review-type change came
+             from the screener — not a human — and we skip re-scoring to
+             prevent a 2x async interview queue on every bulk CE screen. -->
+        <filterLogic>(1 OR 2) AND 3</filterLogic>
         <filters>
             <field>nepa_review_type__c</field>
             <operator>IsChanged</operator>
@@ -741,6 +805,13 @@
             <operator>IsChanged</operator>
             <value>
                 <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_screener_last_run__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>false</booleanValue>
             </value>
         </filters>
     </start>
@@ -875,5 +946,15 @@
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_CurrentStep</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <stringValue>Start</stringValue>
+        </value>
     </variables>
 </Flow>
