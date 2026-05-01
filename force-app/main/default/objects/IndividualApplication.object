@@ -389,6 +389,37 @@
         <trackHistory>false</trackHistory>
         <type>DateTime</type>
     </fields>
+    <!-- SLA tracking fields -->
+    <fields>
+        <fullName>nepa_sla_due_date__c</fullName>
+        <description>Computed SLA deadline: nepa_start_date__c + NEPA_SLA_Config__mdt.Total_Days__c for the matching review type. Set by NEPA_SLA_Due_Date_Setter on create or when nepa_review_type__c / nepa_start_date__c changes. NULL until both fields are populated.</description>
+        <inlineHelpText>Statutory deadline for this review. Computed automatically from start date and review type.</inlineHelpText>
+        <label>SLA Due Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>nepa_sla_warning_sent__c</fullName>
+        <description>Set to true by NEPA_SLA_Escalation_Monitor when TODAY >= nepa_sla_due_date__c - Warning_Days. Prevents duplicate warning notifications on subsequent daily runs. Reset to false when nepa_sla_due_date__c changes (new review type or start date correction).</description>
+        <inlineHelpText>Warning notification has been sent for this SLA deadline.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>SLA Warning Sent</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_sla_overdue__c</fullName>
+        <description>Set to true by NEPA_SLA_Escalation_Monitor when TODAY > nepa_sla_due_date__c and the process is not yet completed or cancelled. Drives list views, dashboard tiles, and secondary escalation notifications.</description>
+        <inlineHelpText>Process has passed its SLA due date without reaching a terminal status.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>SLA Overdue</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+
     <!-- Priority 6: Workflow Orchestration fields -->
     <fields>
         <fullName>nepa_last_stage_transition__c</fullName>

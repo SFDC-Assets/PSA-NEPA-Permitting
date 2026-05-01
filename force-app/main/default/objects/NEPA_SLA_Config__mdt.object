@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>SLA configuration per NEPA review type. Defines the total calendar days allowed and the warning threshold (days before due) for each review track. Used by NEPA_SLA_Due_Date_Setter (computes nepa_sla_due_date__c on stage entry) and NEPA_SLA_Escalation_Monitor (scheduled daily check for warning and overdue conditions).</description>
+    <label>NEPA SLA Config</label>
+    <pluralLabel>NEPA SLA Configs</pluralLabel>
+    <visibility>Public</visibility>
+    <fields>
+        <fullName>Review_Type__c</fullName>
+        <description>NEPA review type this SLA applies to. Must match nepa_review_type__c picklist values on IndividualApplication.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Review Type</label>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>EIS</fullName><default>false</default><label>EIS</label></value>
+                <value><fullName>EA</fullName><default>false</default><label>EA</label></value>
+                <value><fullName>CE</fullName><default>false</default><label>CE</label></value>
+                <value><fullName>Other Authorization</fullName><default>false</default><label>Other Authorization</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Total_Days__c</fullName>
+        <description>Total calendar days allowed for this review type from start date to final decision. CEQ defaults: EIS=730, EA=365, CE=90, Other Authorization=180.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Total Days Allowed</label>
+        <precision>6</precision>
+        <scale>0</scale>
+        <type>Number</type>
+    </fields>
+    <fields>
+        <fullName>Warning_Days_Before_Due__c</fullName>
+        <description>Number of calendar days before nepa_sla_due_date__c at which the warning notification fires. The escalation monitor sends a Chatter post and sets nepa_sla_warning_sent__c when TODAY >= due_date - warning_days.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Warning Days Before Due</label>
+        <precision>4</precision>
+        <scale>0</scale>
+        <type>Number</type>
+    </fields>
+    <fields>
+        <fullName>Active__c</fullName>
+        <description>Inactive records are ignored by the due date setter and escalation monitor. Allows a new SLA config to be staged before cutover without affecting live processes.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <defaultValue>true</defaultValue>
+        <label>Active</label>
+        <type>Checkbox</type>
+    </fields>
+</CustomObject>

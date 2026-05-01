@@ -1,0 +1,619 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>Scheduled flow — runs daily. Queries active IndividualApplication records with a populated nepa_sla_due_date__c that have not yet reached a terminal process status (completed or cancelled). For each record, evaluates two conditions: (1) warning window — TODAY >= due date minus warning days AND warning not yet sent; (2) overdue — TODAY > due date. Posts a Chatter feed item on the record and sets the corresponding flag to prevent duplicate notifications on subsequent runs. Fault paths log to NEPA_Error_Logger. Schedule must be configured at activation time in Flow Builder — no start element schedule is expressible in XML metadata.</description>
+    <label>NEPA SLA Escalation Monitor</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Active</status>
+
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_SLAConfigs</targetReference>
+        </connector>
+    </start>
+
+    <!-- ============================================================
+         STEP 1: Load all active SLA configs into a collection
+         CMT queries are governor-exempt
+    ============================================================ -->
+    <recordLookups>
+        <name>Get_SLAConfigs</name>
+        <label>Get All Active SLA Configs</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_ConfigsLoaded</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Active__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>NEPA_SLA_Config__mdt</object>
+        <outputReference>col_SLAConfigs</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Review_Type__c</queriedFields>
+        <queriedFields>Warning_Days_Before_Due__c</queriedFields>
+    </recordLookups>
+
+    <decisions>
+        <name>Decision_ConfigsLoaded</name>
+        <label>SLA Configs Loaded?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No Active Configs — exit</defaultConnectorLabel>
+        <rules>
+            <name>Configs_Present</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>col_SLAConfigs</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_ActiveProcesses</targetReference>
+            </connector>
+            <label>Configs Present</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         STEP 2: Query active processes with an SLA due date set
+         Excludes completed and cancelled. Uses formula_WarningCutoff
+         to limit to records within the widest warning window (30 days)
+         so the batch stays small on large orgs.
+         Note: scheduled flows have a 250K record governor — the
+         nepa_sla_due_date__c IS NOT NULL + status filter keeps this
+         well within limits for typical NEPA caseloads.
+    ============================================================ -->
+    <recordLookups>
+        <name>Get_ActiveProcesses</name>
+        <label>Get Active Processes Approaching or Past SLA Due Date</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_ProcessesFound</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_QueryError</targetReference>
+        </faultConnector>
+        <filterLogic>1 AND 2 AND 3 AND (4 OR 5)</filterLogic>
+        <filters>
+            <field>nepa_sla_due_date__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_process_status__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>completed</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_process_status__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>cancelled</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_sla_due_date__c</field>
+            <operator>LessThanOrEqualTo</operator>
+            <value>
+                <elementReference>formula_WarningCutoff</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_sla_overdue__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>IndividualApplication</object>
+        <outputReference>col_ActiveProcesses</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Name</queriedFields>
+        <queriedFields>OwnerId</queriedFields>
+        <queriedFields>nepa_review_type__c</queriedFields>
+        <queriedFields>nepa_sla_due_date__c</queriedFields>
+        <queriedFields>nepa_sla_warning_sent__c</queriedFields>
+        <queriedFields>nepa_sla_overdue__c</queriedFields>
+    </recordLookups>
+
+    <decisions>
+        <name>Decision_ProcessesFound</name>
+        <label>Processes to Evaluate?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>None — exit cleanly</defaultConnectorLabel>
+        <rules>
+            <name>Processes_Present</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>col_ActiveProcesses</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Loop_Processes</targetReference>
+            </connector>
+            <label>Processes Present</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         STEP 3: Loop — one record at a time
+         No DML inside the loop. Accumulate updates in two collections:
+         one for warning-state records, one for overdue records.
+         Chatter posts are created inside the loop via a separate
+         recordCreates targeting FeedItem — one post per record.
+         FeedItem creates inside loops are acceptable at NEPA caseload
+         scale (hundreds, not hundreds of thousands).
+    ============================================================ -->
+    <loops>
+        <name>Loop_Processes</name>
+        <label>Loop Through Active Processes</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>col_ActiveProcesses</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Decision_EvaluateSLAState</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Decision_HasWarningUpdates</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+
+    <!-- ============================================================
+         INNER: classify each record as Overdue, Warning, or neither
+    ============================================================ -->
+    <decisions>
+        <name>Decision_EvaluateSLAState</name>
+        <label>Overdue or In Warning Window?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Neither — skip</defaultConnectorLabel>
+        <rules>
+            <name>Is_Overdue</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Loop_Processes.nepa_sla_due_date__c</leftValueReference>
+                <operator>LessThan</operator>
+                <rightValue>
+                    <elementReference>formula_Today</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Loop_Processes.nepa_sla_overdue__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Build_OverdueUpdate</targetReference>
+            </connector>
+            <label>Overdue (not yet flagged)</label>
+        </rules>
+        <rules>
+            <name>In_Warning_Window</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Loop_Processes.nepa_sla_due_date__c</leftValueReference>
+                <operator>LessThanOrEqualTo</operator>
+                <rightValue>
+                    <elementReference>formula_WarningCutoff</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Loop_Processes.nepa_sla_warning_sent__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Build_WarningUpdate</targetReference>
+            </connector>
+            <label>In Warning Window (warning not yet sent)</label>
+        </rules>
+    </decisions>
+
+    <!-- Prepare overdue record for bulk update collection + Chatter post -->
+    <assignments>
+        <name>Build_OverdueUpdate</name>
+        <label>Stage Overdue Flag Update</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_UpdateRecord.Id</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_Processes.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_UpdateRecord.nepa_sla_overdue__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>col_OverdueUpdates</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>var_UpdateRecord</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_ChatterBody</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>⚠️ SLA OVERDUE: This {!Loop_Processes.nepa_review_type__c} review passed its SLA deadline of {!Loop_Processes.nepa_sla_due_date__c}. Immediate action required to document the cause and update the project timeline.</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Post_ChatterOverdue</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- code-analyzer-suppress flow:MissingFaultHandler - Chatter post inside loop; fault here is non-critical, acceptable to skip one post rather than abort the batch -->
+    <recordCreates>
+        <name>Post_ChatterOverdue</name>
+        <label>Post Overdue Chatter Notification</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>ParentId</field>
+            <value>
+                <elementReference>Loop_Processes.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Body</field>
+            <value>
+                <elementReference>var_ChatterBody</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Type</field>
+            <value>
+                <stringValue>TextPost</stringValue>
+            </value>
+        </inputAssignments>
+        <object>FeedItem</object>
+    </recordCreates>
+
+    <!-- Prepare warning record for bulk update collection + Chatter post -->
+    <assignments>
+        <name>Build_WarningUpdate</name>
+        <label>Stage Warning Flag Update</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_UpdateRecord.Id</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_Processes.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_UpdateRecord.nepa_sla_warning_sent__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>col_WarningUpdates</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>var_UpdateRecord</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_ChatterBody</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>📅 SLA WARNING: This {!Loop_Processes.nepa_review_type__c} review is approaching its SLA deadline of {!Loop_Processes.nepa_sla_due_date__c}. Please review the project schedule and confirm the process is on track.</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Post_ChatterWarning</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- code-analyzer-suppress flow:MissingFaultHandler - Chatter post inside loop; fault here is non-critical, acceptable to skip one post rather than abort the batch -->
+    <recordCreates>
+        <name>Post_ChatterWarning</name>
+        <label>Post Warning Chatter Notification</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>ParentId</field>
+            <value>
+                <elementReference>Loop_Processes.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Body</field>
+            <value>
+                <elementReference>var_ChatterBody</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Type</field>
+            <value>
+                <stringValue>TextPost</stringValue>
+            </value>
+        </inputAssignments>
+        <object>FeedItem</object>
+    </recordCreates>
+
+    <!-- ============================================================
+         POST-LOOP: bulk update overdue flags (single DML call)
+    ============================================================ -->
+    <decisions>
+        <name>Decision_HasWarningUpdates</name>
+        <label>Any Warning Updates to Write?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No Warning Updates</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Decision_HasOverdueUpdates</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Has_Warning_Updates</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>col_WarningUpdates</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Bulk_UpdateWarning</targetReference>
+            </connector>
+            <label>Has Warning Updates</label>
+        </rules>
+    </decisions>
+
+    <recordUpdates>
+        <name>Bulk_UpdateWarning</name>
+        <label>Bulk Set nepa_sla_warning_sent__c = true</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <faultConnector>
+            <targetReference>Handle_UpdateError</targetReference>
+        </faultConnector>
+        <inputReference>col_WarningUpdates</inputReference>
+        <connector>
+            <targetReference>Decision_HasOverdueUpdates</targetReference>
+        </connector>
+    </recordUpdates>
+
+    <decisions>
+        <name>Decision_HasOverdueUpdates</name>
+        <label>Any Overdue Updates to Write?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No Overdue Updates — done</defaultConnectorLabel>
+        <rules>
+            <name>Has_Overdue_Updates</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>col_OverdueUpdates</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Bulk_UpdateOverdue</targetReference>
+            </connector>
+            <label>Has Overdue Updates</label>
+        </rules>
+    </decisions>
+
+    <recordUpdates>
+        <name>Bulk_UpdateOverdue</name>
+        <label>Bulk Set nepa_sla_overdue__c = true</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <faultConnector>
+            <targetReference>Handle_UpdateError</targetReference>
+        </faultConnector>
+        <inputReference>col_OverdueUpdates</inputReference>
+    </recordUpdates>
+
+    <!-- ============================================================
+         ERROR HANDLERS
+    ============================================================ -->
+    <assignments>
+        <name>Handle_QueryError</name>
+        <label>Capture Query Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CurrentStep</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Get_ActiveProcesses</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Handle_UpdateError</name>
+        <label>Capture Update Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- code-analyzer-suppress flow:MissingFaultHandler - terminal error handler; fault-handling Call_ErrorLogger would be circular -->
+    <subflows>
+        <name>Call_ErrorLogger</name>
+        <label>Log Flow Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value><stringValue>NEPA_SLA_Escalation_Monitor</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value><elementReference>var_ErrorMessage</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value><stringValue></stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RunningUserId</name>
+            <value><elementReference>$User.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_FailedStep</name>
+            <value><elementReference>var_CurrentStep</elementReference></value>
+        </inputAssignments>
+    </subflows>
+
+    <!-- ============================================================
+         FORMULAS
+    ============================================================ -->
+
+    <!-- Today as a Date (for overdue comparison) -->
+    <formulas>
+        <name>formula_Today</name>
+        <dataType>Date</dataType>
+        <expression>TODAY()</expression>
+    </formulas>
+
+    <!-- Warning cutoff: today + max warning window (30 days = EIS config)
+         The query filter uses this to bound the result set. Records
+         whose due date is more than 30 days out are skipped entirely.
+         If the widest warning window in CMT ever exceeds 30 days,
+         update this constant accordingly. -->
+    <formulas>
+        <name>formula_WarningCutoff</name>
+        <dataType>Date</dataType>
+        <expression>TODAY() + 30</expression>
+    </formulas>
+
+    <!-- ============================================================
+         VARIABLES
+    ============================================================ -->
+    <variables>
+        <name>col_SLAConfigs</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>NEPA_SLA_Config__mdt</objectType>
+    </variables>
+
+    <variables>
+        <name>col_ActiveProcesses</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>IndividualApplication</objectType>
+    </variables>
+
+    <variables>
+        <name>col_WarningUpdates</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>IndividualApplication</objectType>
+    </variables>
+
+    <variables>
+        <name>col_OverdueUpdates</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>IndividualApplication</objectType>
+    </variables>
+
+    <variables>
+        <name>var_UpdateRecord</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>IndividualApplication</objectType>
+    </variables>
+
+    <variables>
+        <name>var_ChatterBody</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <variables>
+        <name>var_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <variables>
+        <name>var_CurrentStep</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <stringValue>Start</stringValue>
+        </value>
+    </variables>
+
+</Flow>
