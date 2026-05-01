@@ -22,6 +22,15 @@
         <unique>false</unique>
     </fields>
     <fields>
+        <fullName>Gate_Event_Type__c</fullName>
+        <description>The exact nepa_event_type__c picklist value on ApplicationTimeline that gates this document. When a timeline event of this type is set to Completed, NEPA_Stage_Gate_Doc_Check verifies the document is present before allowing the save. Must exactly match a value in ApplicationTimeline.nepa_event_type__c. Leave blank to omit from gate checks (document is scored but not gate-blocking).</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Gate Event Type</label>
+        <length>100</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
         <fullName>Is_Required__c</fullName>
         <description>When true, the document must be present in Approved or Published status for the process to reach full completeness. When false, the document is recommended but not counted in the score. SubscriberControlled so agencies can adjust requirements to their process.</description>
         <fieldManageability>SubscriberControlled</fieldManageability>

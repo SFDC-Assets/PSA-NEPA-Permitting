@@ -26,4 +26,8 @@
         <field>Active__c</field>
         <value xsi:type="xsd:boolean">true</value>
     </values>
+    <values>
+        <field>Gate_Event_Type__c</field>
+        <value xsi:type="xsd:string">Draft EIS Published</value>
+    </values>
 </CustomMetadata>
