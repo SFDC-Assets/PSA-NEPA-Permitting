@@ -517,11 +517,21 @@
             <name>inp_FailedStep</name>
             <value><elementReference>var_CurrentStep</elementReference></value>
         </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorContext</name>
+            <value><elementReference>formula_ErrorContext</elementReference></value>
+        </inputAssignments>
     </subflows>
 
     <!-- ============================================================
          FORMULAS
     ============================================================ -->
+
+    <formulas>
+        <name>formula_ErrorContext</name>
+        <dataType>String</dataType>
+        <expression>"WarningUpdates:" &amp; TEXT(SIZE({!col_WarningUpdates})) &amp; "|OverdueUpdates:" &amp; TEXT(SIZE({!col_OverdueUpdates})) &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
+    </formulas>
 
     <!-- Today as a Date (for overdue comparison) -->
     <formulas>

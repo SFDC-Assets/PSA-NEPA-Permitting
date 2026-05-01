@@ -572,6 +572,24 @@
             <name>inp_RecordId</name>
             <value><elementReference>$Record.Id</elementReference></value>
         </inputAssignments>
+        <inputAssignments>
+            <name>inp_RunningUserId</name>
+            <value><elementReference>$User.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_FailedStep</name>
+            <value><elementReference>$Flow.CurrentStageLabel</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorContext</name>
+            <value><elementReference>formula_ErrorContext</elementReference></value>
+        </inputAssignments>
     </subflows>
+
+    <formulas>
+        <name>formula_ErrorContext</name>
+        <dataType>String</dataType>
+        <expression>"ReviewType:" &amp; {!$Record.nepa_review_type__c} &amp; "|RiskTier:" &amp; {!var_RiskTier} &amp; "|PrevTier:" &amp; {!var_PreviousTier} &amp; "|BaselineDays:" &amp; TEXT({!var_BaselineDays})</expression>
+    </formulas>
 
 </Flow>

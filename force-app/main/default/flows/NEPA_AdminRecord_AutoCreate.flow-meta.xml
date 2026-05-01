@@ -326,7 +326,17 @@
             <name>inp_FailedStep</name>
             <value><elementReference>var_CurrentStep</elementReference></value>
         </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorContext</name>
+            <value><elementReference>formula_ErrorContext</elementReference></value>
+        </inputAssignments>
     </subflows>
+
+    <formulas>
+        <name>formula_ErrorContext</name>
+        <dataType>String</dataType>
+        <expression>"DocType:" &amp; {!$Record.nepa_document_type__c} &amp; "|DocTitle:" &amp; {!$Record.Title} &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
+    </formulas>
 
     <!-- ============================================================
          VARIABLES

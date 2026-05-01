@@ -499,7 +499,17 @@
             <name>inp_FailedStep</name>
             <value><elementReference>var_CurrentStep</elementReference></value>
         </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorContext</name>
+            <value><elementReference>formula_ErrorContext</elementReference></value>
+        </inputAssignments>
     </subflows>
+
+    <formulas>
+        <name>formula_ErrorContext</name>
+        <dataType>String</dataType>
+        <expression>"TotalRequired:" &amp; TEXT({!var_TotalRequired}) &amp; "|TotalMet:" &amp; TEXT({!var_TotalMet}) &amp; "|Completeness:" &amp; TEXT({!var_CompletenessPercent}) &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
+    </formulas>
 
     <!-- ============================================================
          FORMULA: completeness percentage

@@ -102,7 +102,25 @@
             <name>inp_RecordId</name>
             <value><elementReference>$Record.Id</elementReference></value>
         </inputAssignments>
+        <inputAssignments>
+            <name>inp_RunningUserId</name>
+            <value><elementReference>$User.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_FailedStep</name>
+            <value><elementReference>var_CurrentStep</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorContext</name>
+            <value><elementReference>formula_ErrorContext</elementReference></value>
+        </inputAssignments>
     </subflows>
+
+    <formulas>
+        <name>formula_ErrorContext</name>
+        <dataType>String</dataType>
+        <expression>"ReviewType:" &amp; {!$Record.nepa_review_type__c} &amp; "|PredictedGrounds:" &amp; {!var_PredictedGrounds} &amp; "|AdjacentStatutes:" &amp; {!var_AdjacentStatutes} &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
+    </formulas>
 
     <!-- Decisions -->
     <decisions>

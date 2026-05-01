@@ -359,7 +359,17 @@
             <name>inp_FailedStep</name>
             <value><elementReference>var_CurrentStep</elementReference></value>
         </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorContext</name>
+            <value><elementReference>formula_ErrorContext</elementReference></value>
+        </inputAssignments>
     </subflows>
+
+    <formulas>
+        <name>formula_ErrorContext</name>
+        <dataType>String</dataType>
+        <expression>"Agency:" &amp; {!var_AgencyName} &amp; "|Circuit:" &amp; {!var_CircuitKey} &amp; "|ReviewType:" &amp; {!$Record.nepa_review_type__c} &amp; "|RiskScore:" &amp; TEXT({!var_RiskScore}) &amp; "|RiskTier:" &amp; {!var_RiskTier} &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
+    </formulas>
 
     <!-- Decisions -->
     <!-- Step 1: Assign review type risk points -->

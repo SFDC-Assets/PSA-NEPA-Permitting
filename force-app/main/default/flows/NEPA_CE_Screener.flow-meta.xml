@@ -1326,6 +1326,16 @@
             <name>inp_FailedStep</name>
             <value><elementReference>var_CurrentStep</elementReference></value>
         </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorContext</name>
+            <value><elementReference>formula_ErrorContext</elementReference></value>
+        </inputAssignments>
     </subflows>
+
+    <formulas>
+        <name>formula_ErrorContext</name>
+        <dataType>String</dataType>
+        <expression>"Agency:" &amp; {!var_AgencyAbbr} &amp; "|ReviewType:" &amp; {!var_ReviewType} &amp; "|CECode:" &amp; {!var_CECode} &amp; "|Confidence:" &amp; TEXT({!var_Confidence}) &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
+    </formulas>
 
 </Flow>
