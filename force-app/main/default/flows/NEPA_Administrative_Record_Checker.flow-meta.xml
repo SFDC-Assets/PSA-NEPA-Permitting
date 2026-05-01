@@ -422,7 +422,7 @@
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
-            <field>nepa_related_case_event__r.IndividualApplicationId</field>
+            <field>nepa_process__c</field>
             <operator>EqualTo</operator>
             <value><elementReference>var_ProcessId</elementReference></value>
         </filters>

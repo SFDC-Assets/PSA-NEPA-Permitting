@@ -450,6 +450,30 @@
     </fields>
 
     <fields>
+        <fullName>nepa_section_tags__c</fullName>
+        <description>One or more document sections represented in this file. Used for Phase 2 RAG-based document retrieval to scope search to specific EIS/EA sections. Multi-select to support files that span multiple sections (e.g., a combined Affected Environment + Environmental Consequences chapter).</description>
+        <inlineHelpText>Select all EIS/EA sections covered by this document.</inlineHelpText>
+        <label>Section Tags</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>MultiselectPicklist</type>
+        <visibleLines>4</visibleLines>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Purpose and Need</fullName><default>false</default><label>Purpose and Need</label></value>
+                <value><fullName>Alternatives</fullName><default>false</default><label>Alternatives</label></value>
+                <value><fullName>Affected Environment</fullName><default>false</default><label>Affected Environment</label></value>
+                <value><fullName>Environmental Consequences</fullName><default>false</default><label>Environmental Consequences</label></value>
+                <value><fullName>Mitigation</fullName><default>false</default><label>Mitigation</label></value>
+                <value><fullName>Appendix</fullName><default>false</default><label>Appendix</label></value>
+                <value><fullName>Full Document</fullName><default>false</default><label>Full Document</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+
+    <fields>
         <fullName>nepa_main_document__c</fullName>
         <description>Indicates whether this file is the primary/main document (true) or supporting material such as an appendix, attachment, or supplemental file (false). Aligns with NEPATEC2.0 main_document flag.</description>
         <inlineHelpText>Check if this is the main document. Leave unchecked for appendices, attachments, and supplemental files.</inlineHelpText>

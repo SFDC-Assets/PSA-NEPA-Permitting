@@ -251,7 +251,7 @@
         </faultConnector>
         <filterLogic>and</filterLogic>
         <filters>
-            <field>nepa_related_case_event__r.nepa_related_process__c</field>
+            <field>nepa_process__c</field>
             <operator>EqualTo</operator>
             <value>
                 <elementReference>rec_CaseEvent.nepa_related_process__c</elementReference>
