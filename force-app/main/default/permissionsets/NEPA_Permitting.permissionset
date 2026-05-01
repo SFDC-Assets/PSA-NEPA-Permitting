@@ -1060,4 +1060,8 @@
         <object>nepa_process_related_agencies__c</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
+    <classAccesses>
+        <apexClass>NepaCeqExportService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
 </PermissionSet>
