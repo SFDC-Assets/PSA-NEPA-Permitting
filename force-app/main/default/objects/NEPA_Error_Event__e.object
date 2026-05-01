@@ -46,4 +46,12 @@
         <label>Occurred At</label>
         <type>DateTime</type>
     </fields>
+    <fields>
+        <fullName>Error_Context__c</fullName>
+        <description>Pipe-delimited snapshot of key variable values at fault time (e.g. "ReviewType:CE|RiskScore:73|Step:Update_RiskFields"). Passed from the faulting flow as inp_ErrorContext to NEPA_Error_Logger and forwarded here for persistence in NEPA_Flow_Error__c.</description>
+        <label>Error Context</label>
+        <length>32768</length>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
 </CustomObject>

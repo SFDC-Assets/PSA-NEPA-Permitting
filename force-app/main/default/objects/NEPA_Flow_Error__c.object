@@ -68,4 +68,15 @@
         <externalId>false</externalId>
         <unique>false</unique>
     </fields>
+
+    <fields>
+        <fullName>nepa_error_context__c</fullName>
+        <description>Serialized snapshot of key variable values at the time of fault. Format is pipe-delimited name:value pairs (e.g. "ReviewType:CE|RiskScore:73|Tier:Moderate|Step:Update_RiskFields"). Populated by the calling flow before it invokes NEPA_Error_Logger as inp_ErrorContext. Enables post-mortem diagnosis without needing to reproduce the failure.</description>
+        <inlineHelpText>Variable state snapshot at the time of failure, populated automatically by the faulted flow.</inlineHelpText>
+        <label>Error Context</label>
+        <length>32768</length>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+        <required>false</required>
+    </fields>
 </CustomObject>

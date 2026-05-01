@@ -6,37 +6,65 @@
     <processType>AutoLaunchedFlow</processType>
     <status>Active</status>
 
-    <!-- ============================================================
-         TRIGGER: Platform Event
-         Subscribes to every NEPA_Error_Event__e publish.
-         $Record fields map directly to the event payload.
-    ============================================================ -->
-
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <object>NEPA_Error_Event__e</object>
         <triggerType>PlatformEvent</triggerType>
         <connector>
-            <targetReference>Create_FlowErrorRecord</targetReference>
+            <targetReference>Decision_ValidRunningUser</targetReference>
         </connector>
     </start>
 
     <!-- ============================================================
-         CREATE LOG RECORD
-         nepa_running_user__c is a Lookup(User) — the handler sets it
-         directly from the Running_User_Id__c string field on the event.
+         GUARD: Validate Running_User_Id__c before using as Lookup
          Salesforce accepts a valid 18-char User ID for Lookup assignment
-         in recordCreates.
+         in recordCreates, but silently fails or throws on null/malformed IDs.
+         Fall back to null (SetNull) rather than blocking the error record.
+    ============================================================ -->
+    <decisions>
+        <name>Decision_ValidRunningUser</name>
+        <label>Running User ID Valid (18 chars, non-null)?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Invalid or null — create without user link</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Create_FlowErrorRecord_NoUser</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Valid_UserId</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Running_User_Id__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Running_User_Id__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>formula_UserIdLength</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_FlowErrorRecord</targetReference>
+            </connector>
+            <label>Valid 18-char User ID</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         CREATE LOG RECORD — with user lookup
          No fault path: a fault here would loop back into the logger.
     ============================================================ -->
-
     <!-- code-analyzer-suppress flow:MissingFaultHandler - terminal error handler; adding a fault path here creates an infinite logging loop -->
     <recordCreates>
         <name>Create_FlowErrorRecord</name>
-        <label>Create Flow Error Record</label>
+        <label>Create Flow Error Record (with User)</label>
         <locationX>0</locationX>
-        <locationY>120</locationY>
+        <locationY>0</locationY>
         <inputAssignments>
             <field>nepa_flow_api_name__c</field>
             <value>
@@ -73,7 +101,76 @@
                 <elementReference>$Record.Occurred_At__c</elementReference>
             </value>
         </inputAssignments>
+        <inputAssignments>
+            <field>nepa_error_context__c</field>
+            <value>
+                <elementReference>$Record.Error_Context__c</elementReference>
+            </value>
+        </inputAssignments>
         <object>NEPA_Flow_Error__c</object>
     </recordCreates>
+
+    <!-- ============================================================
+         CREATE LOG RECORD — without user lookup (null/malformed ID)
+    ============================================================ -->
+    <!-- code-analyzer-suppress flow:MissingFaultHandler - terminal error handler; adding a fault path here creates an infinite logging loop -->
+    <recordCreates>
+        <name>Create_FlowErrorRecord_NoUser</name>
+        <label>Create Flow Error Record (no User link)</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>nepa_flow_api_name__c</field>
+            <value>
+                <elementReference>$Record.Flow_Name__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_error_message__c</field>
+            <value>
+                <elementReference>$Record.Error_Message__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_record_id__c</field>
+            <value>
+                <elementReference>$Record.Record_Id__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_failed_step__c</field>
+            <value>
+                <elementReference>$Record.Failed_Step__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_occurred_at__c</field>
+            <value>
+                <elementReference>$Record.Occurred_At__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_error_context__c</field>
+            <value>
+                <elementReference>$Record.Error_Context__c</elementReference>
+            </value>
+        </inputAssignments>
+        <object>NEPA_Flow_Error__c</object>
+    </recordCreates>
+
+    <!-- ============================================================
+         FORMULA: check Running_User_Id__c is exactly 18 characters
+         LEN() returns a Number; compare against a 18-char literal
+         by comparing the value to itself truncated — in Flow we use
+         a formula that evaluates to the padded string if valid,
+         or a sentinel if not, then compare against the original field.
+         Simpler approach: formula returns the original value only if
+         LEN == 18, otherwise returns empty string. Decision checks EqualTo.
+    ============================================================ -->
+    <formulas>
+        <name>formula_UserIdLength</name>
+        <dataType>String</dataType>
+        <expression>IF(LEN({!$Record.Running_User_Id__c}) = 18, {!$Record.Running_User_Id__c}, "")</expression>
+    </formulas>
 
 </Flow>

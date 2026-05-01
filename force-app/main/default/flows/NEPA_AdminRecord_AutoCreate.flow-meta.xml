@@ -263,6 +263,12 @@
                 <elementReference>var_CreatedEventId</elementReference>
             </value>
         </inputAssignments>
+        <inputAssignments>
+            <field>nepa_process__c</field>
+            <value>
+                <elementReference>rec_DocLink.LinkedEntityId</elementReference>
+            </value>
+        </inputAssignments>
         <object>ContentVersion</object>
         <filters>
             <field>Id</field>
