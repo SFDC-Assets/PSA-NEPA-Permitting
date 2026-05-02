@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>CE | CE Determination</label>
+    <protected>false</protected>
+    <values>
+        <field>Review_Type__c</field>
+        <value xsi:type="xsd:string">CE</value>
+    </values>
+    <values>
+        <field>Stage_Name__c</field>
+        <value xsi:type="xsd:string">CE Determination</value>
+    </values>
+    <values>
+        <field>Baseline_Days__c</field>
+        <value xsi:type="xsd:decimal">21</value>
+    </values>
+    <values>
+        <field>Max_Days__c</field>
+        <value xsi:type="xsd:decimal">45</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

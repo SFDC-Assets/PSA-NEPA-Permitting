@@ -23,6 +23,17 @@
         <field>IndividualApplication.nepa_ce_rationale_supplemental__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <!-- P6 Phase 1 Completion fields -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_plaintiff_risk_flag__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_connected_actions_identified__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <!-- P5 Litigation Guardrail fields -->
     <fieldPermissions>
         <editable>false</editable>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Known repeat-plaintiff organizations in federal NEPA litigation, seeded from PermitTEC v0.1 case analysis. Used by NEPA_Plaintiff_Intelligence Flow to flag IndividualApplication records when a high-risk commenter submits a PublicComplaint. Drives nepa_plaintiff_risk_flag__c and Litigation Risk Score bonus.</description>
+    <label>NEPA Plaintiff Profile</label>
+    <pluralLabel>NEPA Plaintiff Profiles</pluralLabel>
+    <fields>
+        <fullName>Organization_Name__c</fullName>
+        <description>Exact organization name matched against PublicComplaint.nepa_organization__c. Case-insensitive CONTAINS match is performed in the Flow.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Organization Name</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Name_Keywords__c</fullName>
+        <description>Semicolon-delimited keywords from the organization name for fuzzy matching (e.g., "WildEarth; Guardians"). Flow performs CONTAINS check on each keyword against the commenter organization field.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Name Keywords</label>
+        <length>500</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Risk_Tier__c</fullName>
+        <description>Litigation risk tier for this organization. VERY_HIGH/HIGH organizations trigger nepa_plaintiff_risk_flag__c and a Legal Defensibility Review task. LOW/MEDIUM do not trigger flag but are logged.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Risk Tier</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>VERY_HIGH</fullName><default>false</default><label>Very High</label></value>
+                <value><fullName>HIGH</fullName><default>false</default><label>High</label></value>
+                <value><fullName>MEDIUM</fullName><default>false</default><label>Medium</label></value>
+                <value><fullName>LOW</fullName><default>false</default><label>Low</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Prior_Case_Count__c</fullName>
+        <description>Number of prior NEPA litigation cases filed by this organization in the PermitTEC corpus.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Prior Case Count</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Success_Rate__c</fullName>
+        <description>Fraction of prior cases in which this plaintiff obtained a favorable ruling (0.00–1.00). Displayed in the Legal Defensibility Review task description.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Success Rate</label>
+        <precision>4</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Typical_Causes__c</fullName>
+        <description>Semicolon-delimited list of typical NEPA challenge grounds this organization has used (e.g., Cumulative impacts; ESA Section 7). Included in task description for legal review.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Typical Causes</label>
+        <length>500</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Active__c</fullName>
+        <description>When false, this profile is excluded from Plaintiff Intelligence matching.</description>
+        <defaultValue>true</defaultValue>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Active</label>
+        <type>Checkbox</type>
+    </fields>
+</CustomObject>

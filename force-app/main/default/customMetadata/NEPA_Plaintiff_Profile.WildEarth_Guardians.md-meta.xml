@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>WildEarth Guardians</label>
+    <protected>false</protected>
+    <values>
+        <field>Organization_Name__c</field>
+        <value xsi:type="xsd:string">WildEarth Guardians</value>
+    </values>
+    <values>
+        <field>Name_Keywords__c</field>
+        <value xsi:type="xsd:string">WildEarth; Guardians</value>
+    </values>
+    <values>
+        <field>Risk_Tier__c</field>
+        <value xsi:type="xsd:string">VERY_HIGH</value>
+    </values>
+    <values>
+        <field>Prior_Case_Count__c</field>
+        <value xsi:type="xsd:decimal">47</value>
+    </values>
+    <values>
+        <field>Success_Rate__c</field>
+        <value xsi:type="xsd:decimal">0.55</value>
+    </values>
+    <values>
+        <field>Typical_Causes__c</field>
+        <value xsi:type="xsd:string">Cumulative impacts; ESA Section 7; Supplementation failure</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

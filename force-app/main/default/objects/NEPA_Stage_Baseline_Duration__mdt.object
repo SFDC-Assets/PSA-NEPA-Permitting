@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Baseline duration in days for each NEPA process stage, by review type. Seeded from NEPATEC v2.0 aggregate duration data. Used by NEPA_Timeline_Risk_Assessor Flow to compute At Risk / Stalled / Overdue tier thresholds. SubscriberControlled fields allow agencies to tune thresholds without a package update.</description>
+    <label>NEPA Stage Baseline Duration</label>
+    <pluralLabel>NEPA Stage Baseline Durations</pluralLabel>
+    <fields>
+        <fullName>Review_Type__c</fullName>
+        <description>NEPA review type this baseline applies to: CE, EA, or EIS.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Review Type</label>
+        <length>10</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Stage_Name__c</fullName>
+        <description>Stage name. Must exactly match values used in IndividualApplication.nepa_process_stage__c for the NEPA_Timeline_Risk_Assessor lookup to succeed.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Stage Name</label>
+        <length>100</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Baseline_Days__c</fullName>
+        <description>Median days in this stage for this review type, from NEPATEC v2.0 corpus. NEPA_Timeline_Risk_Assessor uses this to compute pct_over_baseline for risk tiering: At Risk = 10-25% over, Stalled = 25-50%, Overdue = 50%+.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
+        <label>Baseline Days</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Max_Days__c</fullName>
+        <description>95th-percentile days in this stage. Records exceeding this value are automatically Overdue regardless of the percentage threshold. SubscriberControlled for agency tuning.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
+        <label>Max Days (95th pct)</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Active__c</fullName>
+        <description>Inactive records are excluded from timeline risk calculations.</description>
+        <defaultValue>true</defaultValue>
+        <fieldManageability>SubscriberControlled</fieldManageability>
+        <label>Active</label>
+        <type>Checkbox</type>
+    </fields>
+</CustomObject>

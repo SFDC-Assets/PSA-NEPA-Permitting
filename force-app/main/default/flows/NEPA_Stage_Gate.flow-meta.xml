@@ -3,51 +3,209 @@
     <apiVersion>62.0</apiVersion>
     <description>Priority 6: Stage-gate automation for IndividualApplication. Fires before-save when nepa_process_stage__c changes. Updates nepa_last_stage_transition__c. Fires after-save async when nepa_process_status__c transitions to completed: sets nepa_completion_date__c if blank. A separate after-save path fires when a key document-type ApplicationTimeline event status becomes Completed: advances nepa_process_stage__c and sends notification. Also triggers on nepa_review_type__c set for the first time to stamp nepa_target_completion_date__c based on review type defaults (CE: 30d, EA: 180d, EIS: 730d).</description>
     <label>NEPA Stage Gate</label>
-    <description>NEPA Stage Gate</description>
     <processType>AutoLaunchedFlow</processType>
     <status>Draft</status>
 
-    <!-- Variables -->
-    <variables>
-        <name>var_TargetDays</name>
-        <description>Number of days used to compute the target completion date from today.</description>
-        <dataType>Number</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <scale>0</scale>
-        <value><numberValue>180.0</numberValue></value>
-    </variables>
-
-    <!-- ============================================================
-         BEFORE-SAVE FLOW: stamp transition timestamp + target date
-    ============================================================ -->
-    <start>
+    <!-- VR-001: Block EIS stage advance when tiering to stale prior EIS and supplementation not confirmed -->
+    <decisions>
+        <name>Decision_VR001_SupplementCheck</name>
+        <label>VR-001: EIS Supplementation Required?</label>
+        <description>Blocks stage advance when EIS is tiering to a prior document older than 5 years and supplementation review is not confirmed.</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <object>IndividualApplication</object>
-        <recordTriggerType>CreateAndUpdate</recordTriggerType>
-        <triggerType>RecordBeforeSave</triggerType>
+        <defaultConnectorLabel>No Supplementation Issue</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Decision_VR004_ESAGate</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>VR001_SupplementRequired</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_review_type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><stringValue>EIS</stringValue></rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.nepa_tiering_to_prior_eis__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><booleanValue>true</booleanValue></rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>formula_PriorEISStale</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><booleanValue>true</booleanValue></rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.nepa_supplementation_review_complete__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Error_VR001</targetReference>
+            </connector>
+            <label>Supplementation Required but Not Confirmed</label>
+        </rules>
+    </decisions>
+
+    <customErrors>
+        <name>Error_VR001</name>
+        <label>VR-001 Supplementation Required</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <description>VR-001: Blocks save when EIS tiering to a prior document older than 5 years and supplementation review is not confirmed.</description>
+        <customErrorMessages>
+            <errorMessage>This EIS is tiering to a prior NEPA document that is more than 5 years old. A supplementation determination is required before advancing to the next stage. Check the "Supplementation Review Complete" field and document your determination in the administrative record.</errorMessage>
+            <isFieldError>false</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+
+    <!-- VR-004: Block Decision Issued stage when EA/EIS has open ESA Section 7 consultation -->
+    <decisions>
+        <name>Decision_VR004_ESAGate</name>
+        <label>VR-004: Decision Issued with Open ESA Consultation?</label>
+        <description>Blocks stage advance to Decision Issued when an EA or EIS process has an unresolved ESA Section 7 consultation.</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>ESA Cleared or Not Applicable</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Assign_StageTransitionTimestamp</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>VR004_ESAOpenOnDecision</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_process_stage__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><stringValue>Decision Issued</stringValue></rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>formula_ReviewTypeEAorEIS</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><booleanValue>true</booleanValue></rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>formula_ESANotCleared</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><booleanValue>true</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Error_VR004</targetReference>
+            </connector>
+            <label>Decision Issued + EA/EIS + ESA Not Cleared</label>
+        </rules>
+    </decisions>
+
+    <customErrors>
+        <name>Error_VR004</name>
+        <label>VR-004 ESA Consultation Open</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <description>VR-004: Blocks save when advancing to Decision Issued on an EA/EIS with an unresolved ESA Section 7 consultation.</description>
+        <customErrorMessages>
+            <errorMessage>This EA/EIS cannot advance to Decision Issued while ESA Section 7 consultation remains open. The consultation status must reach "No Effect," "Not Required," "Concurrence Received," or "Biological Opinion Issued" before a decision can be issued. Update the ESA Consultation Status field and document the consultation outcome in the administrative record.</errorMessage>
+            <isFieldError>false</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+
+    <!-- Stamp transition timestamp on stage change (before-save, no DML needed) -->
+    <assignments>
+        <name>Assign_StageTransitionTimestamp</name>
+        <label>Stamp Last Stage Transition Timestamp</label>
+        <description>Stamp Last Stage Transition Timestamp</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.nepa_last_stage_transition__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.CurrentDateTime</elementReference>
+            </value>
+        </assignmentItems>
         <connector>
-            <targetReference>Decision_StageChanged</targetReference>
+            <targetReference>Decision_ReviewTypeFirstSet</targetReference>
         </connector>
-        <filterLogic>or</filterLogic>
-        <filters>
-            <field>nepa_process_stage__c</field>
-            <operator>IsChanged</operator>
-            <value><booleanValue>true</booleanValue></value>
-        </filters>
-        <filters>
-            <field>nepa_review_type__c</field>
-            <operator>IsChanged</operator>
-            <value><booleanValue>true</booleanValue></value>
-        </filters>
-        <filters>
-            <field>nepa_process_status__c</field>
-            <operator>IsChanged</operator>
-            <value><booleanValue>true</booleanValue></value>
-        </filters>
-    </start>
+    </assignments>
+
+    <assignments>
+        <name>Assign_TargetDays_CE</name>
+        <label>CE: 30 Days</label>
+        <description>CE: 30 Days</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_TargetDays</assignToReference>
+            <operator>Assign</operator>
+            <value><numberValue>30.0</numberValue></value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Assign_TargetDate</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_TargetDays_EA</name>
+        <label>EA: 180 Days</label>
+        <description>EA: 180 Days</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_TargetDays</assignToReference>
+            <operator>Assign</operator>
+            <value><numberValue>180.0</numberValue></value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Assign_TargetDate</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_TargetDays_EIS</name>
+        <label>EIS: 730 Days</label>
+        <description>EIS: 730 Days</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_TargetDays</assignToReference>
+            <operator>Assign</operator>
+            <value><numberValue>730.0</numberValue></value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Assign_TargetDate</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_TargetDate</name>
+        <label>Set Target Completion Date</label>
+        <description>Set Target Completion Date</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.nepa_target_completion_date__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula_TargetDate</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_ProcessCompleted</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_CompletionDate</name>
+        <label>Stamp Completion Date</label>
+        <description>Stamp Completion Date</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.nepa_completion_date__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.CurrentDate</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
 
     <decisions>
         <name>Decision_StageChanged</name>
@@ -68,31 +226,12 @@
                 <rightValue><booleanValue>true</booleanValue></rightValue>
             </conditions>
             <connector>
-                <targetReference>Assign_StageTransitionTimestamp</targetReference>
+                <targetReference>Decision_VR001_SupplementCheck</targetReference>
             </connector>
             <label>Stage Changed</label>
             <description>Stage Changed</description>
         </rules>
     </decisions>
-
-    <!-- Stamp transition timestamp on stage change (before-save, no DML needed) -->
-    <assignments>
-        <name>Assign_StageTransitionTimestamp</name>
-        <label>Stamp Last Stage Transition Timestamp</label>
-        <description>Stamp Last Stage Transition Timestamp</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>$Record.nepa_last_stage_transition__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>$Flow.CurrentDateTime</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Decision_ReviewTypeFirstSet</targetReference>
-        </connector>
-    </assignments>
 
     <!-- Set target completion date when review type is first assigned -->
     <decisions>
@@ -166,80 +305,6 @@
         </rules>
     </decisions>
 
-    <assignments>
-        <name>Assign_TargetDays_CE</name>
-        <label>CE: 30 Days</label>
-        <description>CE: 30 Days</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_TargetDays</assignToReference>
-            <operator>Assign</operator>
-            <value><numberValue>30.0</numberValue></value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Assign_TargetDate</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Assign_TargetDays_EA</name>
-        <label>EA: 180 Days</label>
-        <description>EA: 180 Days</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_TargetDays</assignToReference>
-            <operator>Assign</operator>
-            <value><numberValue>180.0</numberValue></value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Assign_TargetDate</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Assign_TargetDays_EIS</name>
-        <label>EIS: 730 Days</label>
-        <description>EIS: 730 Days</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_TargetDays</assignToReference>
-            <operator>Assign</operator>
-            <value><numberValue>730.0</numberValue></value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Assign_TargetDate</targetReference>
-        </connector>
-    </assignments>
-
-    <!-- Add var_TargetDays days to today using a formula via a formula variable -->
-    <formulas>
-        <name>formula_TargetDate</name>
-        <description>Computes target completion date as TODAY() + var_TargetDays.</description>
-        <dataType>Date</dataType>
-        <expression>TODAY() + {!var_TargetDays}</expression>
-    </formulas>
-
-    <assignments>
-        <name>Assign_TargetDate</name>
-        <label>Set Target Completion Date</label>
-        <description>Set Target Completion Date</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>$Record.nepa_target_completion_date__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>formula_TargetDate</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Decision_ProcessCompleted</targetReference>
-        </connector>
-    </assignments>
-
     <!-- Stamp completion date when status transitions to completed -->
     <decisions>
         <name>Decision_ProcessCompleted</name>
@@ -269,19 +334,88 @@
         </rules>
     </decisions>
 
-    <assignments>
-        <name>Assign_CompletionDate</name>
-        <label>Stamp Completion Date</label>
-        <description>Stamp Completion Date</description>
+    <!-- Add var_TargetDays days to today using a formula via a formula variable -->
+    <formulas>
+        <name>formula_TargetDate</name>
+        <description>Computes target completion date as TODAY() + var_TargetDays.</description>
+        <dataType>Date</dataType>
+        <expression>TODAY() + {!var_TargetDays}</expression>
+    </formulas>
+
+    <!-- VR-001: True when the prior NEPA document is more than 5 years (1825 days) old -->
+    <formulas>
+        <name>formula_PriorEISStale</name>
+        <description>VR-001 guard: true when nepa_prior_nepa_date__c is populated and older than 5 years.</description>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+  NOT(ISBLANK({!$Record.nepa_prior_nepa_date__c})),
+  {!$Record.nepa_prior_nepa_date__c} &lt; (TODAY() - 1825)
+)</expression>
+    </formulas>
+
+    <!-- VR-004: True when review type is EA or EIS -->
+    <formulas>
+        <name>formula_ReviewTypeEAorEIS</name>
+        <description>VR-004 guard: true when nepa_review_type__c is EA or EIS.</description>
+        <dataType>Boolean</dataType>
+        <expression>OR(
+  ISPICKVAL({!$Record.nepa_review_type__c}, "EA"),
+  ISPICKVAL({!$Record.nepa_review_type__c}, "EIS")
+)</expression>
+    </formulas>
+
+    <!-- VR-004: True when ESA consultation has not reached a terminal cleared state -->
+    <formulas>
+        <name>formula_ESANotCleared</name>
+        <description>VR-004 guard: true when ESA consultation is still open (not in a terminal cleared state).</description>
+        <dataType>Boolean</dataType>
+        <expression>NOT(OR(
+  ISPICKVAL({!$Record.nepa_esa_consultation_status__c}, "No Effect"),
+  ISPICKVAL({!$Record.nepa_esa_consultation_status__c}, "Not Required"),
+  ISPICKVAL({!$Record.nepa_esa_consultation_status__c}, "Concurrence Received"),
+  ISPICKVAL({!$Record.nepa_esa_consultation_status__c}, "Biological Opinion Issued")
+))</expression>
+    </formulas>
+
+    <!-- ============================================================
+         BEFORE-SAVE FLOW: stamp transition timestamp + target date
+    ============================================================ -->
+    <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>$Record.nepa_completion_date__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>$Flow.CurrentDate</elementReference>
-            </value>
-        </assignmentItems>
-    </assignments>
+        <object>IndividualApplication</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+        <connector>
+            <targetReference>Decision_StageChanged</targetReference>
+        </connector>
+        <filterLogic>or</filterLogic>
+        <filters>
+            <field>nepa_process_stage__c</field>
+            <operator>IsChanged</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </filters>
+        <filters>
+            <field>nepa_review_type__c</field>
+            <operator>IsChanged</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </filters>
+        <filters>
+            <field>nepa_process_status__c</field>
+            <operator>IsChanged</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </filters>
+    </start>
 
+    <!-- Variables -->
+    <variables>
+        <name>var_TargetDays</name>
+        <description>Number of days used to compute the target completion date from today.</description>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+        <value><numberValue>180.0</numberValue></value>
+    </variables>
 </Flow>

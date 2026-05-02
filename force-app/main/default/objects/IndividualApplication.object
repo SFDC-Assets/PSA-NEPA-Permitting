@@ -894,6 +894,27 @@
         <type>Checkbox</type>
     </fields>
 
+    <!-- P6 Phase 1 Completion fields -->
+    <fields>
+        <fullName>nepa_plaintiff_risk_flag__c</fullName>
+        <description>Set to true by NEPA_Plaintiff_Intelligence Flow when a PublicComplaint linked to this application is submitted by an organization matching a HIGH or VERY_HIGH record in NEPA_Plaintiff_Profile__mdt. Triggers a Legal Defensibility Review task and increases the litigation risk score by 25 points (PLAINTIFF_RISK_BONUS).</description>
+        <inlineHelpText>Known high-risk plaintiff organization has submitted a comment on this process. See Legal Defensibility Review task for details.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Plaintiff Risk Flag</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_connected_actions_identified__c</fullName>
+        <description>Set by coordinator when connected or similar actions under 40 CFR 1508.25(a) have been identified and scoped. Required by the Stage Gate VR-001 extension to advance EA/EIS to Draft EIS Publication. Addresses DG-002 (connected/cumulative actions not systematically scoped).</description>
+        <inlineHelpText>Connected and similar actions (40 CFR 1508.25) have been identified and scoped. Required before Draft EIS publication for EA/EIS processes.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Connected Actions Identified</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <type>Checkbox</type>
+    </fields>
     <!-- P5 Litigation Guardrail fields -->
     <fields>
         <fullName>nepa_small_sample_warning__c</fullName>
