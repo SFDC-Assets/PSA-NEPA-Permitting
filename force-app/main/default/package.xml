@@ -318,10 +318,36 @@
         <members>nepa_process_related_agencies__c.nepa_role__c</members>
         <members>nepa_project_agency_relationship__c.Agency__c</members>
         <members>nepa_project_agency_relationship__c.nepa_Project__c</members>
+        <!-- Comment responsiveness: decision modification attribution -->
+        <members>nepa_decision_modification__c.nepa_process__c</members>
+        <members>nepa_decision_modification__c.nepa_modification_type__c</members>
+        <members>nepa_decision_modification__c.nepa_decision_element_affected__c</members>
+        <members>nepa_decision_modification__c.nepa_modification_description__c</members>
+        <members>nepa_decision_modification__c.nepa_attribution_type__c</members>
+        <members>nepa_decision_modification__c.nepa_attributed_cluster_id__c</members>
+        <members>nepa_decision_modification__c.nepa_attributed_cluster_count__c</members>
+        <members>nepa_decision_modification__c.nepa_final_eis_section__c</members>
+        <members>nepa_decision_modification__c.nepa_modification_date__c</members>
+        <members>nepa_decision_modification__c.nepa_recorded_by__c</members>
+        <members>nepa_comment_attribution__c.nepa_modification__c</members>
+        <members>nepa_comment_attribution__c.nepa_comment__c</members>
+        <members>nepa_comment_attribution__c.nepa_attribution_note__c</members>
+        <!-- Engagement quality fields (Mandate 3) -->
+        <members>nepa_engagement__c.nepa_registered_count__c</members>
+        <members>nepa_engagement__c.nepa_comments_received_count__c</members>
+        <members>nepa_engagement__c.nepa_advance_notice_days__c</members>
+        <members>nepa_engagement__c.nepa_ada_accessible__c</members>
+        <members>nepa_engagement__c.nepa_ada_accommodations__c</members>
+        <members>nepa_engagement__c.nepa_translation_services__c</members>
+        <members>nepa_engagement__c.nepa_interpreter_languages__c</members>
+        <members>nepa_engagement__c.nepa_notification_channels__c</members>
+        <members>nepa_engagement__c.nepa_transcript_available__c</members>
         <name>CustomField</name>
     </types>
     <types>
         <!-- __c custom objects -->
+        <members>nepa_decision_modification__c</members>
+        <members>nepa_comment_attribution__c</members>
         <members>NEPA_Flow_Error__c</members>
         <members>nepa_engagement__c</members>
         <members>nepa_litigation__c</members>

@@ -842,6 +842,119 @@
         <readable>true</readable>
     </fieldPermissions>
     <!-- Junction object fields: all junction fields (Agency__c, Processes__c, nepa_Project__c, nepa_role__c) are required — omitted from fieldPermissions -->
+    <!-- nepa_decision_modification__c — agency PM edits; modification_type and description are required on create -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_modification__c.nepa_process__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_modification__c.nepa_modification_type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_modification__c.nepa_decision_element_affected__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_modification__c.nepa_modification_description__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_modification__c.nepa_attribution_type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_modification__c.nepa_attributed_cluster_id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_modification__c.nepa_attributed_cluster_count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_modification__c.nepa_final_eis_section__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_modification__c.nepa_modification_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_modification__c.nepa_recorded_by__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- nepa_comment_attribution__c — junction; nepa_modification__c and nepa_comment__c are required -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_comment_attribution__c.nepa_modification__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_comment_attribution__c.nepa_comment__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_comment_attribution__c.nepa_attribution_note__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- nepa_engagement__c engagement quality fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_registered_count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_comments_received_count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_advance_notice_days__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_ada_accessible__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_ada_accommodations__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_translation_services__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_interpreter_languages__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_notification_channels__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_transcript_available__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <!-- nepa_legal_structure__c (CEQ Entity 9) fields -->
     <!-- nepa_citation__c is required — omitted from fieldPermissions -->
     <fieldPermissions>
@@ -1120,6 +1233,24 @@
         <allowRead>true</allowRead>
         <modifyAllRecords>false</modifyAllRecords>
         <object>nepa_process_related_agencies__c</object>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>nepa_decision_modification__c</object>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>nepa_comment_attribution__c</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
     <classAccesses>

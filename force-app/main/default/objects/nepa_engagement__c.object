@@ -333,6 +333,158 @@
         <type>LongTextArea</type>
         <visibleLines>5</visibleLines>
     </fields>
+    <!-- Engagement Quality fields (Mandate 3: data deficit identified in academic EIS responsiveness research) -->
+
+    <fields>
+        <fullName>nepa_registered_count__c</fullName>
+        <description>Number of participants who pre-registered for this event. Compared against nepa_attendance_count__c to calculate attendance rate. Supports engagement quality reporting for future researchers and agency auditors who noted this data is absent from historic EIS documents.</description>
+        <inlineHelpText>Pre-registered attendees. Compare to actual attendance to calculate show-up rate.</inlineHelpText>
+        <label>Registered Count</label>
+        <precision>8</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+
+    <fields>
+        <fullName>nepa_comments_received_count__c</fullName>
+        <description>Number of written or oral comments received at or attributable to this engagement event. Enables per-event comment yield analysis — a metric that historic EIS documents failed to report and that researchers flagged as a critical engagement quality gap.</description>
+        <inlineHelpText>Comments received at or directly resulting from this event.</inlineHelpText>
+        <label>Comments Received Count</label>
+        <precision>8</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+
+    <fields>
+        <fullName>nepa_advance_notice_days__c</fullName>
+        <description>Number of calendar days between the first public notice and the event date. Shorter advance notice disproportionately disadvantages low-income and rural communities with less scheduling flexibility. CEQ best practice is 15+ days; FRA compressed timelines often result in shorter windows.</description>
+        <inlineHelpText>Days of advance notice given before this event. CEQ best practice: 15 or more days.</inlineHelpText>
+        <label>Advance Notice Days</label>
+        <precision>4</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+
+    <fields>
+        <fullName>nepa_ada_accessible__c</fullName>
+        <description>Whether the venue or virtual platform met ADA accessibility standards. Required for EJ compliance reporting. An agency that holds a public meeting in an inaccessible venue may face civil rights challenges under Title VI.</description>
+        <inlineHelpText>Did this event meet ADA accessibility requirements?</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>ADA Accessible</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+
+    <fields>
+        <fullName>nepa_ada_accommodations__c</fullName>
+        <description>Specific ADA accommodations provided at this event. Multi-select to enable reportable breakdown of accommodation types across all engagement events in a process.</description>
+        <inlineHelpText>Select all ADA accommodations provided at this event.</inlineHelpText>
+        <label>ADA Accommodations Provided</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>MultiselectPicklist</type>
+        <visibleLines>4</visibleLines>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>ASL Interpretation</fullName><default>false</default><label>ASL Interpretation</label></value>
+                <value><fullName>Captioning/CART</fullName><default>false</default><label>Captioning/CART</label></value>
+                <value><fullName>Wheelchair Accessible Venue</fullName><default>false</default><label>Wheelchair Accessible Venue</label></value>
+                <value><fullName>Accessible Parking</fullName><default>false</default><label>Accessible Parking</label></value>
+                <value><fullName>Hearing Loop/Assistive Listening</fullName><default>false</default><label>Hearing Loop/Assistive Listening</label></value>
+                <value><fullName>Large Print Materials</fullName><default>false</default><label>Large Print Materials</label></value>
+                <value><fullName>Screen Reader Compatible (Virtual)</fullName><default>false</default><label>Screen Reader Compatible (Virtual)</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+
+    <fields>
+        <fullName>nepa_translation_services__c</fullName>
+        <description>Whether any translation or interpretation services were provided. Agencies serving communities with limited English proficiency must provide language access under Executive Order 13166 and Title VI. Historic EIS documents rarely reported this data.</description>
+        <inlineHelpText>Were translation or interpretation services provided at this event?</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Translation Services Provided</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+
+    <fields>
+        <fullName>nepa_interpreter_languages__c</fullName>
+        <description>Languages for which live interpretation was provided (oral) or written materials were translated. Multi-select enables aggregate reporting of language access coverage across all engagement events in a process — data that was absent from historic EIS documents reviewed in academic research.</description>
+        <inlineHelpText>Select all languages for which interpretation or translated materials were available.</inlineHelpText>
+        <label>Interpreter Languages</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>MultiselectPicklist</type>
+        <visibleLines>4</visibleLines>
+        <valueSet>
+            <restricted>false</restricted>
+            <valueSetDefinition>
+                <sorted>true</sorted>
+                <value><fullName>Spanish</fullName><default>false</default><label>Spanish</label></value>
+                <value><fullName>Mandarin Chinese</fullName><default>false</default><label>Mandarin Chinese</label></value>
+                <value><fullName>Cantonese Chinese</fullName><default>false</default><label>Cantonese Chinese</label></value>
+                <value><fullName>Vietnamese</fullName><default>false</default><label>Vietnamese</label></value>
+                <value><fullName>Korean</fullName><default>false</default><label>Korean</label></value>
+                <value><fullName>Arabic</fullName><default>false</default><label>Arabic</label></value>
+                <value><fullName>Tagalog/Filipino</fullName><default>false</default><label>Tagalog/Filipino</label></value>
+                <value><fullName>Haitian Creole</fullName><default>false</default><label>Haitian Creole</label></value>
+                <value><fullName>Portuguese</fullName><default>false</default><label>Portuguese</label></value>
+                <value><fullName>Russian</fullName><default>false</default><label>Russian</label></value>
+                <value><fullName>French</fullName><default>false</default><label>French</label></value>
+                <value><fullName>Navajo/Diné</fullName><default>false</default><label>Navajo/Diné</label></value>
+                <value><fullName>Other (noted in Notes field)</fullName><default>false</default><label>Other (noted in Notes field)</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+
+    <fields>
+        <fullName>nepa_notification_channels__c</fullName>
+        <description>Channels used to notify the public of this engagement event. Multi-select enables aggregate reporting of outreach reach and channel diversity — a metric that academic researchers flagged as systematically absent from historic EIS documents, preventing quality evaluation of public engagement efforts.</description>
+        <inlineHelpText>Select all channels used to announce this event to the public.</inlineHelpText>
+        <label>Public Notification Channels</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>MultiselectPicklist</type>
+        <visibleLines>5</visibleLines>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Federal Register Notice</fullName><default>false</default><label>Federal Register Notice</label></value>
+                <value><fullName>Agency Website</fullName><default>false</default><label>Agency Website</label></value>
+                <value><fullName>Email List</fullName><default>false</default><label>Email List</label></value>
+                <value><fullName>Direct Mail</fullName><default>false</default><label>Direct Mail</label></value>
+                <value><fullName>Local Newspaper</fullName><default>false</default><label>Local Newspaper</label></value>
+                <value><fullName>Social Media</fullName><default>false</default><label>Social Media</label></value>
+                <value><fullName>Radio</fullName><default>false</default><label>Radio</label></value>
+                <value><fullName>Tribal Government Direct Notice</fullName><default>false</default><label>Tribal Government Direct Notice</label></value>
+                <value><fullName>Community Organization Outreach</fullName><default>false</default><label>Community Organization Outreach</label></value>
+                <value><fullName>Flyer/Poster Distribution</fullName><default>false</default><label>Flyer/Poster Distribution</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+
+    <fields>
+        <fullName>nepa_transcript_available__c</fullName>
+        <description>Whether an official transcript, recording, or written summary of this event is available in the administrative record. Transcript availability is a key administrative record completeness indicator — agencies that cannot produce meeting transcripts during litigation face credibility challenges about what was actually discussed.</description>
+        <inlineHelpText>Is a transcript, recording, or official summary available for this event?</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Transcript/Recording Available</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+
     <!-- Provenance fields (CEQ Standard v1.2 - required on all entities) -->
     <fields>
         <fullName>nepa_data_record_version__c</fullName>

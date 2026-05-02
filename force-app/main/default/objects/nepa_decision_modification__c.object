@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Records a single substantive decision modification made to a NEPA process (IndividualApplication) and attributes it to the public comment(s) that drove the change. Implements the Farber-Carlarne academic rubric: Partial Modification, Addition/Removal, or New Alternative. Enables structured credit attribution required by APA administrative record standards and supports empirical analysis of comment responsiveness rates (study baseline: 62% modification rate, 88% comment credit rate).</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableLicensing>false</enableLicensing>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <externalSharingModel>ControlledByParent</externalSharingModel>
+
+    <!-- ── Core relationships ───────────────────────────────────────────── -->
+
+    <fields>
+        <fullName>nepa_process__c</fullName>
+        <description>The NEPA process (IndividualApplication) whose decision was modified.</description>
+        <inlineHelpText>The NEPA process this decision modification applies to.</inlineHelpText>
+        <label>NEPA Process</label>
+        <referenceTo>IndividualApplication</referenceTo>
+        <relationshipLabel>Decision Modifications</relationshipLabel>
+        <relationshipName>Decision_Modifications</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    </fields>
+
+    <!-- ── Modification type (Farber-Carlarne rubric) ───────────────────── -->
+
+    <fields>
+        <fullName>nepa_modification_type__c</fullName>
+        <description>Substantive modification category per the Farber-Carlarne academic rubric. Partial Modification: change to one aspect of the preferred alternative or mitigation plan. Addition/Removal: a project element added or removed in response to comments. New Alternative: an entirely new preferred alternative created in response to comments. Non-Substantive: text clarification or editorial change only — no decision impact.</description>
+        <inlineHelpText>Partial Modification, Addition/Removal, New Alternative, or Non-Substantive. Required for agency responsiveness reporting.</inlineHelpText>
+        <label>Modification Type</label>
+        <required>true</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Partial Modification</fullName>
+                    <default>false</default>
+                    <label>Partial Modification</label>
+                    <description>Change to one aspect of the preferred alternative or mitigation plan (e.g., reduced buffer zone, modified construction schedule, new mitigation measure).</description>
+                </value>
+                <value>
+                    <fullName>Addition/Removal</fullName>
+                    <default>false</default>
+                    <label>Addition/Removal</label>
+                    <description>A project element was added to or removed from the proposed action in direct response to public comment (e.g., removal of a pipeline segment, addition of a noise barrier).</description>
+                </value>
+                <value>
+                    <fullName>New Alternative</fullName>
+                    <default>false</default>
+                    <label>New Alternative</label>
+                    <description>An entirely new preferred alternative was created or selected in response to public comments. Highest tier of responsiveness.</description>
+                </value>
+                <value>
+                    <fullName>Non-Substantive</fullName>
+                    <default>false</default>
+                    <label>Non-Substantive</label>
+                    <description>Text edit, formatting correction, or clarification with no change to the underlying decision or mitigation plan.</description>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+
+    <!-- ── What changed ─────────────────────────────────────────────────── -->
+
+    <fields>
+        <fullName>nepa_decision_element_affected__c</fullName>
+        <description>The specific aspect of the decision that was modified: preferred alternative selection, mitigation measure, project design, scope/boundary, schedule, monitoring requirement, or other.</description>
+        <inlineHelpText>Which part of the decision changed. Required for reportable attribution trail.</inlineHelpText>
+        <label>Decision Element Affected</label>
+        <required>true</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Preferred Alternative</fullName><default>false</default><label>Preferred Alternative</label></value>
+                <value><fullName>Mitigation Measure</fullName><default>false</default><label>Mitigation Measure</label></value>
+                <value><fullName>Project Design</fullName><default>false</default><label>Project Design</label></value>
+                <value><fullName>Project Scope/Boundary</fullName><default>false</default><label>Project Scope/Boundary</label></value>
+                <value><fullName>Construction Schedule</fullName><default>false</default><label>Construction Schedule</label></value>
+                <value><fullName>Monitoring Requirement</fullName><default>false</default><label>Monitoring Requirement</label></value>
+                <value><fullName>Other</fullName><default>false</default><label>Other</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+
+    <fields>
+        <fullName>nepa_modification_description__c</fullName>
+        <description>Plain-language description of what changed and how it differs from the prior decision. Required for administrative record and APA judicial review. This text is part of the Final EIS comment response chapter.</description>
+        <inlineHelpText>Describe what changed, what the prior decision was, and why this modification was made in response to comments.</inlineHelpText>
+        <label>Modification Description</label>
+        <length>32768</length>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>6</visibleLines>
+    </fields>
+
+    <!-- ── Comment attribution ──────────────────────────────────────────── -->
+
+    <fields>
+        <fullName>nepa_attribution_type__c</fullName>
+        <description>Whether this modification is attributed to individual named comments, a comment cluster (near-duplicate group), or both. Drives which attribution fields to populate and how the report rollup counts comments credited.</description>
+        <inlineHelpText>Individual Comments: link specific PublicComplaint records. Cluster: enter cluster ID and count. Both: use both fields.</inlineHelpText>
+        <label>Attribution Type</label>
+        <required>true</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Individual Comments</fullName><default>false</default><label>Individual Comments</label></value>
+                <value><fullName>Comment Cluster</fullName><default>false</default><label>Comment Cluster</label></value>
+                <value><fullName>Both</fullName><default>false</default><label>Both</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+
+    <fields>
+        <fullName>nepa_attributed_cluster_id__c</fullName>
+        <description>The cluster ID from nepa_cluster_id__c on PublicComplaint records. When a modification is driven by a group of near-duplicate comments (e.g., 500 form letters citing the same concern), use this field instead of linking each comment individually to avoid governor limits and noise in the attribution report. Matches nepa_cluster_id__c values set by the AI Triage Agent.</description>
+        <inlineHelpText>Cluster ID from the AI triage agent's near-duplicate grouping. Use when 10+ comments share the same concern.</inlineHelpText>
+        <label>Attributed Cluster ID</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+
+    <fields>
+        <fullName>nepa_attributed_cluster_count__c</fullName>
+        <description>Number of comments in the attributed cluster. Reported as the credited comment count when attribution_type is Cluster or Both. Required when nepa_attributed_cluster_id__c is populated.</description>
+        <inlineHelpText>How many comments were in this cluster. Used in responsiveness rate reporting.</inlineHelpText>
+        <label>Attributed Cluster Comment Count</label>
+        <precision>8</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+
+    <!-- ── EIS chapter citation ──────────────────────────────────────────── -->
+
+    <fields>
+        <fullName>nepa_final_eis_section__c</fullName>
+        <description>The Final EIS section or response-to-comments chapter where this modification is documented. Enables auditors and reviewing courts to locate the agency's written credit attribution in the published document without manually parsing hundreds of pages.</description>
+        <inlineHelpText>Final EIS chapter/section where this modification and its attributed comments are discussed (e.g., "Chapter 4, Response to Comment C-47").</inlineHelpText>
+        <label>Final EIS Section Reference</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+
+    <fields>
+        <fullName>nepa_modification_date__c</fullName>
+        <description>Date the modification was formally incorporated into the preferred alternative or mitigation plan. Used for chronological ordering in the administrative record.</description>
+        <inlineHelpText>Date this change was incorporated into the project decision.</inlineHelpText>
+        <label>Modification Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+
+    <fields>
+        <fullName>nepa_recorded_by__c</fullName>
+        <description>The agency staff member who recorded this attribution. Part of the OMB M-24-10 audit trail — human attribution decisions are not AI-generated.</description>
+        <inlineHelpText>Agency staff member who documented this modification and its comment attribution.</inlineHelpText>
+        <label>Recorded By</label>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <referenceTo>User</referenceTo>
+        <relationshipLabel>Decision Modifications Recorded</relationshipLabel>
+        <relationshipName>Decision_Modifications_Recorded</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+
+    <!-- ── Auto number ──────────────────────────────────────────────────── -->
+
+    <label>NEPA Decision Modification</label>
+    <nameField>
+        <displayFormat>MOD-{00000000}</displayFormat>
+        <label>Modification Name</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>NEPA Decision Modifications</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ControlledByParent</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>
