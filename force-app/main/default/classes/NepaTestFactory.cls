@@ -94,6 +94,41 @@ public class NepaTestFactory {
         return insertProcess(projectId, 'EIS', today.addDays(-60), today.addDays(-1));
     }
 
+    /**
+     * Builds an unsaved IndividualApplication with DateTime-precision comment period boundaries.
+     * Use this overload when sub-day precision is needed (e.g., exact-minute deadline tests).
+     * @param projectId Parent Program Id
+     * @param reviewType Value for nepa_review_type__c (CE/EA/EIS)
+     * @param periodStart DateTime the comment period opens
+     * @param periodEnd DateTime the comment period closes (exact-minute precision)
+     * @return Unsaved IndividualApplication record
+     */
+    @SuppressWarnings('PMD.ExcessiveParameterList')
+    public static IndividualApplication makeProcessWithDateTimes(
+        Id projectId, String reviewType, DateTime periodStart, DateTime periodEnd
+    ) {
+        IndividualApplication ia = new IndividualApplication();
+        ia.nepa_related_project__c                = projectId;
+        ia.nepa_review_type__c                    = reviewType;
+        ia.nepa_process_status__c                 = 'in progress';
+        ia.nepa_process_stage__c                  = 'Scoping';
+        ia.nepa_public_comment_period_start__c    = periodStart;
+        ia.nepa_public_comment_period_end_date__c = periodEnd;
+        return ia;
+    }
+
+    /**
+     * Inserts and returns an IndividualApplication with DateTime-precision comment period boundaries.
+     */
+    @SuppressWarnings('PMD.ExcessiveParameterList')
+    public static IndividualApplication insertProcessWithDateTimes(
+        Id projectId, String reviewType, DateTime periodStart, DateTime periodEnd
+    ) {
+        IndividualApplication ia = makeProcessWithDateTimes(projectId, reviewType, periodStart, periodEnd);
+        insert ia;
+        return ia;
+    }
+
     // ── nepa_engagement__c ────────────────────────────────────────────────────
 
     /**

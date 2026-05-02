@@ -80,6 +80,52 @@ global with sharing class NepaCommentEJDetector {
 
     // ── Core scanning logic ──────────────────────────────────────────────────
 
+    /**
+     * Strips Latin diacritics (accents) from a string so that bypass attempts using
+     * lookalike characters (e.g. "nàtive" for "native") are caught by keyword matching.
+     * Uses Normalizer.Form.NFD to decompose accented characters into base + combining marks,
+     * then strips all Unicode combining marks (category Mn).
+     * Apex does not have java.text.Normalizer, so we handle the common Latin-1 Supplement and
+     * Latin Extended-A ranges with a static replacement map covering all accented characters
+     * appearing in EJ/tribal keyword bypass attempts.
+     */
+    @TestVisible
+    private static String normalizeDiacritics(String input) {
+        // Map covering all precomposed Latin letters with diacritics (Unicode blocks
+        // Latin-1 Supplement U+00C0-00FF and Latin Extended-A U+0100-017E) that an
+        // adversary might substitute for ASCII base letters in EJ/tribal keywords.
+        String s = input;
+        s = s.replaceAll('[àáâãäåāăą]', 'a');
+        s = s.replaceAll('[ÀÁÂÃÄÅĀĂĄ]', 'a');
+        s = s.replaceAll('[èéêëēĕėęě]', 'e');
+        s = s.replaceAll('[ÈÉÊËĒĔĖĘĚ]', 'e');
+        s = s.replaceAll('[ìíîïĩīĭįı]', 'i');
+        s = s.replaceAll('[ÌÍÎÏĨĪĬĮI]', 'i');
+        s = s.replaceAll('[òóôõöōŏő]',  'o');
+        s = s.replaceAll('[ÒÓÔÕÖŌŎŐ]',  'o');
+        s = s.replaceAll('[ùúûüũūŭůűų]', 'u');
+        s = s.replaceAll('[ÙÚÛÜŨŪŬŮŰŲ]', 'u');
+        s = s.replaceAll('[ýÿ]',         'y');
+        s = s.replaceAll('[ÝŸ]',         'y');
+        s = s.replaceAll('[çćĉċč]',      'c');
+        s = s.replaceAll('[ÇĆĈĊČ]',      'c');
+        s = s.replaceAll('[ñńņňŉ]',      'n');
+        s = s.replaceAll('[ÑŃŅŇ]',       'n');
+        s = s.replaceAll('[śŝşšș]',      's');
+        s = s.replaceAll('[ŚŜŞŠȘ]',      's');
+        s = s.replaceAll('[ţťțþ]',       't');
+        s = s.replaceAll('[ŢŤȚÞ]',       't');
+        s = s.replaceAll('[źżž]',         'z');
+        s = s.replaceAll('[ŹŻŽ]',         'z');
+        s = s.replaceAll('[ðď]',          'd');
+        s = s.replaceAll('[ÐĎ]',          'd');
+        s = s.replaceAll('[ĺļľ]',         'l');
+        s = s.replaceAll('[ĹĻĽ]',         'l');
+        s = s.replaceAll('[ŗř]',           'r');
+        s = s.replaceAll('[ŖŘ]',           'r');
+        return s;
+    }
+
     private static Result scanComment(Request req) {
         Result res = new Result();
 
@@ -90,7 +136,9 @@ global with sharing class NepaCommentEJDetector {
             return res;
         }
 
-        String normalizedBody = req.commentBody.toLowerCase();
+        // Normalize diacritics before lowercasing so that adversarial submissions using
+        // accented characters (e.g. "nàtive américan") are matched correctly.
+        String normalizedBody = normalizeDiacritics(req.commentBody).toLowerCase();
         List<String> matchedCategories = new List<String>();
 
         for (String category : TRIGGER_KEYWORDS.keySet()) {

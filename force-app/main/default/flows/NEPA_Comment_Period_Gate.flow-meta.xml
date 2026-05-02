@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>Before-save kill-switch for the portal comment submission form. Runs on every PublicComplaint insert. If nepa_related_process__c is populated, fetches the parent IndividualApplication and compares NOW() to the exact comment period end datetime. Throws addError if the deadline has passed — blocking the record insert at the database layer regardless of channel (portal, API, OmniScript). Mandate 1: automates exact-minute intake gating for compressed 5-day comment periods under federal emergency procedures.</description>
+    <description>Before-save kill-switch for the portal comment submission form. Runs on every PublicComplaint insert. Uses cross-object field references ($Record.nepa_related_process__r.*) instead of a Get Records element — zero SOQL consumed regardless of batch size, safe for bulk API inserts of any volume. Compares $Flow.CurrentDateTime (UTC, second precision) to the exact comment period end datetime. Throws addError if the deadline has passed. Mandate 1: automates exact-minute intake gating for compressed 5-day comment periods under federal emergency procedures.</description>
     <label>NEPA Comment Period Gate</label>
     <processType>AutoLaunchedFlow</processType>
     <status>Draft</status>
@@ -24,31 +24,9 @@
                 <rightValue><booleanValue>false</booleanValue></rightValue>
             </conditions>
             <connector>
-                <targetReference>Get_RelatedProcess</targetReference>
-            </connector>
-            <label>Has Related Process</label>
-        </rules>
-    </decisions>
-
-    <decisions>
-        <name>Decision_IAFound</name>
-        <label>IA Record Found?</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>IA not found — allow insert</defaultConnectorLabel>
-        <!-- If the lookup points to a deleted/invalid record, fail open — the validation rule is the backstop -->
-        <rules>
-            <name>IA_Found</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>rec_IA</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue><booleanValue>false</booleanValue></rightValue>
-            </conditions>
-            <connector>
                 <targetReference>Decision_EndDateConfigured</targetReference>
             </connector>
-            <label>IA Found</label>
+            <label>Has Related Process</label>
         </rules>
     </decisions>
 
@@ -58,12 +36,13 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>No End Date — allow insert</defaultConnectorLabel>
-        <!-- If the agency has not set a deadline, fail open — the validation rule is the backstop -->
+        <!-- Cross-object reference returns null when lookup points to deleted/invalid record;
+             fail-open keeps behaviour consistent with original. Validation rule is backstop. -->
         <rules>
             <name>End_Date_Set</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>rec_IA.nepa_public_comment_period_end_date__c</leftValueReference>
+                <leftValueReference>$Record.nepa_related_process__r.nepa_public_comment_period_end_date__c</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue><booleanValue>false</booleanValue></rightValue>
             </conditions>
@@ -88,44 +67,20 @@
             <conditionLogic>1 AND 2</conditionLogic>
             <conditions>
                 <!-- Start date reached or not set (no start = open immediately) -->
-                <leftValueReference>rec_IA.nepa_public_comment_period_start__c</leftValueReference>
+                <leftValueReference>$Record.nepa_related_process__r.nepa_public_comment_period_start__c</leftValueReference>
                 <operator>LessThanOrEqualTo</operator>
                 <rightValue><elementReference>$Flow.CurrentDateTime</elementReference></rightValue>
             </conditions>
             <conditions>
-                <!-- End deadline has not passed — this is the exact-minute kill-switch -->
-                <leftValueReference>rec_IA.nepa_public_comment_period_end_date__c</leftValueReference>
+                <!-- End deadline has not passed — exact-minute kill-switch -->
+                <leftValueReference>$Record.nepa_related_process__r.nepa_public_comment_period_end_date__c</leftValueReference>
                 <operator>GreaterThan</operator>
                 <rightValue><elementReference>$Flow.CurrentDateTime</elementReference></rightValue>
             </conditions>
             <label>Period Open</label>
-            <!-- No connector — allow the insert to proceed (before-save flows that fall off the end allow DML) -->
+            <!-- No connector — allow the insert to proceed -->
         </rules>
     </decisions>
-
-    <!-- ── Record Lookups ─────────────────────────────────────────────────── -->
-
-    <recordLookups>
-        <name>Get_RelatedProcess</name>
-        <label>Get Related NEPA Process</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Decision_IAFound</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value><elementReference>$Record.nepa_related_process__c</elementReference></value>
-        </filters>
-        <object>IndividualApplication</object>
-        <outputReference>rec_IA</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>nepa_public_comment_period_end_date__c</queriedFields>
-        <queriedFields>nepa_public_comment_period_start__c</queriedFields>
-    </recordLookups>
 
     <!-- ── Custom Error ───────────────────────────────────────────────────── -->
 
@@ -151,16 +106,5 @@
         <recordTriggerType>Create</recordTriggerType>
         <triggerType>RecordBeforeSave</triggerType>
     </start>
-
-    <!-- ── Variables ─────────────────────────────────────────────────────── -->
-
-    <variables>
-        <name>rec_IA</name>
-        <dataType>SObject</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>IndividualApplication</objectType>
-    </variables>
 
 </Flow>

@@ -265,6 +265,139 @@ private class NepaCommentControllerTest {
         Test.stopTest();
     }
 
+    // ── Bug regression: nepa_related_process__c populated on insert ──────────
+
+    @IsTest
+    static void submitComment_setsNepaRelatedProcess_forGateEnforcement() {
+        // Regression for Bug 3: controller previously set only IndividualApplicationId,
+        // leaving nepa_related_process__c null. Both the NEPA_Comment_Period_Gate
+        // before-save flow and the NEPA_Comment_Period_Closed validation rule check
+        // nepa_related_process__c exclusively; without it both gate layers are bypassed.
+        IndividualApplication ia = [
+            SELECT Id FROM IndividualApplication
+            WHERE nepa_public_comment_period_end_date__c >= :DateTime.now()
+            LIMIT 1
+        ];
+
+        Test.startTest();
+        String commentId = NepaCommentController.submitComment(makeInput(ia.Id));
+        Test.stopTest();
+
+        PublicComplaint created = [
+            SELECT nepa_related_process__c, IndividualApplicationId
+            FROM PublicComplaint
+            WHERE Id = :commentId
+        ];
+        System.assertEquals(ia.Id, created.nepa_related_process__c,
+            'nepa_related_process__c must be set so before-save flow and validation rule can enforce the deadline');
+        System.assertEquals(ia.Id, created.IndividualApplicationId,
+            'IndividualApplicationId (PSS native) must also be set');
+    }
+
+    // ── Bug regression: exact-minute deadline (DateTime precision) ────────────
+
+    @IsTest
+    static void submitComment_deadlinePassedTodayEarlier_throwsException() {
+        // Regression for Bug 2: original code compared Date.today() >= periodEnd.date(),
+        // which allowed submissions on the deadline calendar day even after the exact
+        // cutoff time. The fix uses DateTime.now() with strict > comparison matching
+        // the before-save flow's $Flow.CurrentDateTime semantics.
+        //
+        // We set the period end to 1 second in the past — same calendar day as now(),
+        // but the exact-minute deadline has passed.
+        Program proj = NepaTestFactory.insertProgram('CMT-DT-001', 'DateTime Precision Test', 'EPA');
+        DateTime justExpired = DateTime.now().addSeconds(-1);
+        IndividualApplication ia = NepaTestFactory.insertProcessWithDateTimes(
+            proj.Id, 'EIS', DateTime.now().addDays(-30), justExpired
+        );
+
+        Test.startTest();
+        try {
+            NepaCommentController.submitComment(makeInput(ia.Id));
+            System.assert(false, 'Should have thrown — deadline passed 1 second ago');
+        } catch (AuraHandledException e) {
+            System.assert(e.getMessage().contains('not currently open'),
+                'Expected "not currently open" but got: ' + e.getMessage());
+        }
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void submitComment_deadlineInOneSecond_succeeds() {
+        // Complement to the above: period closes 60 seconds from now — submission must succeed.
+        Program proj = NepaTestFactory.insertProgram('CMT-DT-002', 'Nearly Closed Test', 'NPS');
+        IndividualApplication ia = NepaTestFactory.insertProcessWithDateTimes(
+            proj.Id, 'EIS', DateTime.now().addDays(-5), DateTime.now().addSeconds(60)
+        );
+
+        Test.startTest();
+        String commentId = NepaCommentController.submitComment(makeInput(ia.Id));
+        Test.stopTest();
+
+        System.assertNotEquals(null, commentId, 'Should succeed when period closes 60 seconds from now');
+    }
+
+    // ── Bot payload: oversized body rejected before DML ───────────────────────
+
+    @IsTest
+    static void submitComment_200kbBotPayload_rejectedBeforeDml() {
+        // Phase 1 test 1.2: a 200KB malicious body (all HTML junk + 50-char substantive
+        // content buried within) must be rejected by the 32,000-char controller guard
+        // before it ever reaches the database or the Agentforce triage pipeline.
+        // LongTextArea max is 32,768 chars; controller enforces 32,000 to leave headroom.
+        IndividualApplication ia = [
+            SELECT Id FROM IndividualApplication
+            WHERE nepa_public_comment_period_end_date__c >= :DateTime.now()
+            LIMIT 1
+        ];
+
+        // 200 * 1024 = 204,800 characters — well above the 32,000 threshold
+        String botPayload = '<div>'.repeat(40000) + 'The pipeline affects salmon habitat.' + '</div>'.repeat(256);
+
+        NepaCommentController.CommentInput input = makeInput(ia.Id);
+        input.commentBody = botPayload;
+
+        Test.startTest();
+        try {
+            NepaCommentController.submitComment(input);
+            System.assert(false, 'Should have thrown for oversized body');
+        } catch (AuraHandledException e) {
+            System.assert(e.getMessage().contains('32,000'),
+                'Should surface the 32,000-char limit message: ' + e.getMessage());
+        }
+        Test.stopTest();
+
+        Integer count = [SELECT COUNT() FROM PublicComplaint WHERE IndividualApplicationId = :ia.Id];
+        System.assertEquals(0, count, 'No record should be persisted for the oversized payload');
+    }
+
+    @IsTest
+    static void submitComment_htmlStrippedThenSentimentPreserved() {
+        // After HTML stripping, the substantive text content must survive intact
+        // (guard against over-aggressive sanitization that strips legitimate text).
+        IndividualApplication ia = [
+            SELECT Id FROM IndividualApplication
+            WHERE nepa_public_comment_period_end_date__c >= :DateTime.now()
+            LIMIT 1
+        ];
+
+        NepaCommentController.CommentInput input = makeInput(ia.Id);
+        input.commentBody = '<div><span style="color:red">The pipeline crosses a sensitive wetland '
+            + 'under 33 U.S.C. 1344 jurisdiction.</span></div>';
+
+        Test.startTest();
+        String commentId = NepaCommentController.submitComment(input);
+        Test.stopTest();
+
+        PublicComplaint created = [SELECT nepa_comment_body__c FROM PublicComplaint WHERE Id = :commentId];
+        System.assert(!created.nepa_comment_body__c.contains('<div>'), 'HTML tags must be stripped');
+        System.assert(!created.nepa_comment_body__c.contains('<span'), 'HTML tags must be stripped');
+        System.assert(created.nepa_comment_body__c.contains('wetland'),
+            'Substantive content must survive sanitization');
+        System.assert(created.nepa_comment_body__c.contains('1344'),
+            'Statutory citation must survive sanitization');
+    }
+
     // ── bulk safety ───────────────────────────────────────────────────────────
 
     @IsTest

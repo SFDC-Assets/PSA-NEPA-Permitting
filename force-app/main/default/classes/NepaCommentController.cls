@@ -26,6 +26,10 @@ public with sharing class NepaCommentController {
         PublicComplaint comment = new PublicComplaint();
         // IndividualApplicationId is the PSS native lookup to the process record
         comment.IndividualApplicationId         = input.processId;
+        // nepa_related_process__c must be set so the NEPA_Comment_Period_Gate before-save flow
+        // and the NEPA_Comment_Period_Closed validation rule can enforce the deadline.
+        // IndividualApplicationId alone does not satisfy either gate check.
+        comment.nepa_related_process__c         = input.processId;
         // PSS uses Name as the commenter identity field on PublicComplaint
         comment.Name                            = sanitize(input.commenterName);
         comment.nepa_organization__c            = sanitize(input.organization);
@@ -87,14 +91,19 @@ public with sharing class NepaCommentController {
             throw new AuraHandledException('Process not found');
         }
 
-        Date today = Date.today();
+        // Use DateTime.now() — NOT Date.today() — so the exact-minute deadline is enforced.
+        // Date.today() comparison would allow submissions on the deadline day after the
+        // cutoff time, defeating the compressed 5-day emergency comment period kill-switch.
+        // The before-save Flow and validation rule both use $Flow.CurrentDateTime / NOW()
+        // (UTC-based second precision); this method must match that precision.
+        DateTime now = DateTime.now();
         IndividualApplication ia = processes[0];
 
         Boolean open = (
             ia.nepa_public_comment_period_start__c != null &&
             ia.nepa_public_comment_period_end_date__c != null &&
-            ia.nepa_public_comment_period_start__c.date() <= today &&
-            ia.nepa_public_comment_period_end_date__c.date() >= today
+            ia.nepa_public_comment_period_start__c <= now &&
+            ia.nepa_public_comment_period_end_date__c > now
         );
 
         if (!open) {

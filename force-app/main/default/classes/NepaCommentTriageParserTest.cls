@@ -2,7 +2,7 @@
 @SuppressWarnings('PMD.MethodNamingConventions')
 private class NepaCommentTriageParserTest {
 
-    private static final String VALID_JSON = '{"sentiment":"Opposed","is_substantive":true,"confidence_score":85,"cluster_hint":"water quality concern","triage_rationale":"Substantive: raises specific water quality claim citing upstream contamination data."}';
+    private static final String VALID_JSON = '{"sentiment":"Opposed","is_substantive":true,"confidence_score":85,"cluster_hint":"water quality concern","triage_rationale":"Substantive: raises specific water quality claim citing upstream contamination data.","litigation_threat":false,"litigation_threat_basis":""}';
     private static final String VALID_JSON_WRAPPED = '```json\n' + VALID_JSON + '\n```';
 
     // ── Happy path ────────────────────────────────────────────────────────────
@@ -187,6 +187,98 @@ private class NepaCommentTriageParserTest {
         Test.stopTest();
 
         System.assertEquals(false, results[0].parseSuccess, 'Non-object JSON should fail to parse');
+    }
+
+    // ── Litigation threat fields ──────────────────────────────────────────────
+
+    @IsTest
+    static void litigationThreat_trueWithBasis_parsedCorrectly() {
+        // Vermont Yankee issue exhaustion: comment cites 40 C.F.R. 1502.24 and alleges
+        // the agency failed to respond — sufficient specificity to flag a litigation threat.
+        NepaCommentTriageParser.Request req = new NepaCommentTriageParser.Request();
+        req.triageJson = '{'
+            + '"sentiment":"Opposed",'
+            + '"is_substantive":true,'
+            + '"confidence_score":88,'
+            + '"cluster_hint":"cumulative impact analysis",'
+            + '"triage_rationale":"Substantive: cites specific regulatory gap.",'
+            + '"litigation_threat":true,'
+            + '"litigation_threat_basis":"Comment cites 40 C.F.R. 1502.24 and alleges agency '
+            + 'failed to disclose upstream cumulative impacts — sufficient for APA arbitrary-and-capricious challenge."'
+            + '}';
+
+        Test.startTest();
+        List<NepaCommentTriageParser.Result> results = NepaCommentTriageParser.parse(
+            new List<NepaCommentTriageParser.Request>{ req });
+        Test.stopTest();
+
+        NepaCommentTriageParser.Result res = results[0];
+        System.assertEquals(true,  res.parseSuccess,       'Parse must succeed');
+        System.assertEquals(true,  res.litigationThreat,   'litigationThreat must be true');
+        System.assert(String.isNotBlank(res.litigationThreatBasis),
+            'litigationThreatBasis must be populated when threat is true');
+        System.assert(res.litigationThreatBasis.contains('1502.24'),
+            'Basis text must be preserved verbatim');
+    }
+
+    @IsTest
+    static void litigationThreat_false_parsedCorrectly() {
+        NepaCommentTriageParser.Request req = new NepaCommentTriageParser.Request();
+        req.triageJson = '{'
+            + '"sentiment":"Supportive","is_substantive":false,"confidence_score":90,'
+            + '"cluster_hint":"","triage_rationale":"Non-substantive.",'
+            + '"litigation_threat":false,"litigation_threat_basis":""'
+            + '}';
+
+        Test.startTest();
+        List<NepaCommentTriageParser.Result> results = NepaCommentTriageParser.parse(
+            new List<NepaCommentTriageParser.Request>{ req });
+        Test.stopTest();
+
+        NepaCommentTriageParser.Result res = results[0];
+        System.assertEquals(true,  res.parseSuccess);
+        System.assertEquals(false, res.litigationThreat, 'litigationThreat must be false');
+        System.assertEquals('',    res.litigationThreatBasis, 'Basis must be empty string when no threat');
+    }
+
+    @IsTest
+    static void litigationThreat_fieldsAbsentInJson_defaultToFalseAndEmpty() {
+        // JSON from an older prompt version that predates the litigation_threat fields;
+        // parser must apply safe defaults rather than throw.
+        NepaCommentTriageParser.Request req = new NepaCommentTriageParser.Request();
+        req.triageJson = '{"sentiment":"Neutral","is_substantive":false,"confidence_score":70,'
+            + '"cluster_hint":"","triage_rationale":"Non-substantive."}';
+
+        Test.startTest();
+        List<NepaCommentTriageParser.Result> results = NepaCommentTriageParser.parse(
+            new List<NepaCommentTriageParser.Request>{ req });
+        Test.stopTest();
+
+        NepaCommentTriageParser.Result res = results[0];
+        System.assertEquals(true,  res.parseSuccess);
+        System.assertEquals(false, res.litigationThreat,
+            'Missing litigation_threat field must default to false');
+        System.assertEquals('',    res.litigationThreatBasis,
+            'Missing litigation_threat_basis field must default to empty string');
+    }
+
+    @IsTest
+    static void litigationThreat_nullBasisValue_defaultsToEmpty() {
+        // LLM occasionally emits explicit JSON null for string fields.
+        NepaCommentTriageParser.Request req = new NepaCommentTriageParser.Request();
+        req.triageJson = '{"sentiment":"Opposed","is_substantive":true,"confidence_score":80,'
+            + '"cluster_hint":"","triage_rationale":"Substantive.",'
+            + '"litigation_threat":false,"litigation_threat_basis":null}';
+
+        Test.startTest();
+        List<NepaCommentTriageParser.Result> results = NepaCommentTriageParser.parse(
+            new List<NepaCommentTriageParser.Request>{ req });
+        Test.stopTest();
+
+        NepaCommentTriageParser.Result res = results[0];
+        System.assertEquals(true, res.parseSuccess);
+        System.assertEquals('',   res.litigationThreatBasis,
+            'Explicit JSON null for basis must not produce a null String in the result');
     }
 
     // ── Bulk ─────────────────────────────────────────────────────────────────
