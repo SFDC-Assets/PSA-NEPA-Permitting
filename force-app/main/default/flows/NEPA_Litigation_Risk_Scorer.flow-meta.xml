@@ -201,6 +201,34 @@
                 <elementReference>var_AdjacentStatutePoints</elementReference>
             </value>
         </assignmentItems>
+        <!-- Mandate 3: route through expedited penalty check before capping -->
+        <connector>
+            <targetReference>Decision_IsExpedited</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- Mandate 3: APA arbitrary-and-capricious multiplier for expedited procedures -->
+    <assignments>
+        <name>Apply_Expedited_Multiplier</name>
+        <label>Apply 1.5x APA Risk Multiplier</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <!-- 1.5x multiplier: expedited procedure + incomplete record = high APA challenge probability -->
+            <assignToReference>var_RiskScore</assignToReference>
+            <operator>Multiply</operator>
+            <value><numberValue>1.5</numberValue></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_ExpeditedPenaltyApplied</assignToReference>
+            <operator>Assign</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CurrentStep</assignToReference>
+            <operator>Assign</operator>
+            <value><stringValue>Expedited_Multiplier_Applied</stringValue></value>
+        </assignmentItems>
         <connector>
             <targetReference>Decision_CapScore</targetReference>
         </connector>
@@ -311,6 +339,24 @@
             </value>
         </assignmentItems>
         <connector>
+            <targetReference>Decision_AppendPenaltyNote</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- Mandate 3: conditionally append APA penalty note to score factors string -->
+    <assignments>
+        <name>Append_PenaltyNote</name>
+        <label>Append APA Penalty Note to Score Factors</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ScoreFactors</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula_ScoreFactorsWithPenalty</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
             <targetReference>Update_RiskFields</targetReference>
         </connector>
     </assignments>
@@ -371,7 +417,89 @@
         <expression>"Agency:" &amp; {!var_AgencyName} &amp; "|Circuit:" &amp; {!var_CircuitKey} &amp; "|ReviewType:" &amp; {!$Record.nepa_review_type__c} &amp; "|RiskScore:" &amp; TEXT({!var_RiskScore}) &amp; "|RiskTier:" &amp; {!var_RiskTier} &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
     </formulas>
 
+    <!-- Mandate 3: appends APA penalty context to the score factors audit string -->
+    <formulas>
+        <name>formula_ScoreFactorsWithPenalty</name>
+        <dataType>String</dataType>
+        <expression>{!var_ScoreFactors} &amp; "; APA PENALTY: 1.5x multiplier applied — Expedited/Emergency procedure with " &amp; TEXT({!$Record.nepa_record_completeness__c}) &amp; "% administrative record completeness. Immediate record gap remediation required."</expression>
+    </formulas>
+
     <!-- Decisions -->
+    <!-- Mandate 3: gate on whether penalty was applied before writing score factors -->
+    <decisions>
+        <name>Decision_AppendPenaltyNote</name>
+        <label>Append APA Penalty Note?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No Penalty — proceed to update</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Update_RiskFields</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Penalty_Applied</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_ExpeditedPenaltyApplied</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><booleanValue>true</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Append_PenaltyNote</targetReference>
+            </connector>
+            <label>Penalty Applied</label>
+        </rules>
+    </decisions>
+
+    <!-- Mandate 3: Expedited APA risk gating — runs after base score calculation -->
+    <decisions>
+        <name>Decision_IsExpedited</name>
+        <label>Is Expedited or Emergency Procedure?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Standard — no penalty</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Decision_CapScore</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Is_Expedited_Emergency</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_review_timeline_type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><stringValue>Expedited/Emergency</stringValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Decision_RecordIncomplete</targetReference>
+            </connector>
+            <label>Expedited/Emergency</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_RecordIncomplete</name>
+        <label>Administrative Record Incomplete (&lt;100%)?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Record 100% Complete — no penalty</defaultConnectorLabel>
+        <!-- 100% completeness exempts the agency from the APA multiplier; they may still get sued, but their record is defensible -->
+        <defaultConnector>
+            <targetReference>Decision_CapScore</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Record_Incomplete</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_record_completeness__c</leftValueReference>
+                <operator>LessThan</operator>
+                <rightValue><numberValue>100.0</numberValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Apply_Expedited_Multiplier</targetReference>
+            </connector>
+            <label>Record Incomplete</label>
+        </rules>
+    </decisions>
+
     <!-- Step 1: Assign review type risk points -->
     <decisions>
         <name>Decision_ReviewType</name>
@@ -772,6 +900,13 @@
                 <elementReference>$Flow.CurrentDateTime</elementReference>
             </value>
         </inputAssignments>
+        <!-- Mandate 3: write the APA penalty flag for audit trail -->
+        <inputAssignments>
+            <field>nepa_expedited_risk_penalty_applied__c</field>
+            <value>
+                <elementReference>var_ExpeditedPenaltyApplied</elementReference>
+            </value>
+        </inputAssignments>
         <object>IndividualApplication</object>
         <filters>
             <field>Id</field>
@@ -795,14 +930,12 @@
             </connector>
             <pathType>AsyncAfterCommit</pathType>
         </scheduledPaths>
-        <!-- filterLogic: (1 OR 2) AND 3
-             Condition 3 guards against the CE Screener re-fire loop:
-             nepa_screener_last_run__c is stamped by NEPA_CE_Screener
-             immediately before it writes nepa_review_type__c. If that
-             field changed in the same save, the review-type change came
-             from the screener — not a human — and we skip re-scoring to
-             prevent a 2x async interview queue on every bulk CE screen. -->
-        <filterLogic>(1 OR 2) AND 3</filterLogic>
+        <!-- filterLogic: (1 OR 2 OR 4) AND 3
+             Condition 3 guards against the CE Screener re-fire loop.
+             Condition 4 (Mandate 3): also fires when nepa_review_timeline_type__c
+             changes — expedited/emergency designation must immediately
+             recalculate the APA risk multiplier. -->
+        <filterLogic>(1 OR 2 OR 4) AND 3</filterLogic>
         <filters>
             <field>nepa_review_type__c</field>
             <operator>IsChanged</operator>
@@ -822,6 +955,13 @@
             <operator>IsChanged</operator>
             <value>
                 <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_review_timeline_type__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
             </value>
         </filters>
     </start>
@@ -956,6 +1096,15 @@
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <!-- Mandate 3: tracks whether the 1.5x APA expedited penalty was applied this run -->
+    <variables>
+        <name>var_ExpeditedPenaltyApplied</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value><booleanValue>false</booleanValue></value>
     </variables>
     <variables>
         <name>var_CurrentStep</name>

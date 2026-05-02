@@ -977,6 +977,42 @@
         <field>IndividualApplication.nepa_legal_structure__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <!-- Mandate 1: Comment period gating fields -->
+    <!-- nepa_portal_comment_intake_open__c is a formula checkbox — read-only by nature -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_portal_comment_intake_open__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_related_process__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- Mandate 3: APA expedited review penalty fields -->
+    <!-- nepa_review_timeline_type__c is editable: PM sets this at intake -->
+    <!-- nepa_expedited_risk_penalty_applied__c is read-only: written by NEPA_Litigation_Risk_Scorer Flow -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_review_timeline_type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_expedited_risk_penalty_applied__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- Mandate 4: AI EIS draft document fields (read-only — written by NEPA_EIS_Section_Assembler Flow) -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>ContentVersion.nepa_section_type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>ContentVersion.nepa_draft_source__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <!-- NEPA_Flow_Error__c fields (written by flows, readable by admins) -->
     <!-- Note: nepa_flow_api_name__c is required on NEPA_Flow_Error__c and cannot be listed in fieldPermissions -->
     <fieldPermissions>

@@ -382,4 +382,30 @@
         <trackHistory>false</trackHistory>
         <type>DateTime</type>
     </fields>
+
+    <!-- Mandate 1: Comment period kill-switch — lookup to parent IA for server-side gate -->
+    <fields>
+        <fullName>nepa_related_process__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Lookup to the IndividualApplication (NEPA process) this comment was submitted against. Required for the NEPA_Comment_Period_Gate before-save flow and the NEPA_Comment_Period_Closed validation rule to enforce exact-minute comment period deadlines without human admin intervention.</description>
+        <inlineHelpText>The NEPA process (IndividualApplication) this comment responds to. Set by the portal OmniScript on submission.</inlineHelpText>
+        <label>Related NEPA Process</label>
+        <referenceTo>IndividualApplication</referenceTo>
+        <relationshipLabel>Public Comments</relationshipLabel>
+        <relationshipName>Public_Comments</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <validationRules>
+        <fullName>NEPA_Comment_Period_Closed</fullName>
+        <active>true</active>
+        <description>Belt-and-suspenders enforcement of the comment period deadline. Blocks direct API inserts where the before-save flow does not execute. Fires only when nepa_related_process__c is set and the process has an end date that has already passed. Fail-open: missing lookup or missing end date allows the insert.</description>
+        <errorConditionFormula>AND(
+  NOT(ISBLANK(nepa_related_process__c)),
+  NOT(ISBLANK(nepa_related_process__r.nepa_public_comment_period_end_date__c)),
+  nepa_related_process__r.nepa_public_comment_period_end_date__c &lt; NOW()
+)</errorConditionFormula>
+        <errorMessage>The public comment period for this NEPA process has closed. Comments submitted after the deadline cannot be accepted.</errorMessage>
+    </validationRules>
 </CustomObject>

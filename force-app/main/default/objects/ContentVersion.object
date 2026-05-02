@@ -483,6 +483,48 @@
         <trackHistory>false</trackHistory>
         <type>Checkbox</type>
     </fields>
+    <!-- Mandate 4: AI EIS section generation fields -->
+    <fields>
+        <fullName>nepa_section_type__c</fullName>
+        <description>Single-select EIS section type for AI-generated drafts. Distinct from nepa_section_tags__c (multi-select taxonomy) — this identifies the primary section being drafted by NEPA_EIS_Section_Assembler. Required for OMB M-24-10 AI disclosure and 40 CFR 1502 section traceability.</description>
+        <inlineHelpText>EIS section this document represents. Set automatically by AI draft generation; editable by SME reviewer.</inlineHelpText>
+        <label>EIS Section Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Purpose and Need</fullName><default>false</default><label>Purpose and Need</label></value>
+                <value><fullName>Affected Environment</fullName><default>false</default><label>Affected Environment</label></value>
+                <value><fullName>Alternatives</fullName><default>false</default><label>Alternatives</label></value>
+                <value><fullName>Environmental Consequences</fullName><default>false</default><label>Environmental Consequences</label></value>
+                <value><fullName>Mitigation Measures</fullName><default>false</default><label>Mitigation Measures</label></value>
+                <value><fullName>Cumulative Impacts</fullName><default>false</default><label>Cumulative Impacts</label></value>
+                <value><fullName>Index</fullName><default>false</default><label>Index</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_draft_source__c</fullName>
+        <description>Provenance of this document draft. AI-Generated = fully machine-authored by NEPA_EIS_Section_Assembler; Human-Authored = entirely written by staff; AI-Assisted = AI-generated draft subsequently edited by a human. Required for OMB M-24-10 AI use disclosure. AI-Generated documents must be reviewed by a Subject Matter Expert before publication.</description>
+        <inlineHelpText>Who authored this document. AI-Generated drafts require SME review and sign-off before inclusion in the administrative record.</inlineHelpText>
+        <label>Draft Source</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>AI-Generated</fullName><default>false</default><label>AI-Generated</label></value>
+                <value><fullName>Human-Authored</fullName><default>false</default><label>Human-Authored</label></value>
+                <value><fullName>AI-Assisted</fullName><default>false</default><label>AI-Assisted</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+
     <recordTypes>
         <fullName>nepa_permit_document</fullName>
         <active>true</active>

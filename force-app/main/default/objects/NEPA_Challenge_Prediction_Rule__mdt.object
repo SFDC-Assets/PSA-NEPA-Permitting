@@ -57,4 +57,22 @@
         <label>Active</label>
         <type>Checkbox</type>
     </fields>
+
+    <!-- Mandate 2: EO 14270 temporal versioning -->
+    <fields>
+        <fullName>Effective_Start_Date__c</fullName>
+        <description>Date this record version becomes effective. Flows compare inp_EvaluationDate (= nepa_start_date__c on the IA) against this: only records where Effective_Start_Date__c IS NULL OR &lt;= EvaluationDate are returned. Null = effective from the beginning of time.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Effective Start Date</label>
+        <required>false</required>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>Sunset_Date__c</fullName>
+        <description>Date after which this record version is no longer effective (EO 14270 sunset compliance). Flows filter: Sunset_Date__c IS NULL OR &gt;= EvaluationDate. Null = no sunset.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Sunset Date</label>
+        <required>false</required>
+        <type>Date</type>
+    </fields>
 </CustomObject>

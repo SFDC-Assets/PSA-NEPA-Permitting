@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>Autolaunched subflow that assembles one EIS section draft using AI. Inputs: IA Id and section type. Gets project description, GIS data elements, and scoping ApplicationTimeline records; passes context to the NEPA_EIS_Section_Draft GenAiPromptTemplate; creates a ContentVersion record with nepa_draft_source__c = AI-Generated and nepa_section_type__c set. Called by NEPA_EIS_Section_Draft_Trigger async path when NOI or Scoping Complete events are saved. Mandate 4: real-time AI section assembly for 28-day EIS completion. NOTE: ContentVersion.VersionData requires a base64 Blob — AI output is stored in nepa_document_summary__c (LongTextArea) and Title for SME review; VersionData is left to a follow-up Apex action or manual upload.</description>
+    <label>NEPA EIS Section Assembler</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Draft</status>
+
+    <!-- ── Assignments ────────────────────────────────────────────────────── -->
+
+    <assignments>
+        <name>Build_ProjectContext</name>
+        <label>Build Project Context String</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ProjectDescription</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula_ProjectDescription</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_ScopingEvents</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Append_ScopingEvent</name>
+        <label>Append Scoping Event to Context</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ScopingContext</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>formula_ScopingEventEntry</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_ScopingEvents</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Handle_Error</name>
+        <label>Handle Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- ── Decisions ─────────────────────────────────────────────────────── -->
+
+    <decisions>
+        <name>Decision_ProcessFound</name>
+        <label>Process Record Found?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Not Found — exit</defaultConnectorLabel>
+        <rules>
+            <name>Process_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>rec_Process</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_RelatedProject</targetReference>
+            </connector>
+            <label>Found</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_IsEISProcess</name>
+        <label>Is EIS Review Type?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Not EIS — exit</defaultConnectorLabel>
+        <rules>
+            <name>Is_EIS</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>rec_Process.nepa_review_type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><stringValue>EIS</stringValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Build_ProjectContext</targetReference>
+            </connector>
+            <label>EIS</label>
+        </rules>
+    </decisions>
+
+    <!-- ── Record Lookups ─────────────────────────────────────────────────── -->
+
+    <recordLookups>
+        <name>Get_Process</name>
+        <label>Get NEPA Process</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_ProcessFound</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value><elementReference>inp_ProcessId</elementReference></value>
+        </filters>
+        <object>IndividualApplication</object>
+        <outputReference>rec_Process</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>nepa_review_type__c</queriedFields>
+        <queriedFields>nepa_purpose_need__c</queriedFields>
+        <queriedFields>nepa_description__c</queriedFields>
+        <queriedFields>nepa_related_project__c</queriedFields>
+        <queriedFields>nepa_lead_agency__c</queriedFields>
+    </recordLookups>
+
+    <recordLookups>
+        <name>Get_RelatedProject</name>
+        <label>Get Related Project</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_IsEISProcess</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value><elementReference>rec_Process.nepa_related_project__c</elementReference></value>
+        </filters>
+        <object>Program</object>
+        <outputReference>rec_Project</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>nepa_project_title__c</queriedFields>
+        <queriedFields>nepa_project_description__c</queriedFields>
+        <queriedFields>nepa_location_text__c</queriedFields>
+        <queriedFields>nepa_lead_agency__c</queriedFields>
+        <queriedFields>nepa_project_sector__c</queriedFields>
+        <queriedFields>nepa_location_lat__c</queriedFields>
+        <queriedFields>nepa_location_lon__c</queriedFields>
+    </recordLookups>
+
+    <recordLookups>
+        <name>Get_ScopingEvents</name>
+        <label>Get Scoping Timeline Events</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_ScopingEvents</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>nepa_related_process__c</field>
+            <operator>EqualTo</operator>
+            <value><elementReference>inp_ProcessId</elementReference></value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>ApplicationTimeline</object>
+        <outputReference>col_ScopingEvents</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>nepa_event_type__c</queriedFields>
+        <queriedFields>nepa_event_description__c</queriedFields>
+        <queriedFields>nepa_start_date__c</queriedFields>
+        <sortField>nepa_start_date__c</sortField>
+        <sortOrder>Asc</sortOrder>
+    </recordLookups>
+
+    <!-- ── Loops ──────────────────────────────────────────────────────────── -->
+
+    <loops>
+        <name>Loop_ScopingEvents</name>
+        <label>Loop: Build Scoping Context</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>col_ScopingEvents</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Append_ScopingEvent</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Call_GenAI</targetReference>
+        </noMoreValuesConnector>
+        <outputReference>rec_ScopingEvent</outputReference>
+    </loops>
+
+    <!-- ── Actions (GenAI prompt + error logger) ─────────────────────────── -->
+
+    <actionCalls>
+        <name>Call_GenAI</name>
+        <label>Call NEPA EIS Section Draft Prompt</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>NEPA_EIS_Section_Draft</actionName>
+        <actionType>generateText</actionType>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputParameters>
+            <name>ProjectDescription</name>
+            <value><elementReference>var_ProjectDescription</elementReference></value>
+        </inputParameters>
+        <inputParameters>
+            <name>GISContext</name>
+            <value><elementReference>formula_GISContext</elementReference></value>
+        </inputParameters>
+        <inputParameters>
+            <name>ScopingContext</name>
+            <value><elementReference>var_ScopingContext</elementReference></value>
+        </inputParameters>
+        <outputParameters>
+            <assignToReference>var_AIOutput</assignToReference>
+            <name>generatedText</name>
+        </outputParameters>
+        <connector>
+            <targetReference>Create_DraftDocument</targetReference>
+        </connector>
+    </actionCalls>
+
+    <!-- code-analyzer-suppress flow:MissingFaultHandler - terminal error handler; fault-handling Call_ErrorLogger would be circular -->
+    <subflows>
+        <name>Call_ErrorLogger</name>
+        <label>Log Flow Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value><stringValue>NEPA_EIS_Section_Assembler</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value><elementReference>var_ErrorMessage</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value><elementReference>inp_ProcessId</elementReference></value>
+        </inputAssignments>
+    </subflows>
+
+    <!-- ── Record Creates ────────────────────────────────────────────────── -->
+
+    <!-- NOTE: ContentVersion.VersionData requires a base64-encoded Blob, which
+         Flow cannot natively produce from a String. The AI draft text is stored in
+         nepa_document_summary__c (LongTextArea) and in the Title for immediate SME
+         visibility. A follow-up Apex action or manual upload populates VersionData
+         with the actual file bytes. This is a known platform limitation at API 62.0. -->
+    <recordCreates>
+        <name>Create_DraftDocument</name>
+        <label>Create AI Draft ContentVersion</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>Title</field>
+            <value><elementReference>formula_DocumentTitle</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>PathOnClient</field>
+            <value><elementReference>formula_PathOnClient</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_document_type__c</field>
+            <value><stringValue>Draft EIS</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_section_type__c</field>
+            <value><elementReference>inp_SectionType</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_draft_source__c</field>
+            <value><stringValue>AI-Generated</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_status__c</field>
+            <value><stringValue>Draft</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_document_summary__c</field>
+            <value><elementReference>var_AIOutput</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_related_document__c</field>
+            <value><elementReference>inp_ProcessId</elementReference></value>
+        </inputAssignments>
+        <object>ContentVersion</object>
+    </recordCreates>
+
+    <!-- ── Formulas ───────────────────────────────────────────────────────── -->
+
+    <formulas>
+        <name>formula_ProjectDescription</name>
+        <dataType>String</dataType>
+        <expression>"Project: " &amp; {!rec_Project.nepa_project_title__c} &amp; CHAR(10) &amp;
+"Agency: " &amp; {!rec_Project.nepa_lead_agency__c} &amp; CHAR(10) &amp;
+"Sector: " &amp; {!rec_Project.nepa_project_sector__c} &amp; CHAR(10) &amp;
+"Location: " &amp; {!rec_Project.nepa_location_text__c} &amp; CHAR(10) &amp;
+"Project Description: " &amp; {!rec_Project.nepa_project_description__c} &amp; CHAR(10) &amp;
+"Purpose and Need: " &amp; {!rec_Process.nepa_purpose_need__c}</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_GISContext</name>
+        <dataType>String</dataType>
+        <expression>IF(
+  NOT(ISBLANK({!rec_Project.nepa_location_lat__c})),
+  "Coordinates: " &amp; TEXT({!rec_Project.nepa_location_lat__c}) &amp; ", " &amp; TEXT({!rec_Project.nepa_location_lon__c}) &amp; CHAR(10),
+  ""
+) &amp; IF(
+  NOT(ISBLANK({!rec_Project.nepa_location_text__c})),
+  "Location Description: " &amp; {!rec_Project.nepa_location_text__c},
+  "Location: [GIS data not yet loaded — coordinate from project record]"
+)</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_ScopingEventEntry</name>
+        <dataType>String</dataType>
+        <expression>TEXT({!rec_ScopingEvent.nepa_event_type__c}) &amp; " (" &amp; TEXT({!rec_ScopingEvent.nepa_start_date__c}) &amp; "): " &amp; {!rec_ScopingEvent.nepa_event_description__c} &amp; CHAR(10)</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_DocumentTitle</name>
+        <dataType>String</dataType>
+        <expression>"[AI DRAFT] " &amp; {!inp_SectionType} &amp; " — " &amp; {!rec_Project.nepa_project_title__c} &amp; " — " &amp; TEXT(TODAY())</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_PathOnClient</name>
+        <dataType>String</dataType>
+        <expression>"AI_Draft_" &amp; SUBSTITUTE({!inp_SectionType}, " ", "_") &amp; "_" &amp; TEXT(TODAY()) &amp; ".txt"</expression>
+    </formulas>
+
+    <!-- ── Trigger (none — autolaunched subflow) ─────────────────────────── -->
+
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Process</targetReference>
+        </connector>
+    </start>
+
+    <!-- ── Variables ─────────────────────────────────────────────────────── -->
+
+    <variables>
+        <name>inp_ProcessId</name>
+        <description>Id of the IndividualApplication (NEPA process) to assemble the section for.</description>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>inp_SectionType</name>
+        <description>EIS section type to draft. Must match a nepa_section_type__c picklist value: Purpose and Need, Affected Environment, Alternatives, Environmental Consequences, Mitigation Measures, Cumulative Impacts, Index.</description>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>rec_Process</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>IndividualApplication</objectType>
+    </variables>
+    <variables>
+        <name>rec_Project</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Program</objectType>
+    </variables>
+    <variables>
+        <name>col_ScopingEvents</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ApplicationTimeline</objectType>
+    </variables>
+    <variables>
+        <name>rec_ScopingEvent</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ApplicationTimeline</objectType>
+    </variables>
+    <variables>
+        <name>var_ProjectDescription</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_ScopingContext</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value><stringValue></stringValue></value>
+    </variables>
+    <variables>
+        <name>var_AIOutput</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+</Flow>

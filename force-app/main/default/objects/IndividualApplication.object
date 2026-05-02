@@ -766,4 +766,53 @@
         <type>Number</type>
         <unique>false</unique>
     </fields>
+
+    <!-- Mandate 1: Portal comment intake formula kill-switch -->
+    <fields>
+        <fullName>nepa_portal_comment_intake_open__c</fullName>
+        <description>Formula checkbox: true when NOW() is between nepa_public_comment_period_start__c and nepa_public_comment_period_end_date__c. Drives portal OmniScript conditional visibility and CMS page visibility rules without human admin intervention. Recomputed on every page load — no async lag.</description>
+        <inlineHelpText>Portal comment intake is open when checked. Automatically closes at the exact end datetime — no manual toggle needed.</inlineHelpText>
+        <externalId>false</externalId>
+        <formula>AND(
+  NOT(ISBLANK(nepa_public_comment_period_start__c)),
+  NOT(ISBLANK(nepa_public_comment_period_end_date__c)),
+  NOW() &gt;= nepa_public_comment_period_start__c,
+  NOW() &lt; nepa_public_comment_period_end_date__c
+)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Portal Comment Intake Open</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+
+    <!-- Mandate 3: Expedited procedure APA risk fields -->
+    <fields>
+        <fullName>nepa_review_timeline_type__c</fullName>
+        <description>Procedure type governing APA litigation exposure. Expedited/Emergency and Alternative Arrangement procedures with incomplete administrative records receive a 1.5x risk multiplier from NEPA_Litigation_Risk_Scorer. Standard procedures are unaffected.</description>
+        <inlineHelpText>Standard, Expedited/Emergency (e.g. 14-day EA, 28-day EIS), or Alternative Arrangement. Expedited + incomplete record triggers APA risk penalty.</inlineHelpText>
+        <label>Review Timeline Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Standard</fullName><default>true</default><label>Standard</label></value>
+                <value><fullName>Expedited/Emergency</fullName><default>false</default><label>Expedited/Emergency</label></value>
+                <value><fullName>Alternative Arrangement</fullName><default>false</default><label>Alternative Arrangement</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_expedited_risk_penalty_applied__c</fullName>
+        <description>Set to true by NEPA_Litigation_Risk_Scorer when nepa_review_timeline_type__c is Expedited/Emergency AND nepa_record_completeness__c is below 100. Indicates that the 1.5x APA arbitrary-and-capricious risk multiplier was applied. Audit flag for legal review.</description>
+        <inlineHelpText>APA risk penalty applied: expedited procedure + incomplete administrative record. Review completeness score and fill gaps immediately.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Expedited Risk Penalty Applied</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
 </CustomObject>

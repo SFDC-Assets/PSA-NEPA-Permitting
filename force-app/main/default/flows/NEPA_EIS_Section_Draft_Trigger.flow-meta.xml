@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>Record-triggered flow on ApplicationTimeline. When nepa_event_type__c changes to NOI or Scoping Complete on an EIS process, fires NEPA_EIS_Section_Assembler asynchronously (AsyncAfterCommit) for the appropriate section(s). NOI triggers Purpose and Need. Scoping Complete triggers Affected Environment, Alternatives, Environmental Consequences, and Cumulative Impacts. Mandate 4: continuous real-time AI EIS section assembly so that 28-day EIS completion under federal energy emergency procedures is not blocked by manual drafting.</description>
+    <label>NEPA EIS Section Draft Trigger</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Draft</status>
+
+    <!-- ── Decisions ─────────────────────────────────────────────────────── -->
+
+    <decisions>
+        <name>Decision_EventType</name>
+        <label>Which EIS Trigger Event?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Other Event — exit</defaultConnectorLabel>
+        <rules>
+            <name>Is_NOI</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_event_type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><stringValue>NOI</stringValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_RelatedProcess_NOI</targetReference>
+            </connector>
+            <label>NOI</label>
+        </rules>
+        <rules>
+            <name>Is_Scoping_Complete</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_event_type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><stringValue>Scoping Complete</stringValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_RelatedProcess_Scoping</targetReference>
+            </connector>
+            <label>Scoping Complete</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_IsEIS_NOI</name>
+        <label>Related Process is EIS? (NOI path)</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Not EIS — exit</defaultConnectorLabel>
+        <rules>
+            <name>EIS_NOI</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>rec_Process_NOI.nepa_review_type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><stringValue>EIS</stringValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assemble_PurposeAndNeed</targetReference>
+            </connector>
+            <label>EIS</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_IsEIS_Scoping</name>
+        <label>Related Process is EIS? (Scoping path)</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Not EIS — exit</defaultConnectorLabel>
+        <rules>
+            <name>EIS_Scoping</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>rec_Process_Scoping.nepa_review_type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><stringValue>EIS</stringValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assemble_AffectedEnvironment</targetReference>
+            </connector>
+            <label>EIS</label>
+        </rules>
+    </decisions>
+
+    <!-- ── Record Lookups ─────────────────────────────────────────────────── -->
+
+    <recordLookups>
+        <name>Get_RelatedProcess_NOI</name>
+        <label>Get Related Process (NOI)</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_IsEIS_NOI</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value><elementReference>$Record.nepa_related_process__c</elementReference></value>
+        </filters>
+        <object>IndividualApplication</object>
+        <outputReference>rec_Process_NOI</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>nepa_review_type__c</queriedFields>
+    </recordLookups>
+
+    <recordLookups>
+        <name>Get_RelatedProcess_Scoping</name>
+        <label>Get Related Process (Scoping Complete)</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_IsEIS_Scoping</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value><elementReference>$Record.nepa_related_process__c</elementReference></value>
+        </filters>
+        <object>IndividualApplication</object>
+        <outputReference>rec_Process_Scoping</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>nepa_review_type__c</queriedFields>
+    </recordLookups>
+
+    <!-- ── Subflow calls: NOI path → Purpose and Need ─────────────────────── -->
+
+    <subflows>
+        <name>Assemble_PurposeAndNeed</name>
+        <label>Assemble: Purpose and Need</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>NEPA_EIS_Section_Assembler</flowName>
+        <inputAssignments>
+            <name>inp_ProcessId</name>
+            <value><elementReference>$Record.nepa_related_process__c</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_SectionType</name>
+            <value><stringValue>Purpose and Need</stringValue></value>
+        </inputAssignments>
+    </subflows>
+
+    <!-- ── Subflow calls: Scoping Complete path → 4 sections ─────────────── -->
+
+    <subflows>
+        <name>Assemble_AffectedEnvironment</name>
+        <label>Assemble: Affected Environment</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>NEPA_EIS_Section_Assembler</flowName>
+        <inputAssignments>
+            <name>inp_ProcessId</name>
+            <value><elementReference>$Record.nepa_related_process__c</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_SectionType</name>
+            <value><stringValue>Affected Environment</stringValue></value>
+        </inputAssignments>
+        <connector>
+            <targetReference>Assemble_Alternatives</targetReference>
+        </connector>
+    </subflows>
+
+    <subflows>
+        <name>Assemble_Alternatives</name>
+        <label>Assemble: Alternatives</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>NEPA_EIS_Section_Assembler</flowName>
+        <inputAssignments>
+            <name>inp_ProcessId</name>
+            <value><elementReference>$Record.nepa_related_process__c</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_SectionType</name>
+            <value><stringValue>Alternatives</stringValue></value>
+        </inputAssignments>
+        <connector>
+            <targetReference>Assemble_EnvConsequences</targetReference>
+        </connector>
+    </subflows>
+
+    <subflows>
+        <name>Assemble_EnvConsequences</name>
+        <label>Assemble: Environmental Consequences</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>NEPA_EIS_Section_Assembler</flowName>
+        <inputAssignments>
+            <name>inp_ProcessId</name>
+            <value><elementReference>$Record.nepa_related_process__c</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_SectionType</name>
+            <value><stringValue>Environmental Consequences</stringValue></value>
+        </inputAssignments>
+        <connector>
+            <targetReference>Assemble_CumulativeImpacts</targetReference>
+        </connector>
+    </subflows>
+
+    <subflows>
+        <name>Assemble_CumulativeImpacts</name>
+        <label>Assemble: Cumulative Impacts</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>NEPA_EIS_Section_Assembler</flowName>
+        <inputAssignments>
+            <name>inp_ProcessId</name>
+            <value><elementReference>$Record.nepa_related_process__c</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_SectionType</name>
+            <value><stringValue>Cumulative Impacts</stringValue></value>
+        </inputAssignments>
+    </subflows>
+
+    <!-- ── Trigger ────────────────────────────────────────────────────────── -->
+
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <object>ApplicationTimeline</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+        <!-- AsyncAfterCommit: GenAI callouts and ContentVersion DML cannot run
+             synchronously in a record-triggered transaction. This path ensures
+             the assembler runs after the ApplicationTimeline record is fully
+             committed and the NOI/Scoping data is available for Get Records. -->
+        <scheduledPaths>
+            <connector>
+                <targetReference>Decision_EventType</targetReference>
+            </connector>
+            <pathType>AsyncAfterCommit</pathType>
+        </scheduledPaths>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>nepa_event_type__c</field>
+            <operator>IsChanged</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </filters>
+        <filters>
+            <field>nepa_related_process__c</field>
+            <operator>IsNull</operator>
+            <value><booleanValue>false</booleanValue></value>
+        </filters>
+    </start>
+
+    <!-- ── Variables ─────────────────────────────────────────────────────── -->
+
+    <variables>
+        <name>rec_Process_NOI</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>IndividualApplication</objectType>
+    </variables>
+    <variables>
+        <name>rec_Process_Scoping</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>IndividualApplication</objectType>
+    </variables>
+
+</Flow>

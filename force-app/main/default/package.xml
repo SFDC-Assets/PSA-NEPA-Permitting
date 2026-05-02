@@ -176,6 +176,31 @@
         <!-- PublicComplaint portal submission fields -->
         <members>PublicComplaint.nepa_comment_body__c</members>
         <members>PublicComplaint.nepa_email__c</members>
+        <!-- Mandate 1: Comment period gating -->
+        <members>PublicComplaint.nepa_related_process__c</members>
+        <!-- Mandate 2: CMT temporal versioning — Effective_Start_Date__c + Sunset_Date__c on all 7 CMTs -->
+        <members>NEPA_CE_Screening_Rule__mdt.Effective_Start_Date__c</members>
+        <members>NEPA_CE_Screening_Rule__mdt.Sunset_Date__c</members>
+        <members>NEPA_CE_Code__mdt.Effective_Start_Date__c</members>
+        <members>NEPA_CE_Code__mdt.Sunset_Date__c</members>
+        <members>NEPA_Agency_Risk_Rate__mdt.Effective_Start_Date__c</members>
+        <members>NEPA_Agency_Risk_Rate__mdt.Sunset_Date__c</members>
+        <members>NEPA_Circuit_Risk_Weight__mdt.Effective_Start_Date__c</members>
+        <members>NEPA_Circuit_Risk_Weight__mdt.Sunset_Date__c</members>
+        <members>NEPA_Challenge_Prediction_Rule__mdt.Effective_Start_Date__c</members>
+        <members>NEPA_Challenge_Prediction_Rule__mdt.Sunset_Date__c</members>
+        <members>NEPA_Statute_Risk_Weight__mdt.Effective_Start_Date__c</members>
+        <members>NEPA_Statute_Risk_Weight__mdt.Sunset_Date__c</members>
+        <members>NEPA_Required_Document__mdt.Effective_Start_Date__c</members>
+        <members>NEPA_Required_Document__mdt.Sunset_Date__c</members>
+        <!-- Mandate 3: APA expedited penalty fields -->
+        <members>IndividualApplication.nepa_review_timeline_type__c</members>
+        <members>IndividualApplication.nepa_expedited_risk_penalty_applied__c</members>
+        <!-- Mandate 1: Comment period formula gating (read-only formula) -->
+        <members>IndividualApplication.nepa_portal_comment_intake_open__c</members>
+        <!-- Mandate 4: AI EIS draft fields -->
+        <members>ContentVersion.nepa_section_type__c</members>
+        <members>ContentVersion.nepa_draft_source__c</members>
         <!-- Custom metadata type fields (schema) -->
         <members>NEPA_Agency_Risk_Rate__mdt.Agency_Name__c</members>
         <members>NEPA_Agency_Risk_Rate__mdt.Agency_Abbreviation__c</members>
@@ -491,6 +516,11 @@
         <members>NEPA_FlowError_CountIncrementer</members>
         <!-- Comment Triage Agent save flow -->
         <members>NEPA_Comment_Triage_Save</members>
+        <!-- Mandate 1: Automated comment period kill-switch -->
+        <members>NEPA_Comment_Period_Gate</members>
+        <!-- Mandate 4: Real-time AI EIS section assembly -->
+        <members>NEPA_EIS_Section_Draft_Trigger</members>
+        <members>NEPA_EIS_Section_Assembler</members>
         <name>Flow</name>
     </types>
     <types>
@@ -513,6 +543,11 @@
         <members>nepa_process_related_agencies__c-Permit Application Agency Relationship Layout</members>
         <members>nepa_project_agency_relationship__c-Project Agency Relationship Layout</members>
         <name>Layout</name>
+    </types>
+    <types>
+        <!-- Mandate 1: Belt-and-suspenders validation rule -->
+        <members>PublicComplaint.NEPA_Comment_Period_Closed</members>
+        <name>ValidationRule</name>
     </types>
     <types>
         <members>CustomLabels</members>
@@ -586,6 +621,8 @@
     <types>
         <!-- Comment Triage Agent prompt template -->
         <members>NEPA_Comment_Triage_Analysis</members>
+        <!-- Mandate 4: AI EIS section draft prompt -->
+        <members>NEPA_EIS_Section_Draft</members>
         <name>GenAiPromptTemplate</name>
     </types>
     <types>

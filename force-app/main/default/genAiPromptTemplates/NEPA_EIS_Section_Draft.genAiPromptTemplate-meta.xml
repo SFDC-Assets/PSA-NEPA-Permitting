@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenAiPromptTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <developerName>NEPA_EIS_Section_Draft</developerName>
+    <masterLabel>NEPA EIS Section Draft</masterLabel>
+    <description>Drafts a single EIS section from project description, GIS context, and scoping inputs. Called by NEPA_EIS_Section_Assembler autolaunched flow when an ApplicationTimeline event (NOI or Scoping Complete) triggers real-time section assembly. OMB M-24-10 compliant: AI-Generated flag set on all ContentVersion output records. Mandate 4: enables 28-day EIS completion under federal energy emergency procedures.</description>
+    <type>einstein_gpt__flex</type>
+    <templateVersions>
+        <content>You are a NEPA (National Environmental Policy Act) document specialist drafting a section of an Environmental Impact Statement for a federal permitting process.
+
+Section to draft: {!$Input:SectionType}
+
+Project Description:
+{!$Input:ProjectDescription}
+
+GIS and Environmental Context:
+{!$Input:GISContext}
+
+Scoping Record (NOI, public scoping comments, and agency input collected during scoping):
+{!$Input:ScopingContext}
+
+Instructions:
+- Draft this EIS section following 40 CFR 1502 requirements and CEQ NEPA regulations.
+- Use clear, professional language appropriate for a federal environmental review document.
+- Where additional technical analysis, field surveys, or agency consultation is required, insert a placeholder in the format: [PLACEHOLDER: description of required input — responsible party — estimated completion date]
+- Structure the section with numbered subsections appropriate to the section type.
+- Do not include the section title/header — it will be added by the document assembly system.
+- Do not include references to other sections by number — cross-references will be resolved during final assembly.
+- This is a working DRAFT for Subject Matter Expert (SME) review. Flag any assumptions with [ASSUMPTION: ...].
+
+Return only the section body text with subsection headers. No preamble, no closing remarks.</content>
+        <inputs>
+            <apiName>ProjectDescription</apiName>
+            <definition>primitive://String</definition>
+            <masterLabel>Project Description</masterLabel>
+            <referenceName>Input:ProjectDescription</referenceName>
+            <required>true</required>
+        </inputs>
+        <inputs>
+            <apiName>GISContext</apiName>
+            <definition>primitive://String</definition>
+            <masterLabel>GIS and Environmental Context</masterLabel>
+            <referenceName>Input:GISContext</referenceName>
+            <required>false</required>
+        </inputs>
+        <inputs>
+            <apiName>ScopingContext</apiName>
+            <definition>primitive://String</definition>
+            <masterLabel>Scoping Context</masterLabel>
+            <referenceName>Input:ScopingContext</referenceName>
+            <required>false</required>
+        </inputs>
+        <primaryModel>sfdc_ai__DefaultAnthropic</primaryModel>
+        <status>Draft</status>
+        <templateVersionNumber>1</templateVersionNumber>
+    </templateVersions>
+</GenAiPromptTemplate>
