@@ -1,0 +1,250 @@
+@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage,PMD.MethodNamingConventions,PMD.ApexUnitTestClassShouldHaveRunAs')
+@IsTest
+private class NepaSlaEscalationMonitorTest {
+
+    // ── Setup helpers ─────────────────────────────────────────────────────────
+
+    /**
+     * Creates a process with nepa_sla_due_date__c in the past so it is
+     * overdue when the scheduled flow runs.
+     */
+    private static IndividualApplication insertOverdueProcess(String reviewType) {
+        Program proj = NepaTestFactory.insertProgram(
+            'SLA-OVER-' + reviewType, 'SLA Overdue ' + reviewType, 'BLM');
+        IndividualApplication ia = new IndividualApplication();
+        ia.Category                = 'Permit';
+        ia.nepa_related_project__c = proj.Id;
+        ia.nepa_review_type__c     = reviewType;
+        ia.nepa_process_status__c  = 'in progress';
+        ia.nepa_process_stage__c   = 'Scoping';
+        ia.nepa_sla_due_date__c    = Date.today().addDays(-1);
+        ia.nepa_sla_overdue__c     = false;
+        ia.nepa_sla_warning_sent__c = false;
+        insert ia;
+        return ia;
+    }
+
+    /**
+     * Creates a process whose SLA due date is within the warning window
+     * (EIS warning = 30 days before due; we set due date 15 days out).
+     */
+    private static IndividualApplication insertWarningWindowProcess(String reviewType, Integer daysUntilDue) {
+        Program proj = NepaTestFactory.insertProgram(
+            'SLA-WARN-' + reviewType + daysUntilDue, 'SLA Warning ' + reviewType, 'FWS');
+        IndividualApplication ia = new IndividualApplication();
+        ia.Category                 = 'Permit';
+        ia.nepa_related_project__c  = proj.Id;
+        ia.nepa_review_type__c      = reviewType;
+        ia.nepa_process_status__c   = 'in progress';
+        ia.nepa_process_stage__c    = 'Scoping';
+        ia.nepa_sla_due_date__c     = Date.today().addDays(daysUntilDue);
+        ia.nepa_sla_overdue__c      = false;
+        ia.nepa_sla_warning_sent__c = false;
+        insert ia;
+        return ia;
+    }
+
+    // ── Overdue: flow sets nepa_sla_overdue__c = true ────────────────────────
+
+    @IsTest
+    static void overdueProcess_slaOverdueFlagSetTrue() {
+        IndividualApplication ia = insertOverdueProcess('EIS');
+
+        Test.startTest();
+        // Scheduled flows run when Flow.interview is invoked — invoke via direct execution
+        Flow.Interview.NEPA_SLA_Escalation_Monitor interview =
+            new Flow.Interview.NEPA_SLA_Escalation_Monitor(new Map<String, Object>());
+        interview.start();
+        Test.stopTest();
+
+        IndividualApplication result = [
+            SELECT nepa_sla_overdue__c, nepa_sla_warning_sent__c
+            FROM IndividualApplication
+            WHERE Id = :ia.Id
+        ];
+
+        System.assertEquals(true, result.nepa_sla_overdue__c,
+            'nepa_sla_overdue__c must be set to true for a past-due SLA');
+    }
+
+    // ── Warning window: flow sets nepa_sla_warning_sent__c = true ────────────
+
+    @IsTest
+    static void warningWindowProcess_warningSentFlagSetTrue() {
+        // EIS warning = 30 days before due; set due date 15 days out (within window)
+        IndividualApplication ia = insertWarningWindowProcess('EIS', 15);
+
+        Test.startTest();
+        Flow.Interview.NEPA_SLA_Escalation_Monitor interview =
+            new Flow.Interview.NEPA_SLA_Escalation_Monitor(new Map<String, Object>());
+        interview.start();
+        Test.stopTest();
+
+        IndividualApplication result = [
+            SELECT nepa_sla_warning_sent__c, nepa_sla_overdue__c
+            FROM IndividualApplication
+            WHERE Id = :ia.Id
+        ];
+
+        System.assertEquals(true, result.nepa_sla_warning_sent__c,
+            'nepa_sla_warning_sent__c must be set for a process within the warning window');
+        System.assertEquals(false, result.nepa_sla_overdue__c,
+            'A process 15 days from due date must not be flagged overdue');
+    }
+
+    // ── Warning already sent: no duplicate notification ───────────────────────
+
+    @IsTest
+    static void warningSentAlready_notSentAgain() {
+        Program proj = NepaTestFactory.insertProgram('SLA-DUP-001', 'No Dup Warning', 'BLM');
+        IndividualApplication ia = new IndividualApplication();
+        ia.Category                  = 'Permit';
+        ia.nepa_related_project__c   = proj.Id;
+        ia.nepa_review_type__c       = 'EIS';
+        ia.nepa_process_status__c    = 'in progress';
+        ia.nepa_process_stage__c     = 'Scoping';
+        ia.nepa_sla_due_date__c      = Date.today().addDays(15);
+        ia.nepa_sla_overdue__c       = false;
+        ia.nepa_sla_warning_sent__c  = true; // already sent
+        insert ia;
+
+        Integer chatterBefore = [
+            SELECT COUNT() FROM FeedItem WHERE ParentId = :ia.Id
+        ];
+
+        Test.startTest();
+        Flow.Interview.NEPA_SLA_Escalation_Monitor interview =
+            new Flow.Interview.NEPA_SLA_Escalation_Monitor(new Map<String, Object>());
+        interview.start();
+        Test.stopTest();
+
+        Integer chatterAfter = [
+            SELECT COUNT() FROM FeedItem WHERE ParentId = :ia.Id
+        ];
+
+        System.assertEquals(chatterBefore, chatterAfter,
+            'No new Chatter post should be created when warning was already sent');
+    }
+
+    // ── Completed process is excluded from SLA check ─────────────────────────
+
+    @IsTest
+    static void completedProcess_isExcludedFromSLACheck() {
+        Program proj = NepaTestFactory.insertProgram('SLA-COMP-001', 'Completed Process', 'BLM');
+        IndividualApplication ia = new IndividualApplication();
+        ia.Category                  = 'Permit';
+        ia.nepa_related_project__c   = proj.Id;
+        ia.nepa_review_type__c       = 'EIS';
+        ia.nepa_process_status__c    = 'completed'; // terminal status
+        ia.nepa_process_stage__c     = 'Record of Decision';
+        ia.nepa_sla_due_date__c      = Date.today().addDays(-10);
+        ia.nepa_sla_overdue__c       = false;
+        ia.nepa_sla_warning_sent__c  = false;
+        insert ia;
+
+        Test.startTest();
+        Flow.Interview.NEPA_SLA_Escalation_Monitor interview =
+            new Flow.Interview.NEPA_SLA_Escalation_Monitor(new Map<String, Object>());
+        interview.start();
+        Test.stopTest();
+
+        IndividualApplication result = [
+            SELECT nepa_sla_overdue__c
+            FROM IndividualApplication
+            WHERE Id = :ia.Id
+        ];
+
+        System.assertEquals(false, result.nepa_sla_overdue__c,
+            'Completed process must not be flagged overdue by SLA monitor');
+    }
+
+    // ── No SLA due date: process is ignored ──────────────────────────────────
+
+    @IsTest
+    static void noSlaDueDate_processIgnored() {
+        Program proj = NepaTestFactory.insertProgram('SLA-NULL-001', 'No SLA Date Process', 'BLM');
+        IndividualApplication ia = new IndividualApplication();
+        ia.Category                = 'Permit';
+        ia.nepa_related_project__c = proj.Id;
+        ia.nepa_review_type__c     = 'EIS';
+        ia.nepa_process_status__c  = 'in progress';
+        ia.nepa_process_stage__c   = 'Scoping';
+        ia.nepa_sla_due_date__c    = null;
+        ia.nepa_sla_overdue__c     = false;
+        insert ia;
+
+        Test.startTest();
+        Flow.Interview.NEPA_SLA_Escalation_Monitor interview =
+            new Flow.Interview.NEPA_SLA_Escalation_Monitor(new Map<String, Object>());
+        interview.start();
+        Test.stopTest();
+
+        IndividualApplication result = [
+            SELECT nepa_sla_overdue__c
+            FROM IndividualApplication
+            WHERE Id = :ia.Id
+        ];
+
+        System.assertEquals(false, result.nepa_sla_overdue__c,
+            'Process without SLA due date must not be flagged overdue');
+    }
+
+    // ── CE and EA processes are also evaluated ────────────────────────────────
+
+    @IsTest
+    static void ceAndEaProcesses_areEvaluated() {
+        IndividualApplication ceIa = insertOverdueProcess('CE');
+        IndividualApplication eaIa = insertOverdueProcess('EA');
+
+        Test.startTest();
+        Flow.Interview.NEPA_SLA_Escalation_Monitor interview =
+            new Flow.Interview.NEPA_SLA_Escalation_Monitor(new Map<String, Object>());
+        interview.start();
+        Test.stopTest();
+
+        List<IndividualApplication> results = [
+            SELECT Id, nepa_sla_overdue__c, nepa_review_type__c
+            FROM IndividualApplication
+            WHERE Id IN (:ceIa.Id, :eaIa.Id)
+        ];
+
+        for (IndividualApplication r : results) {
+            System.assertEquals(true, r.nepa_sla_overdue__c,
+                r.nepa_review_type__c + ' overdue process must be flagged');
+        }
+    }
+
+    // ── Bulk: many overdue records processed without governor limit error ─────
+
+    @IsTest
+    static void bulk_manyOverdueRecords_noException() {
+        Program proj = NepaTestFactory.insertProgram('SLA-BULK-001', 'Bulk SLA Project', 'BLM');
+        List<IndividualApplication> ias = new List<IndividualApplication>();
+        for (Integer i = 0; i < 10; i++) {
+            IndividualApplication ia = new IndividualApplication();
+            ia.Category                 = 'Permit';
+            ia.nepa_related_project__c  = proj.Id;
+            ia.nepa_review_type__c      = 'EIS';
+            ia.nepa_process_status__c   = 'in progress';
+            ia.nepa_process_stage__c    = 'Scoping';
+            ia.nepa_sla_due_date__c     = Date.today().addDays(-1 - i);
+            ia.nepa_sla_overdue__c      = false;
+            ia.nepa_sla_warning_sent__c = false;
+            ias.add(ia);
+        }
+        insert ias;
+
+        Test.startTest();
+        Boolean threw = false;
+        try {
+            Flow.Interview.NEPA_SLA_Escalation_Monitor interview =
+                new Flow.Interview.NEPA_SLA_Escalation_Monitor(new Map<String, Object>());
+            interview.start();
+        } catch (Exception e) {
+            threw = true;
+        }
+        Test.stopTest();
+
+        System.assertEquals(false, threw, 'SLA escalation monitor must not throw on bulk overdue records');
+    }
+}
