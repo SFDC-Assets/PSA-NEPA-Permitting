@@ -55,10 +55,10 @@
         <description>Semicolon-delimited list of cooperating agencies typically required for this sector/type/agency combination.</description>
         <fieldManageability>DeveloperControlled</fieldManageability>
         <label>Cooperating Agencies</label>
-        <length>1000</length>
+        <length>32768</length>
         <required>false</required>
-        <type>Text</type>
-        <unique>false</unique>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
     </fields>
     <fields>
         <fullName>Required_Permits__c</fullName>
@@ -75,10 +75,10 @@
         <description>Semicolon-delimited list of adjacent statutory/regulatory reviews not requiring a separate permit but requiring NEPA disclosure or coordination.</description>
         <fieldManageability>DeveloperControlled</fieldManageability>
         <label>Adjacent Reviews</label>
-        <length>2000</length>
+        <length>32768</length>
         <required>false</required>
-        <type>Text</type>
-        <unique>false</unique>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
     </fields>
     <fields>
         <fullName>Typical_Timeline_Months__c</fullName>

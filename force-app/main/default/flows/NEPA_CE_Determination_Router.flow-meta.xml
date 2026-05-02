@@ -1,107 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>Priority 2: Routes IndividualApplication records after CE screening completes. Fires after-save async when nepa_screening_confidence__c or nepa_review_type__c is changed. High-confidence CE: creates an ApplicationTimeline CE Determination event and a task to activate the CE Action Plan. Medium-confidence CE: creates a coordinator review task with pre-populated CE code and basis. Low confidence or EA/EIS: creates a scoping task to document the required review type and classification basis.</description>
+    <description>Priority 2: Routes IndividualApplication records after CE screening completes. Fires after-save async when nepa_screening_confidence__c or nepa_ce_pathway_recommendation__c is changed. High-confidence CE recommendation: creates an ApplicationTimeline CE Determination event and a task to activate the CE Action Plan. Medium-confidence: coordinator review task. EA-Required/EIS-Required: scoping task. Reads nepa_ce_pathway_recommendation__c (AI recommendation), NOT nepa_review_type__c (official pathway set by coordinator).</description>
     <label>NEPA CE Determination Router</label>
     <processType>AutoLaunchedFlow</processType>
     <status>Draft</status>
-
-    <!-- ============================================================
-         VARIABLES
-    ============================================================ -->
-
-    <variables>
-        <name>var_ReviewType</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-    <variables>
-        <name>var_Confidence</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-    <variables>
-        <name>var_TaskSubject</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-    <variables>
-        <name>var_TaskDescription</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-    <variables>
-        <name>var_TaskPriority</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <value><stringValue>Normal</stringValue></value>
-    </variables>
-    <variables>
-        <name>var_DueDays</name>
-        <dataType>Number</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <scale>0</scale>
-        <value><numberValue>5.0</numberValue></value>
-    </variables>
-    <variables>
-        <name>var_ErrorMessage</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-
-    <!-- ============================================================
-         FORMULAS
-    ============================================================ -->
-
-    <formulas>
-        <name>formula_TaskDueDate</name>
-        <dataType>Date</dataType>
-        <expression>TODAY() + {!var_DueDays}</expression>
-    </formulas>
-
-    <!-- ============================================================
-         TRIGGER: after-save async on IndividualApplication
-         when nepa_screening_confidence__c or nepa_review_type__c changes
-    ============================================================ -->
-
-    <start>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <object>IndividualApplication</object>
-        <recordTriggerType>CreateAndUpdate</recordTriggerType>
-        <triggerType>RecordAfterSave</triggerType>
-        <scheduledPaths>
-            <connector>
-                <targetReference>Assign_ScreeningValues</targetReference>
-            </connector>
-            <pathType>AsyncAfterCommit</pathType>
-        </scheduledPaths>
-        <filterLogic>or</filterLogic>
-        <filters>
-            <field>nepa_screening_confidence__c</field>
-            <operator>IsChanged</operator>
-            <value><booleanValue>true</booleanValue></value>
-        </filters>
-        <filters>
-            <field>nepa_review_type__c</field>
-            <operator>IsChanged</operator>
-            <value><booleanValue>true</booleanValue></value>
-        </filters>
-    </start>
 
     <!-- ============================================================
          STEP 1: Capture screening values from the saved record
@@ -115,7 +18,7 @@
         <assignmentItems>
             <assignToReference>var_ReviewType</assignToReference>
             <operator>Assign</operator>
-            <value><elementReference>$Record.nepa_review_type__c</elementReference></value>
+            <value><elementReference>$Record.nepa_ce_pathway_recommendation__c</elementReference></value>
         </assignmentItems>
         <assignmentItems>
             <assignToReference>var_Confidence</assignToReference>
@@ -126,67 +29,6 @@
             <targetReference>Decision_ReviewType</targetReference>
         </connector>
     </assignments>
-
-    <!-- ============================================================
-         STEP 2: Route by review type
-    ============================================================ -->
-
-    <decisions>
-        <name>Decision_ReviewType</name>
-        <label>Review Type?</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>EA or EIS</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Assign_ScopingTask</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>ReviewType_CE</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>var_ReviewType</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue><stringValue>CE</stringValue></rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Decision_CEConfidence</targetReference>
-            </connector>
-            <label>CE</label>
-        </rules>
-    </decisions>
-
-    <!-- ============================================================
-         STEP 3a: For CE — branch by confidence level
-    ============================================================ -->
-
-    <decisions>
-        <name>Decision_CEConfidence</name>
-        <label>CE Confidence Level?</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>Medium or Low</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Assign_MediumConfidenceTask</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>Confidence_High</name>
-            <conditionLogic>or</conditionLogic>
-            <conditions>
-                <leftValueReference>var_Confidence</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue><stringValue>High</stringValue></rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>var_Confidence</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue><stringValue>Medium-High</stringValue></rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Create_CeDeterminationEvent</targetReference>
-            </connector>
-            <label>High or Medium-High</label>
-        </rules>
-    </decisions>
 
     <!-- Error handling -->
     <assignments>
@@ -205,89 +47,6 @@
             <targetReference>Call_ErrorLogger</targetReference>
         </connector>
     </assignments>
-
-    <!-- code-analyzer-suppress flow:MissingFaultHandler - terminal error handler; fault-handling Call_ErrorLogger would be circular -->
-    <subflows>
-        <name>Call_ErrorLogger</name>
-        <label>Log Flow Error</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <flowName>NEPA_Error_Logger</flowName>
-        <inputAssignments>
-            <name>inp_FlowName</name>
-            <value><stringValue>NEPA_CE_Determination_Router</stringValue></value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_ErrorMessage</name>
-            <value><elementReference>var_ErrorMessage</elementReference></value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_RecordId</name>
-            <value><elementReference>$Record.Id</elementReference></value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_RunningUserId</name>
-            <value><elementReference>$User.Id</elementReference></value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_FailedStep</name>
-            <value><elementReference>var_CurrentStep</elementReference></value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_ErrorContext</name>
-            <value><elementReference>formula_ErrorContext</elementReference></value>
-        </inputAssignments>
-    </subflows>
-
-    <formulas>
-        <name>formula_ErrorContext</name>
-        <dataType>String</dataType>
-        <expression>"ReviewType:" &amp; {!var_ReviewType} &amp; "|Confidence:" &amp; TEXT({!var_Confidence}) &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
-    </formulas>
-
-    <!-- ============================================================
-         BRANCH 1: High-confidence CE
-         Create an ApplicationTimeline CE Determination event, then a
-         coordinator task to activate the CE Process Milestones plan
-    ============================================================ -->
-
-    <recordCreates>
-        <name>Create_CeDeterminationEvent</name>
-        <label>Create CE Determination Timeline Event</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <inputAssignments>
-            <field>IndividualApplicationId</field>
-            <value><elementReference>$Record.Id</elementReference></value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>nepa_event_type__c</field>
-            <value><elementReference>$Label.c.NEPA_EventType_CE_Determination</elementReference></value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>nepa_status__c</field>
-            <value><elementReference>$Label.c.NEPA_Status_Pending</elementReference></value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>nepa_event_description__c</field>
-            <value><elementReference>$Record.nepa_classification_basis__c</elementReference></value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>nepa_source__c</field>
-            <value><elementReference>$Label.c.NEPA_Source_CE_Screener</elementReference></value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>nepa_tier__c</field>
-            <value><stringValue>1</stringValue></value>
-        </inputAssignments>
-        <object>ApplicationTimeline</object>
-        <connector>
-            <targetReference>Assign_HighConfidenceTask</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Handle_Error</targetReference>
-        </faultConnector>
-    </recordCreates>
 
     <assignments>
         <name>Assign_HighConfidenceTask</name>
@@ -388,6 +147,127 @@
     </assignments>
 
     <!-- ============================================================
+         STEP 2: Route by review type
+    ============================================================ -->
+
+    <decisions>
+        <name>Decision_ReviewType</name>
+        <label>Review Type?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>EA or EIS</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Assign_ScopingTask</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>ReviewType_CE</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_ReviewType</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><stringValue>CE-Recommended</stringValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Decision_CEConfidence</targetReference>
+            </connector>
+            <label>CE-Recommended</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         STEP 3a: For CE — branch by confidence level
+    ============================================================ -->
+
+    <decisions>
+        <name>Decision_CEConfidence</name>
+        <label>CE Confidence Level?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Medium or Low</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Assign_MediumConfidenceTask</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Confidence_High</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>var_Confidence</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><stringValue>High</stringValue></rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>var_Confidence</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><stringValue>Medium-High</stringValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_CeDeterminationEvent</targetReference>
+            </connector>
+            <label>High or Medium-High</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         FORMULAS
+    ============================================================ -->
+
+    <formulas>
+        <name>formula_TaskDueDate</name>
+        <dataType>Date</dataType>
+        <expression>TODAY() + {!var_DueDays}</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_ErrorContext</name>
+        <dataType>String</dataType>
+        <expression>"ReviewType:" &amp; {!var_ReviewType} &amp; "|Confidence:" &amp; TEXT({!var_Confidence}) &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
+    </formulas>
+
+    <!-- ============================================================
+         BRANCH 1: High-confidence CE
+         Create an ApplicationTimeline CE Determination event, then a
+         coordinator task to activate the CE Process Milestones plan
+    ============================================================ -->
+
+    <recordCreates>
+        <name>Create_CeDeterminationEvent</name>
+        <label>Create CE Determination Timeline Event</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>IndividualApplicationId</field>
+            <value><elementReference>$Record.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_event_type__c</field>
+            <value><elementReference>$Label.c.NEPA_EventType_CE_Determination</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_status__c</field>
+            <value><elementReference>$Label.c.NEPA_Status_Pending</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_event_description__c</field>
+            <value><elementReference>$Record.nepa_classification_basis__c</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_source__c</field>
+            <value><elementReference>$Label.c.NEPA_Source_CE_Screener</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_tier__c</field>
+            <value><stringValue>1</stringValue></value>
+        </inputAssignments>
+        <object>ApplicationTimeline</object>
+        <connector>
+            <targetReference>Assign_HighConfidenceTask</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+    </recordCreates>
+
+    <!-- ============================================================
          FINAL: Create Task (shared by all three branches)
     ============================================================ -->
 
@@ -430,4 +310,123 @@
         </faultConnector>
     </recordCreates>
 
+    <!-- code-analyzer-suppress flow:MissingFaultHandler - terminal error handler; fault-handling Call_ErrorLogger would be circular -->
+    <subflows>
+        <name>Call_ErrorLogger</name>
+        <label>Log Flow Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value><stringValue>NEPA_CE_Determination_Router</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value><elementReference>var_ErrorMessage</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value><elementReference>$Record.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RunningUserId</name>
+            <value><elementReference>$User.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_FailedStep</name>
+            <value><elementReference>var_CurrentStep</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorContext</name>
+            <value><elementReference>formula_ErrorContext</elementReference></value>
+        </inputAssignments>
+    </subflows>
+
+    <!-- ============================================================
+         TRIGGER: after-save async on IndividualApplication
+         when nepa_screening_confidence__c or nepa_review_type__c changes
+    ============================================================ -->
+
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <object>IndividualApplication</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+        <scheduledPaths>
+            <connector>
+                <targetReference>Assign_ScreeningValues</targetReference>
+            </connector>
+            <pathType>AsyncAfterCommit</pathType>
+        </scheduledPaths>
+        <filterLogic>or</filterLogic>
+        <filters>
+            <field>nepa_screening_confidence__c</field>
+            <operator>IsChanged</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </filters>
+        <filters>
+            <field>nepa_ce_pathway_recommendation__c</field>
+            <operator>IsChanged</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </filters>
+    </start>
+
+    <!-- ============================================================
+         VARIABLES
+    ============================================================ -->
+
+    <variables>
+        <name>var_ReviewType</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_Confidence</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_TaskSubject</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_TaskDescription</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_TaskPriority</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value><stringValue>Normal</stringValue></value>
+    </variables>
+    <variables>
+        <name>var_DueDays</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+        <value><numberValue>5.0</numberValue></value>
+    </variables>
+    <variables>
+        <name>var_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
 </Flow>

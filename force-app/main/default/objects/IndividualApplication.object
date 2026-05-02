@@ -1136,4 +1136,26 @@
         <trackHistory>false</trackHistory>
         <type>Checkbox</type>
     </fields>
+
+    <!-- P5: Permit Coordinator fields — auto-populated by NEPA_Permit_Coordinator flow -->
+    <fields>
+        <fullName>nepa_co_permits_required__c</fullName>
+        <description>Semicolon-delimited list of required co-permits and authorizations identified from the NEPA Permit Matrix for this project sector and type. Populated automatically by NEPA_Permit_Coordinator flow when nepa_review_type__c is set. Coordinator should verify and supplement as needed.</description>
+        <inlineHelpText>Required permits identified from sector/type matrix. Verify and supplement before advancing to scoping.</inlineHelpText>
+        <label>Co-Permits Required</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_cooperating_agencies__c</fullName>
+        <description>Semicolon-delimited list of cooperating agencies identified from the NEPA Permit Matrix for this project sector and type. Populated automatically by NEPA_Permit_Coordinator flow. Coordinator should confirm participation before issuing NOI/NOA.</description>
+        <inlineHelpText>Cooperating agencies from permit matrix. Confirm participation before publishing NOI.</inlineHelpText>
+        <label>Cooperating Agencies (Matrix)</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>TextArea</type>
+    </fields>
 </CustomObject>

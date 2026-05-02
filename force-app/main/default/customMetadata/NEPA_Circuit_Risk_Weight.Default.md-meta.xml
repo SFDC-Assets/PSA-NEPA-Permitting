@@ -18,4 +18,8 @@
         <field>Risk_Points__c</field>
         <value xsi:type="xsd:decimal">5</value>
     </values>
+    <values>
+        <field>Low_Data_Confidence__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
 </CustomMetadata>
