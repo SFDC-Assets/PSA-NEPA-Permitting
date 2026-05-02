@@ -1,0 +1,137 @@
+{
+  "Name": "NEPA_CE_Save_IP",
+  "Type": "NEPA",
+  "SubType": "CE_Save_IP",
+  "Language": "English",
+  "VersionNumber": 1,
+  "IsActive": true,
+  "IsIntegrationProcedure": true,
+  "Description": "Saves the NEPA_CE_Intake OmniScript result to IndividualApplication via DR_Load_NEPA_Process. Receives all intake + screening fields, upserts by nepa_federal_unique_id__c (blank = insert), and returns the saved record Id as processId.",
+  "PropertySetConfig": "{\"persistentComponent\":true,\"trackingCustomData\":{},\"enableLWCRuntime\":true}",
+  "WebComponentKey": "NEPA/CE_Save_IP/English/1",
+  "Elements": [
+    {
+      "Name": "BuildProcessPayload",
+      "Type": "Set Values",
+      "SequenceNumber": 1,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "assignmentRules": [
+          {
+            "name": "ProcessPayload:Name",
+            "value": "%processName%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ProcessPayload:nepa_related_project__c",
+            "value": "%projectId%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ProcessPayload:nepa_agency_id__c",
+            "value": "%agencyId%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ProcessPayload:nepa_start_date__c",
+            "value": "%startDate%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ProcessPayload:nepa_purpose_need__c",
+            "value": "%purposeNeed%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ProcessPayload:nepa_description__c",
+            "value": "%description%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ProcessPayload:nepa_action_type__c",
+            "value": "%actionType%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ProcessPayload:nepa_disturbance_acres__c",
+            "value": "%disturbanceAcres%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ProcessPayload:nepa_extraordinary_circumstances__c",
+            "value": "%extraordinaryCircumstances%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ProcessPayload:nepa_review_type__c",
+            "value": "%reviewType%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ProcessPayload:nepa_regulatory_citation__c",
+            "value": "%ceCode%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ProcessPayload:nepa_screening_confidence__c",
+            "value": "%confidence%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ProcessPayload:nepa_classification_basis__c",
+            "value": "%classificationBasis%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ProcessPayload:nepa_process_status__c",
+            "value": "Draft",
+            "valueType": "value"
+          },
+          {
+            "name": "ProcessPayload:nepa_process_stage__c",
+            "value": "Intake",
+            "valueType": "value"
+          }
+        ]
+      }
+    },
+    {
+      "Name": "UpsertProcess",
+      "Type": "DataRaptor Load Action",
+      "SequenceNumber": 2,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "bundleName": "DR_Load_NEPA_Process",
+        "inputMap": [
+          {
+            "name": "ProcessPayload",
+            "value": "%ProcessPayload%",
+            "valueType": "reference"
+          }
+        ],
+        "outputPath": "UpsertResult",
+        "chainOnStep": "BuildProcessPayload",
+        "failOnStepError": true,
+        "mergeOutputWithParent": false
+      }
+    },
+    {
+      "Name": "ExtractSavedId",
+      "Type": "Set Values",
+      "SequenceNumber": 3,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "assignmentRules": [
+          {
+            "name": "processId",
+            "value": "%UpsertResult:Id%",
+            "valueType": "reference"
+          }
+        ]
+      }
+    }
+  ]
+}

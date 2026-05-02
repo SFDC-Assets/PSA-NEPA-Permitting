@@ -1,0 +1,938 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExpressionSetDefinition xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>NEPA CE Screener</label>
+    <processType>Bre</processType>
+    <template>false</template>
+    <versions>
+        <fullName>NEPA_CE_Screener_V1</fullName>
+        <description>CE screening BRE: routes a NEPA project to the correct review type (CE/EA/EIS) based on NAICS code, agency, sector, type key, and action type using a three-tier Decision Matrix lookup. Outputs ReviewType, CECode, Confidence, and ClassificationBasis.</description>
+        <expressionSetDefinition>NEPA_CE_Screener</expressionSetDefinition>
+        <label>NEPA CE Screener V1</label>
+        <processType>Bre</processType>
+        <rank>1</rank>
+        <shouldShowExplExternally>false</shouldShowExplExternally>
+        <startDate>2026-05-01T00:00:00.000Z</startDate>
+        <status>Active</status>
+
+        <!-- ═══════════════════════════════════════════════════════
+             STEP 1  —  Branch: choose screening path
+             Three branches run in parallel priority order:
+               Seq 1: NAICS-first path (most projects have NAICS)
+               Seq 2: Agency+Sector+Type Tier-1 path
+               Seq 3: Agency+ActionType Tier-2 path
+             ═══════════════════════════════════════════════════════ -->
+        <steps>
+            <label>Screening Path Branch</label>
+            <name>ScreeningPathBranch</name>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>1</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>Branch</stepType>
+        </steps>
+
+        <!-- ───── Branch 1: NAICS path ───── -->
+        <steps>
+            <advancedCondition>
+                <conditionLogic>1</conditionLogic>
+                <criteria>
+                    <operator>NotEquals</operator>
+                    <sequenceNumber>1</sequenceNumber>
+                    <sourceFieldName>NAICSCode</sourceFieldName>
+                    <value></value>
+                    <valueType>Literal</valueType>
+                </criteria>
+                <resultParameter>cond_HasNAICS</resultParameter>
+            </advancedCondition>
+            <label>Has NAICS Code</label>
+            <name>HasNAICSCode</name>
+            <parentStep>ScreeningPathBranch</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>1</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>AdvancedCondition</stepType>
+        </steps>
+
+        <steps>
+            <actionType>GetOutputsFromDecisionMatrix</actionType>
+            <decisionTable>
+                <decisionTableName>NEPA_CE_Screener_NAICS</decisionTableName>
+                <type>DecisionMatrix</type>
+            </decisionTable>
+            <label>NAICS Lookup</label>
+            <name>NAICSLookup</name>
+            <parentStep>HasNAICSCode</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>1</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>ReviewType</assignedParameter>
+                <expression>NEPA_CE_Screener_NAICS__ReviewType</expression>
+            </assignment>
+            <label>Set Review Type from NAICS</label>
+            <name>SetReviewTypeFromNAICS</name>
+            <parentStep>HasNAICSCode</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>2</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>CECode</assignedParameter>
+                <expression>NEPA_CE_Screener_NAICS__CECode</expression>
+            </assignment>
+            <label>Set CE Code from NAICS</label>
+            <name>SetCECodeFromNAICS</name>
+            <parentStep>HasNAICSCode</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>3</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>Confidence</assignedParameter>
+                <expression>NEPA_CE_Screener_NAICS__Confidence</expression>
+            </assignment>
+            <label>Set Confidence from NAICS</label>
+            <name>SetConfidenceFromNAICS</name>
+            <parentStep>HasNAICSCode</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>4</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>ClassificationBasis</assignedParameter>
+                <expression>NEPA_CE_Screener_NAICS__ClassificationBasis</expression>
+            </assignment>
+            <label>Set Classification Basis from NAICS</label>
+            <name>SetClassificationBasisFromNAICS</name>
+            <parentStep>HasNAICSCode</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>5</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <!-- ───── Branch 2: Agency + Sector + TypeKey (Tier 1) ───── -->
+        <steps>
+            <advancedCondition>
+                <conditionLogic>1 AND 2 AND 3</conditionLogic>
+                <criteria>
+                    <operator>Equals</operator>
+                    <sequenceNumber>1</sequenceNumber>
+                    <sourceFieldName>NAICSCode</sourceFieldName>
+                    <value></value>
+                    <valueType>Literal</valueType>
+                </criteria>
+                <criteria>
+                    <operator>NotEquals</operator>
+                    <sequenceNumber>2</sequenceNumber>
+                    <sourceFieldName>AgencyAbbr</sourceFieldName>
+                    <value></value>
+                    <valueType>Literal</valueType>
+                </criteria>
+                <criteria>
+                    <operator>NotEquals</operator>
+                    <sequenceNumber>3</sequenceNumber>
+                    <sourceFieldName>SectorKey</sourceFieldName>
+                    <value></value>
+                    <valueType>Literal</valueType>
+                </criteria>
+                <resultParameter>cond_Tier1</resultParameter>
+            </advancedCondition>
+            <label>Agency and Sector Available</label>
+            <name>AgencyAndSectorAvailable</name>
+            <parentStep>ScreeningPathBranch</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>2</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>AdvancedCondition</stepType>
+        </steps>
+
+        <steps>
+            <actionType>GetOutputsFromDecisionMatrix</actionType>
+            <decisionTable>
+                <decisionTableName>NEPA_CE_Screener_Tier1</decisionTableName>
+                <type>DecisionMatrix</type>
+            </decisionTable>
+            <label>Tier 1 Agency Sector Lookup</label>
+            <name>Tier1AgencySectorLookup</name>
+            <parentStep>AgencyAndSectorAvailable</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>1</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>ReviewType</assignedParameter>
+                <expression>NEPA_CE_Screener_Tier1__ReviewType</expression>
+            </assignment>
+            <label>Set Review Type from Tier1</label>
+            <name>SetReviewTypeFromTier1</name>
+            <parentStep>AgencyAndSectorAvailable</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>2</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>CECode</assignedParameter>
+                <expression>NEPA_CE_Screener_Tier1__CECode</expression>
+            </assignment>
+            <label>Set CE Code from Tier1</label>
+            <name>SetCECodeFromTier1</name>
+            <parentStep>AgencyAndSectorAvailable</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>3</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>Confidence</assignedParameter>
+                <expression>NEPA_CE_Screener_Tier1__Confidence</expression>
+            </assignment>
+            <label>Set Confidence from Tier1</label>
+            <name>SetConfidenceFromTier1</name>
+            <parentStep>AgencyAndSectorAvailable</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>4</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>ClassificationBasis</assignedParameter>
+                <expression>NEPA_CE_Screener_Tier1__ClassificationBasis</expression>
+            </assignment>
+            <label>Set Classification Basis from Tier1</label>
+            <name>SetClassificationBasisFromTier1</name>
+            <parentStep>AgencyAndSectorAvailable</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>5</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <!-- ───── Branch 3: Agency + ActionType (Tier 2) ───── -->
+        <steps>
+            <advancedCondition>
+                <conditionLogic>1 AND 2 AND 3</conditionLogic>
+                <criteria>
+                    <operator>Equals</operator>
+                    <sequenceNumber>1</sequenceNumber>
+                    <sourceFieldName>NAICSCode</sourceFieldName>
+                    <value></value>
+                    <valueType>Literal</valueType>
+                </criteria>
+                <criteria>
+                    <operator>Equals</operator>
+                    <sequenceNumber>2</sequenceNumber>
+                    <sourceFieldName>SectorKey</sourceFieldName>
+                    <value></value>
+                    <valueType>Literal</valueType>
+                </criteria>
+                <criteria>
+                    <operator>NotEquals</operator>
+                    <sequenceNumber>3</sequenceNumber>
+                    <sourceFieldName>ActionType</sourceFieldName>
+                    <value></value>
+                    <valueType>Literal</valueType>
+                </criteria>
+                <resultParameter>cond_Tier2</resultParameter>
+            </advancedCondition>
+            <label>Action Type Available</label>
+            <name>ActionTypeAvailable</name>
+            <parentStep>ScreeningPathBranch</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>3</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>AdvancedCondition</stepType>
+        </steps>
+
+        <steps>
+            <actionType>GetOutputsFromDecisionMatrix</actionType>
+            <decisionTable>
+                <decisionTableName>NEPA_CE_Screener_Tier2</decisionTableName>
+                <type>DecisionMatrix</type>
+            </decisionTable>
+            <label>Tier 2 Agency Action Type Lookup</label>
+            <name>Tier2AgencyActionTypeLookup</name>
+            <parentStep>ActionTypeAvailable</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>1</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>ReviewType</assignedParameter>
+                <expression>NEPA_CE_Screener_Tier2__ReviewType</expression>
+            </assignment>
+            <label>Set Review Type from Tier2</label>
+            <name>SetReviewTypeFromTier2</name>
+            <parentStep>ActionTypeAvailable</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>2</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>CECode</assignedParameter>
+                <expression>NEPA_CE_Screener_Tier2__CECode</expression>
+            </assignment>
+            <label>Set CE Code from Tier2</label>
+            <name>SetCECodeFromTier2</name>
+            <parentStep>ActionTypeAvailable</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>3</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>Confidence</assignedParameter>
+                <expression>NEPA_CE_Screener_Tier2__Confidence</expression>
+            </assignment>
+            <label>Set Confidence from Tier2</label>
+            <name>SetConfidenceFromTier2</name>
+            <parentStep>ActionTypeAvailable</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>4</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>ClassificationBasis</assignedParameter>
+                <expression>NEPA_CE_Screener_Tier2__ClassificationBasis</expression>
+            </assignment>
+            <label>Set Classification Basis from Tier2</label>
+            <name>SetClassificationBasisFromTier2</name>
+            <parentStep>ActionTypeAvailable</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>5</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <!-- ═══════════════════════════════════════════════════════
+             STEP 2  —  Acreage override: if DisturbanceAcres exceeds
+             the T2_HighAcreage threshold, force EA regardless of
+             any CE assignment already set.
+             ═══════════════════════════════════════════════════════ -->
+        <steps>
+            <label>Acreage Override Branch</label>
+            <name>AcreageOverrideBranch</name>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>2</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>Branch</stepType>
+        </steps>
+
+        <steps>
+            <advancedCondition>
+                <conditionLogic>1 AND 2</conditionLogic>
+                <criteria>
+                    <operator>GreaterThan</operator>
+                    <sequenceNumber>1</sequenceNumber>
+                    <sourceFieldName>DisturbanceAcres</sourceFieldName>
+                    <value>CONST_AcreageThreshold</value>
+                    <valueType>Parameter</valueType>
+                </criteria>
+                <criteria>
+                    <operator>Equals</operator>
+                    <sequenceNumber>2</sequenceNumber>
+                    <sourceFieldName>ReviewType</sourceFieldName>
+                    <value>CE</value>
+                    <valueType>Literal</valueType>
+                </criteria>
+                <resultParameter>cond_AcreageExceeded</resultParameter>
+            </advancedCondition>
+            <label>Acreage Exceeds CE Threshold</label>
+            <name>AcreageExceedsCEThreshold</name>
+            <parentStep>AcreageOverrideBranch</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>1</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>AdvancedCondition</stepType>
+        </steps>
+
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>ReviewType</assignedParameter>
+                <expression>EA</expression>
+            </assignment>
+            <label>Override to EA for High Acreage</label>
+            <name>OverrideToEAForHighAcreage</name>
+            <parentStep>AcreageExceedsCEThreshold</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>1</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>CECode</assignedParameter>
+                <expression></expression>
+            </assignment>
+            <label>Clear CE Code on Acreage Override</label>
+            <name>ClearCECodeOnAcreageOverride</name>
+            <parentStep>AcreageExceedsCEThreshold</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>2</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>Confidence</assignedParameter>
+                <expression>Low</expression>
+            </assignment>
+            <label>Set Low Confidence on Acreage Override</label>
+            <name>SetLowConfidenceOnAcreageOverride</name>
+            <parentStep>AcreageExceedsCEThreshold</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>3</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>ClassificationBasis</assignedParameter>
+                <expression>&apos;Acreage threshold exceeded (&apos; &amp; TEXT(DisturbanceAcres) &amp; &apos; acres &gt; &apos; &amp; TEXT(CONST_AcreageThreshold) &amp; &apos; acre CE limit); escalated to EA&apos;</expression>
+            </assignment>
+            <label>Set Acreage Override Basis</label>
+            <name>SetAcreageOverrideBasis</name>
+            <parentStep>AcreageExceedsCEThreshold</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>4</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <!-- ═══════════════════════════════════════════════════════
+             STEP 3  —  Default fallback: if no path matched, output
+             EA with Low confidence (conservative).
+             ═══════════════════════════════════════════════════════ -->
+        <steps>
+            <label>Default Fallback Branch</label>
+            <name>DefaultFallbackBranch</name>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>3</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>Branch</stepType>
+        </steps>
+
+        <steps>
+            <advancedCondition>
+                <conditionLogic>1</conditionLogic>
+                <criteria>
+                    <operator>Equals</operator>
+                    <sequenceNumber>1</sequenceNumber>
+                    <sourceFieldName>ReviewType</sourceFieldName>
+                    <value></value>
+                    <valueType>Literal</valueType>
+                </criteria>
+                <resultParameter>cond_NoMatch</resultParameter>
+            </advancedCondition>
+            <label>No Screening Match</label>
+            <name>NoScreeningMatch</name>
+            <parentStep>DefaultFallbackBranch</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>1</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>AdvancedCondition</stepType>
+        </steps>
+
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>ReviewType</assignedParameter>
+                <expression>EA</expression>
+            </assignment>
+            <label>Default Review Type to EA</label>
+            <name>DefaultReviewTypeToEA</name>
+            <parentStep>NoScreeningMatch</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>1</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>Confidence</assignedParameter>
+                <expression>Low</expression>
+            </assignment>
+            <label>Default Confidence to Low</label>
+            <name>DefaultConfidenceToLow</name>
+            <parentStep>NoScreeningMatch</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>2</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>ClassificationBasis</assignedParameter>
+                <expression>No screening rule matched provided inputs; defaulted to EA for manual review</expression>
+            </assignment>
+            <label>Default Classification Basis</label>
+            <name>DefaultClassificationBasis</name>
+            <parentStep>NoScreeningMatch</parentStep>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>3</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <!-- ═══════════════════════════════════════════════════════
+             STEP 4  —  Output: expose final determination
+             ═══════════════════════════════════════════════════════ -->
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>ReviewType</assignedParameter>
+                <expression>ReviewType</expression>
+            </assignment>
+            <label>Output Screening Result</label>
+            <name>OutputScreeningResult</name>
+            <resultIncluded>true</resultIncluded>
+            <sequenceNumber>4</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <!-- ══════════════════════ VARIABLES ══════════════════════ -->
+
+        <!-- Input variables -->
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Agency abbreviation (BLM, DOE, USFS, etc.)</description>
+            <input>true</input>
+            <name>AgencyAbbr</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value></value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>NAICS code string from Program.nepa_applicant_naics__c</description>
+            <input>true</input>
+            <name>NAICSCode</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value></value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Project sector key (Energy, Transportation, Agriculture, etc.)</description>
+            <input>true</input>
+            <name>SectorKey</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value></value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Project type key (NewConstruction, Renewal, Modification, etc.)</description>
+            <input>true</input>
+            <name>TypeKey</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value></value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Specific action type from IndividualApplication.nepa_action_type__c</description>
+            <input>true</input>
+            <name>ActionType</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value></value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Numeric</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Physical disturbance area from IndividualApplication.nepa_disturbance_acres__c</description>
+            <input>true</input>
+            <name>DisturbanceAcres</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value>0</value>
+        </variables>
+
+        <!-- Output variables -->
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Determined review type: CE, EA, or EIS</description>
+            <input>false</input>
+            <name>ReviewType</name>
+            <output>true</output>
+            <type>Variable</type>
+            <value></value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Applicable CE code (null when ReviewType is EA or EIS)</description>
+            <input>false</input>
+            <name>CECode</name>
+            <output>true</output>
+            <type>Variable</type>
+            <value></value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Classification confidence: High, Medium, or Low</description>
+            <input>false</input>
+            <name>Confidence</name>
+            <output>true</output>
+            <type>Variable</type>
+            <value></value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Human-readable explanation of which rule produced the classification</description>
+            <input>false</input>
+            <name>ClassificationBasis</name>
+            <output>true</output>
+            <type>Variable</type>
+            <value></value>
+        </variables>
+
+        <!-- Constant: acreage threshold above which a CE must be escalated to EA -->
+        <variables>
+            <collection>false</collection>
+            <dataType>Numeric</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Disturbance acreage ceiling for CE applicability (default 250 per CEQ guidance)</description>
+            <input>false</input>
+            <name>CONST_AcreageThreshold</name>
+            <output>false</output>
+            <type>Constant</type>
+            <value>250</value>
+        </variables>
+
+        <!-- Decision Matrix-bound output variables: NAICS tier -->
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_NAICS</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_NAICS__ReviewType</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_NAICS</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_NAICS__CECode</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_NAICS</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_NAICS__Confidence</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_NAICS</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_NAICS__ClassificationBasis</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+
+        <!-- Decision Matrix-bound output variables: Tier 1 -->
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_Tier1</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_Tier1__ReviewType</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_Tier1</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_Tier1__CECode</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_Tier1</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_Tier1__Confidence</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_Tier1</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_Tier1__ClassificationBasis</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+
+        <!-- Decision Matrix-bound output variables: Tier 2 -->
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_Tier2</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_Tier2__ReviewType</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_Tier2</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_Tier2__CECode</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_Tier2</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_Tier2__Confidence</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_Tier2</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_Tier2__ClassificationBasis</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+
+        <!-- Condition output flags -->
+        <variables>
+            <collection>false</collection>
+            <dataType>Boolean</dataType>
+            <description>True when NAICSCode is provided</description>
+            <input>false</input>
+            <name>cond_HasNAICS</name>
+            <output>false</output>
+            <resultStep>HasNAICSCode</resultStep>
+            <type>Variable</type>
+            <value>False</value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Boolean</dataType>
+            <description>True when Agency and Sector are available for Tier 1 lookup</description>
+            <input>false</input>
+            <name>cond_Tier1</name>
+            <output>false</output>
+            <resultStep>AgencyAndSectorAvailable</resultStep>
+            <type>Variable</type>
+            <value>False</value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Boolean</dataType>
+            <description>True when ActionType is available for Tier 2 lookup</description>
+            <input>false</input>
+            <name>cond_Tier2</name>
+            <output>false</output>
+            <resultStep>ActionTypeAvailable</resultStep>
+            <type>Variable</type>
+            <value>False</value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Boolean</dataType>
+            <description>True when DisturbanceAcres exceeds CE threshold and ReviewType is CE</description>
+            <input>false</input>
+            <name>cond_AcreageExceeded</name>
+            <output>false</output>
+            <resultStep>AcreageExceedsCEThreshold</resultStep>
+            <type>Variable</type>
+            <value>False</value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Boolean</dataType>
+            <description>True when no screening path matched and ReviewType remains empty</description>
+            <input>false</input>
+            <name>cond_NoMatch</name>
+            <output>false</output>
+            <resultStep>NoScreeningMatch</resultStep>
+            <type>Variable</type>
+            <value>False</value>
+        </variables>
+
+        <versionNumber>1</versionNumber>
+    </versions>
+</ExpressionSetDefinition>

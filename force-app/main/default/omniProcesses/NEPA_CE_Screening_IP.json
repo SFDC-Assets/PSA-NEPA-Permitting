@@ -1,0 +1,179 @@
+{
+  "Name": "NEPA_CE_Screening_IP",
+  "Type": "NEPA",
+  "SubType": "CE_Screening_IP",
+  "Language": "English",
+  "VersionNumber": 1,
+  "IsActive": true,
+  "IsIntegrationProcedure": true,
+  "Description": "CE screening Integration Procedure. Accepts project and process context, calls the NEPA_CE_Screener Expression Set BRE, and returns ReviewType, CECode, Confidence, and ClassificationBasis. Called by the NEPA_CE_Intake OmniScript on the screening step.",
+  "PropertySetConfig": "{\"persistentComponent\":true,\"trackingCustomData\":{},\"enableLWCRuntime\":true}",
+  "WebComponentKey": "NEPA/CE_Screening_IP/English/1",
+  "Elements": [
+    {
+      "Name": "GetProcessForScreening",
+      "Type": "DataRaptor Extract Action",
+      "SequenceNumber": 1,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "bundleName": "DR_Extract_NEPA_Process",
+        "inputMap": [
+          {
+            "name": "processId",
+            "value": "%processId%",
+            "valueType": "reference"
+          }
+        ],
+        "outputPath": "ProcessData",
+        "chainOnStep": "",
+        "failOnStepError": true,
+        "mergeOutputWithParent": false
+      }
+    },
+    {
+      "Name": "GetProjectForScreening",
+      "Type": "DataRaptor Extract Action",
+      "SequenceNumber": 2,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "bundleName": "DR_Extract_NEPA_Project",
+        "inputMap": [
+          {
+            "name": "projectId",
+            "value": "%ProcessData:nepa_related_project__c%",
+            "valueType": "reference"
+          }
+        ],
+        "outputPath": "ProjectData",
+        "chainOnStep": "GetProcessForScreening",
+        "failOnStepError": false,
+        "mergeOutputWithParent": false
+      }
+    },
+    {
+      "Name": "BuildScreeningInputs",
+      "Type": "Set Values",
+      "SequenceNumber": 3,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "assignmentRules": [
+          {
+            "name": "AgencyAbbr",
+            "value": "%ProcessData:nepa_data_source_agency__c%",
+            "valueType": "reference"
+          },
+          {
+            "name": "NAICSCode",
+            "value": "%ProjectData:nepa_applicant_naics__c%",
+            "valueType": "reference"
+          },
+          {
+            "name": "SectorKey",
+            "value": "%ProjectData:nepa_project_sector__c%",
+            "valueType": "reference"
+          },
+          {
+            "name": "TypeKey",
+            "value": "%ProjectData:nepa_project_type__c%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ActionType",
+            "value": "%ProcessData:nepa_action_type__c%",
+            "valueType": "reference"
+          },
+          {
+            "name": "DisturbanceAcres",
+            "value": "%ProcessData:nepa_disturbance_acres__c%",
+            "valueType": "reference"
+          }
+        ]
+      }
+    },
+    {
+      "Name": "CallCEScreenerBRE",
+      "Type": "Expression Set",
+      "SequenceNumber": 4,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "expressionSetApiName": "NEPA_CE_Screener",
+        "inputMap": [
+          {
+            "name": "AgencyAbbr",
+            "value": "%AgencyAbbr%",
+            "valueType": "reference"
+          },
+          {
+            "name": "NAICSCode",
+            "value": "%NAICSCode%",
+            "valueType": "reference"
+          },
+          {
+            "name": "SectorKey",
+            "value": "%SectorKey%",
+            "valueType": "reference"
+          },
+          {
+            "name": "TypeKey",
+            "value": "%TypeKey%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ActionType",
+            "value": "%ActionType%",
+            "valueType": "reference"
+          },
+          {
+            "name": "DisturbanceAcres",
+            "value": "%DisturbanceAcres%",
+            "valueType": "reference"
+          }
+        ],
+        "outputPath": "ScreeningResult",
+        "chainOnStep": "BuildScreeningInputs",
+        "failOnStepError": false,
+        "mergeOutputWithParent": false
+      }
+    },
+    {
+      "Name": "BuildScreeningResponse",
+      "Type": "Set Values",
+      "SequenceNumber": 5,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "assignmentRules": [
+          {
+            "name": "ReviewType",
+            "value": "%ScreeningResult:ReviewType%",
+            "valueType": "reference"
+          },
+          {
+            "name": "CECode",
+            "value": "%ScreeningResult:CECode%",
+            "valueType": "reference"
+          },
+          {
+            "name": "Confidence",
+            "value": "%ScreeningResult:Confidence%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ClassificationBasis",
+            "value": "%ScreeningResult:ClassificationBasis%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ScreeningComplete",
+            "value": "true",
+            "valueType": "value"
+          }
+        ]
+      }
+    }
+  ]
+}

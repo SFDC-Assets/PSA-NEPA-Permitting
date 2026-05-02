@@ -47,6 +47,10 @@
         <members>IndividualApplication.nepa_record_completeness__c</members>
         <members>IndividualApplication.nepa_missing_documents__c</members>
         <members>IndividualApplication.nepa_record_completeness_updated__c</members>
+        <!-- SLA tracking fields -->
+        <members>IndividualApplication.nepa_sla_due_date__c</members>
+        <members>IndividualApplication.nepa_sla_warning_sent__c</members>
+        <members>IndividualApplication.nepa_sla_overdue__c</members>
         <!-- CE Screening fields (Priority 2) -->
         <members>IndividualApplication.nepa_action_type__c</members>
         <members>IndividualApplication.nepa_disturbance_acres__c</members>
@@ -215,12 +219,19 @@
         <members>NEPA_Statute_Risk_Weight__mdt.Case_Count__c</members>
         <members>NEPA_Statute_Risk_Weight__mdt.Risk_Points__c</members>
         <members>NEPA_Statute_Risk_Weight__mdt.Active__c</members>
+        <!-- NEPA_SLA_Config__mdt fields -->
+        <members>NEPA_SLA_Config__mdt.Review_Type__c</members>
+        <members>NEPA_SLA_Config__mdt.Total_Days__c</members>
+        <members>NEPA_SLA_Config__mdt.Warning_Days_Before_Due__c</members>
+        <members>NEPA_SLA_Config__mdt.Active__c</members>
+        <!-- NEPA_Required_Document__mdt fields -->
         <members>NEPA_Required_Document__mdt.Review_Type__c</members>
         <members>NEPA_Required_Document__mdt.Document_Type__c</members>
         <members>NEPA_Required_Document__mdt.Is_Required__c</members>
         <members>NEPA_Required_Document__mdt.Stage_Required_By__c</members>
         <members>NEPA_Required_Document__mdt.Display_Order__c</members>
         <members>NEPA_Required_Document__mdt.Active__c</members>
+        <members>NEPA_Required_Document__mdt.Gate_Event_Type__c</members>
         <!-- NEPA_Flow_Error__c fields -->
         <members>NEPA_Flow_Error__c.nepa_flow_api_name__c</members>
         <members>NEPA_Flow_Error__c.nepa_error_message__c</members>
@@ -296,6 +307,9 @@
         <members>NEPA_CE_Code__mdt</members>
         <members>NEPA_Required_Document__mdt</members>
         <members>NEPA_Statute_Risk_Weight__mdt</members>
+        <members>NEPA_SLA_Config__mdt</members>
+        <!-- Platform events -->
+        <members>NEPA_Error_Event__e</members>
         <name>CustomObject</name>
     </types>
     <types>
@@ -419,6 +433,11 @@
         <members>NEPA_CE_Code.CEC_Energy_Policy_Act_2005_Sec_390_b_4</members>
         <members>NEPA_CE_Code.CEC_Energy_Policy_Act_2005_Sec_390_Cat</members>
         <members>NEPA_CE_Code.CEC_FLPMA_402_h</members>
+        <!-- NEPA_SLA_Config seed records -->
+        <members>NEPA_SLA_Config.EIS</members>
+        <members>NEPA_SLA_Config.EA</members>
+        <members>NEPA_SLA_Config.CE</members>
+        <members>NEPA_SLA_Config.Other_Authorization</members>
         <!-- NEPA_Required_Document seed records -->
         <members>NEPA_Required_Document.CE_CE_Determination</members>
         <members>NEPA_Required_Document.CE_Memorandum_to_File</members>
@@ -451,10 +470,19 @@
         <members>NEPA_Timeline_Risk_Assessor</members>
         <!-- Priority 6: Workflow Orchestration -->
         <members>NEPA_Stage_Gate</members>
+        <members>NEPA_Stage_Gate_Orchestrator</members>
+        <members>NEPA_Stage_Gate_Doc_Check</members>
         <!-- Priority 9: Administrative Record Completeness -->
         <members>NEPA_Administrative_Record_Checker</members>
+        <members>NEPA_AdminRecord_AutoCreate</members>
+        <members>NEPA_Record_Completeness_Scorer</members>
+        <!-- SLA Flows -->
+        <members>NEPA_SLA_Due_Date_Setter</members>
+        <members>NEPA_SLA_Escalation_Monitor</members>
         <!-- Error logging -->
         <members>NEPA_Error_Logger</members>
+        <members>NEPA_Error_Event_Handler</members>
+        <members>NEPA_FlowError_CountIncrementer</members>
         <name>Flow</name>
     </types>
     <types>
@@ -503,10 +531,14 @@
         <members>DR_Extract_NEPA_Comment</members>
         <members>DR_Extract_NEPA_EngagementEvent</members>
         <members>DR_Extract_NEPA_CaseEvent</members>
+        <!-- CE Intake: DataRaptor Load -->
+        <members>DR_Load_NEPA_Process</members>
         <name>OmniDataTransform</name>
     </types>
     <types>
         <members>NEPA/CEQExport</members>
+        <members>NEPA/CE_Screening_IP</members>
+        <members>NEPA/CE_Save_IP</members>
         <name>OmniIntegrationProcedure</name>
     </types>
     <types>
@@ -525,7 +557,19 @@
         <members>NepaEngagementControllerTest</members>
         <members>NepaCommentControllerTest</members>
         <members>NepaTimelineControllerTest</members>
+        <members>NepaCeqExportService</members>
+        <members>NepaCeqExportServiceTest</members>
         <name>ApexClass</name>
+    </types>
+    <types>
+        <!-- CE Intake OmniScript -->
+        <members>NEPA/CE_Intake</members>
+        <name>OmniScript</name>
+    </types>
+    <types>
+        <!-- CE Screening BRE -->
+        <members>NEPA_CE_Screener</members>
+        <name>ExpressionSetDefinition</name>
     </types>
     <version>62.0</version>
 </Package>

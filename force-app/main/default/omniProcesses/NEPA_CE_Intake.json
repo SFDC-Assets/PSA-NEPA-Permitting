@@ -1,0 +1,407 @@
+{
+  "Name": "NEPA_CE_Intake",
+  "Type": "NEPA",
+  "SubType": "CE_Intake",
+  "Language": "English",
+  "VersionNumber": 1,
+  "IsActive": true,
+  "IsIntegrationProcedure": false,
+  "Description": "4-step guided intake OmniScript for a new NEPA process. Step 1: select the parent Project. Step 2: enter process details (agency, type, purpose/need). Step 3: enter site and scope data (action type, disturbance acres, extraordinary circumstances). Step 4: view CE screening result returned by the NEPA_CE_Screener BRE and confirm or override before saving.",
+  "PropertySetConfig": "{\"wrapperClass\":\"nepa-ce-intake\",\"pubSubKey\":\"\",\"errorMessageTitle\":\"Error\",\"scriptType\":\"OS\",\"pubSub\":false,\"doneAction\":\"redirect\",\"doneActionUrl\":\"/lightning/r/IndividualApplication/{processId}/view\"}",
+  "WebComponentKey": "NEPA/CE_Intake/English/1",
+  "Elements": [
+
+    {
+      "Name": "Step1_ProjectSelection",
+      "Type": "Step",
+      "SequenceNumber": 1,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "label": "Project Selection",
+        "helpText": "Search for the Project this NEPA process belongs to."
+      },
+      "Children": [
+        {
+          "Name": "projectId",
+          "Type": "Lookup",
+          "SequenceNumber": 1,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "label": "Project",
+            "helpText": "Select the Program record representing this NEPA project.",
+            "required": true,
+            "objectName": "Program",
+            "fieldName": "Id",
+            "displayField": "Name",
+            "searchFields": ["Name", "nepa_project_title__c", "nepa_project_id__c"],
+            "controllingElements": []
+          }
+        },
+        {
+          "Name": "projectTitle",
+          "Type": "Text",
+          "SequenceNumber": 2,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "label": "Project Title",
+            "helpText": "Read-only confirmation of the selected project.",
+            "readOnly": true,
+            "value": "%projectId:Name%"
+          }
+        }
+      ]
+    },
+
+    {
+      "Name": "Step2_ProcessDetails",
+      "Type": "Step",
+      "SequenceNumber": 2,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "label": "Process Details",
+        "helpText": "Enter the key attributes of this NEPA process."
+      },
+      "Children": [
+        {
+          "Name": "processName",
+          "Type": "Text",
+          "SequenceNumber": 1,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "label": "Process Name",
+            "required": true,
+            "helpText": "Short descriptive name for this process record."
+          }
+        },
+        {
+          "Name": "agencyId",
+          "Type": "Text",
+          "SequenceNumber": 2,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "label": "Lead Agency",
+            "required": true,
+            "helpText": "Agency abbreviation (e.g., BLM, DOE, USFS).",
+            "maxLength": 50
+          }
+        },
+        {
+          "Name": "startDate",
+          "Type": "Date",
+          "SequenceNumber": 3,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "label": "Process Start Date",
+            "required": true,
+            "helpText": "Date the NEPA review officially begins."
+          }
+        },
+        {
+          "Name": "purposeNeed",
+          "Type": "TextArea",
+          "SequenceNumber": 4,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "label": "Purpose and Need",
+            "required": false,
+            "helpText": "Brief statement of the purpose and need for the proposed action.",
+            "maxLength": 32768
+          }
+        },
+        {
+          "Name": "description",
+          "Type": "TextArea",
+          "SequenceNumber": 5,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "label": "Process Description",
+            "required": false,
+            "helpText": "Describe the proposed federal action or permit request.",
+            "maxLength": 32768
+          }
+        }
+      ]
+    },
+
+    {
+      "Name": "Step3_SiteAndScope",
+      "Type": "Step",
+      "SequenceNumber": 3,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "label": "Site and Scope",
+        "helpText": "Provide site-specific data used to determine the appropriate level of NEPA review."
+      },
+      "Children": [
+        {
+          "Name": "actionType",
+          "Type": "Select",
+          "SequenceNumber": 1,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "label": "Action Type",
+            "required": true,
+            "helpText": "Select the category of federal action being proposed.",
+            "options": [
+              {"label": "New Construction", "value": "New Construction"},
+              {"label": "Modification", "value": "Modification"},
+              {"label": "Renewal / Reauthorization", "value": "Renewal"},
+              {"label": "Abandonment / Decommission", "value": "Decommission"},
+              {"label": "Operations and Maintenance", "value": "OAM"},
+              {"label": "Research / Site Characterization", "value": "SiteChar"},
+              {"label": "Right-of-Way Grant", "value": "ROW"},
+              {"label": "Grazing Permit", "value": "Grazing"},
+              {"label": "Drilling / Well Permit", "value": "Drilling"},
+              {"label": "Energy Efficiency / Indoor R&D", "value": "IndoorRD"},
+              {"label": "Financial Assistance / Grant", "value": "ResearchFA"},
+              {"label": "Other", "value": "Other"}
+            ]
+          }
+        },
+        {
+          "Name": "disturbanceAcres",
+          "Type": "Number",
+          "SequenceNumber": 2,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "label": "Estimated Disturbance (Acres)",
+            "required": false,
+            "helpText": "Physical area affected by the proposed action. Used to apply acreage-based CE thresholds.",
+            "min": 0,
+            "scale": 2
+          }
+        },
+        {
+          "Name": "extraordinaryCircumstances",
+          "Type": "Checkbox",
+          "SequenceNumber": 3,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "label": "Extraordinary Circumstances Present",
+            "helpText": "Check if any of the 12 CEQ extraordinary circumstances apply (40 CFR 1501.4(b)). Extraordinary circumstances disqualify CE use.",
+            "defaultValue": false
+          }
+        }
+      ]
+    },
+
+    {
+      "Name": "IPAction_RunCEScreener",
+      "Type": "Integration Procedure Action",
+      "SequenceNumber": 4,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "integrationProcedureName": "NEPA_CE_Screening_IP",
+        "inputMap": [
+          {
+            "name": "processId",
+            "value": "%processId%",
+            "valueType": "reference"
+          }
+        ],
+        "outputPath": "ScreeningIPResult",
+        "runOnPageLoad": false,
+        "chainOnStep": "Step3_SiteAndScope",
+        "failOnStepError": false,
+        "remoteTimeout": 10000
+      }
+    },
+
+    {
+      "Name": "Step4_ScreeningResult",
+      "Type": "Step",
+      "SequenceNumber": 5,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "label": "CE Screening Result",
+        "helpText": "Review the recommended NEPA review classification. You may override the recommendation before saving."
+      },
+      "Children": [
+        {
+          "Name": "recommendedReviewType",
+          "Type": "Text",
+          "SequenceNumber": 1,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "label": "Recommended Review Type",
+            "readOnly": true,
+            "value": "%ScreeningIPResult:ReviewType%",
+            "helpText": "CE, EA, or EIS as determined by the screening engine."
+          }
+        },
+        {
+          "Name": "recommendedCECode",
+          "Type": "Text",
+          "SequenceNumber": 2,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "label": "Applicable CE Code",
+            "readOnly": true,
+            "value": "%ScreeningIPResult:CECode%",
+            "helpText": "Regulatory citation for the applicable Categorical Exclusion, if any."
+          }
+        },
+        {
+          "Name": "confidence",
+          "Type": "Text",
+          "SequenceNumber": 3,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "label": "Confidence",
+            "readOnly": true,
+            "value": "%ScreeningIPResult:Confidence%",
+            "helpText": "High / Medium / Low classification confidence from the screening rules."
+          }
+        },
+        {
+          "Name": "classificationBasis",
+          "Type": "TextArea",
+          "SequenceNumber": 4,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "label": "Classification Basis",
+            "readOnly": true,
+            "value": "%ScreeningIPResult:ClassificationBasis%",
+            "helpText": "Explanation of which rule drove this classification."
+          }
+        },
+        {
+          "Name": "reviewTypeOverride",
+          "Type": "Select",
+          "SequenceNumber": 5,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "label": "Override Review Type (optional)",
+            "required": false,
+            "helpText": "Leave blank to accept the recommended type. Select an override if expert judgement differs from the automated result.",
+            "options": [
+              {"label": "-- Accept Recommendation --", "value": ""},
+              {"label": "CE - Categorical Exclusion", "value": "CE"},
+              {"label": "EA - Environmental Assessment", "value": "EA"},
+              {"label": "EIS - Environmental Impact Statement", "value": "EIS"}
+            ]
+          }
+        },
+        {
+          "Name": "overrideRationale",
+          "Type": "TextArea",
+          "SequenceNumber": 6,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "label": "Override Rationale",
+            "required": false,
+            "helpText": "If overriding, briefly explain why.",
+            "controllingElements": [
+              {"name": "reviewTypeOverride", "controllingValues": ["CE","EA","EIS"]}
+            ],
+            "maxLength": 2000
+          }
+        }
+      ]
+    },
+
+    {
+      "Name": "IPAction_SaveProcess",
+      "Type": "Integration Procedure Action",
+      "SequenceNumber": 6,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "integrationProcedureName": "NEPA_CE_Save_IP",
+        "inputMap": [
+          {
+            "name": "projectId",
+            "value": "%projectId%",
+            "valueType": "reference"
+          },
+          {
+            "name": "processName",
+            "value": "%processName%",
+            "valueType": "reference"
+          },
+          {
+            "name": "agencyId",
+            "value": "%agencyId%",
+            "valueType": "reference"
+          },
+          {
+            "name": "startDate",
+            "value": "%startDate%",
+            "valueType": "reference"
+          },
+          {
+            "name": "purposeNeed",
+            "value": "%purposeNeed%",
+            "valueType": "reference"
+          },
+          {
+            "name": "description",
+            "value": "%description%",
+            "valueType": "reference"
+          },
+          {
+            "name": "actionType",
+            "value": "%actionType%",
+            "valueType": "reference"
+          },
+          {
+            "name": "disturbanceAcres",
+            "value": "%disturbanceAcres%",
+            "valueType": "reference"
+          },
+          {
+            "name": "extraordinaryCircumstances",
+            "value": "%extraordinaryCircumstances%",
+            "valueType": "reference"
+          },
+          {
+            "name": "reviewType",
+            "value": "%reviewTypeOverride% || %ScreeningIPResult:ReviewType%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ceCode",
+            "value": "%ScreeningIPResult:CECode%",
+            "valueType": "reference"
+          },
+          {
+            "name": "confidence",
+            "value": "%ScreeningIPResult:Confidence%",
+            "valueType": "reference"
+          },
+          {
+            "name": "classificationBasis",
+            "value": "%ScreeningIPResult:ClassificationBasis%",
+            "valueType": "reference"
+          }
+        ],
+        "outputPath": "SaveResult",
+        "runOnPageLoad": false,
+        "chainOnStep": "Step4_ScreeningResult",
+        "failOnStepError": true,
+        "remoteTimeout": 15000
+      }
+    }
+  ]
+}
