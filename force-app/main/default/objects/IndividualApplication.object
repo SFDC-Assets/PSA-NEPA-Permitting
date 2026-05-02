@@ -389,6 +389,84 @@
         <trackHistory>false</trackHistory>
         <type>DateTime</type>
     </fields>
+    <!-- FRA Statutory Clock fields (2023 Fiscal Responsibility Act — 1 year EA / 2 year EIS hard deadlines) -->
+    <fields>
+        <fullName>nepa_fra_statutory_deadline__c</fullName>
+        <description>Hard FRA statutory deadline: nepa_start_date__c + 365 days for EA, + 730 days for EIS, per 42 U.S.C. 4336a. This is a legal constraint, not a project management guideline. Set by NEPA_SLA_Due_Date_Setter alongside nepa_sla_due_date__c. Stored separately from the SLA due date so that clock-pause extensions are visible without overwriting the original statutory date.</description>
+        <inlineHelpText>FRA hard deadline: 1 year (EA) or 2 years (EIS) from start date. Cannot be extended without project sponsor agreement per 42 U.S.C. 4336a(b).</inlineHelpText>
+        <label>FRA Statutory Deadline</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>nepa_clock_paused__c</fullName>
+        <description>True when the FRA statutory clock is formally suspended. Under 42 U.S.C. 4336a, the clock may pause only when the project sponsor explicitly agrees in writing to a suspension. This flag blocks NEPA_SLA_Escalation_Monitor from marking the process overdue while the suspension is in effect.</description>
+        <inlineHelpText>Statutory clock suspended with project sponsor agreement. Pause requires documented sponsor consent — see nepa_clock_pause_reason__c.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Statutory Clock Paused</label>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_clock_pause_start__c</fullName>
+        <description>Date the statutory clock was suspended. Together with nepa_clock_pause_end__c, used to calculate total suspended days and adjust the effective deadline. Null if clock is not paused.</description>
+        <inlineHelpText>Date the statutory clock suspension began. Required when nepa_clock_paused__c is true.</inlineHelpText>
+        <label>Clock Pause Start</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>nepa_clock_pause_end__c</fullName>
+        <description>Date the statutory clock suspension ended. When populated, the NEPA_SLA_Due_Date_Setter recalculates nepa_fra_adjusted_deadline__c by adding (pause_end - pause_start) days to nepa_fra_statutory_deadline__c.</description>
+        <inlineHelpText>Date the clock suspension ended. Triggers automatic adjusted deadline recalculation.</inlineHelpText>
+        <label>Clock Pause End</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>nepa_clock_pause_days__c</fullName>
+        <description>Formula: IF(nepa_clock_pause_start__c is not null AND nepa_clock_pause_end__c is not null, nepa_clock_pause_end__c - nepa_clock_pause_start__c, 0). Calculated number of suspended days to add back to the statutory deadline.</description>
+        <inlineHelpText>Total days the clock has been suspended. Added to statutory deadline to compute adjusted deadline.</inlineHelpText>
+        <formula>IF(
+  AND(NOT(ISBLANK(nepa_clock_pause_start__c)), NOT(ISBLANK(nepa_clock_pause_end__c))),
+  nepa_clock_pause_end__c - nepa_clock_pause_start__c,
+  0
+)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Clock Pause Days</label>
+        <precision>8</precision>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_fra_adjusted_deadline__c</fullName>
+        <description>Effective FRA deadline after adding clock suspension days. Formula: nepa_fra_statutory_deadline__c + nepa_clock_pause_days__c. This is the date used for overdue determination in NEPA_SLA_Escalation_Monitor when the clock has been paused. Equals nepa_fra_statutory_deadline__c when no pause has occurred.</description>
+        <inlineHelpText>Statutory deadline + suspended days. This is the operative compliance deadline when a pause has occurred.</inlineHelpText>
+        <formula>nepa_fra_statutory_deadline__c + nepa_clock_pause_days__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>FRA Adjusted Deadline</label>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>nepa_clock_pause_reason__c</fullName>
+        <description>Required documentation of the project sponsor's written agreement to the clock suspension, per 42 U.S.C. 4336a(b). Must reference the specific communication (letter, email, form) in which the sponsor consented. Part of the administrative record.</description>
+        <inlineHelpText>Document the sponsor's written agreement to this clock suspension. Required for FRA compliance — cite the letter, email, or form.</inlineHelpText>
+        <label>Clock Pause Reason / Sponsor Agreement Reference</label>
+        <length>1000</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
     <!-- SLA tracking fields -->
     <fields>
         <fullName>nepa_sla_due_date__c</fullName>

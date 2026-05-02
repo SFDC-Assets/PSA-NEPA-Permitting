@@ -34,6 +34,24 @@ These are SEPARATE evaluations. Examples:
 - &quot;This project will be a wonderful addition to our community!&quot; → Sentiment: Supportive, Substantive: FALSE (no environmental basis)
 - &quot;The noise levels during blasting will exceed OSHA limits and affect the school 0.3 miles away&quot; → Sentiment: Neutral, Substantive: TRUE
 
+LITIGATION THREAT / ISSUE EXHAUSTION DETECTION (Vermont Yankee Doctrine):
+Under Vermont Yankee Nuclear Power Corp. v. NRDC (1978) and subsequent APA case law, plaintiffs who fail to raise an issue with "reasonable specificity" during the comment period forfeit the right to raise it in court (issue exhaustion). However, the inverse is also true: a highly technical, legally specific objection that the agency fails to substantively address in the Final EIS can lead to vacatur.
+
+A comment IS a Litigation Threat if it contains ALL of the following:
+1. A specific legal or technical standard by name or citation (e.g., "the 2024 USGS groundwater modeling standard," "40 CFR 1502.21," "the agency's own significance thresholds from its 2019 programmatic EIS")
+2. A specific claim that the NEPA document failed to use, apply, or comply with that standard
+3. Language suggesting the agency's analysis is legally deficient, arbitrary, capricious, or contrary to statute
+
+A comment is NOT a Litigation Threat if it is merely:
+- A general objection ("this will hurt the wetlands") without citing a specific standard
+- An emotional or policy objection with no legal/technical specificity
+- A request for more information without alleging a specific legal deficiency
+
+Examples:
+- "The EIS fails to utilize the 2024 USGS groundwater modeling standard, rendering the mitigation plan arbitrary" → LITIGATION THREAT (cites specific standard, alleges specific failure, claims legal deficiency)
+- "Your noise study didn't account for cumulative impact from the adjacent quarry as required by 40 CFR 1508.7" → LITIGATION THREAT (specific CFR cite, specific factual omission, legal standard)
+- "This pipeline is going to poison our water" → NOT a Litigation Threat (substantive comment, but no specific legal/technical standard cited)
+
 Process context for this comment:
 {!$Input:ProcessContext}
 
@@ -47,7 +65,9 @@ Respond with a JSON object containing EXACTLY these fields:
   &quot;confidence_score&quot;: [0-100],
   &quot;cluster_hint&quot;: &quot;[brief phrase for near-duplicate grouping, or empty string]&quot;,
   &quot;response_status&quot;: &quot;Pending&quot;,
-  &quot;triage_rationale&quot;: &quot;[REQUIRED when is_substantive=false: 1-2 sentences explaining which NEPA criteria this comment does not meet and why. Include the specific absence of factual claims, alternatives, or environmental concerns. If is_substantive=true, write: &apos;Substantive: [brief description of the environmental claim or concern raised]&apos;]&quot;
+  &quot;triage_rationale&quot;: &quot;[REQUIRED when is_substantive=false: 1-2 sentences explaining which NEPA criteria this comment does not meet. If is_substantive=true, write: &apos;Substantive: [brief description of the environmental claim]&apos;]&quot;,
+  &quot;litigation_threat&quot;: [true|false],
+  &quot;litigation_threat_basis&quot;: &quot;[REQUIRED when litigation_threat=true: identify the specific legal/technical standard cited, the specific inadequacy alleged, and why this rises above a general substantive comment to a legally precise objection that must receive a specific written response in the Final EIS. Empty string when litigation_threat=false.]&quot;
 }
 
 Return ONLY the JSON object. No preamble, no explanation outside the JSON.

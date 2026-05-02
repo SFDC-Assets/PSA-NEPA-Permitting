@@ -10,7 +10,9 @@
  *   "confidence_score": 85,
  *   "cluster_hint": "water quality concern",
  *   "response_status": "Pending",
- *   "triage_rationale": "Substantive: raises specific water quality claim..."
+ *   "triage_rationale": "Substantive: raises specific water quality claim...",
+ *   "litigation_threat": false,
+ *   "litigation_threat_basis": ""
  * }
  */
 global with sharing class NepaCommentTriageParser {
@@ -41,6 +43,12 @@ global with sharing class NepaCommentTriageParser {
 
         @InvocableVariable(label='Parse Error' description='Error message if parsing failed')
         global String parseError;
+
+        @InvocableVariable(label='Litigation Threat' description='True when the comment was identified as a Vermont Yankee issue exhaustion litigation threat')
+        global Boolean litigationThreat;
+
+        @InvocableVariable(label='Litigation Threat Basis' description='AI explanation of the specific legal/technical standard cited and the alleged deficiency')
+        global String litigationThreatBasis;
     }
 
     @InvocableMethod(
@@ -63,6 +71,8 @@ global with sharing class NepaCommentTriageParser {
         res.confidenceScore = 0;
         res.clusterHint = '';
         res.triageRationale = '';
+        res.litigationThreat = False;
+        res.litigationThreatBasis = '';
 
         if (String.isBlank(req.triageJson)) {
             res.parseError = 'triageJson input is blank or null.';
@@ -100,6 +110,14 @@ global with sharing class NepaCommentTriageParser {
 
             if (parsed.containsKey('triage_rationale') && parsed.get('triage_rationale') != null) {
                 res.triageRationale = String.valueOf(parsed.get('triage_rationale'));
+            }
+
+            if (parsed.containsKey('litigation_threat') && parsed.get('litigation_threat') != null) {
+                res.litigationThreat = Boolean.valueOf(String.valueOf(parsed.get('litigation_threat')));
+            }
+
+            if (parsed.containsKey('litigation_threat_basis') && parsed.get('litigation_threat_basis') != null) {
+                res.litigationThreatBasis = String.valueOf(parsed.get('litigation_threat_basis'));
             }
 
             // Validate sentiment is a known value; default to Neutral if unexpected

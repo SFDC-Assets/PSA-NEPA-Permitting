@@ -207,6 +207,12 @@
                     <default>false</default>
                     <label>Proponent</label>
                 </value>
+                <value>
+                    <fullName>Project Sponsor</fullName>
+                    <default>false</default>
+                    <label>Project Sponsor</label>
+                    <!-- FRA: private entities or state agencies authorized to prepare EA/EIS under agency supervision per 42 U.S.C. 4336b -->
+                </value>
             </valueSetDefinition>
         </valueSet>
     </fields>

@@ -178,6 +178,39 @@
         <members>PublicComplaint.nepa_email__c</members>
         <!-- Mandate 1: Comment period gating -->
         <members>PublicComplaint.nepa_related_process__c</members>
+        <!-- Phase 5: FRA statutory clock fields (42 U.S.C. 4336a) -->
+        <members>IndividualApplication.nepa_fra_statutory_deadline__c</members>
+        <members>IndividualApplication.nepa_clock_paused__c</members>
+        <members>IndividualApplication.nepa_clock_pause_start__c</members>
+        <members>IndividualApplication.nepa_clock_pause_end__c</members>
+        <members>IndividualApplication.nepa_clock_pause_days__c</members>
+        <members>IndividualApplication.nepa_fra_adjusted_deadline__c</members>
+        <members>IndividualApplication.nepa_clock_pause_reason__c</members>
+        <!-- Phase 5: Vermont Yankee issue exhaustion litigation threat fields -->
+        <members>PublicComplaint.nepa_litigation_threat_flag__c</members>
+        <members>PublicComplaint.nepa_litigation_threat_basis__c</members>
+        <members>PublicComplaint.nepa_legal_review_status__c</members>
+        <!-- Phase 5: FRA page limit + sponsor chain-of-custody + AR export fields on ContentVersion -->
+        <members>ContentVersion.nepa_is_appendix__c</members>
+        <members>ContentVersion.nepa_page_count__c</members>
+        <members>ContentVersion.nepa_fra_page_limit__c</members>
+        <members>ContentVersion.nepa_fra_overlimit__c</members>
+        <members>ContentVersion.nepa_document_custody__c</members>
+        <members>ContentVersion.nepa_sponsor_submitted_by__c</members>
+        <members>ContentVersion.nepa_agency_adopted_date__c</members>
+        <members>ContentVersion.nepa_ar_included__c</members>
+        <members>ContentVersion.nepa_ar_index_number__c</members>
+        <!-- Phase 5: nepa_ar_export__c fields -->
+        <members>nepa_ar_export__c.nepa_process__c</members>
+        <members>nepa_ar_export__c.nepa_export_status__c</members>
+        <members>nepa_ar_export__c.nepa_export_type__c</members>
+        <members>nepa_ar_export__c.nepa_requested_date__c</members>
+        <members>nepa_ar_export__c.nepa_completed_date__c</members>
+        <members>nepa_ar_export__c.nepa_comment_count__c</members>
+        <members>nepa_ar_export__c.nepa_document_count__c</members>
+        <members>nepa_ar_export__c.nepa_export_download_url__c</members>
+        <members>nepa_ar_export__c.nepa_export_error__c</members>
+        <members>nepa_ar_export__c.nepa_requested_by__c</members>
         <!-- Mandate 2: CMT temporal versioning — Effective_Start_Date__c + Sunset_Date__c on all 7 CMTs -->
         <members>NEPA_CE_Screening_Rule__mdt.Effective_Start_Date__c</members>
         <members>NEPA_CE_Screening_Rule__mdt.Sunset_Date__c</members>
@@ -348,6 +381,7 @@
         <!-- __c custom objects -->
         <members>nepa_decision_modification__c</members>
         <members>nepa_comment_attribution__c</members>
+        <members>nepa_ar_export__c</members>
         <members>NEPA_Flow_Error__c</members>
         <members>nepa_engagement__c</members>
         <members>nepa_litigation__c</members>
@@ -542,6 +576,8 @@
         <members>NEPA_FlowError_CountIncrementer</members>
         <!-- Comment Triage Agent save flow -->
         <members>NEPA_Comment_Triage_Save</members>
+        <!-- Phase 5: FRA page limit before-save flow -->
+        <members>NEPA_FRA_Page_Limit_Setter</members>
         <!-- Mandate 1: Automated comment period kill-switch -->
         <members>NEPA_Comment_Period_Gate</members>
         <!-- Mandate 4: Real-time AI EIS section assembly -->

@@ -1115,6 +1115,157 @@
         <field>IndividualApplication.nepa_expedited_risk_penalty_applied__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <!-- Phase 5: FRA statutory clock fields — nepa_clock_pause_days__c and nepa_fra_adjusted_deadline__c are formulas (read-only) -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_fra_statutory_deadline__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_clock_paused__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_clock_pause_start__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_clock_pause_end__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_clock_pause_days__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_fra_adjusted_deadline__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_clock_pause_reason__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- Phase 5: Vermont Yankee litigation threat fields — flag and basis written by agent/flow; legal_review_status editable by counsel -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>PublicComplaint.nepa_litigation_threat_flag__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>PublicComplaint.nepa_litigation_threat_basis__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_legal_review_status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- Phase 5: FRA page limit fields — page_limit and fra_overlimit set by flow/formula (read-only); page_count and is_appendix editable -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.nepa_is_appendix__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.nepa_page_count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>ContentVersion.nepa_fra_page_limit__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>ContentVersion.nepa_fra_overlimit__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- Phase 5: Sponsor chain-of-custody fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.nepa_document_custody__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.nepa_sponsor_submitted_by__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.nepa_agency_adopted_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- Phase 5: AR export index fields on ContentVersion (written by batch job) -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>ContentVersion.nepa_ar_included__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>ContentVersion.nepa_ar_index_number__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- Phase 5: nepa_ar_export__c fields — status written by batch; PM can create/read; counsel can read -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_ar_export__c.nepa_process__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>nepa_ar_export__c.nepa_export_status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_ar_export__c.nepa_export_type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_ar_export__c.nepa_requested_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>nepa_ar_export__c.nepa_completed_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>nepa_ar_export__c.nepa_comment_count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>nepa_ar_export__c.nepa_document_count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>nepa_ar_export__c.nepa_export_download_url__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>nepa_ar_export__c.nepa_export_error__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_ar_export__c.nepa_requested_by__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <!-- Mandate 4: AI EIS draft document fields (read-only — written by NEPA_EIS_Section_Assembler Flow) -->
     <fieldPermissions>
         <editable>false</editable>
@@ -1251,6 +1402,16 @@
         <allowRead>true</allowRead>
         <modifyAllRecords>false</modifyAllRecords>
         <object>nepa_comment_attribution__c</object>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <!-- Phase 5: nepa_ar_export__c — PM creates export requests; batch writes results; Private sharing model -->
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>nepa_ar_export__c</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
     <classAccesses>

@@ -75,6 +75,21 @@
         <isInput>true</isInput>
         <isOutput>false</isOutput>
     </variables>
+    <variables>
+        <name>inp_LitigationThreat</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <value><booleanValue>false</booleanValue></value>
+    </variables>
+    <variables>
+        <name>inp_LitigationThreatBasis</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
 
     <!-- ============================================================
          OUTPUT VARIABLES
@@ -122,6 +137,18 @@
             <targetReference>Decision_RecordIdPresent</targetReference>
         </connector>
     </start>
+
+    <!-- ============================================================
+         FORMULAS
+    ============================================================ -->
+
+    <formulas>
+        <name>formula_LegalReviewStatus</name>
+        <dataType>String</dataType>
+        <!-- Sets Pending Legal Review when litigation_threat is true; empty string otherwise
+             so existing legal_review_status__c values are not overwritten on non-threat saves -->
+        <expression>IF({!inp_LitigationThreat}, "Pending Legal Review", "")</expression>
+    </formulas>
 
     <!-- ============================================================
          STEP 1: DECISION — Record ID Present?
@@ -354,6 +381,28 @@
             <operator>Assign</operator>
             <value>
                 <elementReference>inp_ResponseStatus</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_Comment.nepa_litigation_threat_flag__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>inp_LitigationThreat</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_Comment.nepa_litigation_threat_basis__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>inp_LitigationThreatBasis</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <!-- Auto-set legal review status to Pending when litigation threat is flagged -->
+            <assignToReference>var_Comment.nepa_legal_review_status__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula_LegalReviewStatus</elementReference>
             </value>
         </assignmentItems>
         <connector>

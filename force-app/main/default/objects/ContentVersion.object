@@ -525,6 +525,120 @@
         </valueSet>
     </fields>
 
+    <!-- FRA Page Limit Compliance fields (2023 FRA: 75 pages EA, 150 Draft EIS, 300 Final EIS — excluding appendices and citations) -->
+    <fields>
+        <fullName>nepa_is_appendix__c</fullName>
+        <description>True when this file is an appendix, attachment, or citation supplement rather than core NEPA document text. FRA page limits (EA = 75, Draft EIS = 150, Final EIS = 300) explicitly exclude appendices. This flag is the basis for the FRA Page Limit Compliance Report: core text files count against the limit; appendices do not.</description>
+        <inlineHelpText>Appendices and citation supplements are excluded from FRA page limits. Check this for any file that is not core document text.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Is Appendix / Supplement</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_page_count__c</fullName>
+        <description>Page count of this document's core text, excluding citations and appendices per FRA 42 U.S.C. 4336a. For files where nepa_is_appendix__c = false, this rolls up to the FRA compliance report. Populated manually by the uploader or automatically by an Apex PDFPageCount action on insert.</description>
+        <inlineHelpText>Page count of core document text only. Do not include appendix or citation pages — those are excluded from FRA page limits.</inlineHelpText>
+        <label>Page Count</label>
+        <precision>6</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_fra_page_limit__c</fullName>
+        <description>FRA statutory page limit for this document type: EA = 75, Draft EIS = 150, Final EIS = 300. Set by a before-save flow based on nepa_document_type__c. Null for document types with no statutory limit (CE documents, appendices, supporting analysis). Stored here to enable report formula comparisons without a CMT lookup.</description>
+        <inlineHelpText>FRA statutory page limit: EA = 75, Draft EIS = 150, Final EIS = 300. Null for exempt types.</inlineHelpText>
+        <label>FRA Page Limit</label>
+        <precision>6</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_fra_overlimit__c</fullName>
+        <description>Formula checkbox: true when nepa_page_count__c exceeds nepa_fra_page_limit__c for a core text file (nepa_is_appendix__c = false). Drives the FRA Page Limit Compliance Report filter and the NEPA_SLA_Escalation_Monitor warning. False/null for appendices, CE documents, and files without page counts.</description>
+        <inlineHelpText>True when this document exceeds its FRA statutory page limit. Appendices are excluded from this calculation.</inlineHelpText>
+        <formula>AND(
+  NOT(nepa_is_appendix__c),
+  NOT(ISBLANK(nepa_page_count__c)),
+  NOT(ISBLANK(nepa_fra_page_limit__c)),
+  nepa_page_count__c &gt; nepa_fra_page_limit__c
+)</formula>
+        <label>FRA Page Limit Exceeded</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <!-- Sponsor chain-of-custody fields (FRA project sponsor document drafting — Mandate 3) -->
+    <fields>
+        <fullName>nepa_document_custody__c</fullName>
+        <description>Chain-of-custody status for FRA sponsor-prepared documents. Agency Original: no sponsor involvement. Sponsor Draft: uploaded by the project sponsor portal user, not yet reviewed. Agency Under Review: assigned to an agency reviewer. Agency Modified: agency made substantive edits. Agency Adopted: agency independently evaluated and formally adopted the document per FRA requirements. History tracking enabled — the transition from Sponsor Draft to Agency Adopted is the key APA defensibility record.</description>
+        <inlineHelpText>Custody status of this document. Sponsor Draft documents must reach Agency Adopted before use in the official administrative record.</inlineHelpText>
+        <defaultValue>Agency Original</defaultValue>
+        <label>Document Custody Status</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Agency Original</fullName><default>true</default><label>Agency Original</label></value>
+                <value><fullName>Sponsor Draft</fullName><default>false</default><label>Sponsor Draft</label></value>
+                <value><fullName>Agency Under Review</fullName><default>false</default><label>Agency Under Review</label></value>
+                <value><fullName>Agency Modified</fullName><default>false</default><label>Agency Modified</label></value>
+                <value><fullName>Agency Adopted</fullName><default>false</default><label>Agency Adopted</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_sponsor_submitted_by__c</fullName>
+        <description>Portal username or display name of the project sponsor who uploaded this document. Auto-populated by the portal submission flow for Sponsor Draft documents. Part of the FRA chain-of-custody record that proves the agency received and independently reviewed sponsor-prepared materials.</description>
+        <inlineHelpText>Project sponsor portal user who submitted this draft. Auto-populated for sponsor-submitted documents.</inlineHelpText>
+        <label>Sponsor Submitted By</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_agency_adopted_date__c</fullName>
+        <description>Date the agency formally adopted this sponsor-prepared document into the official administrative record. The period between document upload and this date quantifies the agency's independent review time — a critical metric for demonstrating supervisory control in APA litigation. Required when nepa_document_custody__c = Agency Adopted.</description>
+        <inlineHelpText>Date the agency formally adopted this sponsor-prepared document. Captures independent review duration for APA defensibility.</inlineHelpText>
+        <label>Agency Adopted Date</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </fields>
+    <!-- AR Export fields (Mandate 4: 60-day Administrative Record package) -->
+    <fields>
+        <fullName>nepa_ar_included__c</fullName>
+        <description>True when this file has been marked for inclusion in a formal Administrative Record export package. Set by the NEPA_AR_Export process. Allows the AR exporter to filter ContentVersion records to exactly the documents designated for the AR without querying all files attached to the process.</description>
+        <inlineHelpText>This document is included in the Administrative Record export package.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Included in AR Export</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_ar_index_number__c</fullName>
+        <description>Sequential index number assigned to this document within an Administrative Record export package. Court-ready AR packages require a numbered document index. Assigned by the NEPA_AR_Export process when nepa_ar_included__c is set to true.</description>
+        <inlineHelpText>AR package document index number. Assigned automatically when the AR export is compiled.</inlineHelpText>
+        <label>AR Index Number</label>
+        <precision>8</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
     <recordTypes>
         <fullName>nepa_permit_document</fullName>
         <active>true</active>

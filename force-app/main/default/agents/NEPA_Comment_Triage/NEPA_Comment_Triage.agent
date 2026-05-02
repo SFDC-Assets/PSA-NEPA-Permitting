@@ -39,6 +39,12 @@ variables:
   ai_triage_rationale: mutable string = ""
     label: "AI Triage Rationale"
 
+  # ── Issue exhaustion / litigation threat outputs ────────────────────────────
+  ai_litigation_threat: mutable boolean = False
+    label: "AI Litigation Threat Flag"
+  ai_litigation_threat_basis: mutable string = ""
+    label: "AI Litigation Threat Basis"
+
   # ── Save result ─────────────────────────────────────────────────────────────
   save_success: mutable boolean = False
     label: "Save Success"
@@ -260,6 +266,12 @@ topic ai_triage:
         triageRationale: string
           description: "Parsed triage rationale"
           filter_from_agent: True
+        litigationThreat: boolean
+          description: "True when AI identified a Vermont Yankee issue exhaustion litigation threat"
+          filter_from_agent: True
+        litigationThreatBasis: string
+          description: "AI explanation of the specific legal/technical standard cited and alleged deficiency"
+          filter_from_agent: True
       target: "apex://NepaCommentTriageParser"
 
   reasoning:
@@ -276,6 +288,8 @@ topic ai_triage:
         set @variables.ai_confidence_score = @outputs.confidenceScore
         set @variables.ai_cluster_hint = @outputs.clusterHint
         set @variables.ai_triage_rationale = @outputs.triageRationale
+        set @variables.ai_litigation_threat = @outputs.litigationThreat
+        set @variables.ai_litigation_threat_basis = @outputs.litigationThreatBasis
 
       if @variables.ai_confidence_score < 60:
         transition to @topic.low_confidence_review
@@ -339,6 +353,10 @@ topic save_triage:
           description: "ISO timestamp of triage completion"
         inp_ResponseStatus: string
           description: "New response status"
+        inp_LitigationThreat: boolean
+          description: "Vermont Yankee litigation threat flag from AI triage"
+        inp_LitigationThreatBasis: string
+          description: "AI explanation of litigation threat basis"
       outputs:
         out_Success: boolean
           description: "Whether the save succeeded"
@@ -362,6 +380,8 @@ topic save_triage:
         with inp_RequiresHumanReview = @variables.ej_requires_human_review
         with inp_TriageTimestamp = ""
         with inp_ResponseStatus = "Pending"
+        with inp_LitigationThreat = @variables.ai_litigation_threat
+        with inp_LitigationThreatBasis = @variables.ai_litigation_threat_basis
         set @variables.save_success = @outputs.out_Success
         set @variables.save_error = @outputs.out_ErrorMessage
 
@@ -381,6 +401,14 @@ topic triage_summary:
 
       if @variables.ai_cluster_hint != "":
         | **Cluster Hint:** {!@variables.ai_cluster_hint}
+
+      if @variables.ai_litigation_threat == True:
+        | **⚠ Litigation Threat Detected (Vermont Yankee / Issue Exhaustion)**
+        | **Basis:** {!@variables.ai_litigation_threat_basis}
+        | This comment raises a specific legal or technical standard and alleges a
+          deficiency with enough specificity to support an arbitrary-and-capricious
+          challenge. The record has been flagged for **Pending Legal Review**.
+          Route to your agency's legal counsel before drafting the response.
 
       if @variables.save_success == False:
         | **Save Error:** {!@variables.save_error}

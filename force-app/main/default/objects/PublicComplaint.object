@@ -397,6 +397,49 @@
         <trackHistory>false</trackHistory>
         <type>Lookup</type>
     </fields>
+    <!-- Issue exhaustion / litigation threat fields (Vermont Yankee doctrine — Mandate 2) -->
+    <fields>
+        <fullName>nepa_litigation_threat_flag__c</fullName>
+        <description>True when the AI Triage Agent has identified this comment as a potential "issue exhaustion" comment under the Vermont Yankee doctrine. These are technically specific, legally precise objections that may be setting up a future APA lawsuit. Flagged comments must be routed to agency legal counsel for a substantive written response in the Final EIS — failure to respond may result in vacatur. Set by NEPA_Comment_Triage Agent; human-reviewable via nepa_legal_review_status__c.</description>
+        <inlineHelpText>AI flagged this comment as a potential Vermont Yankee issue exhaustion comment. Route to legal counsel for required written response.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Litigation Threat Flag</label>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_litigation_threat_basis__c</fullName>
+        <description>AI-generated explanation of why this comment was flagged as a potential Vermont Yankee issue exhaustion comment. Should identify: the specific legal or technical standard cited, the specific inadequacy alleged, and why this rises to the level of a legally specific objection rather than a general substantive concern. Written by the NEPA_Comment_Triage Agent alongside the flag.</description>
+        <inlineHelpText>AI explanation of the litigation threat: what legal/technical standard was cited, what inadequacy was alleged, and why this may set up a future APA challenge.</inlineHelpText>
+        <label>Litigation Threat Basis</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_legal_review_status__c</fullName>
+        <description>Legal counsel review status for litigation-threat-flagged comments. Pending Legal Review: flagged, not yet assigned. Assigned to Counsel: routed to a specific attorney. Legal Response Drafted: attorney has drafted a response for inclusion in the Final EIS comment response chapter. Response Finalized: response included in the published Final EIS. No Action Required: counsel determined this does not require a specific response.</description>
+        <inlineHelpText>Legal review status for litigation-threat-flagged comments. Required response workflow — flagged comments must reach Response Finalized before Final EIS publication.</inlineHelpText>
+        <label>Legal Review Status</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Pending Legal Review</fullName><default>false</default><label>Pending Legal Review</label></value>
+                <value><fullName>Assigned to Counsel</fullName><default>false</default><label>Assigned to Counsel</label></value>
+                <value><fullName>Legal Response Drafted</fullName><default>false</default><label>Legal Response Drafted</label></value>
+                <value><fullName>Response Finalized</fullName><default>false</default><label>Response Finalized</label></value>
+                <value><fullName>No Action Required</fullName><default>false</default><label>No Action Required</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
     <validationRules>
         <fullName>NEPA_Comment_Period_Closed</fullName>
         <active>true</active>
