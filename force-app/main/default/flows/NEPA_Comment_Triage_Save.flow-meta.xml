@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>Save-side target for the Agentforce Comment Triage Agent. Receives AI triage results (sentiment, substantiveness, cluster, confidence, rationale, human-review flag) and writes them back to a PublicComplaint record. Called via flow://NEPA_Comment_Triage_Save from the AgentScript agent.</description>
+    <label>NEPA Comment Triage Save</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Active</status>
+
+    <!-- ============================================================
+         INPUT VARIABLES
+         All inputs supplied by the Comment Triage Agent action.
+    ============================================================ -->
+
+    <variables>
+        <name>inp_CommentId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>inp_Sentiment</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>inp_IsSubstantive</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>inp_ClusterId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>inp_AIConfidenceScore</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <scale>2</scale>
+    </variables>
+    <variables>
+        <name>inp_AITriageRationale</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>inp_RequiresHumanReview</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>inp_TriageTimestamp</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>inp_ResponseStatus</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <!-- ============================================================
+         OUTPUT VARIABLES
+    ============================================================ -->
+
+    <variables>
+        <name>out_Success</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
+    <variables>
+        <name>out_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+
+    <!-- ============================================================
+         SOBJECT VARIABLE — holds the queried PublicComplaint record
+    ============================================================ -->
+
+    <variables>
+        <name>var_Comment</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>PublicComplaint</objectType>
+    </variables>
+
+    <!-- ============================================================
+         START
+    ============================================================ -->
+
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Decision_RecordIdPresent</targetReference>
+        </connector>
+    </start>
+
+    <!-- ============================================================
+         STEP 1: DECISION — Record ID Present?
+         Guard against missing or empty CommentId before any DML.
+    ============================================================ -->
+
+    <decisions>
+        <name>Decision_RecordIdPresent</name>
+        <label>Record ID Present?</label>
+        <locationX>0</locationX>
+        <locationY>120</locationY>
+        <defaultConnectorLabel>CommentId Missing</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Assign_Error_MissingId</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>CommentId_Provided</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>inp_CommentId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>inp_CommentId</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue></stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Comment</targetReference>
+            </connector>
+            <label>CommentId Provided</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         STEP 1 FAULT: Missing CommentId — set error outputs and end
+    ============================================================ -->
+
+    <assignments>
+        <name>Assign_Error_MissingId</name>
+        <label>Error: CommentId Required</label>
+        <locationX>0</locationX>
+        <locationY>240</locationY>
+        <assignmentItems>
+            <assignToReference>out_Success</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>out_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>CommentId is required</stringValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+
+    <!-- ============================================================
+         STEP 2: GET RECORDS — Load Comment
+         Query PublicComplaint by Id, limit 1.
+    ============================================================ -->
+
+    <recordLookups>
+        <name>Get_Comment</name>
+        <label>Get Comment</label>
+        <locationX>0</locationX>
+        <locationY>240</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_CommentFound</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Assign_Error_GetFault</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>inp_CommentId</elementReference>
+            </value>
+        </filters>
+        <object>PublicComplaint</object>
+        <outputReference>var_Comment</outputReference>
+        <queriedFields>Id</queriedFields>
+    </recordLookups>
+
+    <!-- ============================================================
+         STEP 2 FAULT: Get Records fault path
+    ============================================================ -->
+
+    <assignments>
+        <name>Assign_Error_GetFault</name>
+        <label>Error: Get Comment Failed</label>
+        <locationX>0</locationX>
+        <locationY>360</locationY>
+        <assignmentItems>
+            <assignToReference>out_Success</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>out_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+
+    <!-- ============================================================
+         STEP 2b: DECISION — Comment Found?
+         If assignNullValuesIfNoRecordsFound returned null, stop.
+    ============================================================ -->
+
+    <decisions>
+        <name>Decision_CommentFound</name>
+        <label>Comment Found?</label>
+        <locationX>0</locationX>
+        <locationY>360</locationY>
+        <defaultConnectorLabel>Comment Not Found</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Assign_Error_NotFound</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Comment_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_Comment</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_UpdatePayload</targetReference>
+            </connector>
+            <label>Comment Found</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         STEP 2b FAULT: Comment not found — set error outputs and end
+    ============================================================ -->
+
+    <assignments>
+        <name>Assign_Error_NotFound</name>
+        <label>Error: Comment Not Found</label>
+        <locationX>0</locationX>
+        <locationY>480</locationY>
+        <assignmentItems>
+            <assignToReference>out_Success</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>out_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>PublicComplaint record not found for the provided CommentId</stringValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+
+    <!-- ============================================================
+         STEP 3: ASSIGNMENT — Build Update Payload
+         Set triage fields on the sObject variable before update.
+    ============================================================ -->
+
+    <assignments>
+        <name>Assign_UpdatePayload</name>
+        <label>Build Update Payload</label>
+        <locationX>0</locationX>
+        <locationY>480</locationY>
+        <assignmentItems>
+            <assignToReference>var_Comment.nepa_sentiment__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>inp_Sentiment</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_Comment.nepa_is_substantive__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>inp_IsSubstantive</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_Comment.nepa_cluster_id__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>inp_ClusterId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_Comment.nepa_ai_confidence_score__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>inp_AIConfidenceScore</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_Comment.nepa_ai_triage_rationale__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>inp_AITriageRationale</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_Comment.nepa_requires_human_review__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>inp_RequiresHumanReview</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_Comment.nepa_response_status__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>inp_ResponseStatus</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Comment</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- ============================================================
+         STEP 4: UPDATE RECORDS — Write triage results back
+    ============================================================ -->
+
+    <recordUpdates>
+        <name>Update_Comment</name>
+        <label>Update Comment</label>
+        <locationX>0</locationX>
+        <locationY>600</locationY>
+        <connector>
+            <targetReference>Assign_Success</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Assign_Error_UpdateFault</targetReference>
+        </faultConnector>
+        <inputReference>var_Comment</inputReference>
+    </recordUpdates>
+
+    <!-- ============================================================
+         STEP 4 FAULT: Update Records fault path
+    ============================================================ -->
+
+    <assignments>
+        <name>Assign_Error_UpdateFault</name>
+        <label>Error: Update Failed</label>
+        <locationX>0</locationX>
+        <locationY>720</locationY>
+        <assignmentItems>
+            <assignToReference>out_Success</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>out_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+
+    <!-- ============================================================
+         STEP 5: ASSIGNMENT — Set Success
+    ============================================================ -->
+
+    <assignments>
+        <name>Assign_Success</name>
+        <label>Set Success</label>
+        <locationX>0</locationX>
+        <locationY>720</locationY>
+        <assignmentItems>
+            <assignToReference>out_Success</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>out_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue></stringValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+
+</Flow>

@@ -132,6 +132,12 @@
         <members>PublicComplaint.nepa_is_substantive__c</members>
         <members>PublicComplaint.nepa_cluster_id__c</members>
         <members>PublicComplaint.nepa_response_status__c</members>
+        <!-- AI Triage Audit Trail fields (OMB M-24-10) -->
+        <members>PublicComplaint.nepa_ai_confidence_score__c</members>
+        <members>PublicComplaint.nepa_ai_triage_rationale__c</members>
+        <members>PublicComplaint.nepa_requires_human_review__c</members>
+        <members>PublicComplaint.nepa_human_override__c</members>
+        <members>PublicComplaint.nepa_ai_triage_timestamp__c</members>
         <!-- nepa_engagement__c (Entity 5: Public Engagement Events) -->
         <members>nepa_engagement__c.nepa_process__c</members>
         <members>nepa_engagement__c.nepa_engagement_type__c</members>
@@ -483,6 +489,8 @@
         <members>NEPA_Error_Logger</members>
         <members>NEPA_Error_Event_Handler</members>
         <members>NEPA_FlowError_CountIncrementer</members>
+        <!-- Comment Triage Agent save flow -->
+        <members>NEPA_Comment_Triage_Save</members>
         <name>Flow</name>
     </types>
     <types>
@@ -559,6 +567,10 @@
         <members>NepaTimelineControllerTest</members>
         <members>NepaCeqExportService</members>
         <members>NepaCeqExportServiceTest</members>
+        <members>NepaCommentEJDetector</members>
+        <members>NepaCommentEJDetectorTest</members>
+        <members>NepaCommentTriageParser</members>
+        <members>NepaCommentTriageParserTest</members>
         <name>ApexClass</name>
     </types>
     <types>
@@ -570,6 +582,16 @@
         <!-- CE Screening BRE -->
         <members>NEPA_CE_Screener</members>
         <name>ExpressionSetDefinition</name>
+    </types>
+    <types>
+        <!-- Comment Triage Agent prompt template -->
+        <members>NEPA_Comment_Triage_Analysis</members>
+        <name>GenAiPromptTemplate</name>
+    </types>
+    <types>
+        <!-- Comment Triage Agentforce Agent -->
+        <members>NEPA_Comment_Triage</members>
+        <name>BotVersion</name>
     </types>
     <version>62.0</version>
 </Package>

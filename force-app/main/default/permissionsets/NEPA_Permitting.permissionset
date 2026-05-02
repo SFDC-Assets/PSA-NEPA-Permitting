@@ -493,6 +493,32 @@
         <field>PublicComplaint.nepa_email__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <!-- AI Triage Audit Trail fields (OMB M-24-10) -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_ai_confidence_score__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_ai_triage_rationale__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_requires_human_review__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_human_override__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_ai_triage_timestamp__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <!-- nepa_engagement__c (Entity 5: Public Engagement Events) -->
     <!-- nepa_process__c, nepa_engagement_type__c, nepa_start_datetime__c are required fields — omitted from fieldPermissions -->
     <fieldPermissions>

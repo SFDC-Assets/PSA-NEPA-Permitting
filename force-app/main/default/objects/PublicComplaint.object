@@ -332,4 +332,54 @@
         <type>LongTextArea</type>
         <visibleLines>8</visibleLines>
     </fields>
+    <!-- AI Triage Audit Trail fields (OMB M-24-10) -->
+    <fields>
+        <fullName>nepa_ai_confidence_score__c</fullName>
+        <description>Confidence score (0–100) returned by the Agentforce Comment Triage Agent. Values below 60 should trigger human review.</description>
+        <inlineHelpText>AI confidence score 0–100. Lower scores indicate uncertain classifications.</inlineHelpText>
+        <label>AI Confidence Score</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_ai_triage_rationale__c</fullName>
+        <description>1–2 sentence rationale written by the AI when marking a comment non-substantive, explaining the NEPA criteria that led to that determination. Mandatory when nepa_is_substantive__c = false.</description>
+        <inlineHelpText>AI explanation of substantive/non-substantive determination. Required when non-substantive.</inlineHelpText>
+        <label>AI Triage Rationale</label>
+        <length>4000</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_requires_human_review__c</fullName>
+        <description>Set to true by the EJ detector gate when the comment mentions tribal sovereignty, sacred sites, environmental justice communities, low-income impact, or civil rights. Bypasses AI categorization and routes to a human EJ/Tribal Liaison coordinator.</description>
+        <inlineHelpText>Flagged for mandatory human review. Set automatically when EJ/tribal/civil-rights triggers are detected.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Requires Human Review</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_human_override__c</fullName>
+        <description>Set to true by a human reviewer when they override the AI's substantive/sentiment classification. Enables systematic measurement of AI bias patterns by zip code, commenter type, or project.</description>
+        <inlineHelpText>Check if a human reviewer has overridden the AI classification.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Human Override Applied</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_ai_triage_timestamp__c</fullName>
+        <description>Date and time the Agentforce Comment Triage Agent completed its analysis. Used for audit trail and performance monitoring.</description>
+        <inlineHelpText>When AI triage was completed.</inlineHelpText>
+        <label>AI Triage Timestamp</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
 </CustomObject>
