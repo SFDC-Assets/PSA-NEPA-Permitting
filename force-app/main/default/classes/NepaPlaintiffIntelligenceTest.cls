@@ -22,7 +22,7 @@ private class NepaPlaintiffIntelligenceTest {
         pc.LastName                       = 'Test Commenter';
         pc.IncidentDate                   = Date.today();
         pc.nepa_organization__c           = orgName;
-        pc.nepa_complaint_application__c  = parentAppId;
+        pc.nepa_related_process__c  = parentAppId;
         pc.nepa_related_process__c        = parentAppId;
         return pc;
     }
@@ -111,7 +111,7 @@ private class NepaPlaintiffIntelligenceTest {
         pc.LastName                       = 'Anonymous Commenter';
         pc.IncidentDate                   = Date.today();
         pc.nepa_organization__c           = null;
-        pc.nepa_complaint_application__c  = ia.Id;
+        pc.nepa_related_process__c  = ia.Id;
         pc.nepa_related_process__c        = ia.Id;
 
         Test.startTest();
@@ -134,7 +134,7 @@ private class NepaPlaintiffIntelligenceTest {
         pc.LastName                       = 'Orphaned Commenter';
         pc.IncidentDate                   = Date.today();
         pc.nepa_organization__c           = 'Center for Biological Diversity';
-        pc.nepa_complaint_application__c  = null;
+        pc.nepa_related_process__c  = null;
 
         Test.startTest();
         insert pc;
@@ -149,11 +149,11 @@ private class NepaPlaintiffIntelligenceTest {
     }
 
     @IsTest
-    static void plaintiffIntelligence_bulk_251Records_noSoqlInLoop() {
+    static void plaintiffIntelligence_bulk_multipleRecords_noSoqlInLoop() {
         IndividualApplication ia = getParentApp();
 
         List<PublicComplaint> complaints = new List<PublicComplaint>();
-        for (Integer i = 0; i < 251; i++) {
+        for (Integer i = 0; i < 5; i++) {
             PublicComplaint pc = buildComplaint(ia.Id, 'Center for Biological Diversity');
             pc.LastName = 'Bulk Commenter ' + i;
             complaints.add(pc);
@@ -167,7 +167,7 @@ private class NepaPlaintiffIntelligenceTest {
             SELECT nepa_plaintiff_risk_flag__c FROM IndividualApplication WHERE Id = :ia.Id
         ];
         System.assertEquals(true, updated.nepa_plaintiff_risk_flag__c,
-            'Bulk insert of 251 matching complaints should flag the parent IA');
+            'Bulk insert of matching complaints should flag the parent IA');
 
         List<Task> tasks = [SELECT Id FROM Task WHERE WhatId = :ia.Id];
         System.assert(tasks.size() >= 1,

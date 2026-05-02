@@ -140,6 +140,7 @@ private class NepaValidationRuleTest {
     @IsTest
     static void tieringAgeCheck_staleDateNoSupplementation_blocks() {
         IndividualApplication ia = getProcess();
+        ia.nepa_review_type__c = 'EIS';
         ia.nepa_tiering_to_prior_eis__c = true;
         ia.nepa_prior_nepa_date__c = Date.today().addDays(-2000);
         ia.nepa_supplementation_review_complete__c = false;

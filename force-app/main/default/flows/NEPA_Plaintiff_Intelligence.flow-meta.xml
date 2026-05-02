@@ -1,85 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>After-save trigger on PublicComplaint (insert only). Queries NEPA_Plaintiff_Profile__mdt for records whose Name_Keywords__c match the commenter organization. When a HIGH or VERY_HIGH profile is found, sets nepa_plaintiff_risk_flag__c on the parent IndividualApplication, creates a Legal Defensibility Review task, and triggers the litigation risk scorer subflow. Part of Phase 1 risk intelligence (P6).</description>
+    <description>After-save trigger on PublicComplaint (insert only). Queries NEPA_Plaintiff_Profile__mdt for records whose Organization_Name__c matches the commenter organization via CONTAINS. When a HIGH or VERY_HIGH profile is found, sets nepa_plaintiff_risk_flag__c on the parent IndividualApplication and creates a Legal Defensibility Review task.</description>
     <label>NEPA Plaintiff Intelligence</label>
     <processType>AutoLaunchedFlow</processType>
-    <status>Draft</status>
+    <status>Active</status>
 
-    <!-- Get all active plaintiff profiles -->
-    <recordLookups>
-        <name>Get_PlaintiffProfiles</name>
-        <label>Get Active Plaintiff Profiles</label>
-        <description>Load all active NEPA_Plaintiff_Profile__mdt records for keyword matching.</description>
+    <assignments>
+        <name>Assign_MatchedProfile</name>
+        <label>Capture Matched Profile</label>
+        <description>Store the matched profile fields for use in downstream task creation.</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <assignmentItems>
+            <assignToReference>var_MatchedOrgName</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_CheckProfiles.Organization_Name__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_MatchedRiskTier</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_CheckProfiles.Risk_Tier__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_MatchedCaseCount</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_CheckProfiles.Prior_Case_Count__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_MatchedSuccessRate</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_CheckProfiles.Success_Rate__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_MatchedCauses</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_CheckProfiles.Typical_Causes__c</elementReference>
+            </value>
+        </assignmentItems>
         <connector>
-            <targetReference>Decision_OrgNamePopulated</targetReference>
+            <targetReference>Get_ParentApplication</targetReference>
         </connector>
-        <faultConnector>
-            <targetReference>End_NoMatch</targetReference>
-        </faultConnector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Active__c</field>
-            <operator>EqualTo</operator>
-            <value><booleanValue>true</booleanValue></value>
-        </filters>
-        <getFirstRecordOnly>false</getFirstRecordOnly>
-        <object>NEPA_Plaintiff_Profile__mdt</object>
-        <outputReference>var_PlaintiffProfiles</outputReference>
-        <queriedFields>Organization_Name__c</queriedFields>
-        <queriedFields>Name_Keywords__c</queriedFields>
-        <queriedFields>Risk_Tier__c</queriedFields>
-        <queriedFields>Prior_Case_Count__c</queriedFields>
-        <queriedFields>Success_Rate__c</queriedFields>
-        <queriedFields>Typical_Causes__c</queriedFields>
-        <sortField>Risk_Tier__c</sortField>
-        <sortOrder>Asc</sortOrder>
-    </recordLookups>
+    </assignments>
 
-    <!-- Only proceed if org name is populated -->
-    <decisions>
-        <name>Decision_OrgNamePopulated</name>
-        <label>Commenter Organization Populated?</label>
-        <description>Commenter Organization Populated?</description>
+    <assignments>
+        <name>End_NoMatch</name>
+        <label>End — No Match or Error</label>
+        <description>No-op terminal node for paths that exit without flagging.</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <defaultConnectorLabel>No Org Name — Skip</defaultConnectorLabel>
-        <rules>
-            <name>OrgName_Populated</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.nepa_organization__c</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue><booleanValue>false</booleanValue></rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Loop_CheckProfiles</targetReference>
-            </connector>
-            <label>Org Name Present</label>
-        </rules>
-    </decisions>
+        <assignmentItems>
+            <assignToReference>var_MatchedOrgName</assignToReference>
+            <operator>Assign</operator>
+            <value><stringValue></stringValue></value>
+        </assignmentItems>
+    </assignments>
 
-    <!-- Loop through profiles checking for keyword match -->
-    <loops>
-        <name>Loop_CheckProfiles</name>
-        <label>Loop Through Plaintiff Profiles</label>
-        <description>Loop Through Plaintiff Profiles</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <collectionReference>var_PlaintiffProfiles</collectionReference>
-        <iterationOrder>Asc</iterationOrder>
-        <nextValueConnector>
-            <targetReference>Decision_KeywordMatch</targetReference>
-        </nextValueConnector>
-        <noMoreValuesConnector>
-            <targetReference>End_NoMatch</targetReference>
-        </noMoreValuesConnector>
-    </loops>
-
-    <!-- Check if commenter org name contains this profile's org name -->
     <decisions>
         <name>Decision_KeywordMatch</name>
         <label>Org Name Contains Profile Name?</label>
@@ -105,110 +90,27 @@
         </rules>
     </decisions>
 
-    <!-- Only flag for HIGH and VERY_HIGH -->
     <decisions>
-        <name>Decision_RiskTierHighEnough</name>
-        <label>Risk Tier HIGH or VERY_HIGH?</label>
-        <description>Risk Tier HIGH or VERY_HIGH?</description>
+        <name>Decision_OrgNamePopulated</name>
+        <label>Commenter Organization Populated?</label>
+        <description>Commenter Organization Populated?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <defaultConnectorLabel>Medium or Low — Skip Flag</defaultConnectorLabel>
+        <defaultConnectorLabel>No Org Name — Skip</defaultConnectorLabel>
         <rules>
-            <name>Tier_High</name>
-            <conditionLogic>or</conditionLogic>
+            <name>OrgName_Populated</name>
+            <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>Loop_CheckProfiles.currentItem.Risk_Tier__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue><stringValue>VERY_HIGH</stringValue></rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>Loop_CheckProfiles.currentItem.Risk_Tier__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue><stringValue>HIGH</stringValue></rightValue>
+                <leftValueReference>$Record.nepa_organization__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
             </conditions>
             <connector>
-                <targetReference>Assign_MatchedProfile</targetReference>
+                <targetReference>Loop_CheckProfiles</targetReference>
             </connector>
-            <label>HIGH or VERY_HIGH</label>
+            <label>Org Name Present</label>
         </rules>
     </decisions>
-
-    <!-- Capture matched profile and stop loop -->
-    <assignments>
-        <name>Assign_MatchedProfile</name>
-        <label>Capture Matched Profile</label>
-        <description>Store the matched profile fields for use in downstream task creation.</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_MatchedOrgName</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Loop_CheckProfiles.currentItem.Organization_Name__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_MatchedRiskTier</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Loop_CheckProfiles.currentItem.Risk_Tier__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_MatchedCaseCount</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Loop_CheckProfiles.currentItem.Prior_Case_Count__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_MatchedSuccessRate</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Loop_CheckProfiles.currentItem.Success_Rate__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_MatchedCauses</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Loop_CheckProfiles.currentItem.Typical_Causes__c</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Get_ParentApplication</targetReference>
-        </connector>
-    </assignments>
-
-    <!-- Get the parent IndividualApplication -->
-    <recordLookups>
-        <name>Get_ParentApplication</name>
-        <label>Get Parent IndividualApplication</label>
-        <description>Load the IndividualApplication this comment was filed against for flag update and task assignment.</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Decision_ParentAppExists</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>End_NoMatch</targetReference>
-        </faultConnector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.nepa_complaint_application__c</elementReference>
-            </value>
-        </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
-        <object>IndividualApplication</object>
-        <outputReference>var_ParentApp</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>OwnerId</queriedFields>
-        <queriedFields>nepa_plaintiff_risk_flag__c</queriedFields>
-    </recordLookups>
 
     <decisions>
         <name>Decision_ParentAppExists</name>
@@ -232,35 +134,79 @@
         </rules>
     </decisions>
 
-    <!-- Set plaintiff risk flag on parent application -->
-    <recordUpdates>
-        <name>Update_PlaintiffFlag</name>
-        <label>Set Plaintiff Risk Flag on Application</label>
-        <description>Set nepa_plaintiff_risk_flag__c = true on the parent IndividualApplication.</description>
+    <decisions>
+        <name>Decision_RiskTierHighEnough</name>
+        <label>Risk Tier HIGH or VERY_HIGH?</label>
+        <description>Risk Tier HIGH or VERY_HIGH?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <connector>
-            <targetReference>Create_DefensibilityTask</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>End_NoMatch</targetReference>
-        </faultConnector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>var_ParentApp.Id</elementReference>
-            </value>
-        </filters>
-        <inputAssignments>
-            <field>nepa_plaintiff_risk_flag__c</field>
-            <value><booleanValue>true</booleanValue></value>
-        </inputAssignments>
-        <object>IndividualApplication</object>
-    </recordUpdates>
+        <defaultConnectorLabel>Medium or Low — Skip Flag</defaultConnectorLabel>
+        <rules>
+            <name>Tier_High</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>Loop_CheckProfiles.Risk_Tier__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><stringValue>VERY_HIGH</stringValue></rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Loop_CheckProfiles.Risk_Tier__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><stringValue>HIGH</stringValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_MatchedProfile</targetReference>
+            </connector>
+            <label>HIGH or VERY_HIGH</label>
+        </rules>
+    </decisions>
 
-    <!-- Create Legal Defensibility Review task -->
+    <formulas>
+        <name>formula_OrgNameContainsProfile</name>
+        <description>True when the commenter org name contains the profile org name (case-insensitive).</description>
+        <dataType>Boolean</dataType>
+        <expression>CONTAINS(
+  UPPER({!$Record.nepa_organization__c}),
+  UPPER({!Loop_CheckProfiles.Organization_Name__c})
+)</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_TaskDescription</name>
+        <description>Task description summarizing plaintiff profile details.</description>
+        <dataType>String</dataType>
+        <expression>"Repeat plaintiff organization identified in public comments. " &amp;
+"Organization: " &amp; {!var_MatchedOrgName} &amp; ". " &amp;
+"Risk tier: " &amp; {!var_MatchedRiskTier} &amp; ". " &amp;
+"Prior NEPA cases: " &amp; TEXT({!var_MatchedCaseCount}) &amp; ". " &amp;
+"Historical success rate: " &amp; TEXT(ROUND({!var_MatchedSuccessRate} * 100, 0)) &amp; "%. " &amp;
+"Typical challenge grounds: " &amp; {!var_MatchedCauses} &amp; ". " &amp;
+"Review administrative record completeness and coordinate with Solicitor&apos;s Office."</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_TaskSubject</name>
+        <description>Task subject for Legal Defensibility Review task.</description>
+        <dataType>String</dataType>
+        <expression>"Legal Defensibility Review — " &amp; {!var_MatchedOrgName} &amp; " (" &amp; {!var_MatchedRiskTier} &amp; ")"</expression>
+    </formulas>
+
+    <loops>
+        <name>Loop_CheckProfiles</name>
+        <label>Loop Through Plaintiff Profiles</label>
+        <description>Loop Through Plaintiff Profiles</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>var_PlaintiffProfiles</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Decision_KeywordMatch</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>End_NoMatch</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+
     <recordCreates>
         <name>Create_DefensibilityTask</name>
         <label>Create Legal Defensibility Review Task</label>
@@ -302,53 +248,138 @@
         <object>Task</object>
     </recordCreates>
 
-    <!-- Formulas -->
-    <formulas>
-        <name>formula_OrgNameContainsProfile</name>
-        <description>True when the commenter org name contains the profile org name (case-insensitive). Uses CONTAINS on the full org name as a simple first-pass match.</description>
-        <dataType>Boolean</dataType>
-        <expression>CONTAINS(
-  UPPER({!$Record.nepa_organization__c}),
-  UPPER({!Loop_CheckProfiles.currentItem.Organization_Name__c})
-)</expression>
-    </formulas>
+    <recordLookups>
+        <name>Get_ParentApplication</name>
+        <label>Get Parent IndividualApplication</label>
+        <description>Load the IndividualApplication this comment was filed against for flag update and task assignment.</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_ParentAppExists</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>End_NoMatch</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.nepa_related_process__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>IndividualApplication</object>
+        <outputReference>var_ParentApp</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>OwnerId</queriedFields>
+        <queriedFields>nepa_plaintiff_risk_flag__c</queriedFields>
+    </recordLookups>
 
-    <formulas>
-        <name>formula_TaskSubject</name>
-        <description>Task subject for Legal Defensibility Review task.</description>
-        <dataType>String</dataType>
-        <expression>"Legal Defensibility Review — " &amp; {!var_MatchedOrgName} &amp; " (" &amp; {!var_MatchedRiskTier} &amp; ")"</expression>
-    </formulas>
+    <recordLookups>
+        <name>Get_PlaintiffProfiles</name>
+        <label>Get Active Plaintiff Profiles</label>
+        <description>Load all active NEPA_Plaintiff_Profile__mdt records for keyword matching.</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_OrgNamePopulated</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>End_NoMatch</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Active__c</field>
+            <operator>EqualTo</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>NEPA_Plaintiff_Profile__mdt</object>
+        <outputReference>var_PlaintiffProfiles</outputReference>
+        <queriedFields>Organization_Name__c</queriedFields>
+        <queriedFields>Name_Keywords__c</queriedFields>
+        <queriedFields>Risk_Tier__c</queriedFields>
+        <queriedFields>Prior_Case_Count__c</queriedFields>
+        <queriedFields>Success_Rate__c</queriedFields>
+        <queriedFields>Typical_Causes__c</queriedFields>
+        <sortField>Risk_Tier__c</sortField>
+        <sortOrder>Asc</sortOrder>
+    </recordLookups>
 
-    <formulas>
-        <name>formula_TaskDescription</name>
-        <description>Task description summarizing plaintiff profile details.</description>
-        <dataType>String</dataType>
-        <expression>"Repeat plaintiff organization identified in public comments. " &amp;
-"Organization: " &amp; {!var_MatchedOrgName} &amp; ". " &amp;
-"Risk tier: " &amp; {!var_MatchedRiskTier} &amp; ". " &amp;
-"Prior NEPA cases: " &amp; TEXT({!var_MatchedCaseCount}) &amp; ". " &amp;
-"Historical success rate: " &amp; TEXT(ROUND({!var_MatchedSuccessRate} * 100, 0)) &amp; "%. " &amp;
-"Typical challenge grounds: " &amp; {!var_MatchedCauses} &amp; ". " &amp;
-"Review administrative record completeness and coordinate with Solicitor&apos;s Office."</expression>
-    </formulas>
+    <recordUpdates>
+        <name>Update_PlaintiffFlag</name>
+        <label>Set Plaintiff Risk Flag on Application</label>
+        <description>Set nepa_plaintiff_risk_flag__c = true on the parent IndividualApplication.</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Create_DefensibilityTask</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>End_NoMatch</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_ParentApp.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>nepa_plaintiff_risk_flag__c</field>
+            <value><booleanValue>true</booleanValue></value>
+        </inputAssignments>
+        <object>IndividualApplication</object>
+    </recordUpdates>
 
-    <!-- Variables -->
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_PlaintiffProfiles</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>nepa_organization__c</field>
+            <operator>IsNull</operator>
+            <value><booleanValue>false</booleanValue></value>
+        </filters>
+        <filters>
+            <field>nepa_related_process__c</field>
+            <operator>IsNull</operator>
+            <value><booleanValue>false</booleanValue></value>
+        </filters>
+        <object>PublicComplaint</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <scheduledPaths>
+            <connector>
+                <targetReference>Get_PlaintiffProfiles</targetReference>
+            </connector>
+            <pathType>AsyncAfterCommit</pathType>
+        </scheduledPaths>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+
     <variables>
-        <name>var_PlaintiffProfiles</name>
-        <dataType>SObject</dataType>
-        <isCollection>true</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>NEPA_Plaintiff_Profile__mdt</objectType>
-    </variables>
-    <variables>
-        <name>var_ParentApp</name>
-        <dataType>SObject</dataType>
+        <name>var_MatchedCaseCount</name>
+        <dataType>Number</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
-        <objectType>IndividualApplication</objectType>
+        <scale>0</scale>
+        <value><numberValue>0</numberValue></value>
+    </variables>
+    <variables>
+        <name>var_MatchedCauses</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value><stringValue></stringValue></value>
     </variables>
     <variables>
         <name>var_MatchedOrgName</name>
@@ -367,15 +398,6 @@
         <value><stringValue></stringValue></value>
     </variables>
     <variables>
-        <name>var_MatchedCaseCount</name>
-        <dataType>Number</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <scale>0</scale>
-        <value><numberValue>0</numberValue></value>
-    </variables>
-    <variables>
         <name>var_MatchedSuccessRate</name>
         <dataType>Number</dataType>
         <isCollection>false</isCollection>
@@ -385,55 +407,20 @@
         <value><numberValue>0</numberValue></value>
     </variables>
     <variables>
-        <name>var_MatchedCauses</name>
-        <dataType>String</dataType>
+        <name>var_ParentApp</name>
+        <dataType>SObject</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
-        <value><stringValue></stringValue></value>
+        <objectType>IndividualApplication</objectType>
     </variables>
-
-    <!-- After-save trigger: PublicComplaint insert only -->
-    <start>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <connector>
-            <targetReference>Get_PlaintiffProfiles</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>nepa_organization__c</field>
-            <operator>IsNull</operator>
-            <value><booleanValue>false</booleanValue></value>
-        </filters>
-        <filters>
-            <field>nepa_complaint_application__c</field>
-            <operator>IsNull</operator>
-            <value><booleanValue>false</booleanValue></value>
-        </filters>
-        <object>PublicComplaint</object>
-        <recordTriggerType>Create</recordTriggerType>
-        <scheduledPaths>
-            <connector>
-                <targetReference>Get_PlaintiffProfiles</targetReference>
-            </connector>
-            <pathType>AsyncAfterCommit</pathType>
-        </scheduledPaths>
-        <triggerType>RecordAfterSave</triggerType>
-    </start>
-
-    <!-- Terminal no-op for paths that exit without action -->
-    <assignments>
-        <name>End_NoMatch</name>
-        <label>End — No Match or Error</label>
-        <description>No-op terminal node for paths that exit without flagging.</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_MatchedOrgName</assignToReference>
-            <operator>Assign</operator>
-            <value><stringValue></stringValue></value>
-        </assignmentItems>
-    </assignments>
+    <variables>
+        <name>var_PlaintiffProfiles</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>NEPA_Plaintiff_Profile__mdt</objectType>
+    </variables>
 
 </Flow>

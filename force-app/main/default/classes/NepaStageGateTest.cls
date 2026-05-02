@@ -17,11 +17,10 @@ private class NepaStageGateTest {
     static void stageGate_vr001_allConditionsMet_blocksSave() {
         Program proj = getProgram();
         IndividualApplication ia = NepaTestFactory.insertProcess(proj.Id, 'EIS', null, null);
+        // Set all blocking conditions and the stage change in one update so VR_006 fires inside the try/catch
         ia.nepa_tiering_to_prior_eis__c = true;
         ia.nepa_prior_nepa_date__c = Date.today().addDays(-2000);
         ia.nepa_supplementation_review_complete__c = false;
-        update ia;
-
         ia.nepa_process_stage__c = 'Draft EIS Preparation';
         try {
             update ia;

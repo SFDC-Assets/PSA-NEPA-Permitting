@@ -841,7 +841,7 @@
     <validationRules>
         <fullName>VR_Description_Minimum_Length</fullName>
         <active>true</active>
-        <description>Enforces minimum 200-character description when nepa_description__c is populated. Addresses NEPATEC data quality finding: truncated descriptions and placeholder text degrade CE classification accuracy (feature lift 0.71). Fires only when description is non-blank to avoid blocking legacy records.</description>
+        <description>Enforces minimum 200-character description when nepa_description__c is populated. Truncated descriptions degrade CE classification accuracy (NEPATEC feature lift 0.71). Does not fire on blank descriptions.</description>
         <errorConditionFormula>AND(
   NOT(ISBLANK(nepa_description__c)),
   LEN(nepa_description__c) &lt; 200
@@ -851,7 +851,7 @@
     <validationRules>
         <fullName>VR_FONSI_ROD_On_CE</fullName>
         <active>true</active>
-        <description>Blocks FONSI or ROD as decision document type when the process review type is CE. Addresses NEPATEC doc_type conflation finding where ROD/FONSI appeared within the CE stratum, corrupting the training corpus. CE decisions use DR or CE Determination, not FONSI/ROD.</description>
+        <description>Blocks FONSI or ROD as decision document type when review type is CE. Addresses NEPATEC doc_type conflation where ROD/FONSI appeared in the CE stratum. CE decisions use DR or CE Determination.</description>
         <errorConditionFormula>AND(
   ISPICKVAL(nepa_review_type__c, "CE"),
   OR(
@@ -1003,24 +1003,25 @@
     <validationRules>
         <fullName>VR_003_NEPA_Waiver_Legal_Sufficiency</fullName>
         <active>true</active>
-        <description>VR-003: Blocks save when nepa_waiver_invoked__c is true but nepa_waiver_statute_cite__c is blank. Addresses DG-003: agencies have lost cases by asserting NEPA waivers without valid legal authority. OGC sign-off documentation must be in the administrative record. Field check only; OGC memo attachment is enforced separately by the Stage Gate flow.</description>
+        <description>VR-003: Blocks save when NEPA waiver is invoked without a statutory citation. Agencies lose cases by asserting waivers without valid legal authority. OGC memo must be in the administrative record.</description>
         <errorConditionFormula>AND(
   nepa_waiver_invoked__c = true,
   ISBLANK(nepa_waiver_statute_cite__c)
 )</errorConditionFormula>
-        <errorMessage>NEPA waiver is checked but no statutory citation is provided. Enter the specific statutory provision authorizing the waiver (e.g., IIRIRA Section 102(c); EPAct 2005 Section 390). An OGC legal sufficiency memo must also be attached before the project can advance to implementation.</errorMessage>
+        <errorMessage>NEPA waiver is checked but no statutory citation is provided. Enter the specific statutory provision authorizing the waiver (e.g., IIRIRA Section 102(c); EPAct 2005 Section 390). Attach an OGC legal sufficiency memo before advancing.</errorMessage>
     </validationRules>
     <validationRules>
         <fullName>VR_006_Tiering_Age_Check</fullName>
         <active>true</active>
-        <description>VR-006: Blocks save when tiering to a prior EIS older than 5 years (1,825 days) without a supplementation review completion. Addresses failure_to_supplement challenge type (100% agency loss rate in PermitTEC linked cases). Both nepa_tiering_to_prior_eis__c and nepa_prior_nepa_date__c must be populated for this rule to fire.</description>
+        <description>VR-006: Blocks save when tiering to a prior EIS older than 5 years without supplementation review. Addresses failure_to_supplement challenge type (100% agency loss rate in PermitTEC). Requires both tiering checkbox and prior NEPA date to be set.</description>
         <errorConditionFormula>AND(
+  ISPICKVAL(nepa_review_type__c, "EIS"),
   nepa_tiering_to_prior_eis__c = true,
   NOT(ISBLANK(nepa_prior_nepa_date__c)),
   nepa_prior_nepa_date__c &lt; (TODAY() - 1825),
   nepa_supplementation_review_complete__c = false
 )</errorConditionFormula>
-        <errorMessage>The prior EIS this process tiers from is more than 5 years old. A documented supplementation review determination is required under 40 CFR 1502.9(c) before proceeding. Check "Supplementation Review Complete" once the responsible official has made a written determination.</errorMessage>
+        <errorMessage>The prior EIS is more than 5 years old. A supplementation review is required under 40 CFR 1502.9(c). Check "Supplementation Review Complete" after the responsible official makes a written determination.</errorMessage>
     </validationRules>
 
     <!-- Screener run timestamp — prevents CE Screener write-back from re-triggering Risk Scorer -->
