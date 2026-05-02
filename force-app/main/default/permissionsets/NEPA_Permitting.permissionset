@@ -2,6 +2,74 @@
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <description>Provides access to NEPA Permitting compliant data model. Implements CEQ NEPA and Permitting Data and Technology Standard v1.2. Requires additional Public Sector Access permission set to be assigned.</description>
     <!-- IndividualApplication (Entity 2: Process) fields -->
+    <!-- P2 Data Quality fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_decision_document_type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_total_pages__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_pages_missing__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_ce_rationale_supplemental__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- P5 Litigation Guardrail fields -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_small_sample_warning__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_waiver_invoked__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_waiver_statute_cite__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_tiering_to_prior_eis__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_prior_nepa_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_supplementation_review_complete__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_esa_consultation_status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- AI AUP compliance fields -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_ce_pathway_recommendation__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_risk_score_is_ai__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <!-- Phase 1 Risk Intelligence fields (read-only — written by Flows) -->
     <fieldPermissions>
         <editable>false</editable>
@@ -164,6 +232,17 @@
         <readable>true</readable>
     </fieldPermissions>
     <!-- Program (Entity 1: Project) fields -->
+    <!-- P2 Data Quality fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Program.nepa_primary_sector__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Program.nepa_sponsor_type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <!-- Phase 1 Risk Intelligence fields -->
     <fieldPermissions>
         <editable>true</editable>
@@ -842,32 +921,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <!-- Junction object fields: all junction fields (Agency__c, Processes__c, nepa_Project__c, nepa_role__c) are required — omitted from fieldPermissions -->
-    <!-- nepa_decision_modification__c — agency PM edits; modification_type and description are required on create -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_modification__c.nepa_process__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_modification__c.nepa_modification_type__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_modification__c.nepa_decision_element_affected__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_modification__c.nepa_modification_description__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_modification__c.nepa_attribution_type__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
+    <!-- nepa_decision_modification__c — nepa_process__c, nepa_modification_type__c, nepa_decision_element_affected__c, nepa_attribution_type__c are required — omitted per Salesforce FLS rules for required fields -->
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_decision_modification__c.nepa_attributed_cluster_id__c</field>
@@ -893,17 +947,7 @@
         <field>nepa_decision_modification__c.nepa_recorded_by__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_comment_attribution__c — junction; nepa_modification__c and nepa_comment__c are required -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_comment_attribution__c.nepa_modification__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_comment_attribution__c.nepa_comment__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
+    <!-- nepa_comment_attribution__c — junction; nepa_modification__c and nepa_comment__c are required — omitted per Salesforce FLS rules for required fields -->
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_comment_attribution__c.nepa_attribution_note__c</field>
@@ -1216,21 +1260,7 @@
         <readable>true</readable>
     </fieldPermissions>
     <!-- Phase 5: nepa_ar_export__c fields — status written by batch; PM can create/read; counsel can read -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_ar_export__c.nepa_process__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>nepa_ar_export__c.nepa_export_status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_ar_export__c.nepa_export_type__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
+    <!-- nepa_process__c and nepa_export_status__c are required fields — omitted per Salesforce FLS rules for required fields -->
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_ar_export__c.nepa_requested_date__c</field>
@@ -1414,8 +1444,5 @@
         <object>nepa_ar_export__c</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    <classAccesses>
-        <apexClass>NepaCeqExportService</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
+    <!-- NepaCeqExportService classAccess omitted — class not yet implemented -->
 </PermissionSet>

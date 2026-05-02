@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Energy | Solar | BLM Federal Land</label>
+    <protected>false</protected>
+    <values>
+        <field>Sector__c</field>
+        <value xsi:type="xsd:string">Energy Production and Management</value>
+    </values>
+    <values>
+        <field>Project_Type__c</field>
+        <value xsi:type="xsd:string">Renewable Energy Production - Solar</value>
+    </values>
+    <values>
+        <field>Lead_Agency_Key__c</field>
+        <value xsi:type="xsd:string">BLM</value>
+    </values>
+    <values>
+        <field>Location_Type__c</field>
+        <value xsi:type="xsd:string">Federal Land</value>
+    </values>
+    <values>
+        <field>Cooperating_Agencies__c</field>
+        <value xsi:type="xsd:string">USFWS; EPA; SHPO; State Wildlife Agency; WAPA/BPA</value>
+    </values>
+    <values>
+        <field>Required_Permits__c</field>
+        <value xsi:type="xsd:string">FLPMA Title V ROW Grant (43 USC 1761); ESA Section 7 Consultation; NHPA Section 106 Review; CWA Section 404 (if wetlands present)</value>
+    </values>
+    <values>
+        <field>Adjacent_Reviews__c</field>
+        <value xsi:type="xsd:string">MBTA; Bald and Golden Eagle Protection Act; EO 13186; DOE Interconnection Approval</value>
+    </values>
+    <values>
+        <field>Typical_Timeline_Months__c</field>
+        <value xsi:type="xsd:decimal">18</value>
+    </values>
+    <values>
+        <field>EIS_Likelihood_Pct__c</field>
+        <value xsi:type="xsd:decimal">60</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Agriculture | Land/Forest Management Plan | BLM/USFS</label>
+    <protected>false</protected>
+    <values>
+        <field>Sector__c</field>
+        <value xsi:type="xsd:string">Agriculture and Natural Resource Management</value>
+    </values>
+    <values>
+        <field>Project_Type__c</field>
+        <value xsi:type="xsd:string">Land Use or Forest Management Plan</value>
+    </values>
+    <values>
+        <field>Lead_Agency_Key__c</field>
+        <value xsi:type="xsd:string">BLM/USFS</value>
+    </values>
+    <values>
+        <field>Location_Type__c</field>
+        <value xsi:type="xsd:string">Federal Land</value>
+    </values>
+    <values>
+        <field>Cooperating_Agencies__c</field>
+        <value xsi:type="xsd:string">USFWS; EPA; SHPO; State Wildlife Agency; Tribal Governments</value>
+    </values>
+    <values>
+        <field>Required_Permits__c</field>
+        <value xsi:type="xsd:string">FLPMA Plan Approval (43 USC 1712); NFMA Forest Plan (16 USC 1604); ESA Section 7 Consultation; NHPA Section 106</value>
+    </values>
+    <values>
+        <field>Adjacent_Reviews__c</field>
+        <value xsi:type="xsd:string">Wild and Scenic Rivers Act; Wilderness Act; MBTA; ANILCA (Alaska)</value>
+    </values>
+    <values>
+        <field>Typical_Timeline_Months__c</field>
+        <value xsi:type="xsd:decimal">36</value>
+    </values>
+    <values>
+        <field>EIS_Likelihood_Pct__c</field>
+        <value xsi:type="xsd:decimal">90</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

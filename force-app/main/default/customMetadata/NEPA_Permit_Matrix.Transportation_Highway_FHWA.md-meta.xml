@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Transportation | Highway | FHWA</label>
+    <protected>false</protected>
+    <values>
+        <field>Sector__c</field>
+        <value xsi:type="xsd:string">Transportation and Infrastructure</value>
+    </values>
+    <values>
+        <field>Project_Type__c</field>
+        <value xsi:type="xsd:string">Surface Transportation - Highway/Other</value>
+    </values>
+    <values>
+        <field>Lead_Agency_Key__c</field>
+        <value xsi:type="xsd:string">FHWA</value>
+    </values>
+    <values>
+        <field>Location_Type__c</field>
+        <value xsi:type="xsd:string">Mixed</value>
+    </values>
+    <values>
+        <field>Cooperating_Agencies__c</field>
+        <value xsi:type="xsd:string">USACE; USFWS; EPA; SHPO; State DOT</value>
+    </values>
+    <values>
+        <field>Required_Permits__c</field>
+        <value xsi:type="xsd:string">CWA Section 404 Permit; Section 4(f) Evaluation (49 USC 303); ESA Section 7 Consultation; NHPA Section 106 Review; CWA Section 402 NPDES Construction</value>
+    </values>
+    <values>
+        <field>Adjacent_Reviews__c</field>
+        <value xsi:type="xsd:string">Clean Air Act Transportation Conformity; UMRA; EO 12898 Environmental Justice; Section 6(f) LWCF</value>
+    </values>
+    <values>
+        <field>Typical_Timeline_Months__c</field>
+        <value xsi:type="xsd:decimal">36</value>
+    </values>
+    <values>
+        <field>EIS_Likelihood_Pct__c</field>
+        <value xsi:type="xsd:decimal">70</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

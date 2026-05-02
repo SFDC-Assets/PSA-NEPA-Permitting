@@ -460,7 +460,7 @@
         <fullName>nepa_clock_pause_reason__c</fullName>
         <description>Required documentation of the project sponsor's written agreement to the clock suspension, per 42 U.S.C. 4336a(b). Must reference the specific communication (letter, email, form) in which the sponsor consented. Part of the administrative record.</description>
         <inlineHelpText>Document the sponsor's written agreement to this clock suspension. Required for FRA compliance — cite the letter, email, or form.</inlineHelpText>
-        <label>Clock Pause Reason / Sponsor Agreement Reference</label>
+        <label>Clock Pause / Sponsor Agreement</label>
         <length>1000</length>
         <required>false</required>
         <trackTrending>false</trackTrending>
@@ -780,6 +780,227 @@
         <trackHistory>false</trackHistory>
         <type>DateTime</type>
     </fields>
+
+    <!-- P2 Data Quality fields -->
+    <fields>
+        <fullName>nepa_decision_document_type__c</fullName>
+        <description>Type of decision document for this NEPA process. Separate from nepa_review_type__c (CE/EA/EIS) to fix doc_type conflation identified in feature engineering: ROD and FONSI must not co-label a CE process. Validation rule blocks FONSI/ROD when review type is CE.</description>
+        <inlineHelpText>Decision document type (ROD, FONSI, NOA, DR). Separate from review type (CE/EA/EIS).</inlineHelpText>
+        <label>Decision Document Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>ROD</fullName><default>false</default><label>Record of Decision (ROD)</label></value>
+                <value><fullName>FONSI</fullName><default>false</default><label>Finding of No Significant Impact (FONSI)</label></value>
+                <value><fullName>NOA</fullName><default>false</default><label>Notice of Availability (NOA)</label></value>
+                <value><fullName>DR</fullName><default>false</default><label>Decision Record (DR)</label></value>
+                <value><fullName>CE Determination</fullName><default>false</default><label>CE Determination</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_total_pages__c</fullName>
+        <description>Total page count of the NEPA document package for this process. CE documents median 3-8 pages; EA 30-200; EIS 200+. Strong numeric discriminator (lift 0.68 in NEPATEC corpus). Used by CE Screener as a confidence modifier and by QA rules to flag implausibly thin documents.</description>
+        <inlineHelpText>Total pages in the NEPA document package. CE: typically 3-8 pages; EA: 30-200; EIS: 200+.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Total Pages</label>
+        <precision>6</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_pages_missing__c</fullName>
+        <description>True when nepa_total_pages__c is blank. Surfaced on record page and in list views as a data-quality checklist flag. Auto-populating from ContentVersion attachment count is a future enhancement.</description>
+        <inlineHelpText>Page count not yet entered. Enter total pages to improve CE screening accuracy.</inlineHelpText>
+        <externalId>false</externalId>
+        <formula>ISBLANK(nepa_total_pages__c)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Page Count Missing</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_ce_rationale_supplemental__c</fullName>
+        <description>Free-text supplemental CE rationale. Companion to nepa_process_code__c (the structured CE code picklist). Addresses the ce_category free-text chaos identified in NEPATEC feature engineering — structured code goes in nepa_process_code__c; narrative explanation and non-standard citations go here.</description>
+        <inlineHelpText>Supplemental CE rationale, non-standard citations, or coordinator notes. Use nepa_process_code__c for the structured CE code.</inlineHelpText>
+        <label>CE Rationale Supplemental</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+
+    <!-- P2 Validation rules -->
+    <validationRules>
+        <fullName>VR_Description_Minimum_Length</fullName>
+        <active>true</active>
+        <description>Enforces minimum 200-character description when nepa_description__c is populated. Addresses NEPATEC data quality finding: truncated descriptions and placeholder text degrade CE classification accuracy (feature lift 0.71). Fires only when description is non-blank to avoid blocking legacy records.</description>
+        <errorConditionFormula>AND(
+  NOT(ISBLANK(nepa_description__c)),
+  LEN(nepa_description__c) &lt; 200
+)</errorConditionFormula>
+        <errorMessage>Process Description must be at least 200 characters. Include: purpose, location summary, disturbance type (new/existing/renewal), and estimated acreage. This improves CE screening accuracy.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>VR_FONSI_ROD_On_CE</fullName>
+        <active>true</active>
+        <description>Blocks FONSI or ROD as decision document type when the process review type is CE. Addresses NEPATEC doc_type conflation finding where ROD/FONSI appeared within the CE stratum, corrupting the training corpus. CE decisions use DR or CE Determination, not FONSI/ROD.</description>
+        <errorConditionFormula>AND(
+  ISPICKVAL(nepa_review_type__c, "CE"),
+  OR(
+    ISPICKVAL(nepa_decision_document_type__c, "FONSI"),
+    ISPICKVAL(nepa_decision_document_type__c, "ROD")
+  )
+)</errorConditionFormula>
+        <errorMessage>FONSI and ROD are not valid decision document types for a Categorical Exclusion (CE) process. Use "CE Determination" or "DR" for CE decision documents.</errorMessage>
+    </validationRules>
+
+    <!-- AI AUP compliance fields -->
+    <fields>
+        <fullName>nepa_ce_pathway_recommendation__c</fullName>
+        <description>AI-recommended NEPA pathway set by NEPA_CE_Screener. Human NEPA Coordinator must confirm and set nepa_review_type__c before the pathway is official. Satisfies Salesforce AI AUP and OMB M-24-10 human-in-the-loop requirement: AI recommends, human decides.</description>
+        <inlineHelpText>AI screening recommendation. Not official until a NEPA Coordinator reviews and confirms by setting the Review Type field.</inlineHelpText>
+        <label>CE Pathway Recommendation (AI)</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Pending</fullName><default>false</default><label>Pending</label></value>
+                <value><fullName>CE-Recommended</fullName><default>false</default><label>CE Recommended</label></value>
+                <value><fullName>EA-Required</fullName><default>false</default><label>EA Required</label></value>
+                <value><fullName>EIS-Required</fullName><default>false</default><label>EIS Required</label></value>
+                <value><fullName>Escalated-Senior-Review</fullName><default>false</default><label>Escalated — Senior Review Required</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_risk_score_is_ai__c</fullName>
+        <description>Always true. Permanently indicates that nepa_risk_score__c is computed by NEPA_Litigation_Risk_Scorer using PermitTEC v0.1 historical data. Required by Salesforce AI AUP: AI-generated scores must be disclosed as such. Field is formula-driven and cannot be overwritten.</description>
+        <inlineHelpText>This risk score is AI-computed from PermitTEC v0.1 historical litigation data. Treat as analytical guidance — not a legal determination.</inlineHelpText>
+        <externalId>false</externalId>
+        <formula>TRUE</formula>
+        <label>Risk Score is AI-Generated</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </fields>
+
+    <!-- P5 Litigation Guardrail fields -->
+    <fields>
+        <fullName>nepa_small_sample_warning__c</fullName>
+        <description>True when the circuit matched in NEPA_Circuit_Risk_Weight__mdt has Low_Data_Confidence__c = true (fewer than 5 PermitTEC cases for that circuit). Set by NEPA_Litigation_Risk_Scorer. UI component shows warning: litigation risk estimate for this circuit is based on fewer than 5 historical cases — treat as directional only.</description>
+        <inlineHelpText>Circuit risk estimate based on fewer than 5 historical cases. Treat as directional guidance only — not a statistical prediction.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Circuit Small Sample Warning</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_waiver_invoked__c</fullName>
+        <description>True when the agency is asserting a statutory NEPA waiver (e.g., IIRIRA Section 102(c), EPAct Section 390). Triggers VR-003 validation rule: blocks save without an attached OGC legal sufficiency memo and valid funding authority citation per 42 USC 4332(2)(C).</description>
+        <inlineHelpText>Check only when a statutory NEPA waiver applies. Requires OGC legal sufficiency memo before project can advance.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>NEPA Waiver Invoked</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_waiver_statute_cite__c</fullName>
+        <description>Required when nepa_waiver_invoked__c is true. Must cite the specific statutory provision authorizing the NEPA waiver (e.g., IIRIRA Section 102(c); EPAct 2005 Section 390). VR-003 blocks save when this is blank and nepa_waiver_invoked__c is true.</description>
+        <inlineHelpText>Statutory citation for the NEPA waiver (e.g., IIRIRA 102(c)). Required when waiver is invoked.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Waiver Statute Citation</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_tiering_to_prior_eis__c</fullName>
+        <description>True when this EA or EIS is explicitly tiered from a prior programmatic EIS under 40 CFR 1502.20. Triggers VR-006: if the prior EIS is older than 5 years (nepa_prior_nepa_date__c), requires a supplementation review determination before proceeding.</description>
+        <inlineHelpText>This process tiers from a prior programmatic EIS. A supplementation review is required if the prior EIS is more than 5 years old.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Tiering to Prior EIS</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_prior_nepa_date__c</fullName>
+        <description>Date of the prior NEPA document that this process tiers from or supplements. Used by VR-006 to check whether the prior EIS is older than 5 years (1,825 days), requiring a documented supplementation review per 40 CFR 1502.9(c).</description>
+        <inlineHelpText>Date of the prior NEPA document being tiered from. If more than 5 years old, a supplementation review determination is required.</inlineHelpText>
+        <label>Prior NEPA Document Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>nepa_supplementation_review_complete__c</fullName>
+        <description>True when a responsible official has documented a written supplementation determination per 40 CFR 1502.9(c). Required by VR-001 (new info post-ROD) and VR-006 (tiering to EIS older than 5 years) to unblock stage gate. Part of the administrative record.</description>
+        <inlineHelpText>Responsible official has documented a supplementation review determination. Required before tiering from a prior EIS older than 5 years.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Supplementation Review Complete</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_esa_consultation_status__c</fullName>
+        <description>Status of ESA Section 7 consultation for this process. VR-004 (implemented as a Stage Gate extension) blocks FONSI/ROD stage advancement until this field is set to a terminal status. Required for EA/EIS processes where the project area intersects listed species range.</description>
+        <inlineHelpText>ESA Section 7 consultation status. Must reach a terminal status before FONSI or ROD can be issued.</inlineHelpText>
+        <label>ESA Section 7 Consultation Status</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Not Required</fullName><default>false</default><label>Not Required (documented)</label></value>
+                <value><fullName>No Effect</fullName><default>false</default><label>No Effect (documented)</label></value>
+                <value><fullName>May Affect - Initiated</fullName><default>false</default><label>May Affect — Consultation Initiated</label></value>
+                <value><fullName>Concurrence Received</fullName><default>false</default><label>Concurrence Received (informal)</label></value>
+                <value><fullName>Biological Opinion Issued</fullName><default>false</default><label>Biological Opinion Issued (formal)</label></value>
+                <value><fullName>Reinitiated</fullName><default>false</default><label>Reinitiated</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+
+    <!-- P5 Validation rules (VR-003, VR-006) -->
+    <validationRules>
+        <fullName>VR_003_NEPA_Waiver_Legal_Sufficiency</fullName>
+        <active>true</active>
+        <description>VR-003: Blocks save when nepa_waiver_invoked__c is true but nepa_waiver_statute_cite__c is blank. Addresses DG-003: agencies have lost cases by asserting NEPA waivers without valid legal authority. OGC sign-off documentation must be in the administrative record. Field check only; OGC memo attachment is enforced separately by the Stage Gate flow.</description>
+        <errorConditionFormula>AND(
+  nepa_waiver_invoked__c = true,
+  ISBLANK(nepa_waiver_statute_cite__c)
+)</errorConditionFormula>
+        <errorMessage>NEPA waiver is checked but no statutory citation is provided. Enter the specific statutory provision authorizing the waiver (e.g., IIRIRA Section 102(c); EPAct 2005 Section 390). An OGC legal sufficiency memo must also be attached before the project can advance to implementation.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>VR_006_Tiering_Age_Check</fullName>
+        <active>true</active>
+        <description>VR-006: Blocks save when tiering to a prior EIS older than 5 years (1,825 days) without a supplementation review completion. Addresses failure_to_supplement challenge type (100% agency loss rate in PermitTEC linked cases). Both nepa_tiering_to_prior_eis__c and nepa_prior_nepa_date__c must be populated for this rule to fire.</description>
+        <errorConditionFormula>AND(
+  nepa_tiering_to_prior_eis__c = true,
+  NOT(ISBLANK(nepa_prior_nepa_date__c)),
+  nepa_prior_nepa_date__c &lt; (TODAY() - 1825),
+  nepa_supplementation_review_complete__c = false
+)</errorConditionFormula>
+        <errorMessage>The prior EIS this process tiers from is more than 5 years old. A documented supplementation review determination is required under 40 CFR 1502.9(c) before proceeding. Check "Supplementation Review Complete" once the responsible official has made a written determination.</errorMessage>
+    </validationRules>
 
     <!-- Screener run timestamp — prevents CE Screener write-back from re-triggering Risk Scorer -->
     <fields>

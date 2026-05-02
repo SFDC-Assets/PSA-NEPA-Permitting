@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Energy | Oil and Gas | BLM Federal Land</label>
+    <protected>false</protected>
+    <values>
+        <field>Sector__c</field>
+        <value xsi:type="xsd:string">Energy Production and Management</value>
+    </values>
+    <values>
+        <field>Project_Type__c</field>
+        <value xsi:type="xsd:string">Conventional Energy Production - Land-based Oil &amp; Gas</value>
+    </values>
+    <values>
+        <field>Lead_Agency_Key__c</field>
+        <value xsi:type="xsd:string">BLM</value>
+    </values>
+    <values>
+        <field>Location_Type__c</field>
+        <value xsi:type="xsd:string">Federal Land</value>
+    </values>
+    <values>
+        <field>Cooperating_Agencies__c</field>
+        <value xsi:type="xsd:string">USFWS; EPA; State Oil &amp; Gas Agency; SHPO</value>
+    </values>
+    <values>
+        <field>Required_Permits__c</field>
+        <value xsi:type="xsd:string">BLM Application for Permit to Drill (43 CFR 3162); Sundry Notice Approval (43 CFR 3162.3-2); ESA Section 7 Consultation; NHPA Section 106 Review</value>
+    </values>
+    <values>
+        <field>Adjacent_Reviews__c</field>
+        <value xsi:type="xsd:string">Clean Air Act NSR/PSD; SDWA UIC Program; EO 13186 Migratory Birds; FLPMA Conformance</value>
+    </values>
+    <values>
+        <field>Typical_Timeline_Months__c</field>
+        <value xsi:type="xsd:decimal">9</value>
+    </values>
+    <values>
+        <field>EIS_Likelihood_Pct__c</field>
+        <value xsi:type="xsd:decimal">20</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

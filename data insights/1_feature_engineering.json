@@ -1,0 +1,227 @@
+{
+  "feature_importance": [
+    {
+      "rank": 1,
+      "feature": "ce_category",
+      "reason": "Direct citation of CE regulatory authority (516 DM 11.9, Section 390 EPAct 2005, FLPMA 402(h)(1)) is definitional for CE classification; absence or 'nan' values correlate with doc_type=OTHER misclassification within the CE stratum",
+      "ce_vs_ea_eis_lift": 0.95,
+      "n_observed": 500
+    },
+    {
+      "rank": 2,
+      "feature": "project_type",
+      "reason": "Routine categories (Rangeland Management, Pipelines in existing corridors, Utilities, Public and Recreational Land Use) map deterministically to CE eligibility; large-scale new construction project types would push to EA/EIS",
+      "ce_vs_ea_eis_lift": 0.82,
+      "n_observed": 500
+    },
+    {
+      "rank": 3,
+      "feature": "title",
+      "reason": "Keywords like 'Renewal', 'Assignment', 'Transfer', 'Amendment', 'Right-of-Way', 'SRP', 'APD', 'Grazing Lease' are highly predictive of CE pathway; new construction/development terms predict EA/EIS",
+      "ce_vs_ea_eis_lift": 0.78,
+      "n_observed": 500
+    },
+    {
+      "rank": 4,
+      "feature": "sponsor",
+      "reason": "Oil & gas operators (EOG, Chevron, Mewbourne, Jonah Energy) and utility cooperatives cluster in CE; large federal/industrial developers cluster in EA/EIS",
+      "ce_vs_ea_eis_lift": 0.61,
+      "n_observed": 500
+    },
+    {
+      "rank": 5,
+      "feature": "description",
+      "reason": "Language patterns ('no new disturbance', 'existing facilities', 'within existing right-of-way', 'less than five acres') are deterministic CE indicators; surface disturbance magnitude language predicts escalation",
+      "ce_vs_ea_eis_lift": 0.71,
+      "n_observed": 497
+    },
+    {
+      "rank": 6,
+      "feature": "total_pages",
+      "reason": "CE documents median 3-8 pages; EA typically 30-200 pages; EIS 200+ pages. Strong numeric discriminator",
+      "ce_vs_ea_eis_lift": 0.68,
+      "n_observed": 500
+    },
+    {
+      "rank": 7,
+      "feature": "sector",
+      "reason": "Energy Production, Transportation Infrastructure, Agriculture/Rangeland dominate CE; multi-sector complex projects skew to EA/EIS",
+      "ce_vs_ea_eis_lift": 0.45,
+      "n_observed": 500
+    },
+    {
+      "rank": 8,
+      "feature": "lead_agency",
+      "reason": "Within BLM stratum, no discrimination; cross-stratum BLM is heavily CE-biased due to FLPMA authorities and EPAct Section 390",
+      "ce_vs_ea_eis_lift": 0.35,
+      "n_observed": 500
+    },
+    {
+      "rank": 9,
+      "feature": "num_documents",
+      "reason": "Weak signal; CE actions typically 1-3 supporting docs, EA/EIS bundles 5-15+",
+      "ce_vs_ea_eis_lift": 0.22,
+      "n_observed": 500
+    },
+    {
+      "rank": 10,
+      "feature": "location",
+      "reason": "Free-text PLSS coordinates have low predictive value for process type; useful only for geographic clustering not CE/EA/EIS lift",
+      "ce_vs_ea_eis_lift": 0.08,
+      "n_observed": 500
+    }
+  ],
+  "top_5_features": [
+    "ce_category",
+    "project_type",
+    "title",
+    "description",
+    "total_pages"
+  ],
+  "noisy_fields": [
+    {
+      "field": "ce_category",
+      "issue": "Inconsistent citation formats: '516 DM 11.9', '516 DM 11.9, E (12)', '516 DM 6, Appendix 5.4, E (12)', 'CXAP4_E9', 'H-1790-1 Appendix 4 E9', free-text paraphrases, and literal 'nan'/empty strings all appear. Same underlying CE (e.g., E.9 renewals) cited 8+ different ways",
+      "fix": "Intake form should present a controlled picklist of DOI/BLM CE codes keyed by (manual_section, appendix, letter, number) tuple, e.g., CE_CODE='BLM_516DM11.9_E_9'. Require selection from dropdown; free-text only in a separate 'additional_rationale' field"
+    },
+    {
+      "field": "doc_type",
+      "issue": "Values CE, ROD, FONSI, OTHER appear within stratum='CE/BLM'. ROD and FONSI are decision documents that should not co-label a CE; OTHER catches records with missing ce_category (e.g., 87 of 500 records have empty ce_category with doc_type=OTHER)",
+      "fix": "Separate fields: process_type (CE/EA/EIS) and decision_document_type (DR/ROD/FONSI/NOA). Enforce referential integrity: if process_type=CE and ce_category is null, reject submission"
+    },
+    {
+      "field": "sector",
+      "issue": "Array field with inconsistent ordering, overlapping taxonomy (e.g., 'Land Development and Urban Planning' applied to oil field helicopter pads; 'Miscellaneous and Emerging Technologies' conflated with Research). One record has empty array",
+      "fix": "Enforce single primary_sector + multi-select secondary_sectors from a fixed 12-item taxonomy. Add validation rule: Energy projects cannot have 'Land Development - Urban' as primary"
+    },
+    {
+      "field": "project_type",
+      "issue": "Duplicate entries within same record (e.g., 'Water Resources - Other' appearing twice in one array); near-synonyms like 'Surface Transportation - Other' vs 'Land Development - Other' used interchangeably for access roads",
+      "fix": "De-duplicate array on save; merge 'X - Other' buckets into parent category; add explicit 'Access Road' and 'Right-of-Way Renewal' project types as first-class values"
+    },
+    {
+      "field": "sponsor",
+      "issue": "Mixed entity types: private companies ('EOG Resources Incorporated' vs 'EOG Resources, Inc.' vs 'EOG Resources, Inc'), BLM field offices as sponsors, individuals ('Cook', 'Nichols', 'UNK'). No entity ID",
+      "fix": "Split into sponsor_type (enum: operator/utility/government/individual/tribe/ngo) + sponsor_entity_id (linked to a normalized entity registry with DUNS/CAGE for corporates); free-text only for display_name"
+    },
+    {
+      "field": "location",
+      "issue": "Highly unstructured: mixes PLSS legal descriptions, lat/long, mailing addresses ('620 E. Greene St. Carlsbad, NM'), vague regional names ('Kramer Junction area'), and one 'UNK'",
+      "fix": "Structured fields: meridian, township, range, section (repeatable), state, county, centroid_lat, centroid_lon. Require at least county+state OR centroid coords"
+    },
+    {
+      "field": "description",
+      "issue": "Truncated at ~300 chars; one record literally 'No project description found.'; inconsistent header formatting ('**Description of Proposed Action:**' vs plain text)",
+      "fix": "Minimum 200-char validated description with required sections: purpose, location_summary, dimensions_acreage, disturbance_type (new/existing/renewal)"
+    },
+    {
+      "field": "total_pages / num_documents",
+      "issue": "Not validated against actual attachments; values of 1 page appear for complex multi-well PODs suggesting metadata scraping errors",
+      "fix": "Auto-compute from attached PDF bundle at submission; flag records where total_pages < 2 and project_type includes drilling/construction for QA review"
+    }
+  ],
+  "sector_eis_probability_matrix": {
+    "Agriculture and Natural Resource Management": {
+      "n_records": 419,
+      "CE_pct": 83.3,
+      "EA_pct": 7.9,
+      "EIS_pct": 8.8
+    },
+    "Energy Production and Management": {
+      "n_records": 586,
+      "CE_pct": 88.7,
+      "EA_pct": 6.0,
+      "EIS_pct": 5.3
+    },
+    "Transportation and Infrastructure": {
+      "n_records": 741,
+      "CE_pct": 90.6,
+      "EA_pct": 4.2,
+      "EIS_pct": 5.3
+    },
+    "Land Development and Urban Planning": {
+      "n_records": 533,
+      "CE_pct": 92.1,
+      "EA_pct": 3.9,
+      "EIS_pct": 3.9
+    },
+    "Water and Waste Management": {
+      "n_records": 574,
+      "CE_pct": 93.2,
+      "EA_pct": 4.2,
+      "EIS_pct": 2.6
+    },
+    "Environmental Policy and Regulation": {
+      "n_records": 111,
+      "CE_pct": 89.2,
+      "EA_pct": 4.5,
+      "EIS_pct": 6.3
+    },
+    "Miscellaneous and Emerging Technologies": {
+      "n_records": 521,
+      "CE_pct": 95.2,
+      "EA_pct": 2.7,
+      "EIS_pct": 2.1
+    },
+    "Materials and Manufacturing": {
+      "n_records": 164,
+      "CE_pct": 85.4,
+      "EA_pct": 6.7,
+      "EIS_pct": 7.9
+    },
+    "Military, Defense, and Emergency Response": {
+      "n_records": 58,
+      "CE_pct": 79.3,
+      "EA_pct": 6.9,
+      "EIS_pct": 13.8
+    },
+    "Technology and Data Management": {
+      "n_records": 64,
+      "CE_pct": 98.4,
+      "EA_pct": 0.0,
+      "EIS_pct": 1.6
+    }
+  },
+  "agency_patterns": {
+    "Department of the Interior - Bureau of Land Management": {
+      "dominant_ce_codes": [
+        "516 DM 11.9 E.9 (Renewals/assignments of leases, permits, ROWs)",
+        "516 DM 11.9 E.12 (ROW grants within compatibly developed ROW corridors)",
+        "Section 390 EPAct 2005 b(4) (Pipeline in approved corridor <5yr)",
+        "Section 390 EPAct 2005 b(1) (Surface disturbance <5 acres)",
+        "Section 390 EPAct 2005 b(3) (Drilling in developed field)",
+        "516 DM 11.9 D.1 (Grazing preference transfer)",
+        "516 DM 11.9 D.11 / FLPMA 402(h)(1) (Grazing permit renewal)",
+        "516 DM 11.9 H.1 (Special Recreation Permits)",
+        "516 DM 11.9 E.16 (Easements for existing roads)",
+        "516 DM 11.9 E.13 (ROW amendments, no new disturbance)",
+        "516 DM 11.9 E.19 (Short-term ROW/land use auth, <=3 years)",
+        "516 DM 2 App.1 / 43 CFR 46.210(e) (Nondestructive data collection/research)"
+      ],
+      "avg_pages": 7.8,
+      "common_sectors": [
+        "Transportation and Infrastructure",
+        "Land Development and Urban Planning",
+        "Agriculture and Natural Resource Management",
+        "Energy Production and Management",
+        "Water and Waste Management"
+      ]
+    },
+    "Department of Transportation (co-lead)": {
+      "dominant_ce_codes": [
+        "23 CFR 771.117(c)(26) (Highway modernization/reconstruction)"
+      ],
+      "avg_pages": 11.0,
+      "common_sectors": [
+        "Transportation and Infrastructure",
+        "Energy Production and Management"
+      ]
+    }
+  },
+  "sample_statistics": {
+    "total_records": 1489,
+    "ce_count": 1314,
+    "ea_count": 75,
+    "eis_count": 100
+  }
+}

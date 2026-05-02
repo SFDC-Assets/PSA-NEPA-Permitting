@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Transportation | Electricity Transmission | DOE/WAPA/BPA</label>
+    <protected>false</protected>
+    <values>
+        <field>Sector__c</field>
+        <value xsi:type="xsd:string">Transportation and Infrastructure</value>
+    </values>
+    <values>
+        <field>Project_Type__c</field>
+        <value xsi:type="xsd:string">Electricity Transmission</value>
+    </values>
+    <values>
+        <field>Lead_Agency_Key__c</field>
+        <value xsi:type="xsd:string">DOE/WAPA/BPA</value>
+    </values>
+    <values>
+        <field>Location_Type__c</field>
+        <value xsi:type="xsd:string">Mixed</value>
+    </values>
+    <values>
+        <field>Cooperating_Agencies__c</field>
+        <value xsi:type="xsd:string">BLM; USFS; USFWS; EPA; SHPO; RUS</value>
+    </values>
+    <values>
+        <field>Required_Permits__c</field>
+        <value xsi:type="xsd:string">FLPMA Title V ROW Grant; FPA Section 216 Authorization; ESA Section 7 Consultation; NHPA Section 106 Review; Special Use Permit (36 CFR 251)</value>
+    </values>
+    <values>
+        <field>Adjacent_Reviews__c</field>
+        <value xsi:type="xsd:string">MBTA; Bald and Golden Eagle Protection Act; CWA Section 404; EO 13112 Invasive Species</value>
+    </values>
+    <values>
+        <field>Typical_Timeline_Months__c</field>
+        <value xsi:type="xsd:decimal">30</value>
+    </values>
+    <values>
+        <field>EIS_Likelihood_Pct__c</field>
+        <value xsi:type="xsd:decimal">75</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

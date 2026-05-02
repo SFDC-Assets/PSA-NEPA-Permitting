@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Permit coordination matrix seeded from NEPATEC v2.0 sector/agency routing analysis. Maps project sector + type + lead agency + location to cooperating agencies, required permits, typical timeline, and EIS likelihood. Used by NEPA_Permit_Coordinator Flow to auto-populate Co_Permits_Required__c and create permit coordination tasks.</description>
+    <label>NEPA Permit Matrix</label>
+    <pluralLabel>NEPA Permit Matrix</pluralLabel>
+    <fields>
+        <fullName>Sector__c</fullName>
+        <description>Primary project sector. Matches nepa_primary_sector__c on the related Program record.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Sector</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Project_Type__c</fullName>
+        <description>Project sub-type within the sector. Matches nepa_project_type__c (free-text) or a structured keyword match against that field.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Project Type</label>
+        <length>255</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Lead_Agency_Key__c</fullName>
+        <description>Agency abbreviation or slash-separated pair (e.g., BLM, FERC/DOE). Matched against the lead agency Account name on the related Program.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Lead Agency Key</label>
+        <length>100</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Location_Type__c</fullName>
+        <description>Location type for this matrix row. Federal Land, Private Land, Waterway, or Mixed.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Location Type</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Federal Land</fullName><default>false</default><label>Federal Land</label></value>
+                <value><fullName>Private Land</fullName><default>false</default><label>Private Land</label></value>
+                <value><fullName>Waterway</fullName><default>false</default><label>Waterway</label></value>
+                <value><fullName>Mixed</fullName><default>false</default><label>Mixed</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Cooperating_Agencies__c</fullName>
+        <description>Semicolon-delimited list of cooperating agencies typically required for this sector/type/agency combination.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Cooperating Agencies</label>
+        <length>1000</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Required_Permits__c</fullName>
+        <description>Semicolon-delimited list of required permits and authorizations. Values are displayed in Co_Permits_Required__c on IndividualApplication by the NEPA_Permit_Coordinator Flow.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Required Permits</label>
+        <length>32768</length>
+        <required>false</required>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Adjacent_Reviews__c</fullName>
+        <description>Semicolon-delimited list of adjacent statutory/regulatory reviews not requiring a separate permit but requiring NEPA disclosure or coordination.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Adjacent Reviews</label>
+        <length>2000</length>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Typical_Timeline_Months__c</fullName>
+        <description>Typical total permitting timeline in months from project initiation to final decision. Based on NEPATEC v2.0 aggregate duration data for this sector/type/agency combination.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Typical Timeline (Months)</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>EIS_Likelihood_Pct__c</fullName>
+        <description>Estimated probability (0-100) that this sector/type/agency combination will require an EIS rather than an EA or CE. Derived from NEPATEC v2.0 historical process types for matching rows.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>EIS Likelihood (%)</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>1</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Active__c</fullName>
+        <description>When false, this matrix row is excluded from permit coordinator lookups.</description>
+        <defaultValue>true</defaultValue>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Active</label>
+        <type>Checkbox</type>
+    </fields>
+</CustomObject>

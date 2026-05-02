@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Tier 2 | BLM | Salvage Dead/Dying Timber ≤250 ac → 516 DM C8</label>
+    <protected>false</protected>
+    <values>
+        <field>Rule_Label__c</field>
+        <value xsi:type="xsd:string">Tier 2 | BLM | Salvage Dead/Dying Timber ≤250 ac → 516 DM C8</value>
+    </values>
+    <values>
+        <field>Tier__c</field>
+        <value xsi:type="xsd:string">2</value>
+    </values>
+    <values>
+        <field>Agency__c</field>
+        <value xsi:type="xsd:string">BLM</value>
+    </values>
+    <values>
+        <field>Sector_Key__c</field>
+        <value xsi:type="xsd:string">Agriculture and Natural Resource Management</value>
+    </values>
+    <values>
+        <field>Type_Key__c</field>
+        <value xsi:type="xsd:string">Forestry/Fuels Management</value>
+    </values>
+    <values>
+        <field>Action_Types__c</field>
+        <value xsi:type="xsd:string">Operate or Maintain Existing</value>
+    </values>
+    <values>
+        <field>CE_Code__c</field>
+        <value xsi:type="xsd:string">516 DM 11.9 C8</value>
+    </values>
+    <values>
+        <field>Review_Type__c</field>
+        <value xsi:type="xsd:string">CE</value>
+    </values>
+    <values>
+        <field>Confidence__c</field>
+        <value xsi:type="xsd:string">High</value>
+    </values>
+    <values>
+        <field>Requires_Acreage_Check__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>Acreage_Threshold__c</field>
+        <value xsi:type="xsd:decimal">250</value>
+    </values>
+    <values>
+        <field>Requires_GIS_Check__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>NAICS_Code__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>CE_Namespace__c</field>
+        <value xsi:type="xsd:string">BLM_516DM</value>
+    </values>
+    <values>
+        <field>Confidence_Modifier__c</field>
+        <value xsi:type="xsd:string">Acreage must be ≤250 acres; temporary road construction ≤0.5 miles</value>
+    </values>
+    <values>
+        <field>Classification_Basis__c</field>
+        <value xsi:type="xsd:string">Tier 2: BLM + Forestry + OAM → Salvage of dead/dying trees not exceeding 250 acres with ≤0.5 mi temporary road (516 DM 11.9 C8). GIS check for extraordinary circumstances.</value>
+    </values>
+    <values>
+        <field>Priority__c</field>
+        <value xsi:type="xsd:decimal">22</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>Record_Count_NEPATEC__c</field>
+        <value xsi:type="xsd:decimal">38</value>
+    </values>
+</CustomMetadata>

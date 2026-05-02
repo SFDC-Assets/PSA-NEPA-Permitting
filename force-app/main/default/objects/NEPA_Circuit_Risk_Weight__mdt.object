@@ -42,6 +42,14 @@
         <unique>false</unique>
     </fields>
 
+    <fields>
+        <fullName>Low_Data_Confidence__c</fullName>
+        <description>True when the circuit loss rate is derived from fewer than 5 cases in the PermitTEC corpus. When true, the NEPA_Litigation_Risk_Scorer populates nepa_small_sample_warning__c on IndividualApplication, surfacing a warning banner that the circuit estimate is directional only.</description>
+        <defaultValue>false</defaultValue>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Low Data Confidence</label>
+        <type>Checkbox</type>
+    </fields>
     <!-- Mandate 2: EO 14270 temporal versioning -->
     <fields>
         <fullName>Effective_Start_Date__c</fullName>
