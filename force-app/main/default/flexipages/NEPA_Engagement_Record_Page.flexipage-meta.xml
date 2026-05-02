@@ -34,7 +34,7 @@
         <type>Region</type>
     </flexiPageRegions>
 
-    <!-- SECTION 1: Project Overview — Column 1 -->
+    <!-- SECTION: Event Details — Column 1 -->
     <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
@@ -42,8 +42,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_project_title__c</fieldItem>
-                <identifier>prog_overview_title</identifier>
+                <fieldItem>Record.nepa_process__c</fieldItem>
+                <identifier>eng_process</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -52,8 +52,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_current_status__c</fieldItem>
-                <identifier>prog_overview_status</identifier>
+                <fieldItem>Record.nepa_engagement_type__c</fieldItem>
+                <identifier>eng_type</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -62,8 +62,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_start_date__c</fieldItem>
-                <identifier>prog_overview_start_date</identifier>
+                <fieldItem>Record.nepa_start_datetime__c</fieldItem>
+                <identifier>eng_start</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -72,15 +72,15 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_project_id__c</fieldItem>
-                <identifier>prog_overview_project_id</identifier>
+                <fieldItem>Record.nepa_end_datetime__c</fieldItem>
+                <identifier>eng_end</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>prog-overview-c1</name>
+        <name>eng-event-c1</name>
         <type>Facet</type>
     </flexiPageRegions>
 
-    <!-- SECTION 1: Project Overview — Column 2 -->
+    <!-- SECTION: Event Details — Column 2 -->
     <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
@@ -88,190 +88,10 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_lead_agency__c</fieldItem>
-                <identifier>prog_overview_lead_agency</identifier>
+                <fieldItem>Record.nepa_location_format__c</fieldItem>
+                <identifier>eng_location_format</identifier>
             </fieldInstance>
         </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_parent_project__c</fieldItem>
-                <identifier>prog_overview_parent</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_record_owner_agency__c</fieldItem>
-                <identifier>prog_overview_owner_agency</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>prog-overview-c2</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- SECTION 1: Project Overview — Columns Wrapper -->
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>prog-overview-c1</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>prog_overview_col1</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>prog-overview-c2</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>prog_overview_col2</identifier>
-            </componentInstance>
-        </itemInstances>
-        <name>prog-overview-cols</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- SECTION 2: Project Description — Column 1 -->
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_project_description__c</fieldItem>
-                <identifier>prog_desc_description</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_project_type__c</fieldItem>
-                <identifier>prog_desc_type</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_project_sector__c</fieldItem>
-                <identifier>prog_desc_sector</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_primary_sector__c</fieldItem>
-                <identifier>prog_desc_primary_sector</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_adjacent_statutes__c</fieldItem>
-                <identifier>prog_desc_adjacent_statutes</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>prog-desc-c1</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- SECTION 2: Project Description — Column 2 -->
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_project_sponsor__c</fieldItem>
-                <identifier>prog_desc_sponsor</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_sponsor_type__c</fieldItem>
-                <identifier>prog_desc_sponsor_type</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_applicant_naics__c</fieldItem>
-                <identifier>prog_desc_naics</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_funding__c</fieldItem>
-                <identifier>prog_desc_funding</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>prog-desc-c2</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- SECTION 2: Project Description — Columns Wrapper (2-col) -->
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>prog-desc-c1</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>prog_desc_col1</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>prog-desc-c2</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>prog_desc_col2</identifier>
-            </componentInstance>
-        </itemInstances>
-        <name>prog-desc-cols</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- SECTION 3: Location — Column 1 -->
-    <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
@@ -279,7 +99,7 @@
                     <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_location__c</fieldItem>
-                <identifier>prog_loc_location</identifier>
+                <identifier>eng_location</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -288,67 +108,51 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_location_text__c</fieldItem>
-                <identifier>prog_loc_location_text</identifier>
+                <fieldItem>Record.nepa_public_access__c</fieldItem>
+                <identifier>eng_public_access</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>prog-loc-c1</name>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_document__c</fieldItem>
+                <identifier>eng_document</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>eng-event-c2</name>
         <type>Facet</type>
     </flexiPageRegions>
 
-    <!-- SECTION 3: Location — Column 2 -->
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_location_lat__c</fieldItem>
-                <identifier>prog_loc_lat</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_location_lon__c</fieldItem>
-                <identifier>prog_loc_lon</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>prog-loc-c2</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- SECTION 3: Location — Columns Wrapper -->
+    <!-- SECTION: Event Details — Columns Wrapper -->
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>body</name>
-                    <value>prog-loc-c1</value>
+                    <value>eng-event-c1</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:column</componentName>
-                <identifier>prog_loc_col1</identifier>
+                <identifier>eng_event_col1</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>body</name>
-                    <value>prog-loc-c2</value>
+                    <value>eng-event-c2</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:column</componentName>
-                <identifier>prog_loc_col2</identifier>
+                <identifier>eng_event_col2</identifier>
             </componentInstance>
         </itemInstances>
-        <name>prog-loc-cols</name>
+        <name>eng-event-cols</name>
         <type>Facet</type>
     </flexiPageRegions>
 
-    <!-- SECTION 4: Risk Summary — Column 1 -->
+    <!-- SECTION: Participation — Column 1 -->
     <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
@@ -356,15 +160,45 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_litigation_count__c</fieldItem>
-                <identifier>prog_risk_litigation_count</identifier>
+                <fieldItem>Record.nepa_registered_count__c</fieldItem>
+                <identifier>eng_registered_count</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>prog-risk-c1</name>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_attendance_count__c</fieldItem>
+                <identifier>eng_attendance</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_comments_received_count__c</fieldItem>
+                <identifier>eng_comments_count</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_advance_notice_days__c</fieldItem>
+                <identifier>eng_advance_notice</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>eng-part-c1</name>
         <type>Facet</type>
     </flexiPageRegions>
 
-    <!-- SECTION 4: Risk Summary — Column 2 -->
+    <!-- SECTION: Participation — Column 2 -->
     <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
@@ -372,42 +206,140 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_circuit__c</fieldItem>
-                <identifier>prog_risk_circuit</identifier>
+                <fieldItem>Record.nepa_transcript_available__c</fieldItem>
+                <identifier>eng_transcript</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>prog-risk-c2</name>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_notification_channels__c</fieldItem>
+                <identifier>eng_notification_channels</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>eng-part-c2</name>
         <type>Facet</type>
     </flexiPageRegions>
 
-    <!-- SECTION 4: Risk Summary — Columns Wrapper -->
+    <!-- SECTION: Participation — Columns Wrapper -->
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>body</name>
-                    <value>prog-risk-c1</value>
+                    <value>eng-part-c1</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:column</componentName>
-                <identifier>prog_risk_col1</identifier>
+                <identifier>eng_part_col1</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>body</name>
-                    <value>prog-risk-c2</value>
+                    <value>eng-part-c2</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:column</componentName>
-                <identifier>prog_risk_col2</identifier>
+                <identifier>eng_part_col2</identifier>
             </componentInstance>
         </itemInstances>
-        <name>prog-risk-cols</name>
+        <name>eng-part-cols</name>
         <type>Facet</type>
     </flexiPageRegions>
 
-    <!-- SECTION 5: Data Provenance — Column 1 -->
+    <!-- SECTION: Accessibility — Column 1 -->
     <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_ada_accessible__c</fieldItem>
+                <identifier>eng_ada_accessible</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_ada_accommodations__c</fieldItem>
+                <identifier>eng_ada_accommodations</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>eng-access-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Accessibility — Column 2 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_translation_services__c</fieldItem>
+                <identifier>eng_translation</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_interpreter_languages__c</fieldItem>
+                <identifier>eng_interpreter_languages</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>eng-access-c2</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Accessibility — Columns Wrapper -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>eng-access-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>eng_access_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>eng-access-c2</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>eng_access_col2</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>eng-access-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Notes and Provenance — Column 1 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_notes__c</fieldItem>
+                <identifier>eng_notes</identifier>
+            </fieldInstance>
+        </itemInstances>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
@@ -415,7 +347,7 @@
                     <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_data_record_version__c</fieldItem>
-                <identifier>prog_prov_record_version</identifier>
+                <identifier>eng_prov_record_version</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -425,7 +357,7 @@
                     <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_data_source_agency__c</fieldItem>
-                <identifier>prog_prov_source_agency</identifier>
+                <identifier>eng_prov_source_agency</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -435,14 +367,14 @@
                     <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_data_source_system__c</fieldItem>
-                <identifier>prog_prov_source_system</identifier>
+                <identifier>eng_prov_source_system</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>prog-prov-c1</name>
+        <name>eng-notes-c1</name>
         <type>Facet</type>
     </flexiPageRegions>
 
-    <!-- SECTION 5: Data Provenance — Column 2 -->
+    <!-- SECTION: Notes and Provenance — Column 2 -->
     <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
@@ -451,7 +383,7 @@
                     <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_record_owner_agency__c</fieldItem>
-                <identifier>prog_prov_owner_agency</identifier>
+                <identifier>eng_prov_owner_agency</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -461,36 +393,36 @@
                     <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_retrieved_timestamp__c</fieldItem>
-                <identifier>prog_prov_retrieved_ts</identifier>
+                <identifier>eng_prov_retrieved_ts</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>prog-prov-c2</name>
+        <name>eng-notes-c2</name>
         <type>Facet</type>
     </flexiPageRegions>
 
-    <!-- SECTION 5: Data Provenance — Columns Wrapper -->
+    <!-- SECTION: Notes and Provenance — Columns Wrapper -->
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>body</name>
-                    <value>prog-prov-c1</value>
+                    <value>eng-notes-c1</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:column</componentName>
-                <identifier>prog_prov_col1</identifier>
+                <identifier>eng_notes_col1</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>body</name>
-                    <value>prog-prov-c2</value>
+                    <value>eng-notes-c2</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:column</componentName>
-                <identifier>prog_prov_col2</identifier>
+                <identifier>eng_notes_col2</identifier>
             </componentInstance>
         </itemInstances>
-        <name>prog-prov-cols</name>
+        <name>eng-notes-cols</name>
         <type>Facet</type>
     </flexiPageRegions>
 
@@ -500,7 +432,7 @@
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
-                    <value>prog-overview-cols</value>
+                    <value>eng-event-cols</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>horizontalAlignment</name>
@@ -508,17 +440,17 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>label</name>
-                    <value>Project Overview</value>
+                    <value>Event Details</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
-                <identifier>prog_section_overview</identifier>
+                <identifier>eng_section_event</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
-                    <value>prog-desc-cols</value>
+                    <value>eng-part-cols</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>horizontalAlignment</name>
@@ -526,17 +458,17 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>label</name>
-                    <value>Project Description</value>
+                    <value>Participation</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
-                <identifier>prog_section_desc</identifier>
+                <identifier>eng_section_participation</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
-                    <value>prog-loc-cols</value>
+                    <value>eng-access-cols</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>horizontalAlignment</name>
@@ -544,17 +476,17 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>label</name>
-                    <value>Location</value>
+                    <value>Accessibility</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
-                <identifier>prog_section_location</identifier>
+                <identifier>eng_section_accessibility</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
-                    <value>prog-risk-cols</value>
+                    <value>eng-notes-cols</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>horizontalAlignment</name>
@@ -562,28 +494,10 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>label</name>
-                    <value>Risk Summary</value>
+                    <value>Notes and Provenance</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
-                <identifier>prog_section_risk</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>columns</name>
-                    <value>prog-prov-cols</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>horizontalAlignment</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>label</name>
-                    <value>Data Provenance</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:fieldSection</componentName>
-                <identifier>prog_section_provenance</identifier>
+                <identifier>eng_section_notes</identifier>
             </componentInstance>
         </itemInstances>
         <mode>Replace</mode>
@@ -719,9 +633,9 @@
         <type>Region</type>
     </flexiPageRegions>
 
-    <masterLabel>NEPA Project Record Page</masterLabel>
+    <masterLabel>NEPA Public Engagement Event Record Page</masterLabel>
     <parentFlexiPage>flexipage__default_rec_L</parentFlexiPage>
-    <sobjectType>Program</sobjectType>
+    <sobjectType>nepa_engagement__c</sobjectType>
     <template>
         <name>flexipage:recordHomeTemplateDesktop</name>
     </template>

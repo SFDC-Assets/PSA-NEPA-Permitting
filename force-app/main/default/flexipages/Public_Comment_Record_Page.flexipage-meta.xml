@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FlexiPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <!-- HEADER -->
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
@@ -31,6 +32,8 @@
         <name>header</name>
         <type>Region</type>
     </flexiPageRegions>
+
+    <!-- SECTION: Commenter — Column 1 -->
     <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
@@ -68,6 +71,32 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
+                <fieldItem>Record.nepa_email__c</fieldItem>
+                <identifier>Recordnepa_email_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_organization__c</fieldItem>
+                <identifier>Recordnepa_organization_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>cmt-commenter-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Commenter — Column 2 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
                 <fieldItem>Record.Method_of_Submission__c</fieldItem>
                 <identifier>RecordMethod_of_Submission_cField</identifier>
             </fieldInstance>
@@ -76,24 +105,20 @@
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
-                    <value>required</value>
+                    <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.IncidentDate</fieldItem>
                 <identifier>RecordIncidentDateField</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>Facet-98e017c0-b32a-4ed3-b69e-4baab405295b</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.Subject</fieldItem>
-                <identifier>RecordSubjectField</identifier>
+                <fieldItem>Record.nepa_date_submitted__c</fieldItem>
+                <identifier>Recordnepa_date_submitted_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -102,18 +127,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.ComplaintType</fieldItem>
-                <identifier>RecordComplaintTypeField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.ComplaintSubType</fieldItem>
-                <identifier>RecordComplaintSubTypeField</identifier>
+                <fieldItem>Record.nepa_related_process__c</fieldItem>
+                <identifier>Recordnepa_related_process_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -126,34 +141,89 @@
                 <identifier>Recordnepa_public_access_cField</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>Facet-1e68d811-2ddb-4263-9547-1de6f687f1ff</name>
+        <name>cmt-commenter-c2</name>
         <type>Facet</type>
     </flexiPageRegions>
+
+    <!-- SECTION: Commenter — Columns Wrapper -->
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>body</name>
-                    <value>Facet-98e017c0-b32a-4ed3-b69e-4baab405295b</value>
+                    <value>cmt-commenter-c1</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:column</componentName>
-                <identifier>flexipage_column</identifier>
+                <identifier>cmt_commenter_col1</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>body</name>
-                    <value>Facet-1e68d811-2ddb-4263-9547-1de6f687f1ff</value>
+                    <value>cmt-commenter-c2</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:column</componentName>
-                <identifier>flexipage_column2</identifier>
+                <identifier>cmt_commenter_col2</identifier>
             </componentInstance>
         </itemInstances>
-        <name>Facet-58110116-92a1-485d-9ec6-632f8ce1d1b2</name>
+        <name>cmt-commenter-cols</name>
         <type>Facet</type>
     </flexiPageRegions>
-    <!-- AI Analysis section: left column -->
+
+    <!-- SECTION: Comment Body — Column 1 (full-width) -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_comment_body__c</fieldItem>
+                <identifier>Recordnepa_comment_body_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_pii_redacted__c</fieldItem>
+                <identifier>Recordnepa_pii_redacted_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_redacted_body__c</fieldItem>
+                <identifier>Recordnepa_redacted_body_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>cmt-body-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Comment Body — Column Wrapper (1-col) -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>cmt-body-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>cmt_body_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>cmt-body-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: AI Analysis — Column 1 -->
     <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
@@ -175,10 +245,51 @@
                 <identifier>Recordnepa_is_substantive_cField</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>Facet-ai-left</name>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_category__c</fieldItem>
+                <identifier>Recordnepa_category_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_cluster_id__c</fieldItem>
+                <identifier>Recordnepa_cluster_id_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_ai_confidence_score__c</fieldItem>
+                <identifier>Recordnepa_ai_confidence_score_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_ai_triage_timestamp__c</fieldItem>
+                <identifier>Recordnepa_ai_triage_timestamp_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>cmt-ai-c1</name>
         <type>Facet</type>
     </flexiPageRegions>
-    <!-- AI Analysis section: right column -->
+
+    <!-- SECTION: AI Analysis — Column 2 -->
     <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
@@ -196,38 +307,81 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_cluster_id__c</fieldItem>
-                <identifier>Recordnepa_cluster_id_cField</identifier>
+                <fieldItem>Record.nepa_requires_human_review__c</fieldItem>
+                <identifier>Recordnepa_requires_human_review_cField</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>Facet-ai-right</name>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_human_override__c</fieldItem>
+                <identifier>Recordnepa_human_override_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_ai_triage_rationale__c</fieldItem>
+                <identifier>Recordnepa_ai_triage_rationale_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_litigation_threat_flag__c</fieldItem>
+                <identifier>Recordnepa_litigation_threat_flag_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_litigation_threat_basis__c</fieldItem>
+                <identifier>Recordnepa_litigation_threat_basis_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>cmt-ai-c2</name>
         <type>Facet</type>
     </flexiPageRegions>
-    <!-- AI Analysis section: two-column row -->
+
+    <!-- SECTION: AI Analysis — Columns Wrapper -->
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>body</name>
-                    <value>Facet-ai-left</value>
+                    <value>cmt-ai-c1</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:column</componentName>
-                <identifier>flexipage_column_ai_left</identifier>
+                <identifier>cmt_ai_col1</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>body</name>
-                    <value>Facet-ai-right</value>
+                    <value>cmt-ai-c2</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:column</componentName>
-                <identifier>flexipage_column_ai_right</identifier>
+                <identifier>cmt_ai_col2</identifier>
             </componentInstance>
         </itemInstances>
-        <name>Facet-ai-row</name>
+        <name>cmt-ai-cols</name>
         <type>Facet</type>
     </flexiPageRegions>
+
+    <!-- SECTION: Agency Response — Column 1 (full-width) -->
     <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
@@ -249,23 +403,125 @@
                 <identifier>Recordnepa_agency_response_cField</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>Facet-f23812e6-2ea1-42e7-97f8-f3779b0fbdc6</name>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_legal_review_status__c</fieldItem>
+                <identifier>Recordnepa_legal_review_status_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>cmt-response-c1</name>
         <type>Facet</type>
     </flexiPageRegions>
+
+    <!-- SECTION: Agency Response — Column Wrapper (1-col) -->
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>body</name>
-                    <value>Facet-f23812e6-2ea1-42e7-97f8-f3779b0fbdc6</value>
+                    <value>cmt-response-c1</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:column</componentName>
-                <identifier>flexipage_column3</identifier>
+                <identifier>cmt_response_col1</identifier>
             </componentInstance>
         </itemInstances>
-        <name>Facet-8d9a93de-e3c4-44be-9763-459f35a35f65</name>
+        <name>cmt-response-cols</name>
         <type>Facet</type>
     </flexiPageRegions>
+
+    <!-- SECTION: Data Provenance — Column 1 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_data_record_version__c</fieldItem>
+                <identifier>Recordnepa_data_record_version_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_data_source_agency__c</fieldItem>
+                <identifier>Recordnepa_data_source_agency_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_data_source_system__c</fieldItem>
+                <identifier>Recordnepa_data_source_system_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>cmt-prov-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Data Provenance — Column 2 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_record_owner_agency__c</fieldItem>
+                <identifier>Recordnepa_record_owner_agency_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_retrieved_timestamp__c</fieldItem>
+                <identifier>Recordnepa_retrieved_timestamp_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>cmt-prov-c2</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Data Provenance — Columns Wrapper -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>cmt-prov-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>cmt_prov_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>cmt-prov-c2</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>cmt_prov_col2</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>cmt-prov-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- DETAIL TAB CONTENT -->
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
@@ -297,7 +553,7 @@
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
-                    <value>Facet-58110116-92a1-485d-9ec6-632f8ce1d1b2</value>
+                    <value>cmt-commenter-cols</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>horizontalAlignment</name>
@@ -308,14 +564,32 @@
                     <value>Commenter</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
-                <identifier>flexipage_fieldSection</identifier>
+                <identifier>cmt_section_commenter</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
-                    <value>Facet-ai-row</value>
+                    <value>cmt-body-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Comment Body</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>cmt_section_body</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>cmt-ai-cols</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>horizontalAlignment</name>
@@ -326,14 +600,14 @@
                     <value>AI Analysis</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
-                <identifier>flexipage_fieldSection_ai</identifier>
+                <identifier>cmt_section_ai</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
-                    <value>Facet-8d9a93de-e3c4-44be-9763-459f35a35f65</value>
+                    <value>cmt-response-cols</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>horizontalAlignment</name>
@@ -344,13 +618,33 @@
                     <value>Agency Response</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
-                <identifier>flexipage_fieldSection2</identifier>
+                <identifier>cmt_section_response</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>cmt-prov-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Data Provenance</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>cmt_section_provenance</identifier>
             </componentInstance>
         </itemInstances>
         <mode>Replace</mode>
         <name>detailTabContent</name>
         <type>Facet</type>
     </flexiPageRegions>
+
+    <!-- MAIN TABS -->
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
@@ -389,6 +683,8 @@
         <name>main</name>
         <type>Region</type>
     </flexiPageRegions>
+
+    <!-- SIDEBAR: Activity -->
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
@@ -442,6 +738,7 @@
         <name>sidebar</name>
         <type>Region</type>
     </flexiPageRegions>
+
     <masterLabel>Public Comment Record Page</masterLabel>
     <parentFlexiPage>flexipage__default_rec_L</parentFlexiPage>
     <sobjectType>PublicComplaint</sobjectType>

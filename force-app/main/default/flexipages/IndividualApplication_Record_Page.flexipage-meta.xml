@@ -170,8 +170,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_process_code__c</fieldItem>
-                <identifier>ia_ce_process_code</identifier>
+                <fieldItem>Record.nepa_ce_pathway_recommendation__c</fieldItem>
+                <identifier>ia_ce_pathway_recommendation</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -220,6 +220,26 @@
                 <identifier>ia_ce_classification_basis</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_regulatory_citation__c</fieldItem>
+                <identifier>ia_ce_regulatory_citation</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_connected_actions_identified__c</fieldItem>
+                <identifier>ia_ce_connected_actions</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>ia-ce-c2</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -247,6 +267,212 @@
             </componentInstance>
         </itemInstances>
         <name>ia-ce-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Intake and Submission — Column 1 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_submission_complete__c</fieldItem>
+                <identifier>ia_intake_submission_complete</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_applicant_contact__c</fieldItem>
+                <identifier>ia_intake_applicant_contact</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_rfi_count__c</fieldItem>
+                <identifier>ia_intake_rfi_count</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>ia-intake-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Intake and Submission — Column 2 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_total_pages__c</fieldItem>
+                <identifier>ia_intake_total_pages</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_comment_period_days__c</fieldItem>
+                <identifier>ia_intake_comment_period_days</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_missing_documents__c</fieldItem>
+                <identifier>ia_intake_missing_docs</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>ia-intake-c2</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Intake and Submission — Columns Wrapper -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>ia-intake-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>ia_intake_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>ia-intake-c2</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>ia_intake_col2</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>ia-intake-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: SLA and Deadlines — Column 1 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_sla_due_date__c</fieldItem>
+                <identifier>ia_sla_due_date</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_sla_overdue__c</fieldItem>
+                <identifier>ia_sla_overdue</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_sla_warning_sent__c</fieldItem>
+                <identifier>ia_sla_warning_sent</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_clock_paused__c</fieldItem>
+                <identifier>ia_sla_clock_paused</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>ia-sla-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: SLA and Deadlines — Column 2 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_fra_statutory_deadline__c</fieldItem>
+                <identifier>ia_sla_fra_statutory</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_fra_adjusted_deadline__c</fieldItem>
+                <identifier>ia_sla_fra_adjusted</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_clock_pause_reason__c</fieldItem>
+                <identifier>ia_sla_clock_pause_reason</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>ia-sla-c2</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: SLA and Deadlines — Columns Wrapper -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>ia-sla-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>ia_sla_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>ia-sla-c2</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>ia_sla_col2</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>ia-sla-cols</name>
         <type>Facet</type>
     </flexiPageRegions>
 
@@ -292,6 +518,26 @@
                 <identifier>ia_details_process_outcome</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_decision_document_type__c</fieldItem>
+                <identifier>ia_details_decision_doc_type</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_review_timeline_type__c</fieldItem>
+                <identifier>ia_details_review_timeline_type</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>ia-details-c1</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -316,6 +562,46 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_public_comment_period_end_date__c</fieldItem>
                 <identifier>ia_details_comment_end</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_esa_consultation_status__c</fieldItem>
+                <identifier>ia_details_esa_status</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_supplementation_review_complete__c</fieldItem>
+                <identifier>ia_details_supplementation</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_waiver_invoked__c</fieldItem>
+                <identifier>ia_details_waiver_invoked</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_waiver_statute_cite__c</fieldItem>
+                <identifier>ia_details_waiver_cite</identifier>
             </fieldInstance>
         </itemInstances>
         <name>ia-details-c2</name>
@@ -348,6 +634,64 @@
         <type>Facet</type>
     </flexiPageRegions>
 
+    <!-- SECTION: Permit Coordination — Column 1 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_co_permits_required__c</fieldItem>
+                <identifier>ia_permit_co_permits</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>ia-permit-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Permit Coordination — Column 2 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_cooperating_agencies__c</fieldItem>
+                <identifier>ia_permit_cooperating_agencies</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>ia-permit-c2</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Permit Coordination — Columns Wrapper -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>ia-permit-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>ia_permit_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>ia-permit-c2</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>ia_permit_col2</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>ia-permit-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
     <!-- SECTION 3: Purpose and Need — Column 1 -->
     <flexiPageRegions>
         <itemInstances>
@@ -368,6 +712,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_description__c</fieldItem>
                 <identifier>ia_purpose_description</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_notes__c</fieldItem>
+                <identifier>ia_purpose_notes</identifier>
             </fieldInstance>
         </itemInstances>
         <name>ia-purpose-c1</name>
@@ -420,6 +774,26 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_risk_score_updated__c</fieldItem>
                 <identifier>ia_risk_score_updated</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_risk_score_is_ai__c</fieldItem>
+                <identifier>ia_risk_score_is_ai</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_small_sample_warning__c</fieldItem>
+                <identifier>ia_risk_small_sample_warning</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -488,6 +862,26 @@
                 <identifier>ia_risk_defensibility_gaps</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_plaintiff_risk_flag__c</fieldItem>
+                <identifier>ia_risk_plaintiff_flag</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_expedited_risk_penalty_applied__c</fieldItem>
+                <identifier>ia_risk_expedited_penalty</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>ia-risk-c2</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -538,6 +932,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_days_in_current_stage__c</fieldItem>
                 <identifier>ia_tl_days_in_stage</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_last_stage_transition__c</fieldItem>
+                <identifier>ia_tl_last_transition</identifier>
             </fieldInstance>
         </itemInstances>
         <name>ia-tl-risk-c1</name>
@@ -726,6 +1130,42 @@
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
+                    <value>ia-intake-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Intake and Submission</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>ia_section_intake</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>ia-sla-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>SLA and Deadlines</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>ia_section_sla</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
                     <value>ia-details-cols</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
@@ -738,6 +1178,24 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>ia_section_details</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>ia-permit-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Permit Coordination</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>ia_section_permit</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>

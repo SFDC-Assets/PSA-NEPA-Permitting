@@ -34,7 +34,7 @@
         <type>Region</type>
     </flexiPageRegions>
 
-    <!-- SECTION 1: Project Overview — Column 1 -->
+    <!-- SECTION: Case Identity — Column 1 -->
     <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
@@ -42,8 +42,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_project_title__c</fieldItem>
-                <identifier>prog_overview_title</identifier>
+                <fieldItem>Record.nepa_case_title__c</fieldItem>
+                <identifier>lit_case_title</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -52,8 +52,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_current_status__c</fieldItem>
-                <identifier>prog_overview_status</identifier>
+                <fieldItem>Record.nepa_citation__c</fieldItem>
+                <identifier>lit_citation</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -62,310 +62,10 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_start_date__c</fieldItem>
-                <identifier>prog_overview_start_date</identifier>
+                <fieldItem>Record.nepa_court__c</fieldItem>
+                <identifier>lit_court</identifier>
             </fieldInstance>
         </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_project_id__c</fieldItem>
-                <identifier>prog_overview_project_id</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>prog-overview-c1</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- SECTION 1: Project Overview — Column 2 -->
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_lead_agency__c</fieldItem>
-                <identifier>prog_overview_lead_agency</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_parent_project__c</fieldItem>
-                <identifier>prog_overview_parent</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_record_owner_agency__c</fieldItem>
-                <identifier>prog_overview_owner_agency</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>prog-overview-c2</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- SECTION 1: Project Overview — Columns Wrapper -->
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>prog-overview-c1</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>prog_overview_col1</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>prog-overview-c2</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>prog_overview_col2</identifier>
-            </componentInstance>
-        </itemInstances>
-        <name>prog-overview-cols</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- SECTION 2: Project Description — Column 1 -->
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_project_description__c</fieldItem>
-                <identifier>prog_desc_description</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_project_type__c</fieldItem>
-                <identifier>prog_desc_type</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_project_sector__c</fieldItem>
-                <identifier>prog_desc_sector</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_primary_sector__c</fieldItem>
-                <identifier>prog_desc_primary_sector</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_adjacent_statutes__c</fieldItem>
-                <identifier>prog_desc_adjacent_statutes</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>prog-desc-c1</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- SECTION 2: Project Description — Column 2 -->
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_project_sponsor__c</fieldItem>
-                <identifier>prog_desc_sponsor</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_sponsor_type__c</fieldItem>
-                <identifier>prog_desc_sponsor_type</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_applicant_naics__c</fieldItem>
-                <identifier>prog_desc_naics</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_funding__c</fieldItem>
-                <identifier>prog_desc_funding</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>prog-desc-c2</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- SECTION 2: Project Description — Columns Wrapper (2-col) -->
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>prog-desc-c1</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>prog_desc_col1</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>prog-desc-c2</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>prog_desc_col2</identifier>
-            </componentInstance>
-        </itemInstances>
-        <name>prog-desc-cols</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- SECTION 3: Location — Column 1 -->
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_location__c</fieldItem>
-                <identifier>prog_loc_location</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_location_text__c</fieldItem>
-                <identifier>prog_loc_location_text</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>prog-loc-c1</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- SECTION 3: Location — Column 2 -->
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_location_lat__c</fieldItem>
-                <identifier>prog_loc_lat</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_location_lon__c</fieldItem>
-                <identifier>prog_loc_lon</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>prog-loc-c2</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- SECTION 3: Location — Columns Wrapper -->
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>prog-loc-c1</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>prog_loc_col1</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>prog-loc-c2</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>prog_loc_col2</identifier>
-            </componentInstance>
-        </itemInstances>
-        <name>prog-loc-cols</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- SECTION 4: Risk Summary — Column 1 -->
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_litigation_count__c</fieldItem>
-                <identifier>prog_risk_litigation_count</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>prog-risk-c1</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- SECTION 4: Risk Summary — Column 2 -->
-    <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
@@ -373,40 +73,196 @@
                     <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_circuit__c</fieldItem>
-                <identifier>prog_risk_circuit</identifier>
+                <identifier>lit_circuit</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>prog-risk-c2</name>
+        <name>lit-case-c1</name>
         <type>Facet</type>
     </flexiPageRegions>
 
-    <!-- SECTION 4: Risk Summary — Columns Wrapper -->
+    <!-- SECTION: Case Identity — Column 2 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_plaintiff__c</fieldItem>
+                <identifier>lit_plaintiff</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_defendant__c</fieldItem>
+                <identifier>lit_defendant</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_ruling_date__c</fieldItem>
+                <identifier>lit_ruling_date</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_prevailing_party__c</fieldItem>
+                <identifier>lit_prevailing_party</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>lit-case-c2</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Case Identity — Columns Wrapper -->
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>body</name>
-                    <value>prog-risk-c1</value>
+                    <value>lit-case-c1</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:column</componentName>
-                <identifier>prog_risk_col1</identifier>
+                <identifier>lit_case_col1</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>body</name>
-                    <value>prog-risk-c2</value>
+                    <value>lit-case-c2</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:column</componentName>
-                <identifier>prog_risk_col2</identifier>
+                <identifier>lit_case_col2</identifier>
             </componentInstance>
         </itemInstances>
-        <name>prog-risk-cols</name>
+        <name>lit-case-cols</name>
         <type>Facet</type>
     </flexiPageRegions>
 
-    <!-- SECTION 5: Data Provenance — Column 1 -->
+    <!-- SECTION: Project Link — Column 1 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_related_project__c</fieldItem>
+                <identifier>lit_related_project</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_contested_project_name__c</fieldItem>
+                <identifier>lit_contested_project</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>lit-project-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Project Link — Column 2 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_in_nepatec__c</fieldItem>
+                <identifier>lit_in_nepatec</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_extraction_quality__c</fieldItem>
+                <identifier>lit_extraction_quality</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>lit-project-c2</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Project Link — Columns Wrapper -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>lit-project-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>lit_project_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>lit-project-c2</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>lit_project_col2</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>lit-project-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: AI / Provenance — Column 1 (full-width) -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_llm_keywords__c</fieldItem>
+                <identifier>lit_llm_keywords</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>lit-ai-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: AI / Provenance — Column Wrapper (1-col) -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>lit-ai-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>lit_ai_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>lit-ai-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Data Provenance — Column 1 -->
     <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
@@ -415,17 +271,7 @@
                     <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_data_record_version__c</fieldItem>
-                <identifier>prog_prov_record_version</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_data_source_agency__c</fieldItem>
-                <identifier>prog_prov_source_agency</identifier>
+                <identifier>lit_prov_record_version</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -435,62 +281,26 @@
                     <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_data_source_system__c</fieldItem>
-                <identifier>prog_prov_source_system</identifier>
+                <identifier>lit_prov_source_system</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>prog-prov-c1</name>
+        <name>lit-prov-c1</name>
         <type>Facet</type>
     </flexiPageRegions>
 
-    <!-- SECTION 5: Data Provenance — Column 2 -->
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_record_owner_agency__c</fieldItem>
-                <identifier>prog_prov_owner_agency</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_retrieved_timestamp__c</fieldItem>
-                <identifier>prog_prov_retrieved_ts</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>prog-prov-c2</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- SECTION 5: Data Provenance — Columns Wrapper -->
+    <!-- SECTION: Data Provenance — Column Wrapper (1-col) -->
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>body</name>
-                    <value>prog-prov-c1</value>
+                    <value>lit-prov-c1</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:column</componentName>
-                <identifier>prog_prov_col1</identifier>
+                <identifier>lit_prov_col1</identifier>
             </componentInstance>
         </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>prog-prov-c2</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>prog_prov_col2</identifier>
-            </componentInstance>
-        </itemInstances>
-        <name>prog-prov-cols</name>
+        <name>lit-prov-cols</name>
         <type>Facet</type>
     </flexiPageRegions>
 
@@ -500,7 +310,7 @@
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
-                    <value>prog-overview-cols</value>
+                    <value>lit-case-cols</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>horizontalAlignment</name>
@@ -508,17 +318,17 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>label</name>
-                    <value>Project Overview</value>
+                    <value>Case Identity</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
-                <identifier>prog_section_overview</identifier>
+                <identifier>lit_section_case</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
-                    <value>prog-desc-cols</value>
+                    <value>lit-project-cols</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>horizontalAlignment</name>
@@ -526,17 +336,17 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>label</name>
-                    <value>Project Description</value>
+                    <value>Related Project</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
-                <identifier>prog_section_desc</identifier>
+                <identifier>lit_section_project</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
-                    <value>prog-loc-cols</value>
+                    <value>lit-ai-cols</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>horizontalAlignment</name>
@@ -544,35 +354,17 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>label</name>
-                    <value>Location</value>
+                    <value>AI Keywords</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
-                <identifier>prog_section_location</identifier>
+                <identifier>lit_section_ai</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
-                    <value>prog-risk-cols</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>horizontalAlignment</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>label</name>
-                    <value>Risk Summary</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:fieldSection</componentName>
-                <identifier>prog_section_risk</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>columns</name>
-                    <value>prog-prov-cols</value>
+                    <value>lit-prov-cols</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>horizontalAlignment</name>
@@ -583,7 +375,7 @@
                     <value>Data Provenance</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
-                <identifier>prog_section_provenance</identifier>
+                <identifier>lit_section_provenance</identifier>
             </componentInstance>
         </itemInstances>
         <mode>Replace</mode>
@@ -719,9 +511,9 @@
         <type>Region</type>
     </flexiPageRegions>
 
-    <masterLabel>NEPA Project Record Page</masterLabel>
+    <masterLabel>NEPA Litigation Record Page</masterLabel>
     <parentFlexiPage>flexipage__default_rec_L</parentFlexiPage>
-    <sobjectType>Program</sobjectType>
+    <sobjectType>nepa_litigation__c</sobjectType>
     <template>
         <name>flexipage:recordHomeTemplateDesktop</name>
     </template>
