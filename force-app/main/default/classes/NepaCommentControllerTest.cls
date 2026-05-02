@@ -1,3 +1,4 @@
+@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage')
 @IsTest
 @SuppressWarnings('PMD.MethodNamingConventions, PMD.ApexUnitTestClassShouldHaveRunAs')
 private class NepaCommentControllerTest {
@@ -269,10 +270,10 @@ private class NepaCommentControllerTest {
 
     @IsTest
     static void submitComment_setsNepaRelatedProcess_forGateEnforcement() {
-        // Regression for Bug 3: controller previously set only IndividualApplicationId,
-        // leaving nepa_related_process__c null. Both the NEPA_Comment_Period_Gate
-        // before-save flow and the NEPA_Comment_Period_Closed validation rule check
-        // nepa_related_process__c exclusively; without it both gate layers are bypassed.
+        // Regression for Bug 3: nepa_related_process__c must be set on insert so the
+        // NEPA_Comment_Period_Gate before-save flow and NEPA_Comment_Period_Closed validation
+        // rule can enforce the deadline. This org's PSS installation does not expose
+        // IndividualApplicationId on PublicComplaint; nepa_related_process__c is the sole gate field.
         IndividualApplication ia = [
             SELECT Id FROM IndividualApplication
             WHERE nepa_public_comment_period_end_date__c >= :DateTime.now()
@@ -284,14 +285,12 @@ private class NepaCommentControllerTest {
         Test.stopTest();
 
         PublicComplaint created = [
-            SELECT nepa_related_process__c, IndividualApplicationId
+            SELECT nepa_related_process__c
             FROM PublicComplaint
             WHERE Id = :commentId
         ];
         System.assertEquals(ia.Id, created.nepa_related_process__c,
             'nepa_related_process__c must be set so before-save flow and validation rule can enforce the deadline');
-        System.assertEquals(ia.Id, created.IndividualApplicationId,
-            'IndividualApplicationId (PSS native) must also be set');
     }
 
     // ── Bug regression: exact-minute deadline (DateTime precision) ────────────
@@ -367,7 +366,7 @@ private class NepaCommentControllerTest {
         }
         Test.stopTest();
 
-        Integer count = [SELECT COUNT() FROM PublicComplaint WHERE IndividualApplicationId = :ia.Id];
+        Integer count = [SELECT COUNT() FROM PublicComplaint WHERE nepa_related_process__c = :ia.Id];
         System.assertEquals(0, count, 'No record should be persisted for the oversized payload');
     }
 
@@ -416,7 +415,7 @@ private class NepaCommentControllerTest {
         }
         Test.stopTest();
 
-        Integer count = [SELECT COUNT() FROM PublicComplaint WHERE IndividualApplicationId = :ia.Id];
+        Integer count = [SELECT COUNT() FROM PublicComplaint WHERE nepa_related_process__c = :ia.Id];
         System.assertEquals(10, count, 'All 10 comments should have been created');
     }
 }

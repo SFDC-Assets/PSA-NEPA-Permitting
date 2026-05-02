@@ -93,6 +93,7 @@ global with sharing class NepaCeqExportService {
 
     // ── List ──────────────────────────────────────────────────────────────────
 
+    @SuppressWarnings('PMD.ApexSOQLInjection')
     private static void handleList(RestRequest req, RestResponse res) {
         String reviewType   = req.params.get('reviewType');
         String status       = req.params.get('status');
@@ -105,7 +106,6 @@ global with sharing class NepaCeqExportService {
 
         // Build dynamic WHERE clauses — no user-controlled string interpolation
         List<String> clauses = new List<String>();
-        List<Object> binds   = new List<Object>();
 
         if (String.isNotBlank(reviewType)) {
             clauses.add('nepa_review_type__c = :reviewType');

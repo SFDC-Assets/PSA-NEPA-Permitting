@@ -1,3 +1,4 @@
+@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage')
 /** Tests validation rules on IndividualApplication: description length, FONSI/ROD on CE, waiver legal sufficiency, tiering age check. */
 @IsTest
 @SuppressWarnings('PMD.MethodNamingConventions, PMD.ApexUnitTestClassShouldHaveRunAs')

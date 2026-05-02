@@ -15,47 +15,48 @@
  *   "litigation_threat_basis": ""
  * }
  */
-global with sharing class NepaCommentTriageParser {
+@SuppressWarnings('PMD.StdCyclomaticComplexity')
+public with sharing class NepaCommentTriageParser {
 
-    global class Request {
+    public class Request {
         @InvocableVariable(label='Triage JSON' description='Raw JSON string returned by the NEPA_Comment_Triage_Analysis prompt template' required=true)
-        global String triageJson;
+        public String triageJson;
     }
 
-    global class Result {
+    public class Result {
         @InvocableVariable(label='Sentiment' description='Parsed sentiment: Supportive, Neutral, Opposed, or Mixed')
-        global String sentiment;
+        public String sentiment;
 
         @InvocableVariable(label='Is Substantive' description='Parsed substantive determination')
-        global Boolean isSubstantive;
+        public Boolean isSubstantive;
 
         @InvocableVariable(label='Confidence Score' description='Parsed AI confidence score 0-100')
-        global Decimal confidenceScore;
+        public Decimal confidenceScore;
 
         @InvocableVariable(label='Cluster Hint' description='Parsed near-duplicate cluster hint phrase')
-        global String clusterHint;
+        public String clusterHint;
 
         @InvocableVariable(label='Triage Rationale' description='Parsed triage rationale explaining the substantive determination')
-        global String triageRationale;
+        public String triageRationale;
 
         @InvocableVariable(label='Parse Success' description='True when JSON was parsed successfully')
-        global Boolean parseSuccess;
+        public Boolean parseSuccess;
 
         @InvocableVariable(label='Parse Error' description='Error message if parsing failed')
-        global String parseError;
+        public String parseError;
 
         @InvocableVariable(label='Litigation Threat' description='True when the comment was identified as a Vermont Yankee issue exhaustion litigation threat')
-        global Boolean litigationThreat;
+        public Boolean litigationThreat;
 
         @InvocableVariable(label='Litigation Threat Basis' description='AI explanation of the specific legal/technical standard cited and the alleged deficiency')
-        global String litigationThreatBasis;
+        public String litigationThreatBasis;
     }
 
     @InvocableMethod(
         label='Parse NEPA Comment Triage JSON'
         description='Parses the structured JSON output from the NEPA_Comment_Triage_Analysis prompt template into typed scalar fields for deterministic use in the Comment Triage agent.'
     )
-    global static List<Result> parse(List<Request> requests) {
+    public static List<Result> parse(List<Request> requests) {
         List<Result> results = new List<Result>();
         for (Request req : requests) {
             results.add(parseTriageJson(req));
@@ -63,6 +64,7 @@ global with sharing class NepaCommentTriageParser {
         return results;
     }
 
+    @SuppressWarnings('PMD.CyclomaticComplexity,PMD.StdCyclomaticComplexity,PMD.CognitiveComplexity,PMD.NcssMethodCount')
     private static Result parseTriageJson(Request req) {
         Result res = new Result();
         res.parseSuccess = False;

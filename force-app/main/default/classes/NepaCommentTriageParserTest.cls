@@ -1,3 +1,4 @@
+@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage')
 @IsTest
 @SuppressWarnings('PMD.MethodNamingConventions')
 private class NepaCommentTriageParserTest {

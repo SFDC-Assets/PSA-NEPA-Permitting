@@ -2,13 +2,27 @@
 @IsTest
 public class NepaTestFactory {
 
+    // ── Agency Account cache ──────────────────────────────────────────────────
+
+    private static final Map<String, Id> AGENCY_CACHE = new Map<String, Id>();
+
+    private static Id getOrCreateAgencyAccount(String agencyName) {
+        if (AGENCY_CACHE.containsKey(agencyName)) {
+            return AGENCY_CACHE.get(agencyName);
+        }
+        Account a = new Account(Name = agencyName);
+        insert a;
+        AGENCY_CACHE.put(agencyName, a.Id);
+        return a.Id;
+    }
+
     // ── Program (CEQ Project) ─────────────────────────────────────────────────
 
     /**
      * Builds an unsaved Program record.
      * @param projectId Value for nepa_project_id__c
      * @param title Value for Name and nepa_project_title__c
-     * @param agency Value for nepa_lead_agency__c
+     * @param agency Account Name for nepa_lead_agency__c (Account is created/cached automatically)
      * @return Unsaved Program record
      */
     public static Program makeProgram(String projectId, String title, String agency) {
@@ -16,7 +30,7 @@ public class NepaTestFactory {
         p.Name                   = title;
         p.nepa_project_id__c     = projectId;
         p.nepa_project_title__c  = title;
-        p.nepa_lead_agency__c    = agency;
+        p.nepa_lead_agency__c    = getOrCreateAgencyAccount(agency);
         p.nepa_project_sector__c = 'Energy';
         p.nepa_project_type__c   = 'EIS';
         p.nepa_current_status__c = 'in progress';
@@ -49,6 +63,7 @@ public class NepaTestFactory {
     @SuppressWarnings('PMD.ExcessiveParameterList')
     public static IndividualApplication makeProcess(Id projectId, String reviewType, Date periodStart, Date periodEnd) {
         IndividualApplication ia = new IndividualApplication();
+        ia.Category                                = 'Permit';
         ia.nepa_related_project__c                 = projectId;
         ia.nepa_review_type__c                     = reviewType;
         ia.nepa_process_status__c                  = 'in progress';
@@ -108,6 +123,7 @@ public class NepaTestFactory {
         Id projectId, String reviewType, DateTime periodStart, DateTime periodEnd
     ) {
         IndividualApplication ia = new IndividualApplication();
+        ia.Category                               = 'Permit';
         ia.nepa_related_project__c                = projectId;
         ia.nepa_review_type__c                    = reviewType;
         ia.nepa_process_status__c                 = 'in progress';
@@ -183,6 +199,7 @@ public class NepaTestFactory {
 
     private static ApplicationTimeline insertTimelineRecord(Id processId, Boolean publicAccess) {
         ApplicationTimeline evt = new ApplicationTimeline();
+        evt.Name                    = 'NEPA Test Event';
         evt.nepa_event_type__c      = 'NOI';
         evt.nepa_status__c          = 'Completed';
         evt.nepa_tier__c            = '1';

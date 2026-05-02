@@ -9,7 +9,7 @@
  * Designed as an invocable action consumable by Flows and Agentforce agent
  * scripts via the apex:// target.
  */
-global with sharing class NepaCommentEJDetector {
+public with sharing class NepaCommentEJDetector {
 
     // ── Trigger category keyword maps ────────────────────────────────────────
 
@@ -44,24 +44,24 @@ global with sharing class NepaCommentEJDetector {
     // ── Invocable wrapper classes ─────────────────────────────────────────────
 
     /** Input wrapper for the invocable method. */
-    global class Request {
+    public class Request {
         @InvocableVariable(label='Comment Body' description='The public comment text to scan for EJ and tribal sovereignty triggers' required=true)
-        global String commentBody;
+        public String commentBody;
 
         @InvocableVariable(label='Comment Id' description='Optional record Id of the comment for audit logging' required=false)
-        global String commentId;
+        public String commentId;
     }
 
     /** Output wrapper returned by the invocable method. */
-    global class Result {
+    public class Result {
         @InvocableVariable(label='Requires Human Review' description='True when any EJ or tribal sovereignty trigger matched')
-        global Boolean requiresHumanReview;
+        public Boolean requiresHumanReview;
 
         @InvocableVariable(label='Detected Triggers' description='Comma-separated list of trigger categories found')
-        global String detectedTriggers;
+        public String detectedTriggers;
 
         @InvocableVariable(label='Trigger Details' description='Description of what was found and required escalation protocols')
-        global String triggerDetails;
+        public String triggerDetails;
     }
 
     // ── Invocable entry point ─────────────────────────────────────────────────
@@ -70,7 +70,7 @@ global with sharing class NepaCommentEJDetector {
         label='Detect EJ and Tribal Sovereignty Triggers'
         description='Deterministic gate that scans public comment text for Environmental Justice, tribal sovereignty, sacred sites, low-income impact, and civil rights keywords before AI triage. Returns true when mandatory human review is required per federal EJ guidelines.'
     )
-    global static List<Result> detect(List<Request> requests) {
+    publicstatic List<Result> detect(List<Request> requests) {
         List<Result> results = new List<Result>();
         for (Request req : requests) {
             results.add(scanComment(req));

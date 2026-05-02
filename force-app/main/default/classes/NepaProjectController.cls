@@ -90,7 +90,7 @@ public with sharing class NepaProjectController {
 
         String searchFilter = '';
         if (String.isNotBlank(searchTerm)) {
-            searchFilter = ' AND (nepa_project_title__c LIKE :searchTerm OR nepa_lead_agency__c LIKE :searchTerm)';
+            searchFilter = ' AND (nepa_project_title__c LIKE :searchTerm OR nepa_lead_agency__r.Name LIKE :searchTerm)';
         }
 
         String whereClause = 'Id != null' + searchFilter;
@@ -101,10 +101,10 @@ public with sharing class NepaProjectController {
         );
 
         List<Program> programs = Database.query(
-            'SELECT Id, nepa_project_id__c, nepa_project_title__c, nepa_lead_agency__c, nepa_start_date__c, ' +
+            'SELECT Id, nepa_project_id__c, nepa_project_title__c, nepa_lead_agency__c, nepa_lead_agency__r.Name, nepa_start_date__c, ' +
             '(SELECT Id, nepa_federal_unique_id__c, nepa_review_type__c, nepa_process_stage__c, ' +
             'nepa_public_comment_period_end_date__c, nepa_public_comment_period_start__c, nepa_process_status__c ' +
-            'FROM Individual_Applications ORDER BY LastModifiedDate DESC LIMIT 1) ' +
+            'FROM Individual_Applications__r ORDER BY LastModifiedDate DESC LIMIT 1) ' +
             'FROM Program WHERE ' + whereClause +
             ' ORDER BY ' + orderClause + ' ASC LIMIT :safePageSize OFFSET :offset',
             AccessLevel.USER_MODE
@@ -133,7 +133,7 @@ public with sharing class NepaProjectController {
     @AuraEnabled(cacheable=true)
     public static ProjectDetail getProjectDetail(String federalUniqueId) {
         if (String.isBlank(federalUniqueId)) {
-            throw new AuraHandledException('federalUniqueId is required');
+            throw auraEx('federalUniqueId is required');
         }
 
         List<Program> programs = [
@@ -141,6 +141,7 @@ public with sharing class NepaProjectController {
                    nepa_project_id__c,
                    nepa_project_title__c,
                    nepa_lead_agency__c,
+                   nepa_lead_agency__r.Name,
                    nepa_location_text__c,
                    nepa_project_sector__c,
                    nepa_project_type__c,
@@ -152,7 +153,7 @@ public with sharing class NepaProjectController {
                            nepa_process_status__c,
                            nepa_public_comment_period_start__c,
                            nepa_public_comment_period_end_date__c
-                    FROM Individual_Applications
+                    FROM Individual_Applications__r
                     ORDER BY LastModifiedDate DESC
                     LIMIT 1)
             FROM Program
@@ -162,7 +163,7 @@ public with sharing class NepaProjectController {
         ];
 
         if (programs.isEmpty()) {
-            throw new AuraHandledException('Project not found: ' + federalUniqueId);
+            throw auraEx('Project not found: ' + federalUniqueId);
         }
 
         Program p = programs[0];
@@ -171,14 +172,14 @@ public with sharing class NepaProjectController {
         ProjectDetail d = new ProjectDetail();
         d.federalUniqueId = p.nepa_project_id__c;
         d.projectTitle    = p.nepa_project_title__c;
-        d.leadAgencyName  = p.nepa_lead_agency__c;
+        d.leadAgencyName  = p.nepa_lead_agency__r?.Name;
         d.locationText    = p.nepa_location_text__c;
         d.projectSector   = p.nepa_project_sector__c;
         d.projectType     = p.nepa_project_type__c;
         d.startDate       = p.nepa_start_date__c != null ? String.valueOf(p.nepa_start_date__c) : null;
 
-        if (!p.Individual_Applications.isEmpty()) {
-            IndividualApplication ia = p.Individual_Applications[0];
+        if (!p.Individual_Applications__r.isEmpty()) {
+            IndividualApplication ia = p.Individual_Applications__r[0];
             d.processId          = ia.Id;
             d.reviewType         = ia.nepa_review_type__c;
             d.processStage       = ia.nepa_process_stage__c;
@@ -237,10 +238,10 @@ public with sharing class NepaProjectController {
         ProjectResult r = new ProjectResult();
         r.federalUniqueId = p.nepa_project_id__c;
         r.projectTitle    = p.nepa_project_title__c;
-        r.leadAgencyName  = p.nepa_lead_agency__c;
+        r.leadAgencyName  = p.nepa_lead_agency__r?.Name;
 
-        if (!p.Individual_Applications.isEmpty()) {
-            IndividualApplication ia = p.Individual_Applications[0];
+        if (!p.Individual_Applications__r.isEmpty()) {
+            IndividualApplication ia = p.Individual_Applications__r[0];
             r.reviewType           = ia.nepa_review_type__c;
             r.processStage         = ia.nepa_process_stage__c;
             r.commentPeriodEndDate = ia.nepa_public_comment_period_end_date__c != null
@@ -251,6 +252,12 @@ public with sharing class NepaProjectController {
             r.isCommentPeriodOpen = false;
         }
         return r;
+    }
+
+    private static AuraHandledException auraEx(String msg) {
+        AuraHandledException e = new AuraHandledException(msg);
+        e.setMessage(msg);
+        return e;
     }
 
     private static Boolean isOpen(IndividualApplication ia, Date today) {

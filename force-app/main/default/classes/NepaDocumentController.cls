@@ -38,7 +38,7 @@ public with sharing class NepaDocumentController {
         Integer pageSize
     ) {
         if (String.isBlank(processId)) {
-            throw new AuraHandledException('processId is required');
+            throw auraEx('processId is required');
         }
 
         Integer safePageSize   = (pageSize   != null && pageSize   > 0 && pageSize   <= MAX_PAGE_SIZE) ? pageSize   : DEFAULT_PAGE_SIZE;
@@ -95,7 +95,7 @@ public with sharing class NepaDocumentController {
     @AuraEnabled(cacheable=true)
     public static String getContentDownloadUrl(String contentVersionId) {
         if (String.isBlank(contentVersionId)) {
-            throw new AuraHandledException('contentVersionId is required');
+            throw auraEx('contentVersionId is required');
         }
 
         List<ContentVersion> versions = [
