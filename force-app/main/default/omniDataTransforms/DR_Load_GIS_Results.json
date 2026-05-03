@@ -1,0 +1,14 @@
+{
+  "Name": "DR_Load_GIS_Results",
+  "Type": "Load",
+  "IsActive__c": true,
+  "Description": "Writes GIS proximity analysis results back to a Program record. Inputs: projectId, nepa_protection_areas__c (LongTextArea summary), nepa_gis_last_checked__c (DateTime), nepa_extraordinary_circumstances__c (Boolean). Called as the final step of NEPA_GIS_Proximity_IP after all layer queries complete.",
+  "SObjectType": "Program",
+  "OperationType": "Update",
+  "Mappings": [
+    {"InputKey": "projectId", "SObjectField": "Id", "DataType": "STRING"},
+    {"InputKey": "nepa_protection_areas__c", "SObjectField": "nepa_protection_areas__c", "DataType": "STRING"},
+    {"InputKey": "nepa_gis_last_checked__c", "SObjectField": "nepa_gis_last_checked__c", "DataType": "DATETIME"},
+    {"InputKey": "nepa_extraordinary_circumstances__c", "SObjectField": "nepa_extraordinary_circumstances__c", "DataType": "BOOLEAN"}
+  ]
+}

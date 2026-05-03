@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>EPA Superfund NPL Site</label>
+    <protected>false</protected>
+    <values>
+        <field>Service_URL__c</field>
+        <value xsi:type="xsd:string">https://geodata.epa.gov/arcgis/rest/services/CERCLA/CERCLIS_NFRAP/MapServer</value>
+    </values>
+    <values>
+        <field>Layer_Number__c</field>
+        <value xsi:type="xsd:decimal">22</value>
+    </values>
+    <values>
+        <field>Buffer_Miles__c</field>
+        <value xsi:type="xsd:decimal">1.0</value>
+    </values>
+    <values>
+        <field>Layer_Label__c</field>
+        <value xsi:type="xsd:string">EPA Superfund NPL Site</value>
+    </values>
+    <values>
+        <field>Result_Key_Field__c</field>
+        <value xsi:type="xsd:string">SITE_NAME</value>
+    </values>
+    <values>
+        <field>Query_Template__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Named_Credential__c</field>
+        <value xsi:type="xsd:string">NEPA_GIS_EPA</value>
+    </values>
+    <values>
+        <field>Extraordinary_Circumstances_Keyword__c</field>
+        <value xsi:type="xsd:string">NPL,SUPERFUND,CERCLA</value>
+    </values>
+    <values>
+        <field>Priority__c</field>
+        <value xsi:type="xsd:decimal">20</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

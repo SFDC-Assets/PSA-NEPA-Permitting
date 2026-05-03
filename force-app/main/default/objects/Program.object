@@ -1,6 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
     <fields>
+        <fullName>nepa_protection_areas__c</fullName>
+        <description>Summary of federal protection areas and environmental constraints identified within proximity of the project location by the NEPA_GIS_Proximity_IP. Auto-populated when nepa_location_lat__c and nepa_location_lon__c are set. Each line lists the layer label and matching feature name(s). Read-only — updated by Integration Procedure.</description>
+        <inlineHelpText>Federal protection areas (wetlands, Superfund, critical habitat, EJ) identified near this project. Auto-populated by GIS proximity check.</inlineHelpText>
+        <label>Protection Areas</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <length>32768</length>
+        <visibleLines>8</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_gis_last_checked__c</fullName>
+        <description>Timestamp of the last successful GIS proximity check by NEPA_GIS_Proximity_IP. Null if the check has never run. Used to detect stale proximity data when coordinates are updated.</description>
+        <inlineHelpText>Last time the GIS proximity check ran for this project location.</inlineHelpText>
+        <label>GIS Last Checked</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>nepa_extraordinary_circumstances__c</fullName>
+        <description>Set to true by NEPA_GIS_Proximity_IP when a proximity match triggers an extraordinary circumstances keyword (e.g., WETLANDS, FLOODPLAIN, critical habitat) as defined in NEPA_GIS_Layer__mdt. When true, the CE Screener will not recommend a CE pathway — the project requires at minimum an EA.</description>
+        <inlineHelpText>True if GIS proximity check found extraordinary circumstances that preclude a CE determination.</inlineHelpText>
+        <label>Extraordinary Circumstances (GIS)</label>
+        <required>false</required>
+        <defaultValue>false</defaultValue>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
         <fullName>nepa_litigation_count__c</fullName>
         <description>Count of litigation cases linked to this NEPA project via nepa_related_project__c on nepa_litigation__c. Updated by Flow when litigation records are created or related. Provides a quick litigation risk signal — EIS projects account for 98%+ of NEPA litigation.</description>
         <inlineHelpText>Number of litigation cases linked to this project.</inlineHelpText>

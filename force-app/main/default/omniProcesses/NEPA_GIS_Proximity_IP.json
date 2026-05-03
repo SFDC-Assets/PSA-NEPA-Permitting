@@ -1,0 +1,364 @@
+{
+  "Name": "NEPA_GIS_Proximity_IP",
+  "Type": "NEPA",
+  "SubType": "GIS_Proximity_IP",
+  "Language": "English",
+  "VersionNumber": 1,
+  "IsActive": true,
+  "IsIntegrationProcedure": true,
+  "Description": "GIS proximity Integration Procedure. Accepts a NEPA Project ID, loads the project centroid coordinates, queries all active NEPA_GIS_Layer__mdt-registered federal FeatureServer endpoints within the configured buffer distance, aggregates findings into a human-readable protection areas summary, and writes results back to the Program record. Adding a new federal layer requires only a new CMT record — no IP changes. Called by the NEPA_GIS_Proximity after-save Flow and optionally invoked directly from the NEPA Project record page.",
+  "PropertySetConfig": {
+    "persistentComponent": true,
+    "trackingCustomData": {},
+    "enableLWCRuntime": true
+  },
+  "WebComponentKey": "NEPA/GIS_Proximity_IP/English/1",
+  "Elements": [
+    {
+      "Name": "GetProjectLocation",
+      "Type": "DataRaptor Extract Action",
+      "SequenceNumber": 1,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "bundleName": "DR_Extract_NEPA_Project",
+        "inputMap": [
+          {
+            "name": "projectId",
+            "value": "%projectId%",
+            "valueType": "reference"
+          }
+        ],
+        "outputPath": "ProjectData"
+      }
+    },
+    {
+      "Name": "ValidateCoordinates",
+      "Type": "Set Values",
+      "SequenceNumber": 2,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "assignmentRules": [
+          {
+            "name": "HasCoordinates",
+            "value": "%ProjectData:location_latitude% != null && %ProjectData:location_longitude% != null",
+            "valueType": "formula"
+          },
+          {
+            "name": "Latitude",
+            "value": "%ProjectData:location_latitude%",
+            "valueType": "reference"
+          },
+          {
+            "name": "Longitude",
+            "value": "%ProjectData:location_longitude%",
+            "valueType": "reference"
+          }
+        ]
+      }
+    },
+    {
+      "Name": "GetActiveGISLayers",
+      "Type": "DataRaptor Extract Action",
+      "SequenceNumber": 3,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "bundleName": "DR_Extract_GIS_Layers",
+        "inputMap": [],
+        "outputPath": "GISLayers"
+      }
+    },
+    {
+      "Name": "InitializeAggregation",
+      "Type": "Set Values",
+      "SequenceNumber": 4,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "assignmentRules": [
+          {
+            "name": "ProtectionAreasSummary",
+            "value": "",
+            "valueType": "value"
+          },
+          {
+            "name": "ExtraordinaryCircumstancesFound",
+            "value": "false",
+            "valueType": "value"
+          },
+          {
+            "name": "LayerResultLines",
+            "value": "",
+            "valueType": "value"
+          }
+        ]
+      }
+    },
+    {
+      "Name": "LoopGISLayers",
+      "Type": "Loop",
+      "SequenceNumber": 5,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "loopInput": "%GISLayers%",
+        "loopItemAlias": "CurrentLayer",
+        "loopIndexAlias": "LayerIndex"
+      }
+    },
+    {
+      "Name": "BuildArcGISQueryURL",
+      "Type": "Set Values",
+      "SequenceNumber": 6,
+      "Level": 1,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "assignmentRules": [
+          {
+            "name": "IsTemplateLayer",
+            "value": "%CurrentLayer:Query_Template__c% != null && %CurrentLayer:Query_Template__c% != ''",
+            "valueType": "formula"
+          },
+          {
+            "name": "ArcGISLayerPath",
+            "value": "%CurrentLayer:Service_URL__c%/%CurrentLayer:Layer_Number__c%/query",
+            "valueType": "reference"
+          },
+          {
+            "name": "GeometryParam",
+            "value": "{\"x\":%Longitude%,\"y\":%Latitude%,\"spatialReference\":{\"wkid\":4326}}",
+            "valueType": "reference"
+          },
+          {
+            "name": "QueryParams",
+            "value": "geometry=%GeometryParam%&geometryType=esriGeometryPoint&distance=%CurrentLayer:Buffer_Miles__c%&units=esriSRUnit_Mile&spatialRel=esriSpatialRelIntersects&outFields=%CurrentLayer:Result_Key_Field__c%&returnGeometry=false&f=json",
+            "valueType": "reference"
+          },
+          {
+            "name": "TemplateURL",
+            "value": "%CurrentLayer:Query_Template__c%",
+            "valueType": "reference"
+          },
+          {
+            "name": "FinalQueryURL",
+            "value": "IF(%IsTemplateLayer%, SUBSTITUTE(SUBSTITUTE(%TemplateURL%, '{lat}', TEXT(%Latitude%)), '{lon}', TEXT(%Longitude%)), %ArcGISLayerPath% & '?' & %QueryParams%)",
+            "valueType": "formula"
+          }
+        ]
+      }
+    },
+    {
+      "Name": "CallGISEndpoint",
+      "Type": "HTTP Action",
+      "SequenceNumber": 7,
+      "Level": 1,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "namedCredential": "%CurrentLayer:Named_Credential__c%",
+        "method": "GET",
+        "url": "%FinalQueryURL%",
+        "headers": [
+          {
+            "name": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "responseMap": [
+          {
+            "name": "LayerResponse",
+            "value": "response"
+          }
+        ],
+        "timeout": 10000,
+        "successCodes": "200",
+        "errorPath": "GISCalloutError"
+      }
+    },
+    {
+      "Name": "ParseLayerResponse",
+      "Type": "Set Values",
+      "SequenceNumber": 8,
+      "Level": 1,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "assignmentRules": [
+          {
+            "name": "FeatureCount",
+            "value": "%LayerResponse:features.length%",
+            "valueType": "reference"
+          },
+          {
+            "name": "HasFeatures",
+            "value": "%FeatureCount% > 0",
+            "valueType": "formula"
+          },
+          {
+            "name": "FirstFeatureName",
+            "value": "%LayerResponse:features[0].attributes.%CurrentLayer:Result_Key_Field__c%%",
+            "valueType": "reference"
+          },
+          {
+            "name": "EJIndexValue",
+            "value": "%LayerResponse:EJINDEX%",
+            "valueType": "reference"
+          },
+          {
+            "name": "LayerResultLine",
+            "value": "IF(%HasFeatures%, %CurrentLayer:Layer_Label__c% & ': ' & %FirstFeatureName% & IF(%FeatureCount% > 1, ' (+ ' & TEXT(%FeatureCount% - 1) & ' more)', ''), IF(%CurrentLayer:Layer_Number__c% == -1 && %EJIndexValue% != null, %CurrentLayer:Layer_Label__c% & ': EJ Index = ' & TEXT(%EJIndexValue%), ''))",
+            "valueType": "formula"
+          }
+        ]
+      }
+    },
+    {
+      "Name": "CheckExtraordinaryCircumstances",
+      "Type": "Set Values",
+      "SequenceNumber": 9,
+      "Level": 1,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "assignmentRules": [
+          {
+            "name": "LayerKeywords",
+            "value": "%CurrentLayer:Extraordinary_Circumstances_Keyword__c%",
+            "valueType": "reference"
+          },
+          {
+            "name": "KeywordTriggered",
+            "value": "%HasFeatures% && %LayerKeywords% != null && CONTAINS(UPPER(%LayerResultLine%), UPPER(%LayerKeywords%))",
+            "valueType": "formula"
+          },
+          {
+            "name": "ExtraordinaryCircumstancesFound",
+            "value": "IF(%KeywordTriggered%, 'true', %ExtraordinaryCircumstancesFound%)",
+            "valueType": "formula"
+          }
+        ]
+      }
+    },
+    {
+      "Name": "AppendLayerResult",
+      "Type": "Set Values",
+      "SequenceNumber": 10,
+      "Level": 1,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "assignmentRules": [
+          {
+            "name": "ProtectionAreasSummary",
+            "value": "IF(%LayerResultLine% != '', IF(%ProtectionAreasSummary% == '', %LayerResultLine%, %ProtectionAreasSummary% & '\n' & %LayerResultLine%), %ProtectionAreasSummary%)",
+            "valueType": "formula"
+          }
+        ]
+      }
+    },
+    {
+      "Name": "HandleCalloutError",
+      "Type": "Set Values",
+      "SequenceNumber": 11,
+      "Level": 1,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "assignmentRules": [
+          {
+            "name": "ProtectionAreasSummary",
+            "value": "IF(%GISCalloutError% != null, IF(%ProtectionAreasSummary% == '', %CurrentLayer:Layer_Label__c% & ': [query failed - check endpoint availability]', %ProtectionAreasSummary% & '\n' & %CurrentLayer:Layer_Label__c% & ': [query failed - check endpoint availability]'), %ProtectionAreasSummary%)",
+            "valueType": "formula"
+          },
+          {
+            "name": "GISCalloutError",
+            "value": null,
+            "valueType": "value"
+          }
+        ]
+      }
+    },
+    {
+      "Name": "FinalizeResult",
+      "Type": "Set Values",
+      "SequenceNumber": 12,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "assignmentRules": [
+          {
+            "name": "FinalProtectionAreasSummary",
+            "value": "IF(%ProtectionAreasSummary% == '', 'No protected areas identified within buffer distance.', %ProtectionAreasSummary%)",
+            "valueType": "formula"
+          },
+          {
+            "name": "GISCheckedTimestamp",
+            "value": "NOW()",
+            "valueType": "formula"
+          }
+        ]
+      }
+    },
+    {
+      "Name": "SaveResultsToProject",
+      "Type": "DataRaptor Load Action",
+      "SequenceNumber": 13,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "bundleName": "DR_Load_GIS_Results",
+        "inputMap": [
+          {
+            "name": "projectId",
+            "value": "%projectId%",
+            "valueType": "reference"
+          },
+          {
+            "name": "nepa_protection_areas__c",
+            "value": "%FinalProtectionAreasSummary%",
+            "valueType": "reference"
+          },
+          {
+            "name": "nepa_gis_last_checked__c",
+            "value": "%GISCheckedTimestamp%",
+            "valueType": "reference"
+          },
+          {
+            "name": "nepa_extraordinary_circumstances__c",
+            "value": "%ExtraordinaryCircumstancesFound%",
+            "valueType": "reference"
+          }
+        ],
+        "outputPath": "SaveResult"
+      }
+    },
+    {
+      "Name": "BuildResponse",
+      "Type": "Set Values",
+      "SequenceNumber": 14,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "assignmentRules": [
+          {
+            "name": "ProtectionAreas",
+            "value": "%FinalProtectionAreasSummary%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ExtraordinaryCircumstances",
+            "value": "%ExtraordinaryCircumstancesFound%",
+            "valueType": "reference"
+          },
+          {
+            "name": "GISCheckedAt",
+            "value": "%GISCheckedTimestamp%",
+            "valueType": "reference"
+          },
+          {
+            "name": "LayersQueried",
+            "value": "%LayerIndex%",
+            "valueType": "reference"
+          }
+        ]
+      }
+    }
+  ]
+}

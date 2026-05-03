@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RemoteSiteSetting xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>EPA EJScreen REST broker. Public endpoint — no authentication required. Used by NEPA_GIS_Proximity_IP for environmental justice index queries. Uses a non-ArcGIS URL pattern (ejscreenRESTbroker.aspx) — Layer_Number__c = -1 in the CMT record signals the IP to use Query_Template__c directly.</description>
+    <disableProtocolSecurity>false</disableProtocolSecurity>
+    <isActive>true</isActive>
+    <url>https://ejscreen.epa.gov</url>
+</RemoteSiteSetting>

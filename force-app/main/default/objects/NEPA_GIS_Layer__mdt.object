@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>NEPA GIS Layer</label>
+    <pluralLabel>NEPA GIS Layers</pluralLabel>
+    <description>Registry of federal ArcGIS FeatureServer layers and REST endpoints queried during NEPA project GIS proximity analysis. Each record defines one layer — add a new record to extend coverage without modifying the Integration Procedure.</description>
+    <fields>
+        <fullName>Service_URL__c</fullName>
+        <label>Service URL</label>
+        <type>Text</type>
+        <length>512</length>
+        <description>Base URL for the ArcGIS FeatureServer or REST endpoint. For standard ArcGIS layers, append /query. For non-ArcGIS endpoints (e.g., EJScreen), the full query URL is built using Query_Template__c.</description>
+    </fields>
+    <fields>
+        <fullName>Layer_Number__c</fullName>
+        <label>Layer Number</label>
+        <type>Number</type>
+        <precision>5</precision>
+        <scale>0</scale>
+        <description>ArcGIS layer index appended to Service_URL__c before /query (e.g., 0 → /0/query). Set to -1 for non-ArcGIS endpoints that use Query_Template__c directly.</description>
+    </fields>
+    <fields>
+        <fullName>Buffer_Miles__c</fullName>
+        <label>Buffer Miles</label>
+        <type>Number</type>
+        <precision>5</precision>
+        <scale>2</scale>
+        <description>Proximity buffer radius in miles. The spatial query returns features within this distance of the project centroid.</description>
+    </fields>
+    <fields>
+        <fullName>Layer_Label__c</fullName>
+        <label>Layer Label</label>
+        <type>Text</type>
+        <length>255</length>
+        <description>Human-readable name written to the protection areas summary (e.g., NWI Wetlands, EPA Superfund NPL Site).</description>
+    </fields>
+    <fields>
+        <fullName>Result_Key_Field__c</fullName>
+        <label>Result Key Field</label>
+        <type>Text</type>
+        <length>128</length>
+        <description>Field name in the ArcGIS response features.attributes object used to summarize matches (e.g., WETLAND_TYPE, SITE_NAME, GEN_STAT). Written to the protection areas summary line.</description>
+    </fields>
+    <fields>
+        <fullName>Query_Template__c</fullName>
+        <label>Query Template</label>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+        <length>1024</length>
+        <description>Optional full query URL template for non-ArcGIS endpoints. Use {lat} and {lon} as placeholders. When set, overrides Service_URL__c + Layer_Number__c construction. Example for EJScreen: https://ejscreen.epa.gov/mapper/ejscreenRESTbroker.aspx?latitude={lat}&amp;longitude={lon}&amp;unit=miles&amp;distance=1&amp;f=json</description>
+    </fields>
+    <fields>
+        <fullName>Named_Credential__c</fullName>
+        <label>Named Credential</label>
+        <type>Text</type>
+        <length>128</length>
+        <description>API name of the Named Credential used for this endpoint (e.g., NEPA_GIS_ArcGIS_FWS). All federal public endpoints use No Authentication credentials.</description>
+    </fields>
+    <fields>
+        <fullName>Extraordinary_Circumstances_Keyword__c</fullName>
+        <label>Extraordinary Circumstances Keyword</label>
+        <type>Text</type>
+        <length>255</length>
+        <description>Comma-separated keywords that, if found in the response, trigger the extraordinary-circumstances flag on the IndividualApplication. Example: WETLANDS,FLOODPLAIN triggers for NWI layer.</description>
+    </fields>
+    <fields>
+        <fullName>Priority__c</fullName>
+        <label>Priority</label>
+        <type>Number</type>
+        <precision>3</precision>
+        <scale>0</scale>
+        <description>Execution order within the loop. Lower numbers execute first. Used to control summary line ordering.</description>
+    </fields>
+    <fields>
+        <fullName>Active__c</fullName>
+        <label>Active</label>
+        <type>Checkbox</type>
+        <defaultValue>true</defaultValue>
+        <description>When false, this layer is skipped by the GIS Proximity IP. Use to disable layers without deleting records.</description>
+    </fields>
+</CustomObject>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RemoteSiteSetting xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>FWS ECOS ArcGIS REST services. Public endpoint — no authentication required. Used by NEPA_GIS_Proximity_IP for critical habitat proximity queries. Note: ecos.fws.gov uses a federal intermediate CA; add the DOD/FWS intermediate certificate to org trusted CAs if callouts fail with SSL errors.</description>
+    <disableProtocolSecurity>false</disableProtocolSecurity>
+    <isActive>true</isActive>
+    <url>https://ecos.fws.gov</url>
+</RemoteSiteSetting>

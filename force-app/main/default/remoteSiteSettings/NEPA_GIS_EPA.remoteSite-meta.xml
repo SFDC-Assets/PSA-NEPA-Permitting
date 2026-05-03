@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RemoteSiteSetting xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>EPA Geodata ArcGIS REST services. Public endpoint — no authentication required. Used by NEPA_GIS_Proximity_IP for Superfund NPL site proximity queries.</description>
+    <disableProtocolSecurity>false</disableProtocolSecurity>
+    <isActive>true</isActive>
+    <url>https://geodata.epa.gov</url>
+</RemoteSiteSetting>
