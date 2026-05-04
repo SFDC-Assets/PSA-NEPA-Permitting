@@ -1074,36 +1074,40 @@
         <field>nepa_engagement__c.nepa_transcript_available__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_legal_structure__c (CEQ Entity 9) fields -->
-    <!-- nepa_citation__c is required — omitted from fieldPermissions -->
+    <!-- RegulatoryCode (CEQ Entity 9) custom fields -->
     <fieldPermissions>
         <editable>true</editable>
-        <field>nepa_legal_structure__c.nepa_description__c</field>
+        <field>RegulatoryCode.nepa_compliance_requirements__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>nepa_legal_structure__c.nepa_text_content__c</field>
+        <field>RegulatoryCode.nepa_text_content__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>nepa_legal_structure__c.nepa_issuing_authority__c</field>
+        <field>RegulatoryCode.nepa_data_record_version__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>nepa_legal_structure__c.nepa_effective_date__c</field>
+        <field>RegulatoryCode.nepa_data_source_agency__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>nepa_legal_structure__c.nepa_compliance_requirements__c</field>
+        <field>RegulatoryCode.nepa_data_source_system__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>nepa_legal_structure__c.nepa_active__c</field>
+        <field>RegulatoryCode.nepa_record_owner_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>RegulatoryCode.nepa_retrieved_timestamp__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <!-- nepa_decision_element__c (MFR #3/#4) fields -->
@@ -1202,11 +1206,6 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>IndividualApplication.nepa_polygon__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>IndividualApplication.nepa_legal_structure__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <!-- Mandate 1: Comment period gating fields -->
@@ -1477,32 +1476,6 @@
         <field>NEPA_Flow_Error__c.nepa_error_context__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_legal_structure__c provenance fields (CEQ Entity 9) -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_legal_structure__c.nepa_data_record_version__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_legal_structure__c.nepa_data_source_agency__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_legal_structure__c.nepa_data_source_system__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_legal_structure__c.nepa_record_owner_agency__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_legal_structure__c.nepa_retrieved_timestamp__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
     <!-- nepa_gis_data_element__c provenance fields (CEQ Entity 7) -->
     <fieldPermissions>
         <editable>true</editable>
@@ -1594,15 +1567,6 @@
         <allowRead>true</allowRead>
         <modifyAllRecords>false</modifyAllRecords>
         <object>NEPA_Flow_Error__c</object>
-        <viewAllRecords>false</viewAllRecords>
-    </objectPermissions>
-    <objectPermissions>
-        <allowCreate>true</allowCreate>
-        <allowDelete>false</allowDelete>
-        <allowEdit>true</allowEdit>
-        <allowRead>true</allowRead>
-        <modifyAllRecords>false</modifyAllRecords>
-        <object>nepa_legal_structure__c</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
@@ -1784,7 +1748,7 @@
         <visibility>Available</visibility>
     </tabSettings>
     <tabSettings>
-        <tab>nepa_legal_structure__c</tab>
+        <tab>standard-RegulatoryCode</tab>
         <visibility>Available</visibility>
     </tabSettings>
     <tabSettings>

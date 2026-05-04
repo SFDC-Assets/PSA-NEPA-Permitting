@@ -20,7 +20,7 @@
     <tabs>nepa_gis_data_element__c</tabs>
     <tabs>nepa_ar_export__c</tabs>
     <tabs>nepa_process_team_member__c</tabs>
-    <tabs>nepa_legal_structure__c</tabs>
+    <tabs>standard-RegulatoryCode</tabs>
     <tabs>standard-report</tabs>
     <tabs>standard-dashboard</tabs>
     <uiType>Lightning</uiType>

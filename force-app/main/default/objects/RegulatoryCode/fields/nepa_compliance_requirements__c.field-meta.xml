@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_compliance_requirements__c</fullName>
+    <description>Procedural mandates or compliance requirements imposed by this legal authority on NEPA review processes.</description>
+    <inlineHelpText>Procedural requirements agencies must follow when applying this legal authority.</inlineHelpText>
+    <label>Compliance Requirements</label>
+    <length>32768</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
+</CustomField>

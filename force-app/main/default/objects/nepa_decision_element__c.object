@@ -157,12 +157,12 @@
     <fields>
         <fullName>nepa_legal_reference__c</fullName>
         <deleteConstraint>SetNull</deleteConstraint>
-        <description>The legal authority that defines or authorizes this decision criterion.</description>
+        <description>The legal authority that defines or authorizes this decision criterion. Links to the PSS RegulatoryCode object.</description>
         <inlineHelpText>Legal authority that defines this criterion (e.g., 40 CFR 1501.4 for CE determination).</inlineHelpText>
         <label>Legal Reference</label>
-        <referenceTo>nepa_legal_structure__c</referenceTo>
-        <relationshipLabel>Decision Elements</relationshipLabel>
-        <relationshipName>Decision_Elements</relationshipName>
+        <referenceTo>RegulatoryCode</referenceTo>
+        <relationshipLabel>NEPA Decision Elements</relationshipLabel>
+        <relationshipName>NEPA_Decision_Elements</relationshipName>
         <required>false</required>
         <trackHistory>false</trackHistory>
         <type>Lookup</type>
