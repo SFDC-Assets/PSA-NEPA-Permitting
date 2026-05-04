@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>IndividualApplication$nepa_risk_tier__c</field>
+    </columns>
+    <columns>
+        <field>IndividualApplication$nepa_process_status__c</field>
+    </columns>
+    <description>Active NEPA processes grouped by review stage and type. Used on the NEPA Permitting home page KPI card and Operations dashboard.</description>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>IndividualApplication$nepa_process_stage__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>IndividualApplication$nepa_review_type__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Active Permits by Stage</name>
+    <reportType>NEPA_Process_Reports__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+</Report>

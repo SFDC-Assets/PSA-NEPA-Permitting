@@ -341,16 +341,6 @@
                 <identifier>Recordnepa_litigation_threat_flag_cField</identifier>
             </fieldInstance>
         </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_litigation_threat_basis__c</fieldItem>
-                <identifier>Recordnepa_litigation_threat_basis_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
         <name>cmt-ai-c2</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -403,16 +393,6 @@
                 <identifier>Recordnepa_agency_response_cField</identifier>
             </fieldInstance>
         </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_legal_review_status__c</fieldItem>
-                <identifier>Recordnepa_legal_review_status_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
         <name>cmt-response-c1</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -430,6 +410,64 @@
             </componentInstance>
         </itemInstances>
         <name>cmt-response-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Litigation Threat — Column 1 (visible when litigation_threat_flag = true) -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_litigation_threat_basis__c</fieldItem>
+                <identifier>Recordnepa_litigation_threat_basis_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>cmt-litig-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Litigation Threat — Column 2 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_legal_review_status__c</fieldItem>
+                <identifier>Recordnepa_legal_review_status_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>cmt-litig-c2</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Litigation Threat — Columns Wrapper -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>cmt-litig-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>cmt_litig_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>cmt-litig-c2</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>cmt_litig_col2</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>cmt-litig-cols</name>
         <type>Facet</type>
     </flexiPageRegions>
 
@@ -601,6 +639,38 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>cmt_section_ai</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.nepa_is_substantive__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>cmt-litig-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Litigation Threat</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>cmt_section_litigation</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.nepa_litigation_threat_flag__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                </visibilityRule>
             </componentInstance>
         </itemInstances>
         <itemInstances>

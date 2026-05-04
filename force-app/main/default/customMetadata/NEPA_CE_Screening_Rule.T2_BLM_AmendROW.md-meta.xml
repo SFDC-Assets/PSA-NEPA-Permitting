@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>Tier 2 | BLM | Amend ROW Within Boundary → 516 DM E13</label>
+    <label>T2 BLM Amend ROW Boundary 516 DM E13</label>
     <protected>false</protected>
     <values>
         <field>Rule_Label__c</field>

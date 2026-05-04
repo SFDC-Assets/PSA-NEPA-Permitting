@@ -6,8 +6,7 @@
     <fields>
         <fullName>Service_URL__c</fullName>
         <label>Service URL</label>
-        <type>Text</type>
-        <length>512</length>
+        <type>Url</type>
         <description>Base URL for the ArcGIS FeatureServer or REST endpoint. For standard ArcGIS layers, append /query. For non-ArcGIS endpoints (e.g., EJScreen), the full query URL is built using Query_Template__c.</description>
     </fields>
     <fields>

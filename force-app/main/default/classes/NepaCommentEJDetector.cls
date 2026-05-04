@@ -70,7 +70,7 @@ public with sharing class NepaCommentEJDetector {
         label='Detect EJ and Tribal Sovereignty Triggers'
         description='Deterministic gate that scans public comment text for Environmental Justice, tribal sovereignty, sacred sites, low-income impact, and civil rights keywords before AI triage. Returns true when mandatory human review is required per federal EJ guidelines.'
     )
-    publicstatic List<Result> detect(List<Request> requests) {
+    public static List<Result> detect(List<Request> requests) {
         List<Result> results = new List<Result>();
         for (Request req : requests) {
             results.add(scanComment(req));

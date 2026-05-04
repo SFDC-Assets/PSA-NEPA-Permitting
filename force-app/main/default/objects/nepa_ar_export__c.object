@@ -161,7 +161,7 @@
         <fullName>nepa_process__c</fullName>
         <description>The NEPA process (IndividualApplication) whose Administrative Record is being exported.</description>
         <inlineHelpText>The NEPA process this AR export covers.</inlineHelpText>
-        <deleteConstraint>SetNull</deleteConstraint>
+        <deleteConstraint>Restrict</deleteConstraint>
         <label>NEPA Process</label>
         <referenceTo>IndividualApplication</referenceTo>
         <relationshipLabel>AR Exports</relationshipLabel>
@@ -274,7 +274,7 @@
         <description>URL or Salesforce Files path where the completed AR export package can be downloaded. For Metadata Only exports, points to a CSV/JSON ContentVersion created by the batch. For Full Package exports, points to a ZIP archive or a Content Delivery URL. Null until export status is Complete.</description>
         <inlineHelpText>Download location for the completed AR package. Available when Export Status = Complete.</inlineHelpText>
         <label>Export Download URL</label>
-        <length>1000</length>
+        <length>255</length>
         <required>false</required>
         <trackTrending>false</trackTrending>
         <type>Text</type>

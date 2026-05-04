@@ -6,101 +6,6 @@
     <processType>AutoLaunchedFlow</processType>
     <status>Active</status>
 
-    <start>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <object>NEPA_Flow_Error__c</object>
-        <recordTriggerType>Create</recordTriggerType>
-        <triggerType>RecordAfterSave</triggerType>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>nepa_record_id__c</field>
-            <operator>IsNull</operator>
-            <value>
-                <booleanValue>false</booleanValue>
-            </value>
-        </filters>
-        <connector>
-            <targetReference>Decision_RecordIdLength</targetReference>
-        </connector>
-    </start>
-
-    <!-- ============================================================
-         GUARD: only proceed if nepa_record_id__c looks like a valid
-         18-char Salesforce ID (LEN check via formula decision)
-    ============================================================ -->
-    <decisions>
-        <name>Decision_RecordIdLength</name>
-        <label>Record ID Is 18 Characters?</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>Not 18 chars — exit</defaultConnectorLabel>
-        <rules>
-            <name>Valid_RecordId</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.nepa_record_id__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <elementReference>formula_RecordIdIfValid</elementReference>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Get_IndividualApplication</targetReference>
-            </connector>
-            <label>Valid 18-char ID</label>
-        </rules>
-    </decisions>
-
-    <!-- ============================================================
-         LOOKUP: resolve IndividualApplication by the text ID
-    ============================================================ -->
-    <recordLookups>
-        <name>Get_IndividualApplication</name>
-        <label>Get IndividualApplication</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Decision_AppFound</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.nepa_record_id__c</elementReference>
-            </value>
-        </filters>
-        <object>IndividualApplication</object>
-        <outputReference>rec_Application</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>nepa_flow_error_count__c</queriedFields>
-    </recordLookups>
-
-    <decisions>
-        <name>Decision_AppFound</name>
-        <label>IndividualApplication Found?</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>Not Found — exit</defaultConnectorLabel>
-        <rules>
-            <name>App_Found</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>rec_Application</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Increment_ErrorCount</targetReference>
-            </connector>
-            <label>Found</label>
-        </rules>
-    </decisions>
-
     <!-- ============================================================
          ASSIGN: compute new count into a variable
          (Flow recordUpdate with Add operator on a fetched field value)
@@ -129,6 +34,91 @@
         </connector>
     </assignments>
 
+    <!-- ============================================================
+         GUARD: only proceed if nepa_record_id__c looks like a valid
+         18-char Salesforce ID (LEN check via formula decision)
+    ============================================================ -->
+    <decisions>
+        <name>Decision_RecordIdLength</name>
+        <label>Record ID Is 18 Characters?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Not 18 chars — exit</defaultConnectorLabel>
+        <rules>
+            <name>Valid_RecordId</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_record_id__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>formula_RecordIdIfValid</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_IndividualApplication</targetReference>
+            </connector>
+            <label>Valid 18-char ID</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_AppFound</name>
+        <label>IndividualApplication Found?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Not Found — exit</defaultConnectorLabel>
+        <rules>
+            <name>App_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>rec_Application</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Increment_ErrorCount</targetReference>
+            </connector>
+            <label>Found</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         FORMULA: returns the record ID string only if LEN == 18
+    ============================================================ -->
+    <formulas>
+        <name>formula_RecordIdIfValid</name>
+        <dataType>String</dataType>
+        <expression>IF(LEN({!$Record.nepa_record_id__c}) = 18, {!$Record.nepa_record_id__c}, "")</expression>
+    </formulas>
+
+    <!-- ============================================================
+         LOOKUP: resolve IndividualApplication by the text ID
+    ============================================================ -->
+    <recordLookups>
+        <name>Get_IndividualApplication</name>
+        <label>Get IndividualApplication</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_AppFound</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.nepa_record_id__c</elementReference>
+            </value>
+        </filters>
+        <object>IndividualApplication</object>
+        <outputReference>rec_Application</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>nepa_flow_error_count__c</queriedFields>
+    </recordLookups>
+
     <!-- code-analyzer-suppress flow:MissingFaultHandler - diagnostic counter; fault here does not affect permitting data integrity -->
     <recordUpdates>
         <name>Update_ErrorCount</name>
@@ -151,14 +141,24 @@
         </filters>
     </recordUpdates>
 
-    <!-- ============================================================
-         FORMULA: returns the record ID string only if LEN == 18
-    ============================================================ -->
-    <formulas>
-        <name>formula_RecordIdIfValid</name>
-        <dataType>String</dataType>
-        <expression>IF(LEN({!$Record.nepa_record_id__c}) = 18, {!$Record.nepa_record_id__c}, "")</expression>
-    </formulas>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <object>NEPA_Flow_Error__c</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>nepa_record_id__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <connector>
+            <targetReference>Decision_RecordIdLength</targetReference>
+        </connector>
+    </start>
 
     <!-- ============================================================
          VARIABLES
@@ -183,5 +183,4 @@
             <numberValue>0.0</numberValue>
         </value>
     </variables>
-
 </Flow>

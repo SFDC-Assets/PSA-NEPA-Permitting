@@ -312,16 +312,14 @@
     </fields>
     <fields>
         <fullName>nepa_document__c</fullName>
-        <deleteConstraint>SetNull</deleteConstraint>
-        <description>Document released or referenced at this engagement event (e.g., Draft EIS published for public comment). Satisfies CEQ Entity 5 Related Document ID property.</description>
-        <inlineHelpText>Document associated with this engagement event (e.g., the Draft EIS open for comment).</inlineHelpText>
-        <label>Related Document</label>
-        <referenceTo>ContentVersion</referenceTo>
-        <relationshipLabel>Engagement Events</relationshipLabel>
-        <relationshipName>Engagement_Events</relationshipName>
+        <description>ContentDocumentId of the document released or referenced at this engagement event (e.g., Draft EIS published for public comment). Satisfies CEQ Entity 5 Related Document ID property. ContentDocument cannot be a Lookup target via Metadata API; stored as an 18-char ID reference.</description>
+        <inlineHelpText>18-character Salesforce ContentDocumentId for the document associated with this engagement event.</inlineHelpText>
+        <label>Related Document ID</label>
+        <length>18</length>
         <required>false</required>
         <trackTrending>false</trackTrending>
-        <type>Lookup</type>
+        <type>Text</type>
+        <unique>false</unique>
     </fields>
     <fields>
         <fullName>nepa_notes__c</fullName>

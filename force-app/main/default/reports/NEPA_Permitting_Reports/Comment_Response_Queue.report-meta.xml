@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>PublicComplaint$nepa_is_substantive__c</field>
+    </columns>
+    <columns>
+        <field>PublicComplaint$nepa_response_status__c</field>
+    </columns>
+    <columns>
+        <field>PublicComplaint$nepa_litigation_threat_flag__c</field>
+    </columns>
+    <columns>
+        <field>PublicComplaint$CreatedDate</field>
+    </columns>
+    <description>Open public comments awaiting response, sorted by litigation threat flag and substantive status. Used on the Operations dashboard comment table.</description>
+    <filter>
+        <criteriaItems>
+            <column>PublicComplaint$nepa_response_status__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>notEqual</operator>
+            <value>Finalized</value>
+        </criteriaItems>
+    </filter>
+    <format>Tabular</format>
+    <name>Comment Response Queue</name>
+    <reportType>NEPA_Comment_Reports__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <sortColumn>PublicComplaint$nepa_litigation_threat_flag__c</sortColumn>
+    <sortOrder>Desc</sortOrder>
+</Report>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>IndividualApplication$nepa_risk_tier__c</field>
+    </columns>
+    <columns>
+        <field>IndividualApplication$nepa_risk_score__c</field>
+    </columns>
+    <columns>
+        <field>IndividualApplication$nepa_defensibility_gaps__c</field>
+    </columns>
+    <columns>
+        <field>IndividualApplication$nepa_review_type__c</field>
+    </columns>
+    <columns>
+        <field>IndividualApplication$nepa_process_stage__c</field>
+    </columns>
+    <columns>
+        <field>IndividualApplication$nepa_plaintiff_risk_flag__c</field>
+    </columns>
+    <description>All NEPA processes with High or Very High litigation risk tier. Used on the Operations dashboard alert table and home page.</description>
+    <filter>
+        <booleanFilter>1 OR 2</booleanFilter>
+        <criteriaItems>
+            <column>IndividualApplication$nepa_risk_tier__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Very High</value>
+        </criteriaItems>
+        <criteriaItems>
+            <column>IndividualApplication$nepa_risk_tier__c</column>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>High</value>
+        </criteriaItems>
+    </filter>
+    <format>Tabular</format>
+    <name>High Risk Applications</name>
+    <reportType>NEPA_Process_Reports__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <sortColumn>IndividualApplication$nepa_risk_score__c</sortColumn>
+    <sortOrder>Desc</sortOrder>
+</Report>

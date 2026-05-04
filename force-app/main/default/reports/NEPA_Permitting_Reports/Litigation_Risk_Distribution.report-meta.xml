@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>IndividualApplication$nepa_risk_score__c</field>
+    </columns>
+    <columns>
+        <field>IndividualApplication$nepa_defensibility_score__c</field>
+    </columns>
+    <columns>
+        <field>IndividualApplication$nepa_defensibility_gaps__c</field>
+    </columns>
+    <description>Distribution of litigation risk tiers and scores across NEPA processes. Used on the Operations dashboard risk bar chart.</description>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>IndividualApplication$nepa_risk_tier__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>IndividualApplication$nepa_review_type__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>Litigation Risk Distribution</name>
+    <reportType>NEPA_Process_Reports__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+</Report>

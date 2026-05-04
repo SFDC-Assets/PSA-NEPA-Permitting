@@ -263,45 +263,6 @@
         </connector>
     </assignments>
 
-    <!-- code-analyzer-suppress flow:MissingFaultHandler - terminal error handler; fault-handling Call_ErrorLogger would be circular -->
-    <subflows>
-        <name>Call_ErrorLogger</name>
-        <label>Log Flow Error</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <flowName>NEPA_Error_Logger</flowName>
-        <inputAssignments>
-            <name>inp_FlowName</name>
-            <value><stringValue>NEPA_Defensibility_Gap_Checker</stringValue></value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_ErrorMessage</name>
-            <value><elementReference>var_ErrorMessage</elementReference></value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_RecordId</name>
-            <value><elementReference>inp_ProcessId</elementReference></value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_RunningUserId</name>
-            <value><elementReference>$User.Id</elementReference></value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_FailedStep</name>
-            <value><elementReference>var_CurrentStep</elementReference></value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_ErrorContext</name>
-            <value><elementReference>formula_ErrorContext</elementReference></value>
-        </inputAssignments>
-    </subflows>
-
-    <formulas>
-        <name>formula_ErrorContext</name>
-        <dataType>String</dataType>
-        <expression>"DefensibilityScore:" &amp; TEXT({!var_DefensibilityScore}) &amp; "|GapList:" &amp; {!var_GapList} &amp; "|ChecksPassed:" &amp; TEXT({!var_ChecksPassed}) &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
-    </formulas>
-
     <!-- Decisions -->
     <decisions>
         <name>Decision_ROD_FONSI</name>
@@ -491,6 +452,20 @@
             <label>Present</label>
         </rules>
     </decisions>
+
+    <formulas>
+        <name>formula_ErrorContext</name>
+        <dataType>String</dataType>
+        <expression>"DefensibilityScore:" &amp; TEXT({!var_DefensibilityScore}) &amp; "|GapList:" &amp; {!var_GapList} &amp; "|ChecksPassed:" &amp; TEXT({!var_ChecksPassed}) &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
+    </formulas>
+
+    <!-- Autolaunched: called by trigger flows on ContentVersion and nepa_engagement__c -->
+    <formulas>
+        <name>formula_DefensibilityScore</name>
+        <dataType>Number</dataType>
+        <expression>({!var_ChecksPassed} / 6) * 100</expression>
+        <scale>1</scale>
+    </formulas>
 
     <!-- Record Lookups -->
     <recordLookups>
@@ -695,13 +670,38 @@
         </filters>
     </recordUpdates>
 
-    <!-- Autolaunched: called by trigger flows on ContentVersion and nepa_engagement__c -->
-    <formulas>
-        <name>formula_DefensibilityScore</name>
-        <dataType>Number</dataType>
-        <expression>({!var_ChecksPassed} / 6) * 100</expression>
-        <scale>1</scale>
-    </formulas>
+    <!-- code-analyzer-suppress flow:MissingFaultHandler - terminal error handler; fault-handling Call_ErrorLogger would be circular -->
+    <subflows>
+        <name>Call_ErrorLogger</name>
+        <label>Log Flow Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value><stringValue>NEPA_Defensibility_Gap_Checker</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value><elementReference>var_ErrorMessage</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value><elementReference>inp_ProcessId</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RunningUserId</name>
+            <value><elementReference>$User.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_FailedStep</name>
+            <value><elementReference>var_CurrentStep</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorContext</name>
+            <value><elementReference>formula_ErrorContext</elementReference></value>
+        </inputAssignments>
+    </subflows>
 
     <start>
         <locationX>0</locationX>

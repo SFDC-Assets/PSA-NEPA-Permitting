@@ -1648,4 +1648,16 @@
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
     <!-- NepaCeqExportService classAccess omitted — class not yet implemented -->
+    <tabSettings>
+        <tab>nepa_engagement__c</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>nepa_litigation__c</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>nepa_ar_export__c</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
 </PermissionSet>

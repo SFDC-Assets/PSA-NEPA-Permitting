@@ -443,7 +443,7 @@
     <validationRules>
         <fullName>NEPA_Comment_Period_Closed</fullName>
         <active>true</active>
-        <description>Belt-and-suspenders enforcement of the comment period deadline. Blocks direct API inserts where the before-save flow does not execute. Fires only when nepa_related_process__c is set and the process has an end date that has already passed. Fail-open: missing lookup or missing end date allows the insert.</description>
+        <description>Belt-and-suspenders deadline enforcement. Blocks API inserts where the before-save flow does not execute. Fires when nepa_related_process__c is set and end date has passed. Fail-open: missing lookup or end date allows insert.</description>
         <errorConditionFormula>AND(
   NOT(ISBLANK(nepa_related_process__c)),
   NOT(ISBLANK(nepa_related_process__r.nepa_public_comment_period_end_date__c)),

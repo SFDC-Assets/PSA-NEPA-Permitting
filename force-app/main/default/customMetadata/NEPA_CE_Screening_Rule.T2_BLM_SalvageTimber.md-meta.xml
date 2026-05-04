@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>Tier 2 | BLM | Salvage Dead/Dying Timber ≤250 ac → 516 DM C8</label>
+    <label>T2 BLM Salvage Timber 250ac 516 DM C8</label>
     <protected>false</protected>
     <values>
         <field>Rule_Label__c</field>
@@ -60,7 +60,7 @@
     </values>
     <values>
         <field>Confidence_Modifier__c</field>
-        <value xsi:type="xsd:string">Acreage must be ≤250 acres; temporary road construction ≤0.5 miles</value>
+        <value xsi:type="xsd:string">250ac 0.5mi road</value>
     </values>
     <values>
         <field>Classification_Basis__c</field>

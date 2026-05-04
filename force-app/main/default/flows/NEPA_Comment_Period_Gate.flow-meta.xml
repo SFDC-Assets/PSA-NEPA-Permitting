@@ -88,6 +88,8 @@
         <name>Error_PeriodClosed</name>
         <description>Blocks the insert when the comment period deadline has passed. Message is user-facing — shown in Experience Cloud portal and via API error response.</description>
         <label>Comment Period Closed Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
         <customErrorMessages>
             <errorMessage>The public comment period for this NEPA review has closed. No further comments can be accepted. If you believe this is in error, contact the lead agency directly.</errorMessage>
             <isFieldError>false</isFieldError>

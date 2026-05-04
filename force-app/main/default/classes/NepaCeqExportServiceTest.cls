@@ -1,6 +1,5 @@
-@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage,PMD.MethodNamingConventions,PMD.ApexUnitTestClassShouldHaveRunAs')
 @IsTest
-@SuppressWarnings('PMD.MethodNamingConventions, PMD.ApexUnitTestClassShouldHaveRunAs')
 private class NepaCeqExportServiceTest {
 
     @TestSetup

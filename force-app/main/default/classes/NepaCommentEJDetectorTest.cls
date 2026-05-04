@@ -1,6 +1,5 @@
-@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage,PMD.MethodNamingConventions')
 @IsTest
-@SuppressWarnings('PMD.MethodNamingConventions')
 private class NepaCommentEJDetectorTest {
 
     // ── Positive: each trigger category independently ───────────────────────

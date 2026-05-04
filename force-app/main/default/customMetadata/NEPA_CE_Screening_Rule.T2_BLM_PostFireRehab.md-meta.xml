@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>Tier 2 | BLM | Post-Fire Rehab ≤4200 ac → 43 CFR 46.210(a)(1)</label>
+    <label>T2 BLM Post-Fire Rehab 43 CFR 46.210</label>
     <protected>false</protected>
     <values>
         <field>Rule_Label__c</field>
@@ -60,7 +60,7 @@
     </values>
     <values>
         <field>Confidence_Modifier__c</field>
-        <value xsi:type="xsd:string">Must be ≤4,200 acres; no herbicides; no new permanent infrastructure; completed within 3 years of fire</value>
+        <value xsi:type="xsd:string">4200ac no herbicides</value>
     </values>
     <values>
         <field>Classification_Basis__c</field>

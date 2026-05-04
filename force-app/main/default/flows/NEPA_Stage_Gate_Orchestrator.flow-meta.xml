@@ -6,35 +6,200 @@
     <processType>AutoLaunchedFlow</processType>
     <status>Draft</status>
 
-    <!-- ============================================================
-         TRIGGER: ApplicationTimeline after-save
-         Entry condition: nepa_status__c changed to Completed
-    ============================================================ -->
-    <start>
+    <assignments>
+        <name>Assign_Stage_Scoping</name>
+        <label>Set Next Stage: Scoping</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <object>ApplicationTimeline</object>
-        <recordTriggerType>CreateAndUpdate</recordTriggerType>
-        <triggerType>RecordAfterSave</triggerType>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>nepa_status__c</field>
-            <operator>EqualTo</operator>
+        <assignmentItems>
+            <assignToReference>var_NextStage</assignToReference>
+            <operator>Assign</operator>
             <value>
-                <stringValue>Completed</stringValue>
+                <stringValue>Scoping</stringValue>
             </value>
-        </filters>
-        <filters>
-            <field>nepa_status__c</field>
-            <operator>IsChanged</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
+        </assignmentItems>
         <connector>
-            <targetReference>Decision_HasParentProcess</targetReference>
+            <targetReference>Stamp_LastTransition</targetReference>
         </connector>
-    </start>
+    </assignments>
+
+    <assignments>
+        <name>Assign_Stage_Analysis</name>
+        <label>Set Next Stage: Analysis</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_NextStage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Analysis</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Stamp_LastTransition</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_Stage_Review</name>
+        <label>Set Next Stage: Review</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_NextStage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Review</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Stamp_LastTransition</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_Stage_Decision</name>
+        <label>Set Next Stage: Decision</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_NextStage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Decision</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Stamp_LastTransition</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_Stage_Closed</name>
+        <label>Set Next Stage: Closed</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_NextStage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Closed</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Stamp_LastTransition</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_Stage_CEDetermination</name>
+        <label>Set Next Stage: CE Determination</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_NextStage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>CE Determination</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Stamp_LastTransition</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- ============================================================
+         STEP 4: Stamp last stage transition timestamp
+    ============================================================ -->
+    <assignments>
+        <name>Stamp_LastTransition</name>
+        <label>Capture Transition Timestamp</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_TransitionTimestamp</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.CurrentDateTime</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CurrentStep</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Update_ProcessStage</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_ProcessStage</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- ============================================================
+         STEP 6: Find and close the completed stage's open Action Plan task
+         Looks for an open Task with Subject containing the current (now-completed) stage name
+         and linked to the parent IndividualApplication.
+    ============================================================ -->
+    <assignments>
+        <name>Assign_CurrentStageLabel</name>
+        <label>Set Completed Stage Label for Task Search</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_CompletedStageLabel</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>rec_ParentProcess.nepa_process_status__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CurrentStep</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Close_StageTask</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_OpenStageTask</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_CurrentStep_CreateTask</name>
+        <label>Mark Step: Create Next Stage Task</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_CurrentStep</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Create_NextStageTask</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Create_NextStageTask</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- ============================================================
+         ERROR HANDLER — terminal
+    ============================================================ -->
+    <assignments>
+        <name>Handle_Error</name>
+        <label>Handle Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
+    </assignments>
 
     <!-- ============================================================
          STEP 1: Guard — event must have a parent process
@@ -61,37 +226,6 @@
             <label>Has Parent Process</label>
         </rules>
     </decisions>
-
-    <!-- ============================================================
-         STEP 2: Load parent IndividualApplication
-    ============================================================ -->
-    <recordLookups>
-        <name>Get_ParentProcess</name>
-        <label>Get Parent IndividualApplication</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Decision_ProcessFound</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Handle_Error</targetReference>
-        </faultConnector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.nepa_related_process__c</elementReference>
-            </value>
-        </filters>
-        <object>IndividualApplication</object>
-        <outputReference>rec_ParentProcess</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>nepa_process_status__c</queriedFields>
-        <queriedFields>nepa_review_type__c</queriedFields>
-        <queriedFields>OwnerId</queriedFields>
-    </recordLookups>
 
     <decisions>
         <name>Decision_ProcessFound</name>
@@ -238,242 +372,6 @@
         </rules>
     </decisions>
 
-    <assignments>
-        <name>Assign_Stage_Scoping</name>
-        <label>Set Next Stage: Scoping</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_NextStage</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>Scoping</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Stamp_LastTransition</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Assign_Stage_Analysis</name>
-        <label>Set Next Stage: Analysis</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_NextStage</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>Analysis</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Stamp_LastTransition</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Assign_Stage_Review</name>
-        <label>Set Next Stage: Review</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_NextStage</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>Review</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Stamp_LastTransition</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Assign_Stage_Decision</name>
-        <label>Set Next Stage: Decision</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_NextStage</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>Decision</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Stamp_LastTransition</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Assign_Stage_Closed</name>
-        <label>Set Next Stage: Closed</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_NextStage</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>Closed</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Stamp_LastTransition</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Assign_Stage_CEDetermination</name>
-        <label>Set Next Stage: CE Determination</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_NextStage</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>CE Determination</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Stamp_LastTransition</targetReference>
-        </connector>
-    </assignments>
-
-    <!-- ============================================================
-         STEP 4: Stamp last stage transition timestamp
-    ============================================================ -->
-    <assignments>
-        <name>Stamp_LastTransition</name>
-        <label>Capture Transition Timestamp</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_TransitionTimestamp</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>$Flow.CurrentDateTime</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CurrentStep</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>Update_ProcessStage</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Update_ProcessStage</targetReference>
-        </connector>
-    </assignments>
-
-    <!-- ============================================================
-         STEP 5: Advance process stage on parent IndividualApplication
-    ============================================================ -->
-    <recordUpdates>
-        <name>Update_ProcessStage</name>
-        <label>Advance Process Stage</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <faultConnector>
-            <targetReference>Handle_Error</targetReference>
-        </faultConnector>
-        <inputAssignments>
-            <field>nepa_process_status__c</field>
-            <value>
-                <elementReference>var_NextStage</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>nepa_last_stage_transition__c</field>
-            <value>
-                <elementReference>var_TransitionTimestamp</elementReference>
-            </value>
-        </inputAssignments>
-        <object>IndividualApplication</object>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.nepa_related_process__c</elementReference>
-            </value>
-        </filters>
-        <connector>
-            <targetReference>Assign_CurrentStageLabel</targetReference>
-        </connector>
-    </recordUpdates>
-
-    <!-- ============================================================
-         STEP 6: Find and close the completed stage's open Action Plan task
-         Looks for an open Task with Subject containing the current (now-completed) stage name
-         and linked to the parent IndividualApplication.
-    ============================================================ -->
-    <assignments>
-        <name>Assign_CurrentStageLabel</name>
-        <label>Set Completed Stage Label for Task Search</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_CompletedStageLabel</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>rec_ParentProcess.nepa_process_status__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CurrentStep</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>Close_StageTask</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Get_OpenStageTask</targetReference>
-        </connector>
-    </assignments>
-
-    <recordLookups>
-        <name>Get_OpenStageTask</name>
-        <label>Get Open Stage Task</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Decision_TaskFound</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Handle_Error</targetReference>
-        </faultConnector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>WhatId</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.nepa_related_process__c</elementReference>
-            </value>
-        </filters>
-        <filters>
-            <field>Status</field>
-            <operator>NotEqualTo</operator>
-            <value>
-                <stringValue>Completed</stringValue>
-            </value>
-        </filters>
-        <filters>
-            <field>Subject</field>
-            <operator>Contains</operator>
-            <value>
-                <elementReference>var_CompletedStageLabel</elementReference>
-            </value>
-        </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
-        <object>Task</object>
-        <outputReference>rec_OpenTask</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>Subject</queriedFields>
-        <queriedFields>OwnerId</queriedFields>
-    </recordLookups>
-
     <decisions>
         <name>Decision_TaskFound</name>
         <label>Open Stage Task Found?</label>
@@ -499,33 +397,6 @@
             <label>Task Found</label>
         </rules>
     </decisions>
-
-    <recordUpdates>
-        <name>Close_StageTask</name>
-        <label>Close Completed Stage Task</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <faultConnector>
-            <targetReference>Handle_Error</targetReference>
-        </faultConnector>
-        <inputAssignments>
-            <field>Status</field>
-            <value>
-                <stringValue>Completed</stringValue>
-            </value>
-        </inputAssignments>
-        <object>Task</object>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>rec_OpenTask.Id</elementReference>
-            </value>
-        </filters>
-        <connector>
-            <targetReference>Decision_HasNextStage</targetReference>
-        </connector>
-    </recordUpdates>
 
     <!-- ============================================================
          STEP 7: Create opening task for the next stage (when stage advanced)
@@ -560,22 +431,11 @@
         </rules>
     </decisions>
 
-    <assignments>
-        <name>Assign_CurrentStep_CreateTask</name>
-        <label>Mark Step: Create Next Stage Task</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_CurrentStep</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>Create_NextStageTask</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Create_NextStageTask</targetReference>
-        </connector>
-    </assignments>
+    <formulas>
+        <name>formula_ErrorContext</name>
+        <dataType>String</dataType>
+        <expression>"CompletedStage:" &amp; {!var_CompletedStageLabel} &amp; "|NextStage:" &amp; {!var_NextStage} &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
+    </formulas>
 
     <recordCreates>
         <name>Create_NextStageTask</name>
@@ -625,24 +485,140 @@
     </recordCreates>
 
     <!-- ============================================================
-         ERROR HANDLER — terminal
+         STEP 2: Load parent IndividualApplication
     ============================================================ -->
-    <assignments>
-        <name>Handle_Error</name>
-        <label>Handle Error</label>
+    <recordLookups>
+        <name>Get_ParentProcess</name>
+        <label>Get Parent IndividualApplication</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_ErrorMessage</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>$Flow.FaultMessage</elementReference>
-            </value>
-        </assignmentItems>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Call_ErrorLogger</targetReference>
+            <targetReference>Decision_ProcessFound</targetReference>
         </connector>
-    </assignments>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.nepa_related_process__c</elementReference>
+            </value>
+        </filters>
+        <object>IndividualApplication</object>
+        <outputReference>rec_ParentProcess</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>nepa_process_status__c</queriedFields>
+        <queriedFields>nepa_review_type__c</queriedFields>
+        <queriedFields>OwnerId</queriedFields>
+    </recordLookups>
+
+    <recordLookups>
+        <name>Get_OpenStageTask</name>
+        <label>Get Open Stage Task</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_TaskFound</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>WhatId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.nepa_related_process__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Status</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Completed</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Subject</field>
+            <operator>Contains</operator>
+            <value>
+                <elementReference>var_CompletedStageLabel</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Task</object>
+        <outputReference>rec_OpenTask</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Subject</queriedFields>
+        <queriedFields>OwnerId</queriedFields>
+    </recordLookups>
+
+    <!-- ============================================================
+         STEP 5: Advance process stage on parent IndividualApplication
+    ============================================================ -->
+    <recordUpdates>
+        <name>Update_ProcessStage</name>
+        <label>Advance Process Stage</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>nepa_process_status__c</field>
+            <value>
+                <elementReference>var_NextStage</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_last_stage_transition__c</field>
+            <value>
+                <elementReference>var_TransitionTimestamp</elementReference>
+            </value>
+        </inputAssignments>
+        <object>IndividualApplication</object>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.nepa_related_process__c</elementReference>
+            </value>
+        </filters>
+        <connector>
+            <targetReference>Assign_CurrentStageLabel</targetReference>
+        </connector>
+    </recordUpdates>
+
+    <recordUpdates>
+        <name>Close_StageTask</name>
+        <label>Close Completed Stage Task</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Completed</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Task</object>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>rec_OpenTask.Id</elementReference>
+            </value>
+        </filters>
+        <connector>
+            <targetReference>Decision_HasNextStage</targetReference>
+        </connector>
+    </recordUpdates>
 
     <!-- code-analyzer-suppress flow:MissingFaultHandler - terminal error handler; fault-handling Call_ErrorLogger would be circular -->
     <subflows>
@@ -677,11 +653,35 @@
         </inputAssignments>
     </subflows>
 
-    <formulas>
-        <name>formula_ErrorContext</name>
-        <dataType>String</dataType>
-        <expression>"CompletedStage:" &amp; {!var_CompletedStageLabel} &amp; "|NextStage:" &amp; {!var_NextStage} &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
-    </formulas>
+    <!-- ============================================================
+         TRIGGER: ApplicationTimeline after-save
+         Entry condition: nepa_status__c changed to Completed
+    ============================================================ -->
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <object>ApplicationTimeline</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>nepa_status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Completed</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_status__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <connector>
+            <targetReference>Decision_HasParentProcess</targetReference>
+        </connector>
+    </start>
 
     <!-- ============================================================
          VARIABLES
@@ -746,5 +746,4 @@
             <stringValue>Start</stringValue>
         </value>
     </variables>
-
 </Flow>

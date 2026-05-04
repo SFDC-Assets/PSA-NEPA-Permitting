@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>Tier 2 | BLM | Easement for Existing Road/Facility → 516 DM E16</label>
+    <label>T2 BLM Easement Existing Road 516 DM E16</label>
     <protected>false</protected>
     <values>
         <field>Rule_Label__c</field>

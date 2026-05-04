@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>Tier 2 | BLM | Cleanup/Removal of Structures → 516 DM J10</label>
+    <label>T2 BLM Cleanup Removal 516 DM J10</label>
     <protected>false</protected>
     <values>
         <field>Rule_Label__c</field>
@@ -60,7 +60,7 @@
     </values>
     <values>
         <field>Confidence_Modifier__c</field>
-        <value xsi:type="xsd:string">Structures must be of no historical or cultural value; minor ground disturbance only</value>
+        <value xsi:type="xsd:string">No historical value</value>
     </values>
     <values>
         <field>Classification_Basis__c</field>

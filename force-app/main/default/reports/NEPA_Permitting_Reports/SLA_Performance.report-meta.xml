@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>IndividualApplication$nepa_sla_due_date__c</field>
+    </columns>
+    <columns>
+        <field>IndividualApplication$nepa_review_type__c</field>
+    </columns>
+    <columns>
+        <field>IndividualApplication$nepa_days_in_current_stage__c</field>
+    </columns>
+    <description>SLA on-time performance across active NEPA processes. Groups overdue vs. on-track by review type and risk tier.</description>
+    <format>Summary</format>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>IndividualApplication$nepa_sla_overdue__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>IndividualApplication$nepa_timeline_risk_tier__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <name>SLA Performance</name>
+    <reportType>NEPA_Process_Reports__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+</Report>

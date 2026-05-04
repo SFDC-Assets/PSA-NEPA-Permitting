@@ -1,7 +1,6 @@
-@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage,PMD.MethodNamingConventions,PMD.ApexUnitTestClassShouldHaveRunAs')
 /** Tests validation rules on IndividualApplication: description length, FONSI/ROD on CE, waiver legal sufficiency, tiering age check. */
 @IsTest
-@SuppressWarnings('PMD.MethodNamingConventions, PMD.ApexUnitTestClassShouldHaveRunAs')
 private class NepaValidationRuleTest {
 
     @TestSetup

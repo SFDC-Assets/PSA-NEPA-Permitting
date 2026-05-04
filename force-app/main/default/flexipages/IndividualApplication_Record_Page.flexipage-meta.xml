@@ -422,26 +422,6 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_fra_statutory_deadline__c</fieldItem>
-                <identifier>ia_sla_fra_statutory</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_fra_adjusted_deadline__c</fieldItem>
-                <identifier>ia_sla_fra_adjusted</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
                 <fieldItem>Record.nepa_clock_pause_reason__c</fieldItem>
                 <identifier>ia_sla_clock_pause_reason</identifier>
             </fieldInstance>
@@ -473,6 +453,48 @@
             </componentInstance>
         </itemInstances>
         <name>ia-sla-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: FRA Statutory Clock — Column 1 (EIS/EA only) -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_fra_statutory_deadline__c</fieldItem>
+                <identifier>ia_fra_statutory_deadline</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_fra_adjusted_deadline__c</fieldItem>
+                <identifier>ia_fra_adjusted_deadline</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>ia-fra-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: FRA Statutory Clock — Columns Wrapper -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>ia-fra-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>ia_fra_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>ia-fra-cols</name>
         <type>Facet</type>
     </flexiPageRegions>
 
@@ -1124,6 +1146,13 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>ia_section_ce</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.nepa_review_type__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>CE</rightValue>
+                    </criteria>
+                </visibilityRule>
             </componentInstance>
         </itemInstances>
         <itemInstances>
@@ -1160,6 +1189,37 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>ia_section_sla</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>ia-fra-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>FRA Statutory Clock</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>ia_section_fra</identifier>
+                <visibilityRule>
+                    <booleanFilter>1 OR 2</booleanFilter>
+                    <criteria>
+                        <leftValue>{!Record.nepa_review_type__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>EIS</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.nepa_review_type__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>EA</rightValue>
+                    </criteria>
+                </visibilityRule>
             </componentInstance>
         </itemInstances>
         <itemInstances>

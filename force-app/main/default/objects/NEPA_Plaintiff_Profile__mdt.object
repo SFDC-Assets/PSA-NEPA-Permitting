@@ -17,7 +17,7 @@
         <description>Semicolon-delimited keywords from the organization name for fuzzy matching (e.g., "WildEarth; Guardians"). Flow performs CONTAINS check on each keyword against the commenter organization field.</description>
         <fieldManageability>DeveloperControlled</fieldManageability>
         <label>Name Keywords</label>
-        <length>500</length>
+        <length>255</length>
         <required>false</required>
         <type>Text</type>
         <unique>false</unique>
@@ -67,7 +67,7 @@
         <description>Semicolon-delimited list of typical NEPA challenge grounds this organization has used (e.g., Cumulative impacts; ESA Section 7). Included in task description for legal review.</description>
         <fieldManageability>DeveloperControlled</fieldManageability>
         <label>Typical Causes</label>
-        <length>500</length>
+        <length>255</length>
         <required>false</required>
         <type>Text</type>
         <unique>false</unique>

@@ -116,6 +116,12 @@ public with sharing class NepaDocumentController {
 
     // ── private helpers ───────────────────────────────────────────────────────
 
+    private static AuraHandledException auraEx(String msg) {
+        AuraHandledException e = new AuraHandledException(msg);
+        e.setMessage(msg);
+        return e;
+    }
+
     private static Integer countDocuments(Set<Id> docIds, String typeFilter) {
         if (typeFilter != null) {
             return [

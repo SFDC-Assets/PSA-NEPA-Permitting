@@ -1,6 +1,5 @@
-@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage')
+@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage,PMD.MethodNamingConventions')
 @IsTest
-@SuppressWarnings('PMD.MethodNamingConventions')
 private class NepaCommentTriageParserTest {
 
     private static final String VALID_JSON = '{"sentiment":"Opposed","is_substantive":true,"confidence_score":85,"cluster_hint":"water quality concern","triage_rationale":"Substantive: raises specific water quality claim citing upstream contamination data.","litigation_threat":false,"litigation_threat_basis":""}';

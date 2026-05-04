@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>Tier 2 | BLM | Mineral Materials Sale/Free Use ≤5 ac → 516 DM F10</label>
+    <label>T2 BLM Mineral Materials 5ac 516 DM F10</label>
     <protected>false</protected>
     <values>
         <field>Rule_Label__c</field>
@@ -60,7 +60,7 @@
     </values>
     <values>
         <field>Confidence_Modifier__c</field>
-        <value xsi:type="xsd:string">Volume ≤50,000 cy; area ≤5 acres; not in riparian zone (GIS check required)</value>
+        <value xsi:type="xsd:string">5ac non-riparian</value>
     </values>
     <values>
         <field>Classification_Basis__c</field>

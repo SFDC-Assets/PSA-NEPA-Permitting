@@ -417,6 +417,7 @@
         <description>User assigned to review and approve this document before publication. Required for AI-generated documents and for any document that will be included in the administrative record.</description>
         <inlineHelpText>User responsible for reviewing and approving this document.</inlineHelpText>
         <deleteConstraint>SetNull</deleteConstraint>
+        <label>Reviewer</label>
         <referenceTo>User</referenceTo>
         <relationshipLabel>Documents Under Review</relationshipLabel>
         <relationshipName>NEPA_Documents_UnderReview</relationshipName>
@@ -578,7 +579,6 @@
         <fullName>nepa_document_custody__c</fullName>
         <description>Chain-of-custody status for FRA sponsor-prepared documents. Agency Original: no sponsor involvement. Sponsor Draft: uploaded by the project sponsor portal user, not yet reviewed. Agency Under Review: assigned to an agency reviewer. Agency Modified: agency made substantive edits. Agency Adopted: agency independently evaluated and formally adopted the document per FRA requirements. History tracking enabled — the transition from Sponsor Draft to Agency Adopted is the key APA defensibility record.</description>
         <inlineHelpText>Custody status of this document. Sponsor Draft documents must reach Agency Adopted before use in the official administrative record.</inlineHelpText>
-        <defaultValue>Agency Original</defaultValue>
         <label>Document Custody Status</label>
         <required>false</required>
         <trackHistory>true</trackHistory>
@@ -758,4 +758,23 @@
             </values>
         </picklistValues>
     </recordTypes>
+    <fields>
+        <fullName>nepa_record_completeness__c</fullName>
+        <description>Numeric completeness score (0-100) calculated by NEPA_Record_Completeness_Scorer flow indicating how complete the document record is.</description>
+        <label>Record Completeness</label>
+        <precision>5</precision>
+        <scale>0</scale>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_record_completeness_updated__c</fullName>
+        <description>Timestamp when nepa_record_completeness__c was last calculated by the completeness scorer flow.</description>
+        <label>Record Completeness Updated</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
 </CustomObject>

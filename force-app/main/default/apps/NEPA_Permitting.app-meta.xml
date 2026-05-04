@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningExperienceApp xmlns="http://soap.sforce.com/2006/04/metadata">
+    <defaultLandingTab>standard-home</defaultLandingTab>
+    <description>NEPA Permitting Operations — internal user application for managing NEPA processes, documents, public engagement, and litigation risk.</description>
+    <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <isNavTabPersistenceDisabled>false</isNavTabPersistenceDisabled>
+    <isOmniPinnedViewEnabled>false</isOmniPinnedViewEnabled>
+    <label>NEPA Permitting</label>
+    <navType>Standard</navType>
+    <tabs>standard-home</tabs>
+    <tabs>standard-IndividualApplication</tabs>
+    <tabs>standard-Program</tabs>
+    <tabs>standard-ApplicationTimeline</tabs>
+    <tabs>standard-file</tabs>
+    <tabs>standard-PublicComplaint</tabs>
+    <tabs>nepa_engagement__c</tabs>
+    <tabs>nepa_litigation__c</tabs>
+    <tabs>nepa_ar_export__c</tabs>
+    <tabs>standard-report</tabs>
+    <tabs>standard-dashboard</tabs>
+    <uiType>Lightning</uiType>
+</LightningExperienceApp>

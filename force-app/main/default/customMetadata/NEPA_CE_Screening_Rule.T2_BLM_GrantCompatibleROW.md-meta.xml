@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>Tier 2 | BLM | Grant ROW Within Compatible Corridor → 516 DM E12</label>
+    <label>T2 BLM Grant ROW Compatible 516 DM E12</label>
     <protected>false</protected>
     <values>
         <field>Rule_Label__c</field>
@@ -60,7 +60,7 @@
     </values>
     <values>
         <field>Confidence_Modifier__c</field>
-        <value xsi:type="xsd:string">GIS must confirm new grant is wholly within boundaries of existing compatibly developed ROW corridor</value>
+        <value xsi:type="xsd:string">GIS verify boundary</value>
     </values>
     <values>
         <field>Classification_Basis__c</field>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>Tier 2 | USFS | Special Use Permit Reissuance → 36 CFR 220.6(e)(15)</label>
+    <label>T2 USFS Special Use Reissuance 220.6</label>
     <protected>false</protected>
     <values>
         <field>Rule_Label__c</field>
@@ -60,7 +60,7 @@
     </values>
     <values>
         <field>Confidence_Modifier__c</field>
-        <value xsi:type="xsd:string">Administrative changes only; no new facilities, no change in scope; permittee must be in compliance with existing permit terms</value>
+        <value xsi:type="xsd:string">Admin changes only</value>
     </values>
     <values>
         <field>Classification_Basis__c</field>

@@ -247,7 +247,6 @@
         <inlineHelpText>Describe what changed, what the prior decision was, and why this modification was made in response to comments.</inlineHelpText>
         <label>Modification Description</label>
         <length>32768</length>
-        <required>true</required>
         <trackTrending>false</trackTrending>
         <type>LongTextArea</type>
         <visibleLines>6</visibleLines>
