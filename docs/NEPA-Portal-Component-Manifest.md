@@ -290,7 +290,7 @@ Page components are route-mapped in the LWR site configuration. Each receives UR
 | **Priority** | P2 |
 | **USWDS composition** | `usa-breadcrumb`, `usa-sidenav`, `usa-in-page-navigation`, `usa-process-list`, `usa-accordion`, `usa-table`, `usa-summary-box`, `usa-icon-list` |
 | **Child LWCs** | `nepaBanner`, `nepaHeader`, `nepaBreadcrumb`, `nepaLearnSidenav`, `nepaInPageNav`, `nepaLearnContentBlock`, `nepaFooter` |
-| **Wire / Apex** | Static content loaded by slug — can be driven by `nepa_legal_structure__c` records for regulatory content pages |
+| **Wire / Apex** | Static content loaded by slug — can be driven by `RegulatoryCode` records for regulatory content pages |
 
 ### 4.9 `nepaPageAbout`
 

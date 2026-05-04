@@ -317,14 +317,14 @@
         <members>nepa_litigation__c.nepa_data_source_system__c</members>
         <members>nepa_litigation__c.nepa_data_record_version__c</members>
         <members>nepa_litigation__c.nepa_extraction_quality__c</members>
-        <!-- Tier 3 CEQ object fields: nepa_legal_structure__c -->
-        <members>nepa_legal_structure__c.nepa_citation__c</members>
-        <members>nepa_legal_structure__c.nepa_description__c</members>
-        <members>nepa_legal_structure__c.nepa_text_content__c</members>
-        <members>nepa_legal_structure__c.nepa_issuing_authority__c</members>
-        <members>nepa_legal_structure__c.nepa_effective_date__c</members>
-        <members>nepa_legal_structure__c.nepa_compliance_requirements__c</members>
-        <members>nepa_legal_structure__c.nepa_active__c</members>
+        <!-- RegulatoryCode (CEQ Entity 9) custom fields -->
+        <members>RegulatoryCode.nepa_compliance_requirements__c</members>
+        <members>RegulatoryCode.nepa_text_content__c</members>
+        <members>RegulatoryCode.nepa_data_record_version__c</members>
+        <members>RegulatoryCode.nepa_data_source_agency__c</members>
+        <members>RegulatoryCode.nepa_data_source_system__c</members>
+        <members>RegulatoryCode.nepa_record_owner_agency__c</members>
+        <members>RegulatoryCode.nepa_retrieved_timestamp__c</members>
         <!-- nepa_decision_element__c -->
         <members>nepa_decision_element__c.nepa_legal_reference__c</members>
         <members>nepa_decision_element__c.nepa_category__c</members>
@@ -387,7 +387,6 @@
         <members>nepa_litigation__c</members>
         <members>nepa_process_related_agencies__c</members>
         <members>nepa_project_agency_relationship__c</members>
-        <members>nepa_legal_structure__c</members>
         <members>nepa_decision_element__c</members>
         <members>nepa_gis_data_element__c</members>
         <!-- __mdt custom metadata type schemas -->
