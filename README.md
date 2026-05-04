@@ -104,101 +104,18 @@ This Accelerator includes the following assets:
   <li><strong>Documentation</strong>, including:
     <ul>
       <li>This readme file</li>
-      <li><a href="docs/NEPA-Compliance-Improvement-Plan.md">NEPA Compliance Improvement Plan</a> — detailed gap analysis and implementation roadmap against CEQ standard v1.2 and the 10 Minimum Functional Requirements</li>
+      <li><a href="docs/QUICKSTART.md">Quick Start Guide</a> — step-by-step deployment and configuration walkthrough</li>
+      <li><a href="docs/ARCHITECTURE_DECISIONS.md">Architecture Decision Records</a> — object mapping rationale, flow design, and extension guidance</li>
     </ul>
   </li>
 </ol>
 
 
-## Before You Install
-* Spin up a Public Sector Solutions trial org [here](https://developer.salesforce.com/free-trials/comparison/public-sector)
+## Getting Started
 
-**License Requirements** [Required]
-* License Public Sector Solutions — requires Foundations or Advanced for internal; requires Communities for external
+This Accelerator is deployed via the Salesforce CLI from source. See **[docs/QUICKSTART.md](docs/QUICKSTART.md)** for the full step-by-step walkthrough covering prerequisites, deployment, permission set assignment, Flow activation, sample data loading, and verification.
 
-## Installation
-
-Use the links below to install the unmanaged package into your org:
-
-* [Production](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tfn000001Uohx)
-* [Sandbox](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tfn000001Uohx)
-
-> **Note:** Installation links above reflect v1.0. Updated package links for v1.1 will be published once a new package version is created.
-
-## Post-Install Setup & Configuration
-
-### 1. Assign Permission Set
-Assign users the Permission Set `NEPA Permitting`.
-
-### 2. Individual Application (Entity 2: Process)
-Navigate to Setup → Object Manager → `Individual Application` → Page Layouts. Edit the layout you use for permits and add the following fields:
-
-**Process identity:**
-- `Federal Unique Id`, `NEPA Review Type`, `Process Status`, `Process Stage`, `Process Code`, `Agency Process ID`
-
-**Process details:**
-- `Related Project`, `Parent Process`, `Joint Lead Agency`, `Purpose and Need`, `Process Description`, `Process Outcome`
-
-**Timeline:**
-- `Start Date`, `Completion Date`, `Public Comment Period Start`, `Public Comment Period End Date`
-
-**Provenance (add to a collapsed section):**
-- `Data Record Version`, `Data Source Agency`, `Data Source System`, `Record Owner Agency`, `Retrieved Timestamp`
-
-**Related lists to add:**
-- `Related Agencies` (from `nepa_process_related_agencies__c`)
-- `Public Engagement Events` (from `nepa_engagement__c`)
-- `Application Timeline` (from `ApplicationTimeline`)
-
-### 3. Program (Entity 1: Project)
-Navigate to Setup → Object Manager → `Program` → Page Layouts. Edit the layout you use for projects and add the following fields:
-
-**Project identity:**
-- `Project Title`, `Project Id`, `Project Sector`, `Project Type`, `Project Description`
-
-**Ownership and funding:**
-- `Lead Agency`, `Project Sponsor`, `Funding Source(s)`, `Current Status`, `Start Date`
-
-**Location:**
-- `Location`, `Location Latitude`, `Location Longitude`, `Location Text`
-
-**Hierarchy:**
-- `Parent Project`
-
-**Provenance (add to a collapsed section):**
-- `Data Record Version`, `Data Source Agency`, `Data Source System`, `Record Owner Agency`, `Retrieved Timestamp`
-
-**Related lists to add:**
-- `Child Projects` (from `Program`)
-- `Individual Applications` (from `IndividualApplication.nepa_related_project__c`)
-- `Project Agency Relationships` (from `nepa_project_agency_relationship__c`)
-
-### 4. Content Version (Entity 3: Documents)
-Navigate to Setup → Object Manager → `Content Version` → Page Layouts.
-
-Use the Page Layout Assignment to assign the `Permit Document` page layout to profiles as appropriate for your org. The layout includes sections for Document Identity, Version Details, Document Content (summary/TOC), and Provenance.
-
-### 5. Public Complaint (Entity 4: Comments)
-Navigate to Setup → Object Manager → `Public Complaint` → Lightning Record Pages and `Public Comment Record Page`.
-
-- Click the link and the Edit button on the corresponding page.
-- Add the following fields to the page: `Related Document`, `Organization`, `Comment Category`, `Date Submitted`, `Method of Submission`, `Document Location Reference`, `Public Source`, `Agency Response`, `Public Access`.
-- Add the Provenance fields to a collapsed section: `Data Record Version`, `Data Source Agency`, `Data Source System`, `Record Owner Agency`, `Retrieved Timestamp`.
-- Use the Activation button to assign this page as an Org Default, App Default, etc. as appropriate for your organization.
-
-### 6. NEPA Public Engagement Event (Entity 5)
-Navigate to Setup → Object Manager → `NEPA Public Engagement Event` → Page Layouts.
-
-The `NEPA Public Engagement Event Layout` is included and pre-configured. Assign it to the appropriate profiles.
-
-To surface engagement events from the process record, add the `Public Engagement Events` related list to the `Individual Application` page layout (see step 2).
-
-### 7. ApplicationTimeline — Case Events (Entity 6)
-Navigate to Setup → Object Manager → `Application Timeline` → Page Layouts.
-
-The `NEPA Case Event Layout` is included and pre-configured with NEPA event type, status, outcome, assigned entity, related document, and provenance fields. Assign it to the appropriate profiles.
-
-To surface case events from the process record, add the `Application Timeline` related list to the `Individual Application` page layout (see step 2).
+**License requirement:** Salesforce Public Sector Solutions — Foundations or Advanced for internal users; Communities license for external portal users. A free PSS developer org is available at the [PSS trial link](https://developer.salesforce.com/free-trials/comparison/public-sector).
 
 
 ## CEQ-Compliant Data Export
