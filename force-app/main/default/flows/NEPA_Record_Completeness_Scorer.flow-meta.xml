@@ -5,36 +5,125 @@
     <label>NEPA Record Completeness Scorer</label>
     <processType>AutoLaunchedFlow</processType>
     <status>Draft</status>
-
-    <!-- ============================================================
-         TRIGGER: ContentVersion after-save (async)
-         Fires on create/update when it's a NEPA permit document.
-    ============================================================ -->
-    <start>
+    <assignments>
+        <name>Assign_CurrentRequiredDoc</name>
+        <label>Set Current Required Doc</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <object>ContentVersion</object>
-        <recordTriggerType>CreateAndUpdate</recordTriggerType>
-        <triggerType>RecordAfterSave</triggerType>
-        <scheduledPaths>
-            <connector>
-                <targetReference>Decision_HasRelatedProcess</targetReference>
-            </connector>
-            <pathType>AsyncAfterCommit</pathType>
-        </scheduledPaths>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>RecordTypeId</field>
-            <operator>EqualTo</operator>
+        <assignmentItems>
+            <assignToReference>rec_RequiredDoc</assignToReference>
+            <operator>Assign</operator>
             <value>
-                <stringValue>nepa_permit_document</stringValue>
+                <elementReference>Loop_RequiredDocs</elementReference>
             </value>
-        </filters>
-    </start>
-
-    <!-- ============================================================
-         STEP 1: Guard — must have a related process
-    ============================================================ -->
+        </assignmentItems>
+        <connector>
+            <targetReference>Increment_RequiredCount</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_CurrentExistingDoc</name>
+        <label>Set Current Existing Doc</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>rec_ExistingDoc</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_ExistingDocs</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_DocTypeMatch</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Increment_RequiredCount</name>
+        <label>Increment Required Doc Count</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_TotalRequired</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <numberValue>1.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_ExistingDocs</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Increment_MetCount</name>
+        <label>Increment Met Doc Count</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_TotalMet</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <numberValue>1.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_RequiredDocs</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_Completeness_Zero</name>
+        <label>Set Completeness to 0 (No Required Types)</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_CompletenessPercent</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <numberValue>0.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Completeness</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Calculate_Completeness</name>
+        <label>Calculate Completeness Percentage</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_CompletenessPercent</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula_CompletenessPercent</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CurrentStep</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Update_Completeness</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Completeness</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Handle_Error</name>
+        <label>Handle Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
+    </assignments>
     <decisions>
         <name>Decision_HasRelatedProcess</name>
         <label>Has Related Process?</label>
@@ -57,37 +146,6 @@
             <label>Has Related Process (via CaseEvent)</label>
         </rules>
     </decisions>
-
-    <!-- ============================================================
-         STEP 2: Resolve the parent IndividualApplication through the
-         related ApplicationTimeline (CaseEvent) record.
-    ============================================================ -->
-    <recordLookups>
-        <name>Get_RelatedCaseEvent</name>
-        <label>Get Related Case Event</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Decision_CaseEventFound</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Handle_Error</targetReference>
-        </faultConnector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.nepa_related_case_event__c</elementReference>
-            </value>
-        </filters>
-        <object>ApplicationTimeline</object>
-        <outputReference>rec_CaseEvent</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>nepa_related_process__c</queriedFields>
-    </recordLookups>
-
     <decisions>
         <name>Decision_CaseEventFound</name>
         <label>Case Event Found with Parent Process?</label>
@@ -117,34 +175,6 @@
             <label>Case Event Found</label>
         </rules>
     </decisions>
-
-    <recordLookups>
-        <name>Get_ParentProcess</name>
-        <label>Get Parent IndividualApplication</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Decision_ProcessFound</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Handle_Error</targetReference>
-        </faultConnector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>rec_CaseEvent.nepa_related_process__c</elementReference>
-            </value>
-        </filters>
-        <object>IndividualApplication</object>
-        <outputReference>rec_ParentProcess</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>nepa_review_type__c</queriedFields>
-        <queriedFields>nepa_process_status__c</queriedFields>
-    </recordLookups>
-
     <decisions>
         <name>Decision_ProcessFound</name>
         <label>Parent Process Found?</label>
@@ -167,46 +197,6 @@
             <label>Process Found</label>
         </rules>
     </decisions>
-
-    <!-- ============================================================
-         STEP 3: Load required document types for this review type
-         from NEPA_Required_Document__mdt, filtered by Review_Type__c
-    ============================================================ -->
-    <recordLookups>
-        <name>Get_RequiredDocuments</name>
-        <label>Get Required Document Types</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Decision_HasRequiredDocs</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Handle_Error</targetReference>
-        </faultConnector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Review_Type__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>rec_ParentProcess.nepa_review_type__c</elementReference>
-            </value>
-        </filters>
-        <filters>
-            <field>Active__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
-        <getFirstRecordOnly>false</getFirstRecordOnly>
-        <object>NEPA_Required_Document__mdt</object>
-        <outputReference>col_RequiredDocs</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>Document_Type__c</queriedFields>
-        <queriedFields>Required_Stage__c</queriedFields>
-    </recordLookups>
-
     <decisions>
         <name>Decision_HasRequiredDocs</name>
         <label>Required Document Types Found?</label>
@@ -232,100 +222,6 @@
             <label>Has Required Docs</label>
         </rules>
     </decisions>
-
-    <!-- ============================================================
-         STEP 4: Count existing approved NEPA documents on this process
-         (via ContentVersion linked through ApplicationTimeline events)
-    ============================================================ -->
-    <recordLookups>
-        <name>Get_ExistingDocuments</name>
-        <label>Get Existing Approved Documents</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Loop_RequiredDocs</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Handle_Error</targetReference>
-        </faultConnector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>nepa_process__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>rec_CaseEvent.nepa_related_process__c</elementReference>
-            </value>
-        </filters>
-        <filters>
-            <field>RecordType.DeveloperName</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>nepa_permit_document</stringValue>
-            </value>
-        </filters>
-        <getFirstRecordOnly>false</getFirstRecordOnly>
-        <object>ContentVersion</object>
-        <outputReference>col_ExistingDocs</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>nepa_document_type__c</queriedFields>
-        <queriedFields>nepa_status__c</queriedFields>
-    </recordLookups>
-
-    <!-- ============================================================
-         STEP 5: Loop required doc types, check if each is present and
-         approved. Tally total required vs. met.
-    ============================================================ -->
-    <loops>
-        <name>Loop_RequiredDocs</name>
-        <label>Loop: Required Document Types</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <collectionReference>col_RequiredDocs</collectionReference>
-        <iterationOrder>Asc</iterationOrder>
-        <nextValueConnector>
-            <targetReference>Increment_RequiredCount</targetReference>
-        </nextValueConnector>
-        <noMoreValuesConnector>
-            <targetReference>Calculate_Completeness</targetReference>
-        </noMoreValuesConnector>
-        <outputReference>rec_RequiredDoc</outputReference>
-    </loops>
-
-    <assignments>
-        <name>Increment_RequiredCount</name>
-        <label>Increment Required Doc Count</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_TotalRequired</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <numberValue>1.0</numberValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Loop_ExistingDocs</targetReference>
-        </connector>
-    </assignments>
-
-    <!-- Inner loop: scan existing docs for a match on this required type -->
-    <loops>
-        <name>Loop_ExistingDocs</name>
-        <label>Loop: Existing Documents (Check Match)</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <collectionReference>col_ExistingDocs</collectionReference>
-        <iterationOrder>Asc</iterationOrder>
-        <nextValueConnector>
-            <targetReference>Decision_DocTypeMatch</targetReference>
-        </nextValueConnector>
-        <noMoreValuesConnector>
-            <targetReference>Loop_RequiredDocs</targetReference>
-        </noMoreValuesConnector>
-        <outputReference>rec_ExistingDoc</outputReference>
-    </loops>
-
     <decisions>
         <name>Decision_DocTypeMatch</name>
         <label>Document Type and Status Match?</label>
@@ -358,70 +254,164 @@
             <label>Type Match and Approved</label>
         </rules>
     </decisions>
-
-    <assignments>
-        <name>Increment_MetCount</name>
-        <label>Increment Met Doc Count</label>
+    <formulas>
+        <name>formula_ErrorContext</name>
+        <dataType>String</dataType>
+        <expression>"TotalRequired:" &amp; TEXT({!var_TotalRequired}) &amp; "|TotalMet:" &amp; TEXT({!var_TotalMet}) &amp; "|Completeness:" &amp; TEXT({!var_CompletenessPercent}) &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
+    </formulas>
+    <formulas>
+        <name>formula_CompletenessPercent</name>
+        <dataType>Number</dataType>
+        <scale>1</scale>
+        <expression>IF({!var_TotalRequired} &gt; 0, ({!var_TotalMet} / {!var_TotalRequired}) * 100, 0)</expression>
+    </formulas>
+    <loops>
+        <name>Loop_RequiredDocs</name>
+        <label>Loop: Required Document Types</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_TotalMet</assignToReference>
-            <operator>Add</operator>
+        <collectionReference>col_RequiredDocs</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_CurrentRequiredDoc</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Calculate_Completeness</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
+        <name>Loop_ExistingDocs</name>
+        <label>Loop: Existing Documents (Check Match)</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>col_ExistingDocs</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_CurrentExistingDoc</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Loop_RequiredDocs</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <recordLookups>
+        <name>Get_RelatedCaseEvent</name>
+        <label>Get Related Case Event</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_CaseEventFound</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
             <value>
-                <numberValue>1.0</numberValue>
+                <elementReference>$Record.nepa_related_case_event__c</elementReference>
             </value>
-        </assignmentItems>
-        <!-- Break the inner loop after first match for this required type -->
+        </filters>
+        <object>ApplicationTimeline</object>
+        <outputReference>rec_CaseEvent</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>nepa_related_process__c</queriedFields>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_ParentProcess</name>
+        <label>Get Parent IndividualApplication</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_ProcessFound</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>rec_CaseEvent.nepa_related_process__c</elementReference>
+            </value>
+        </filters>
+        <object>IndividualApplication</object>
+        <outputReference>rec_ParentProcess</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>nepa_review_type__c</queriedFields>
+        <queriedFields>nepa_process_status__c</queriedFields>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_RequiredDocuments</name>
+        <label>Get Required Document Types</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_HasRequiredDocs</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Review_Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>rec_ParentProcess.nepa_review_type__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Active__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>NEPA_Required_Document__mdt</object>
+        <outputReference>col_RequiredDocs</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Document_Type__c</queriedFields>
+        <queriedFields>Stage_Required_By__c</queriedFields>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_ExistingDocuments</name>
+        <label>Get Existing Approved Documents</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Loop_RequiredDocs</targetReference>
         </connector>
-    </assignments>
-
-    <!-- ============================================================
-         STEP 6: Calculate percentage and write back
-    ============================================================ -->
-    <assignments>
-        <name>Assign_Completeness_Zero</name>
-        <label>Set Completeness to 0 (No Required Types)</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_CompletenessPercent</assignToReference>
-            <operator>Assign</operator>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>nepa_process__c</field>
+            <operator>EqualTo</operator>
             <value>
-                <numberValue>0.0</numberValue>
+                <elementReference>rec_CaseEvent.nepa_related_process__c</elementReference>
             </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Update_Completeness</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Calculate_Completeness</name>
-        <label>Calculate Completeness Percentage</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_CompletenessPercent</assignToReference>
-            <operator>Assign</operator>
+        </filters>
+        <filters>
+            <field>RecordTypeId</field>
+            <operator>EqualTo</operator>
             <value>
-                <elementReference>formula_CompletenessPercent</elementReference>
+                <stringValue>012ak00000B8n6rAAB</stringValue>
             </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CurrentStep</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>Update_Completeness</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Update_Completeness</targetReference>
-        </connector>
-    </assignments>
-
-    <!-- code-analyzer-suppress flow:SameRecordUpdate — intentional async after-save write-back via AsyncAfterCommit scheduledPath -->
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>ContentVersion</object>
+        <outputReference>col_ExistingDocs</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>nepa_document_type__c</queriedFields>
+        <queriedFields>nepa_status__c</queriedFields>
+    </recordLookups>
     <recordUpdates>
         <name>Update_Completeness</name>
         <label>Update Record Completeness on IndividualApplication</label>
@@ -451,28 +441,6 @@
             </value>
         </filters>
     </recordUpdates>
-
-    <!-- ============================================================
-         ERROR HANDLER — terminal
-    ============================================================ -->
-    <assignments>
-        <name>Handle_Error</name>
-        <label>Handle Error</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_ErrorMessage</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>$Flow.FaultMessage</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Call_ErrorLogger</targetReference>
-        </connector>
-    </assignments>
-
-    <!-- code-analyzer-suppress flow:MissingFaultHandler - terminal error handler; fault-handling Call_ErrorLogger would be circular -->
     <subflows>
         <name>Call_ErrorLogger</name>
         <label>Log Flow Error</label>
@@ -481,49 +449,62 @@
         <flowName>NEPA_Error_Logger</flowName>
         <inputAssignments>
             <name>inp_FlowName</name>
-            <value><stringValue>NEPA_Record_Completeness_Scorer</stringValue></value>
+            <value>
+                <stringValue>NEPA_Record_Completeness_Scorer</stringValue>
+            </value>
         </inputAssignments>
         <inputAssignments>
             <name>inp_ErrorMessage</name>
-            <value><elementReference>var_ErrorMessage</elementReference></value>
+            <value>
+                <elementReference>var_ErrorMessage</elementReference>
+            </value>
         </inputAssignments>
         <inputAssignments>
             <name>inp_RecordId</name>
-            <value><elementReference>$Record.Id</elementReference></value>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
         </inputAssignments>
         <inputAssignments>
             <name>inp_RunningUserId</name>
-            <value><elementReference>$User.Id</elementReference></value>
+            <value>
+                <elementReference>$User.Id</elementReference>
+            </value>
         </inputAssignments>
         <inputAssignments>
             <name>inp_FailedStep</name>
-            <value><elementReference>var_CurrentStep</elementReference></value>
+            <value>
+                <elementReference>var_CurrentStep</elementReference>
+            </value>
         </inputAssignments>
         <inputAssignments>
             <name>inp_ErrorContext</name>
-            <value><elementReference>formula_ErrorContext</elementReference></value>
+            <value>
+                <elementReference>formula_ErrorContext</elementReference>
+            </value>
         </inputAssignments>
     </subflows>
-
-    <formulas>
-        <name>formula_ErrorContext</name>
-        <dataType>String</dataType>
-        <expression>"TotalRequired:" &amp; TEXT({!var_TotalRequired}) &amp; "|TotalMet:" &amp; TEXT({!var_TotalMet}) &amp; "|Completeness:" &amp; TEXT({!var_CompletenessPercent}) &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
-    </formulas>
-
-    <!-- ============================================================
-         FORMULA: completeness percentage
-    ============================================================ -->
-    <formulas>
-        <name>formula_CompletenessPercent</name>
-        <dataType>Number</dataType>
-        <scale>1</scale>
-        <expression>IF({!var_TotalRequired} > 0, ({!var_TotalMet} / {!var_TotalRequired}) * 100, 0)</expression>
-    </formulas>
-
-    <!-- ============================================================
-         VARIABLES
-    ============================================================ -->
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <object>ContentVersion</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+        <scheduledPaths>
+            <connector>
+                <targetReference>Decision_HasRelatedProcess</targetReference>
+            </connector>
+            <pathType>AsyncAfterCommit</pathType>
+        </scheduledPaths>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RecordTypeId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>012ak00000B8n6rAAB</stringValue>
+            </value>
+        </filters>
+    </start>
     <variables>
         <name>rec_CaseEvent</name>
         <dataType>SObject</dataType>
@@ -532,7 +513,6 @@
         <isOutput>false</isOutput>
         <objectType>ApplicationTimeline</objectType>
     </variables>
-
     <variables>
         <name>rec_ParentProcess</name>
         <dataType>SObject</dataType>
@@ -541,7 +521,6 @@
         <isOutput>false</isOutput>
         <objectType>IndividualApplication</objectType>
     </variables>
-
     <variables>
         <name>col_RequiredDocs</name>
         <dataType>SObject</dataType>
@@ -550,7 +529,6 @@
         <isOutput>false</isOutput>
         <objectType>NEPA_Required_Document__mdt</objectType>
     </variables>
-
     <variables>
         <name>rec_RequiredDoc</name>
         <dataType>SObject</dataType>
@@ -559,7 +537,6 @@
         <isOutput>false</isOutput>
         <objectType>NEPA_Required_Document__mdt</objectType>
     </variables>
-
     <variables>
         <name>col_ExistingDocs</name>
         <dataType>SObject</dataType>
@@ -568,7 +545,6 @@
         <isOutput>false</isOutput>
         <objectType>ContentVersion</objectType>
     </variables>
-
     <variables>
         <name>rec_ExistingDoc</name>
         <dataType>SObject</dataType>
@@ -577,7 +553,6 @@
         <isOutput>false</isOutput>
         <objectType>ContentVersion</objectType>
     </variables>
-
     <variables>
         <name>var_TotalRequired</name>
         <dataType>Number</dataType>
@@ -589,7 +564,6 @@
             <numberValue>0.0</numberValue>
         </value>
     </variables>
-
     <variables>
         <name>var_TotalMet</name>
         <dataType>Number</dataType>
@@ -601,7 +575,6 @@
             <numberValue>0.0</numberValue>
         </value>
     </variables>
-
     <variables>
         <name>var_CompletenessPercent</name>
         <dataType>Number</dataType>
@@ -613,7 +586,6 @@
             <numberValue>0.0</numberValue>
         </value>
     </variables>
-
     <variables>
         <name>var_ErrorMessage</name>
         <dataType>String</dataType>
@@ -621,7 +593,6 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
-
     <variables>
         <name>var_CurrentStep</name>
         <dataType>String</dataType>
@@ -632,5 +603,4 @@
             <stringValue>Start</stringValue>
         </value>
     </variables>
-
 </Flow>

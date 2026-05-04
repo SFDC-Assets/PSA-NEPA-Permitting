@@ -5,41 +5,45 @@
     <label>NEPA Administrative Record Auto-Create</label>
     <processType>AutoLaunchedFlow</processType>
     <status>Draft</status>
-
-    <!-- ============================================================
-         TRIGGER: ContentVersion after-save, create only
-         Entry: record type nepa_permit_document and document type set
-    ============================================================ -->
-    <start>
+    <assignments>
+        <name>Build_EventDescription</name>
+        <label>Build Event Description</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <object>ContentVersion</object>
-        <recordTriggerType>Create</recordTriggerType>
-        <triggerType>RecordAfterSave</triggerType>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>RecordTypeId</field>
-            <operator>EqualTo</operator>
+        <assignmentItems>
+            <assignToReference>var_EventDescription</assignToReference>
+            <operator>Assign</operator>
             <value>
-                <stringValue>nepa_permit_document</stringValue>
+                <elementReference>formula_EventDescription</elementReference>
             </value>
-        </filters>
-        <filters>
-            <field>nepa_document_type__c</field>
-            <operator>IsNull</operator>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CurrentStep</assignToReference>
+            <operator>Assign</operator>
             <value>
-                <booleanValue>false</booleanValue>
+                <stringValue>Create_TimelineEvent</stringValue>
             </value>
-        </filters>
+        </assignmentItems>
         <connector>
-            <targetReference>Decision_HasRelatedCaseEvent</targetReference>
+            <targetReference>Create_TimelineEvent</targetReference>
         </connector>
-    </start>
-
-    <!-- ============================================================
-         STEP 1: Does the document already have a related case event?
-         If yes, skip auto-create (already linked manually or by another process).
-    ============================================================ -->
+    </assignments>
+    <assignments>
+        <name>Handle_Error</name>
+        <label>Handle Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
+    </assignments>
     <decisions>
         <name>Decision_HasRelatedCaseEvent</name>
         <label>Already Has Related Case Event?</label>
@@ -62,16 +66,6 @@
             <label>Already Linked — skip</label>
         </rules>
     </decisions>
-
-    <!-- ============================================================
-         STEP 2: Resolve the parent IndividualApplication.
-         ContentVersion → ContentDocumentLink → parent entity is complex in
-         Flow; simpler path is to require nepa_document_type__c + allow
-         the nepa_related_case_event__c back-link to be set by the user OR
-         via the ContentDocument → ContentDocumentLink path.
-         Here we check if the ContentVersion's ContentDocument is linked
-         to an IndividualApplication via ContentDocumentLink.
-    ============================================================ -->
     <decisions>
         <name>Decision_HasLinkedDocument</name>
         <label>Has ContentDocument?</label>
@@ -94,42 +88,6 @@
             <label>Has ContentDocumentId</label>
         </rules>
     </decisions>
-
-    <!-- Find ContentDocumentLink pointing to an IndividualApplication -->
-    <recordLookups>
-        <name>Get_ContentDocumentLink</name>
-        <label>Get ContentDocumentLink to IndividualApplication</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Decision_LinkFound</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Handle_Error</targetReference>
-        </faultConnector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>ContentDocumentId</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.ContentDocumentId</elementReference>
-            </value>
-        </filters>
-        <filters>
-            <field>LinkedEntityType</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>IndividualApplication</stringValue>
-            </value>
-        </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
-        <object>ContentDocumentLink</object>
-        <outputReference>rec_DocLink</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>LinkedEntityId</queriedFields>
-    </recordLookups>
-
     <decisions>
         <name>Decision_LinkFound</name>
         <label>Link to IndividualApplication Found?</label>
@@ -152,37 +110,38 @@
             <label>Link Found</label>
         </rules>
     </decisions>
-
-    <!-- ============================================================
-         STEP 3: Build event description string
-    ============================================================ -->
-    <assignments>
-        <name>Build_EventDescription</name>
-        <label>Build Event Description</label>
+    <decisions>
+        <name>Decision_EventFound</name>
+        <label>Created Event Found?</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_EventDescription</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>Document uploaded: {!$Record.Title} | Type: {!$Record.nepa_document_type__c} | Category: {!$Record.nepa_record_category__c} | AI Generated: {!$Record.nepa_ai_generated__c}</stringValue>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CurrentStep</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>Create_TimelineEvent</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Create_TimelineEvent</targetReference>
-        </connector>
-    </assignments>
-
-    <!-- ============================================================
-         STEP 4: Create ApplicationTimeline event
-    ============================================================ -->
+        <defaultConnectorLabel>Event Not Found — exit</defaultConnectorLabel>
+        <rules>
+            <name>Event_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>rec_CreatedEvent</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Backlink_Document</targetReference>
+            </connector>
+            <label>Event Found</label>
+        </rules>
+    </decisions>
+    <formulas>
+        <name>formula_EventDescription</name>
+        <dataType>String</dataType>
+        <expression>"Document uploaded: " &amp; {!$Record.Title} &amp; " | Type: " &amp; {!$Record.nepa_document_type__c} &amp; " | Category: " &amp; {!$Record.nepa_record_category__c} &amp; " | AI Generated: " &amp; TEXT({!$Record.nepa_ai_generated__c})</expression>
+    </formulas>
+    <formulas>
+        <name>formula_ErrorContext</name>
+        <dataType>String</dataType>
+        <expression>"DocType:" &amp; {!$Record.nepa_document_type__c} &amp; "|DocTitle:" &amp; {!$Record.Title} &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
+    </formulas>
     <recordCreates>
         <name>Create_TimelineEvent</name>
         <label>Create Administrative Record Timeline Event</label>
@@ -240,15 +199,89 @@
             </value>
         </inputAssignments>
         <object>ApplicationTimeline</object>
-        <outputReference>var_CreatedEventId</outputReference>
         <connector>
-            <targetReference>Backlink_Document</targetReference>
+            <targetReference>Get_CreatedEvent</targetReference>
         </connector>
     </recordCreates>
-
-    <!-- ============================================================
-         STEP 5: Back-link the ContentVersion to its new timeline event
-    ============================================================ -->
+    <recordLookups>
+        <name>Get_ContentDocumentLink</name>
+        <label>Get ContentDocumentLink to IndividualApplication</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_LinkFound</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ContentDocumentId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.ContentDocumentId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ContentDocumentLink</object>
+        <outputReference>rec_DocLink</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>LinkedEntityId</queriedFields>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_CreatedEvent</name>
+        <label>Get Newly Created Timeline Event</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_EventFound</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>nepa_related_process__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>rec_DocLink.LinkedEntityId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_event_type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Document Upload</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_source__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>System</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_tier__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Administrative Record</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_event_description__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_EventDescription</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ApplicationTimeline</object>
+        <outputReference>rec_CreatedEvent</outputReference>
+        <queriedFields>Id</queriedFields>
+    </recordLookups>
     <recordUpdates>
         <name>Backlink_Document</name>
         <label>Set nepa_related_case_event__c on ContentVersion</label>
@@ -260,7 +293,7 @@
         <inputAssignments>
             <field>nepa_related_case_event__c</field>
             <value>
-                <elementReference>var_CreatedEventId</elementReference>
+                <elementReference>rec_CreatedEvent.Id</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -278,28 +311,6 @@
             </value>
         </filters>
     </recordUpdates>
-
-    <!-- ============================================================
-         ERROR HANDLER — terminal
-    ============================================================ -->
-    <assignments>
-        <name>Handle_Error</name>
-        <label>Handle Error</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_ErrorMessage</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>$Flow.FaultMessage</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Call_ErrorLogger</targetReference>
-        </connector>
-    </assignments>
-
-    <!-- code-analyzer-suppress flow:MissingFaultHandler - terminal error handler; fault-handling Call_ErrorLogger would be circular -->
     <subflows>
         <name>Call_ErrorLogger</name>
         <label>Log Flow Error</label>
@@ -308,39 +319,66 @@
         <flowName>NEPA_Error_Logger</flowName>
         <inputAssignments>
             <name>inp_FlowName</name>
-            <value><stringValue>NEPA_AdminRecord_AutoCreate</stringValue></value>
+            <value>
+                <stringValue>NEPA_AdminRecord_AutoCreate</stringValue>
+            </value>
         </inputAssignments>
         <inputAssignments>
             <name>inp_ErrorMessage</name>
-            <value><elementReference>var_ErrorMessage</elementReference></value>
+            <value>
+                <elementReference>var_ErrorMessage</elementReference>
+            </value>
         </inputAssignments>
         <inputAssignments>
             <name>inp_RecordId</name>
-            <value><elementReference>$Record.Id</elementReference></value>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
         </inputAssignments>
         <inputAssignments>
             <name>inp_RunningUserId</name>
-            <value><elementReference>$User.Id</elementReference></value>
+            <value>
+                <elementReference>$User.Id</elementReference>
+            </value>
         </inputAssignments>
         <inputAssignments>
             <name>inp_FailedStep</name>
-            <value><elementReference>var_CurrentStep</elementReference></value>
+            <value>
+                <elementReference>var_CurrentStep</elementReference>
+            </value>
         </inputAssignments>
         <inputAssignments>
             <name>inp_ErrorContext</name>
-            <value><elementReference>formula_ErrorContext</elementReference></value>
+            <value>
+                <elementReference>formula_ErrorContext</elementReference>
+            </value>
         </inputAssignments>
     </subflows>
-
-    <formulas>
-        <name>formula_ErrorContext</name>
-        <dataType>String</dataType>
-        <expression>"DocType:" &amp; {!$Record.nepa_document_type__c} &amp; "|DocTitle:" &amp; {!$Record.Title} &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
-    </formulas>
-
-    <!-- ============================================================
-         VARIABLES
-    ============================================================ -->
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <object>ContentVersion</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RecordTypeId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>012ak00000B8n6rAAB</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_document_type__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <connector>
+            <targetReference>Decision_HasRelatedCaseEvent</targetReference>
+        </connector>
+    </start>
     <variables>
         <name>rec_DocLink</name>
         <dataType>SObject</dataType>
@@ -349,7 +387,14 @@
         <isOutput>false</isOutput>
         <objectType>ContentDocumentLink</objectType>
     </variables>
-
+    <variables>
+        <name>rec_CreatedEvent</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ApplicationTimeline</objectType>
+    </variables>
     <variables>
         <name>var_EventDescription</name>
         <dataType>String</dataType>
@@ -357,15 +402,6 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
-
-    <variables>
-        <name>var_CreatedEventId</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-
     <variables>
         <name>var_ErrorMessage</name>
         <dataType>String</dataType>
@@ -373,7 +409,6 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
-
     <variables>
         <name>var_CurrentStep</name>
         <dataType>String</dataType>
@@ -384,5 +419,4 @@
             <stringValue>Start</stringValue>
         </value>
     </variables>
-
 </Flow>

@@ -5,8 +5,6 @@
     <label>NEPA Litigation Risk Scorer</label>
     <processType>AutoLaunchedFlow</processType>
     <status>Draft</status>
-
-    <!-- Assignments -->
     <assignments>
         <name>Assign_ReviewType_EIS</name>
         <label>Review Type EIS: 40 points</label>
@@ -30,7 +28,6 @@
             <targetReference>Decision_HasRelatedProject</targetReference>
         </connector>
     </assignments>
-
     <assignments>
         <name>Assign_ReviewType_EA</name>
         <label>Review Type EA: 20 points</label>
@@ -54,7 +51,6 @@
             <targetReference>Decision_HasRelatedProject</targetReference>
         </connector>
     </assignments>
-
     <assignments>
         <name>Assign_ReviewType_CE</name>
         <label>Review Type CE: 5 points</label>
@@ -78,7 +74,6 @@
             <targetReference>Decision_HasRelatedProject</targetReference>
         </connector>
     </assignments>
-
     <assignments>
         <name>Assign_ReviewType_Low</name>
         <label>Review Type Other: 3 points</label>
@@ -102,7 +97,6 @@
             <targetReference>Decision_HasRelatedProject</targetReference>
         </connector>
     </assignments>
-
     <assignments>
         <name>Assign_AgencyPoints</name>
         <label>Assign Agency Risk Points</label>
@@ -126,7 +120,6 @@
             <targetReference>Get_CircuitRiskWeight</targetReference>
         </connector>
     </assignments>
-
     <assignments>
         <name>Assign_CircuitPoints</name>
         <label>Assign Circuit Risk Points</label>
@@ -150,7 +143,22 @@
             <targetReference>Get_StatuteWeights</targetReference>
         </connector>
     </assignments>
-
+    <assignments>
+        <name>Assign_CurrentStatute</name>
+        <label>Set Current Statute Weight</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>rec_StatuteWeight</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_StatuteWeights</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_StatutePresent</targetReference>
+        </connector>
+    </assignments>
     <assignments>
         <name>Assign_StatutePoints</name>
         <label>Add Statute Risk Points</label>
@@ -167,7 +175,6 @@
             <targetReference>Loop_StatuteWeights</targetReference>
         </connector>
     </assignments>
-
     <assignments>
         <name>Calculate_Total_Score</name>
         <label>Calculate Total Risk Score</label>
@@ -201,39 +208,40 @@
                 <elementReference>var_AdjacentStatutePoints</elementReference>
             </value>
         </assignmentItems>
-        <!-- Mandate 3: route through expedited penalty check before capping -->
         <connector>
             <targetReference>Decision_IsExpedited</targetReference>
         </connector>
     </assignments>
-
-    <!-- Mandate 3: APA arbitrary-and-capricious multiplier for expedited procedures -->
     <assignments>
         <name>Apply_Expedited_Multiplier</name>
         <label>Apply 1.5x APA Risk Multiplier</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
-            <!-- 1.5x multiplier: expedited procedure + incomplete record = high APA challenge probability -->
             <assignToReference>var_RiskScore</assignToReference>
-            <operator>Multiply</operator>
-            <value><numberValue>1.5</numberValue></value>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula_RiskScoreMultiplied</elementReference>
+            </value>
         </assignmentItems>
         <assignmentItems>
             <assignToReference>var_ExpeditedPenaltyApplied</assignToReference>
             <operator>Assign</operator>
-            <value><booleanValue>true</booleanValue></value>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
         </assignmentItems>
         <assignmentItems>
             <assignToReference>var_CurrentStep</assignToReference>
             <operator>Assign</operator>
-            <value><stringValue>Expedited_Multiplier_Applied</stringValue></value>
+            <value>
+                <stringValue>Expedited_Multiplier_Applied</stringValue>
+            </value>
         </assignmentItems>
         <connector>
             <targetReference>Decision_CapScore</targetReference>
         </connector>
     </assignments>
-
     <assignments>
         <name>Assign_Score_Cap</name>
         <label>Cap Score at 100</label>
@@ -250,7 +258,6 @@
             <targetReference>Decision_AssignTier</targetReference>
         </connector>
     </assignments>
-
     <assignments>
         <name>Assign_Tier_VeryHigh</name>
         <label>Tier: Very High</label>
@@ -267,7 +274,6 @@
             <targetReference>Build_Score_Factors</targetReference>
         </connector>
     </assignments>
-
     <assignments>
         <name>Assign_Tier_High</name>
         <label>Tier: High</label>
@@ -284,7 +290,6 @@
             <targetReference>Build_Score_Factors</targetReference>
         </connector>
     </assignments>
-
     <assignments>
         <name>Assign_Tier_Moderate</name>
         <label>Tier: Moderate</label>
@@ -301,7 +306,6 @@
             <targetReference>Build_Score_Factors</targetReference>
         </connector>
     </assignments>
-
     <assignments>
         <name>Assign_Tier_Low</name>
         <label>Tier: Low</label>
@@ -318,7 +322,6 @@
             <targetReference>Build_Score_Factors</targetReference>
         </connector>
     </assignments>
-
     <assignments>
         <name>Build_Score_Factors</name>
         <label>Build Score Factors</label>
@@ -328,7 +331,7 @@
             <assignToReference>var_ScoreFactors</assignToReference>
             <operator>Assign</operator>
             <value>
-                <stringValue>Review Type ({!$Record.nepa_review_type__c}): {!var_ReviewTypePoints} pts; Agency: {!var_AgencyPoints} pts; Circuit: {!var_CircuitPoints} pts; Adjacent Statutes: {!var_AdjacentStatutePoints} pts; Total: {!var_RiskScore}</stringValue>
+                <elementReference>formula_ScoreFactorsSummary</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -342,8 +345,6 @@
             <targetReference>Decision_AppendPenaltyNote</targetReference>
         </connector>
     </assignments>
-
-    <!-- Mandate 3: conditionally append APA penalty note to score factors string -->
     <assignments>
         <name>Append_PenaltyNote</name>
         <label>Append APA Penalty Note to Score Factors</label>
@@ -360,7 +361,6 @@
             <targetReference>Update_RiskFields</targetReference>
         </connector>
     </assignments>
-
     <assignments>
         <name>Handle_Error</name>
         <label>Handle Error</label>
@@ -377,55 +377,6 @@
             <targetReference>Call_ErrorLogger</targetReference>
         </connector>
     </assignments>
-
-    <!-- code-analyzer-suppress flow:MissingFaultHandler - terminal error handler; fault-handling Call_ErrorLogger would be circular -->
-    <subflows>
-        <name>Call_ErrorLogger</name>
-        <label>Log Flow Error</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <flowName>NEPA_Error_Logger</flowName>
-        <inputAssignments>
-            <name>inp_FlowName</name>
-            <value><stringValue>NEPA_Litigation_Risk_Scorer</stringValue></value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_ErrorMessage</name>
-            <value><elementReference>var_ErrorMessage</elementReference></value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_RecordId</name>
-            <value><elementReference>$Record.Id</elementReference></value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_RunningUserId</name>
-            <value><elementReference>$User.Id</elementReference></value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_FailedStep</name>
-            <value><elementReference>var_CurrentStep</elementReference></value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_ErrorContext</name>
-            <value><elementReference>formula_ErrorContext</elementReference></value>
-        </inputAssignments>
-    </subflows>
-
-    <formulas>
-        <name>formula_ErrorContext</name>
-        <dataType>String</dataType>
-        <expression>"Agency:" &amp; {!var_AgencyName} &amp; "|Circuit:" &amp; {!var_CircuitKey} &amp; "|ReviewType:" &amp; {!$Record.nepa_review_type__c} &amp; "|RiskScore:" &amp; TEXT({!var_RiskScore}) &amp; "|RiskTier:" &amp; {!var_RiskTier} &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
-    </formulas>
-
-    <!-- Mandate 3: appends APA penalty context to the score factors audit string -->
-    <formulas>
-        <name>formula_ScoreFactorsWithPenalty</name>
-        <dataType>String</dataType>
-        <expression>{!var_ScoreFactors} &amp; "; APA PENALTY: 1.5x multiplier applied — Expedited/Emergency procedure with " &amp; TEXT({!$Record.nepa_record_completeness__c}) &amp; "% administrative record completeness. Immediate record gap remediation required."</expression>
-    </formulas>
-
-    <!-- Decisions -->
-    <!-- Mandate 3: gate on whether penalty was applied before writing score factors -->
     <decisions>
         <name>Decision_AppendPenaltyNote</name>
         <label>Append APA Penalty Note?</label>
@@ -441,7 +392,9 @@
             <conditions>
                 <leftValueReference>var_ExpeditedPenaltyApplied</leftValueReference>
                 <operator>EqualTo</operator>
-                <rightValue><booleanValue>true</booleanValue></rightValue>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
             </conditions>
             <connector>
                 <targetReference>Append_PenaltyNote</targetReference>
@@ -449,8 +402,6 @@
             <label>Penalty Applied</label>
         </rules>
     </decisions>
-
-    <!-- Mandate 3: Expedited APA risk gating — runs after base score calculation -->
     <decisions>
         <name>Decision_IsExpedited</name>
         <label>Is Expedited or Emergency Procedure?</label>
@@ -466,7 +417,9 @@
             <conditions>
                 <leftValueReference>$Record.nepa_review_timeline_type__c</leftValueReference>
                 <operator>EqualTo</operator>
-                <rightValue><stringValue>Expedited/Emergency</stringValue></rightValue>
+                <rightValue>
+                    <stringValue>Expedited/Emergency</stringValue>
+                </rightValue>
             </conditions>
             <connector>
                 <targetReference>Decision_RecordIncomplete</targetReference>
@@ -474,14 +427,12 @@
             <label>Expedited/Emergency</label>
         </rules>
     </decisions>
-
     <decisions>
         <name>Decision_RecordIncomplete</name>
         <label>Administrative Record Incomplete (&lt;100%)?</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>Record 100% Complete — no penalty</defaultConnectorLabel>
-        <!-- 100% completeness exempts the agency from the APA multiplier; they may still get sued, but their record is defensible -->
         <defaultConnector>
             <targetReference>Decision_CapScore</targetReference>
         </defaultConnector>
@@ -491,7 +442,9 @@
             <conditions>
                 <leftValueReference>$Record.nepa_record_completeness__c</leftValueReference>
                 <operator>LessThan</operator>
-                <rightValue><numberValue>100.0</numberValue></rightValue>
+                <rightValue>
+                    <numberValue>100.0</numberValue>
+                </rightValue>
             </conditions>
             <connector>
                 <targetReference>Apply_Expedited_Multiplier</targetReference>
@@ -499,8 +452,6 @@
             <label>Record Incomplete</label>
         </rules>
     </decisions>
-
-    <!-- Step 1: Assign review type risk points -->
     <decisions>
         <name>Decision_ReviewType</name>
         <label>Set Review Type Points</label>
@@ -556,8 +507,6 @@
             <label>CE</label>
         </rules>
     </decisions>
-
-    <!-- Step 2: Look up related project for agency and circuit -->
     <decisions>
         <name>Decision_HasRelatedProject</name>
         <label>Has Related Project?</label>
@@ -583,7 +532,6 @@
             <label>Has Project</label>
         </rules>
     </decisions>
-
     <decisions>
         <name>Decision_AgencyFound</name>
         <label>Agency Rate Found?</label>
@@ -609,7 +557,6 @@
             <label>Agency Found</label>
         </rules>
     </decisions>
-
     <decisions>
         <name>Decision_CircuitFound</name>
         <label>Circuit Weight Found?</label>
@@ -635,9 +582,6 @@
             <label>Circuit Found</label>
         </rules>
     </decisions>
-
-    <!-- Step 5: Add adjacent statute bonus — driven by NEPA_Statute_Risk_Weight__mdt records -->
-    <!-- Adding a new statute requires only a new metadata record; no flow edit needed -->
     <decisions>
         <name>Decision_StatutePresent</name>
         <label>Project Contains This Statute?</label>
@@ -663,7 +607,6 @@
             <label>Statute Present</label>
         </rules>
     </decisions>
-
     <decisions>
         <name>Decision_CapScore</name>
         <label>Cap Score at 100</label>
@@ -689,7 +632,6 @@
             <label>Score &gt; 100</label>
         </rules>
     </decisions>
-
     <decisions>
         <name>Decision_AssignTier</name>
         <label>Assign Risk Tier</label>
@@ -745,8 +687,41 @@
             <label>Moderate (25-49)</label>
         </rules>
     </decisions>
-
-    <!-- Record Lookups -->
+    <formulas>
+        <name>formula_ErrorContext</name>
+        <dataType>String</dataType>
+        <expression>"Agency:" &amp; {!var_AgencyName} &amp; "|Circuit:" &amp; {!var_CircuitKey} &amp; "|RiskScore:" &amp; TEXT({!var_RiskScore}) &amp; "|RiskTier:" &amp; {!var_RiskTier} &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
+    </formulas>
+    <formulas>
+        <name>formula_ScoreFactorsWithPenalty</name>
+        <dataType>String</dataType>
+        <expression>{!var_ScoreFactors} &amp; "; APA PENALTY: 1.5x multiplier applied — Expedited/Emergency procedure. Immediate record gap remediation required."</expression>
+    </formulas>
+    <formulas>
+        <name>formula_ScoreFactorsSummary</name>
+        <dataType>String</dataType>
+        <expression>"[AI-GENERATED — PermitTEC v0.1, PNNL 2025, 761 cases; circuit weights based on small sample, treat as directional] " &amp; "ReviewType:" &amp; TEXT({!var_ReviewTypePoints}) &amp; "pts; Agency:" &amp; TEXT({!var_AgencyPoints}) &amp; "pts; Circuit:" &amp; TEXT({!var_CircuitPoints}) &amp; "pts; Statutes:" &amp; TEXT({!var_AdjacentStatutePoints}) &amp; "pts; Total:" &amp; TEXT({!var_RiskScore})</expression>
+    </formulas>
+    <formulas>
+        <name>formula_RiskScoreMultiplied</name>
+        <dataType>Number</dataType>
+        <expression>{!var_RiskScore} * 1.5</expression>
+        <scale>2</scale>
+    </formulas>
+    <loops>
+        <name>Loop_StatuteWeights</name>
+        <label>Loop: Statute Risk Weights</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>col_StatuteWeights</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_CurrentStatute</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Calculate_Total_Score</targetReference>
+        </noMoreValuesConnector>
+    </loops>
     <recordLookups>
         <name>Get_RelatedProject</name>
         <label>Get Related Project</label>
@@ -769,10 +744,8 @@
         <queriedFields>Id</queriedFields>
         <queriedFields>nepa_circuit__c</queriedFields>
         <queriedFields>nepa_adjacent_statutes__c</queriedFields>
-        <queriedFields>nepa_lead_agency__r.Name</queriedFields>
+        <queriedFields>nepa_lead_agency__c</queriedFields>
     </recordLookups>
-
-    <!-- Step 3: Look up agency risk rate from custom metadata -->
     <recordLookups>
         <name>Get_AgencyRiskRate</name>
         <label>Get Agency Risk Rate</label>
@@ -787,7 +760,7 @@
             <field>Agency_Name__c</field>
             <operator>Contains</operator>
             <value>
-                <elementReference>rec_RelatedProject.nepa_lead_agency__r.Name</elementReference>
+                <elementReference>rec_RelatedProject.nepa_lead_agency__c</elementReference>
             </value>
         </filters>
         <object>NEPA_Agency_Risk_Rate__mdt</object>
@@ -796,8 +769,6 @@
         <queriedFields>Agency_Name__c</queriedFields>
         <queriedFields>Risk_Points__c</queriedFields>
     </recordLookups>
-
-    <!-- Step 4: Look up circuit risk weight -->
     <recordLookups>
         <name>Get_CircuitRiskWeight</name>
         <label>Get Circuit Risk Weight</label>
@@ -821,8 +792,6 @@
         <queriedFields>Circuit_Key__c</queriedFields>
         <queriedFields>Risk_Points__c</queriedFields>
     </recordLookups>
-
-    <!-- Step 5: Load active statute risk weights -->
     <recordLookups>
         <name>Get_StatuteWeights</name>
         <label>Get Active Statute Risk Weights</label>
@@ -847,27 +816,6 @@
         <queriedFields>Statute_Key__c</queriedFields>
         <queriedFields>Risk_Points__c</queriedFields>
     </recordLookups>
-
-    <!-- Step 5 loop: iterate each statute record, check presence, accumulate points -->
-    <loops>
-        <name>Loop_StatuteWeights</name>
-        <label>Loop: Statute Risk Weights</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <collectionReference>col_StatuteWeights</collectionReference>
-        <iterationOrder>Asc</iterationOrder>
-        <nextValueConnector>
-            <targetReference>Decision_StatutePresent</targetReference>
-        </nextValueConnector>
-        <noMoreValuesConnector>
-            <targetReference>Calculate_Total_Score</targetReference>
-        </noMoreValuesConnector>
-        <outputReference>rec_StatuteWeight</outputReference>
-    </loops>
-
-    <!-- Record Updates -->
-    <!-- Step 8: Write back to IndividualApplication -->
-    <!-- code-analyzer-suppress flow:SameRecordUpdate — intentional async after-save write-back via AsyncAfterCommit scheduledPath; this is the recommended pattern for expensive same-record updates -->
     <recordUpdates>
         <name>Update_RiskFields</name>
         <label>Update Risk Fields</label>
@@ -900,7 +848,6 @@
                 <elementReference>$Flow.CurrentDateTime</elementReference>
             </value>
         </inputAssignments>
-        <!-- Mandate 3: write the APA penalty flag for audit trail -->
         <inputAssignments>
             <field>nepa_expedited_risk_penalty_applied__c</field>
             <value>
@@ -916,8 +863,49 @@
             </value>
         </filters>
     </recordUpdates>
-
-    <!-- Trigger -->
+    <subflows>
+        <name>Call_ErrorLogger</name>
+        <label>Log Flow Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value>
+                <stringValue>NEPA_Litigation_Risk_Scorer</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value>
+                <elementReference>var_ErrorMessage</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RunningUserId</name>
+            <value>
+                <elementReference>$User.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_FailedStep</name>
+            <value>
+                <elementReference>var_CurrentStep</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorContext</name>
+            <value>
+                <elementReference>formula_ErrorContext</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
@@ -930,12 +918,7 @@
             </connector>
             <pathType>AsyncAfterCommit</pathType>
         </scheduledPaths>
-        <!-- filterLogic: (1 OR 2 OR 4) AND 3
-             Condition 3 guards against the CE Screener re-fire loop.
-             Condition 4 (Mandate 3): also fires when nepa_review_timeline_type__c
-             changes — expedited/emergency designation must immediately
-             recalculate the APA risk multiplier. -->
-        <filterLogic>(1 OR 2 OR 4) AND 3</filterLogic>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>nepa_review_type__c</field>
             <operator>IsChanged</operator>
@@ -943,30 +926,7 @@
                 <booleanValue>true</booleanValue>
             </value>
         </filters>
-        <filters>
-            <field>nepa_related_project__c</field>
-            <operator>IsChanged</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
-        <filters>
-            <field>nepa_screener_last_run__c</field>
-            <operator>IsChanged</operator>
-            <value>
-                <booleanValue>false</booleanValue>
-            </value>
-        </filters>
-        <filters>
-            <field>nepa_review_timeline_type__c</field>
-            <operator>IsChanged</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
     </start>
-
-    <!-- Variables -->
     <variables>
         <name>var_AgencyName</name>
         <dataType>String</dataType>
@@ -1097,14 +1057,15 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
-    <!-- Mandate 3: tracks whether the 1.5x APA expedited penalty was applied this run -->
     <variables>
         <name>var_ExpeditedPenaltyApplied</name>
         <dataType>Boolean</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
-        <value><booleanValue>false</booleanValue></value>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
     </variables>
     <variables>
         <name>var_CurrentStep</name>

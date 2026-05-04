@@ -5,15 +5,22 @@
     <label>NEPA Defensibility Trigger - Engagement</label>
     <processType>AutoLaunchedFlow</processType>
     <status>Draft</status>
-
-    <variables>
-        <name>var_ErrorMessage</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-
+    <assignments>
+        <name>Handle_Error</name>
+        <label>Handle Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
+    </assignments>
     <decisions>
         <name>Decision_HasProcess</name>
         <label>Engagement Has Process?</label>
@@ -36,25 +43,11 @@
             <label>Has Process</label>
         </rules>
     </decisions>
-
-    <assignments>
-        <name>Handle_Error</name>
-        <label>Handle Error</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_ErrorMessage</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>$Flow.FaultMessage</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Call_ErrorLogger</targetReference>
-        </connector>
-    </assignments>
-
-    <!-- code-analyzer-suppress flow:MissingFaultHandler - terminal error handler; fault-handling Call_ErrorLogger would be circular -->
+    <formulas>
+        <name>formula_ErrorContext</name>
+        <dataType>String</dataType>
+        <expression>"ProcessId:" &amp; {!$Record.nepa_process__c} &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
+    </formulas>
     <subflows>
         <name>Call_ErrorLogger</name>
         <label>Log Flow Error</label>
@@ -63,44 +56,46 @@
         <flowName>NEPA_Error_Logger</flowName>
         <inputAssignments>
             <name>inp_FlowName</name>
-            <value><stringValue>NEPA_Defensibility_Trigger_Engagement</stringValue></value>
+            <value>
+                <stringValue>NEPA_Defensibility_Trigger_Engagement</stringValue>
+            </value>
         </inputAssignments>
         <inputAssignments>
             <name>inp_ErrorMessage</name>
-            <value><elementReference>var_ErrorMessage</elementReference></value>
+            <value>
+                <elementReference>var_ErrorMessage</elementReference>
+            </value>
         </inputAssignments>
         <inputAssignments>
             <name>inp_RecordId</name>
-            <value><elementReference>$Record.Id</elementReference></value>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
         </inputAssignments>
         <inputAssignments>
             <name>inp_RunningUserId</name>
-            <value><elementReference>$User.Id</elementReference></value>
+            <value>
+                <elementReference>$User.Id</elementReference>
+            </value>
         </inputAssignments>
         <inputAssignments>
             <name>inp_FailedStep</name>
-            <value><elementReference>var_CurrentStep</elementReference></value>
+            <value>
+                <elementReference>var_CurrentStep</elementReference>
+            </value>
         </inputAssignments>
         <inputAssignments>
             <name>inp_ErrorContext</name>
-            <value><elementReference>formula_ErrorContext</elementReference></value>
+            <value>
+                <elementReference>formula_ErrorContext</elementReference>
+            </value>
         </inputAssignments>
     </subflows>
-
-    <formulas>
-        <name>formula_ErrorContext</name>
-        <dataType>String</dataType>
-        <expression>"ProcessId:" &amp; {!$Record.nepa_process__c} &amp; "|EventType:" &amp; {!$Record.nepa_event_type__c} &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
-    </formulas>
-
     <subflows>
         <name>Call_GapChecker</name>
         <label>Call Defensibility Gap Checker</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <faultConnector>
-            <targetReference>Handle_Error</targetReference>
-        </faultConnector>
         <flowName>NEPA_Defensibility_Gap_Checker</flowName>
         <inputAssignments>
             <name>inp_ProcessId</name>
@@ -109,7 +104,6 @@
             </value>
         </inputAssignments>
     </subflows>
-
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
@@ -126,7 +120,26 @@
         <filters>
             <field>nepa_process__c</field>
             <operator>IsNull</operator>
-            <value><booleanValue>false</booleanValue></value>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
         </filters>
     </start>
+    <variables>
+        <name>var_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_CurrentStep</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <stringValue>Start</stringValue>
+        </value>
+    </variables>
 </Flow>
