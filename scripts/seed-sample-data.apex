@@ -2,7 +2,8 @@
 // Usage: sf apex run --file scripts/seed-sample-data.apex --target-org <alias>
 //
 // Creates: 3 projects (EIS, EA, CE), 3 processes, 3 documents, 4 public comments,
-//          2 engagement events, and 3 timeline events.
+//          2 engagement events, 3 timeline events, 3 GIS data elements,
+//          5 process team members, and 4 regulatory citations (RegulatoryCode).
 // Safe to run multiple times — project IDs are unique so duplicates will cause a
 // DUPLICATE_VALUE error on nepa_project_id__c if run twice. Clear data first if needed.
 
@@ -11,6 +12,11 @@ Account blm = new Account(Name = 'Bureau of Land Management');
 Account doe = new Account(Name = 'Department of Energy');
 Account fws = new Account(Name = 'Fish and Wildlife Service');
 insert new List<Account>{ blm, doe, fws };
+
+// RegulatoryAuthority required by RegulatoryCode.RegulatoryAuthorityId
+RegulatoryAuthority raCeq = new RegulatoryAuthority(Name = 'CEQ');
+RegulatoryAuthority raUsfws = new RegulatoryAuthority(Name = 'USFWS');
+insert new List<RegulatoryAuthority>{ raCeq, raUsfws };
 
 // ── 2. Projects (CEQ Entity 1: Project) ───────────────────────────────────────
 Program eisProject = new Program();
@@ -250,5 +256,173 @@ insert new List<ApplicationTimeline>{
     )
 };
 
+// ── 8. GIS Data Elements (CEQ Entity 7) ──────────────────────────────────────
+insert new List<nepa_gis_data_element__c>{
+    new nepa_gis_data_element__c(
+        nepa_purpose__c             = 'Project Boundary',
+        nepa_format__c              = 'GeoJSON',
+        nepa_access_method__c       = 'URL',
+        nepa_coordinate_system__c   = 'WGS84',
+        nepa_access_information__c  = 'https://gis.blm.gov/arcgis/rest/services/lands/BLM_Natl_SMA_Grazing_Allotments/FeatureServer/0',
+        nepa_bounding_box__c        = '-109.5,42.5,-107.8,43.8',
+        nepa_database_reference__c  = 'BLM National Surface Management Agency',
+        nepa_data_source_agency__c  = 'Bureau of Land Management',
+        nepa_data_source_system__c  = 'BLM GeoCommunicator',
+        nepa_data_record_version__c = '3.2',
+        nepa_retrieved_timestamp__c = DateTime.now()
+    ),
+    new nepa_gis_data_element__c(
+        nepa_purpose__c             = 'Resource Layer',
+        nepa_format__c              = 'GeoJSON',
+        nepa_access_method__c       = 'API',
+        nepa_coordinate_system__c   = 'WGS84',
+        nepa_access_information__c  = 'https://services.arcgis.com/QVENGdaPbd4LUkLV/arcgis/rest/services/USFWS_Critical_Habitat/FeatureServer/0',
+        nepa_bounding_box__c        = '-110.0,42.0,-107.0,44.5',
+        nepa_database_reference__c  = 'USFWS Critical Habitat Portal',
+        nepa_data_source_agency__c  = 'Fish and Wildlife Service',
+        nepa_data_source_system__c  = 'USFWS IPaC',
+        nepa_data_record_version__c = '2024.1',
+        nepa_retrieved_timestamp__c = DateTime.now()
+    ),
+    new nepa_gis_data_element__c(
+        nepa_purpose__c             = 'Resource Layer',
+        nepa_format__c              = 'GeoTIFF',
+        nepa_access_method__c       = 'URL',
+        nepa_coordinate_system__c   = 'WGS84',
+        nepa_access_information__c  = 'https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer',
+        nepa_bounding_box__c        = '-109.5,42.5,-107.8,43.8',
+        nepa_database_reference__c  = 'FEMA National Flood Hazard Layer',
+        nepa_data_source_agency__c  = 'FEMA',
+        nepa_data_source_system__c  = 'FEMA NFHL',
+        nepa_data_record_version__c = '2.3.3',
+        nepa_retrieved_timestamp__c = DateTime.now()
+    )
+};
+
+// ── 9. Process Team Members (CEQ Entity 8) ────────────────────────────────────
+// Note: LicenseTypeId is required for IndividualApplication; reuse process Ids
+// seeded above. nepa_process_team_member__c is MasterDetail to IndividualApplication.
+insert new List<nepa_process_team_member__c>{
+    new nepa_process_team_member__c(
+        nepa_process__c              = eisProcess.Id,
+        nepa_user__c                 = UserInfo.getUserId(),
+        nepa_role_type__c            = 'Lead NEPA Coordinator',
+        nepa_active__c               = true,
+        nepa_start_date__c           = today.addDays(-365),
+        nepa_data_source_agency__c   = 'Bureau of Land Management',
+        nepa_data_source_system__c   = 'eNEPA',
+        nepa_data_record_version__c  = '1.0'
+    ),
+    new nepa_process_team_member__c(
+        nepa_process__c              = eisProcess.Id,
+        nepa_user__c                 = UserInfo.getUserId(),
+        nepa_role_type__c            = 'Tribal Liaison',
+        nepa_active__c               = true,
+        nepa_start_date__c           = today.addDays(-300),
+        nepa_notes__c                = 'Primary contact for Eastern Shoshone Tribe government-to-government consultation per NHPA Section 106.',
+        nepa_data_source_agency__c   = 'Bureau of Land Management',
+        nepa_data_source_system__c   = 'eNEPA',
+        nepa_data_record_version__c  = '1.0'
+    ),
+    new nepa_process_team_member__c(
+        nepa_process__c              = eaProcess.Id,
+        nepa_user__c                 = UserInfo.getUserId(),
+        nepa_role_type__c            = 'Lead NEPA Coordinator',
+        nepa_active__c               = true,
+        nepa_start_date__c           = today.addDays(-90),
+        nepa_data_source_agency__c   = 'Department of Energy',
+        nepa_data_source_system__c   = 'eNEPA',
+        nepa_data_record_version__c  = '1.0'
+    ),
+    new nepa_process_team_member__c(
+        nepa_process__c              = eaProcess.Id,
+        nepa_user__c                 = UserInfo.getUserId(),
+        nepa_role_type__c            = 'GIS Specialist',
+        nepa_active__c               = true,
+        nepa_start_date__c           = today.addDays(-60),
+        nepa_notes__c                = 'Responsible for Mojave Desert Tortoise habitat proximity analysis.',
+        nepa_data_source_agency__c   = 'Department of Energy',
+        nepa_data_source_system__c   = 'eNEPA',
+        nepa_data_record_version__c  = '1.0'
+    ),
+    new nepa_process_team_member__c(
+        nepa_process__c              = ceProcess.Id,
+        nepa_user__c                 = UserInfo.getUserId(),
+        nepa_role_type__c            = 'Preparer',
+        nepa_active__c               = true,
+        nepa_start_date__c           = today.addDays(-14),
+        nepa_data_source_agency__c   = 'Bureau of Land Management',
+        nepa_data_source_system__c   = 'eNEPA',
+        nepa_data_record_version__c  = '1.0'
+    )
+};
+
+// ── 10. Regulatory Citations (CEQ Entity 9 — PSS RegulatoryCode) ──────────────
+RegulatoryCode ceq_nepa = new RegulatoryCode(
+    RegulatoryAuthorityId = raCeq.Id,
+    Name             = '42 U.S.C. 4332',
+    Subject          = 'NEPA — Federal Agency Action Requirements',
+    Description      = 'Requires all federal agencies to prepare detailed environmental impact statements for major federal actions significantly affecting the quality of the human environment.',
+    EffectiveFrom    = DateTime.newInstance(1970, 1, 1, 0, 0, 0),
+    nepa_compliance_requirements__c = 'Prepare EIS for major federal actions; consider alternatives; disclose environmental consequences.',
+    nepa_text_content__c = 'Sec. 102(2)(C): include in every recommendation or report on proposals for legislation and other major Federal actions significantly affecting the quality of the human environment, a detailed statement by the responsible official on (i) the environmental impact of the proposed action...',
+    nepa_data_source_agency__c  = 'CEQ',
+    nepa_data_source_system__c  = 'U.S. Code',
+    nepa_data_record_version__c = '2025.1',
+    nepa_record_owner_agency__c = 'CEQ',
+    nepa_retrieved_timestamp__c = DateTime.now()
+);
+
+RegulatoryCode ceq_ce = new RegulatoryCode(
+    RegulatoryAuthorityId = raCeq.Id,
+    Name             = '40 CFR 1501.4',
+    Subject          = 'CE Determination — Categorical Exclusion',
+    Description      = 'Establishes the process for determining whether a proposed federal action qualifies for a categorical exclusion from further NEPA review.',
+    EffectiveFrom    = DateTime.newInstance(2022, 9, 14, 0, 0, 0),
+    nepa_compliance_requirements__c = 'Determine extraordinary circumstances; consult agency CX list; document determination in administrative record.',
+    nepa_data_source_agency__c  = 'CEQ',
+    nepa_data_source_system__c  = 'eCFR',
+    nepa_data_record_version__c = '2022.1',
+    nepa_record_owner_agency__c = 'CEQ',
+    nepa_retrieved_timestamp__c = DateTime.now()
+);
+
+RegulatoryCode ceq_eis = new RegulatoryCode(
+    RegulatoryAuthorityId = raCeq.Id,
+    Name             = '40 CFR 1502.1',
+    Subject          = 'EIS Purpose and Function',
+    Description      = 'Defines the purpose of an Environmental Impact Statement: to serve as an action-forcing device ensuring agencies consider environmental effects and inform decision-makers and the public.',
+    EffectiveFrom    = DateTime.newInstance(2022, 9, 14, 0, 0, 0),
+    nepa_compliance_requirements__c = 'EIS must be analytic rather than encyclopedic; rigorously explore alternatives; circulate for public comment.',
+    nepa_data_source_agency__c  = 'CEQ',
+    nepa_data_source_system__c  = 'eCFR',
+    nepa_data_record_version__c = '2022.1',
+    nepa_record_owner_agency__c = 'CEQ',
+    nepa_retrieved_timestamp__c = DateTime.now()
+);
+
+RegulatoryCode esa_7 = new RegulatoryCode(
+    RegulatoryAuthorityId = raUsfws.Id,
+    Name             = '16 U.S.C. 1536',
+    Subject          = 'ESA Section 7 — Interagency Cooperation',
+    Description      = 'Requires federal agencies to consult with USFWS or NMFS to ensure actions are not likely to jeopardize listed species or destroy critical habitat.',
+    EffectiveFrom    = DateTime.newInstance(1973, 12, 28, 0, 0, 0),
+    nepa_compliance_requirements__c = 'Initiate formal or informal consultation with USFWS/NMFS when action may affect listed species; obtain Biological Opinion if formal consultation required.',
+    nepa_data_source_agency__c  = 'USFWS',
+    nepa_data_source_system__c  = 'U.S. Code',
+    nepa_data_record_version__c = '2023.1',
+    nepa_record_owner_agency__c = 'USFWS',
+    nepa_retrieved_timestamp__c = DateTime.now()
+);
+
+insert new List<RegulatoryCode>{ ceq_nepa, ceq_ce, ceq_eis, esa_7 };
+
+// Wire the CE process to the CE determination citation
+ceProcess.nepa_legal_structure__c = ceq_ce.Id;
+eisProcess.nepa_legal_structure__c = ceq_eis.Id;
+eaProcess.nepa_legal_structure__c = ceq_eis.Id;
+update new List<IndividualApplication>{ eisProcess, eaProcess, ceProcess };
+
 System.debug('=== Seed complete ===');
 System.debug('EIS: ' + eisProcess.Id + ' | EA: ' + eaProcess.Id + ' | CE: ' + ceProcess.Id);
+System.debug('GIS layers: 3 | Team members: 5 | Regulatory citations: 4');

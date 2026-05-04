@@ -6,6 +6,7 @@ public class NepaTestFactory {
 
     private static final Map<String, Id> AGENCY_CACHE = new Map<String, Id>();
     private static Id licenseTypeId;
+    private static Id regulatoryAuthorityId;
     private static Integer cvCounter = 0;
 
     // ── Agency Account cache ──────────────────────────────────────────────────
@@ -18,6 +19,25 @@ public class NepaTestFactory {
         insert a;
         AGENCY_CACHE.put(agencyName, a.Id);
         return a.Id;
+    }
+
+    // ── RegulatoryAuthority cache ─────────────────────────────────────────────
+
+    private static Id getOrCreateRegulatoryAuthority() {
+        if (regulatoryAuthorityId != null) {
+            return regulatoryAuthorityId;
+        }
+        List<RegulatoryAuthority> existing = [
+            SELECT Id FROM RegulatoryAuthority WHERE Name = 'CEQ' LIMIT 1
+        ];
+        if (!existing.isEmpty()) {
+            regulatoryAuthorityId = existing[0].Id;
+        } else {
+            RegulatoryAuthority ra = new RegulatoryAuthority(Name = 'CEQ');
+            insert ra;
+            regulatoryAuthorityId = ra.Id;
+        }
+        return regulatoryAuthorityId;
     }
 
     // ── RegulatoryAuthorizationType cache ─────────────────────────────────────
@@ -261,6 +281,106 @@ public class NepaTestFactory {
      */
     public static ContentVersion insertPrivateContentVersion(Id linkedEntityId, String docType) {
         return insertContentVersionRecord(linkedEntityId, false, docType);
+    }
+
+    // ── nepa_gis_data_element__c (CEQ Entity 7) ──────────────────────────────
+
+    /**
+     * Builds an unsaved GIS data element.
+     * @param processId Optional parent IndividualApplication Id (may be null)
+     * @param purpose   Value for nepa_purpose__c picklist
+     * @return Unsaved nepa_gis_data_element__c record
+     */
+    public static nepa_gis_data_element__c makeGisDataElement(Id processId, String purpose) {
+        nepa_gis_data_element__c g = new nepa_gis_data_element__c();
+        g.nepa_purpose__c            = purpose != null ? purpose : 'Resource Layer';
+        g.nepa_format__c             = 'GeoJSON';
+        g.nepa_access_method__c      = 'URL';
+        g.nepa_coordinate_system__c  = 'WGS84';
+        g.nepa_access_information__c = 'https://services.arcgis.com/test/layer';
+        g.nepa_data_source_agency__c = 'USFWS';
+        g.nepa_data_source_system__c = 'ArcGIS Online';
+        g.nepa_data_record_version__c  = '1.0';
+        g.nepa_retrieved_timestamp__c  = DateTime.now();
+        return g;
+    }
+
+    /**
+     * Inserts and returns a GIS data element.
+     * @param processId Optional parent IndividualApplication Id (may be null)
+     * @param purpose   Value for nepa_purpose__c picklist
+     * @return Saved nepa_gis_data_element__c record
+     */
+    public static nepa_gis_data_element__c insertGisDataElement(Id processId, String purpose) {
+        nepa_gis_data_element__c g = makeGisDataElement(processId, purpose);
+        insert g;
+        return g;
+    }
+
+    // ── nepa_process_team_member__c (CEQ Entity 8) ───────────────────────────
+
+    /**
+     * Builds an unsaved process team member.
+     * @param processId Parent IndividualApplication Id (required — MasterDetail)
+     * @param userId    User to assign; if null uses the running user
+     * @param roleType  Value for nepa_role_type__c picklist
+     * @return Unsaved nepa_process_team_member__c record
+     */
+    public static nepa_process_team_member__c makeTeamMember(Id processId, Id userId, String roleType) {
+        nepa_process_team_member__c tm = new nepa_process_team_member__c();
+        tm.nepa_process__c   = processId;
+        tm.nepa_user__c      = userId != null ? userId : UserInfo.getUserId();
+        tm.nepa_role_type__c = roleType != null ? roleType : 'Reviewer';
+        tm.nepa_active__c    = true;
+        tm.nepa_start_date__c = Date.today();
+        return tm;
+    }
+
+    /**
+     * Inserts and returns a process team member.
+     * @param processId Parent IndividualApplication Id (required — MasterDetail)
+     * @param userId    User to assign; if null uses the running user
+     * @param roleType  Value for nepa_role_type__c picklist
+     * @return Saved nepa_process_team_member__c record
+     */
+    public static nepa_process_team_member__c insertTeamMember(Id processId, Id userId, String roleType) {
+        nepa_process_team_member__c tm = makeTeamMember(processId, userId, roleType);
+        insert tm;
+        return tm;
+    }
+
+    // ── RegulatoryCode (CEQ Entity 9) ─────────────────────────────────────
+
+    /**
+     * Builds an unsaved RegulatoryCode record.
+     * RegulatoryAuthorityId (Lookup → Account) is required in this org;
+     * the factory creates/caches a "CEQ" agency account automatically.
+     * @param name     Citation string, e.g., "40 CFR 1501.4"
+     * @param subject  Subject / description line
+     * @return Unsaved RegulatoryCode record
+     */
+    public static RegulatoryCode makeRegulatoryCode(String name, String subject) {
+        RegulatoryCode rc = new RegulatoryCode();
+        rc.Name                        = name != null ? name : '40 CFR 1501.4';
+        rc.Subject                     = subject != null ? subject : 'CE Determination';
+        rc.EffectiveFrom               = DateTime.now().addDays(-365);
+        rc.RegulatoryAuthorityId       = getOrCreateRegulatoryAuthority();
+        rc.nepa_data_source_agency__c  = 'CEQ';
+        rc.nepa_data_source_system__c  = 'eCFR';
+        rc.nepa_data_record_version__c = '1.0';
+        return rc;
+    }
+
+    /**
+     * Inserts and returns a RegulatoryCode record.
+     * @param name     Citation string, e.g., "40 CFR 1501.4"
+     * @param subject  Subject / description line
+     * @return Saved RegulatoryCode record
+     */
+    public static RegulatoryCode insertRegulatoryCode(String name, String subject) {
+        RegulatoryCode rc = makeRegulatoryCode(name, subject);
+        insert rc;
+        return rc;
     }
 
     private static ContentVersion insertContentVersionRecord(Id linkedEntityId, Boolean publicAccess, String docType) {
