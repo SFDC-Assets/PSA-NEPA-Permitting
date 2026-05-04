@@ -8,3 +8,8 @@ node_modules/
 *-success-records.csv
 package-lock.json
 CLAUDE.md
+# Planning and build-tracking artifacts
+docs/NEPA-Compliance-Improvement-Plan.md
+docs/NEPA-Permitting-Acceleration-Plan.md
+docs/NEPA-Risk-Intelligence-Plan.md
+data insights/
