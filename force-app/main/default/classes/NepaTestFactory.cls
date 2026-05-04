@@ -2,9 +2,13 @@
 @IsTest
 public class NepaTestFactory {
 
-    // ── Agency Account cache ──────────────────────────────────────────────────
+    // ── Field declarations ────────────────────────────────────────────────────
 
     private static final Map<String, Id> AGENCY_CACHE = new Map<String, Id>();
+    private static Id licenseTypeId;
+    private static Integer cvCounter = 0;
+
+    // ── Agency Account cache ──────────────────────────────────────────────────
 
     private static Id getOrCreateAgencyAccount(String agencyName) {
         if (AGENCY_CACHE.containsKey(agencyName)) {
@@ -17,8 +21,6 @@ public class NepaTestFactory {
     }
 
     // ── RegulatoryAuthorizationType cache ─────────────────────────────────────
-
-    private static Id licenseTypeId;
 
     private static Id getOrCreateLicenseType() {
         if (licenseTypeId != null) {
@@ -260,8 +262,6 @@ public class NepaTestFactory {
     public static ContentVersion insertPrivateContentVersion(Id linkedEntityId, String docType) {
         return insertContentVersionRecord(linkedEntityId, false, docType);
     }
-
-    private static Integer cvCounter = 0;
 
     private static ContentVersion insertContentVersionRecord(Id linkedEntityId, Boolean publicAccess, String docType) {
         // Unique title per insert prevents ContentDocument index lock contention when
