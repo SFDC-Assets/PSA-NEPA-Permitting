@@ -39,9 +39,9 @@ This Accelerator implements the following entities from the CEQ NEPA and Permitt
 | Entity 4: Comments | `PublicComplaint` | ✅ Implemented |
 | Entity 5: Public Engagement Events | `nepa_engagement__c` (custom) | ✅ Implemented |
 | Entity 6: Case Events | `ApplicationTimeline` (PSS standard, extended) | ✅ Implemented |
-| Entity 7: GIS Data | PSS `Polygon` (not yet linked) | 🔲 Tier 3 / v2.0 |
-| Entity 8: User Role | Salesforce standard profiles/roles | 🔲 Use native Salesforce |
-| Entity 9: Legal Structure | — | 🔲 Tier 3 / v2.0 |
+| Entity 7: GIS Data | `nepa_gis_data_element__c` (child of PSS `Polygon`) + Program lat/lon/polygon fields + GIS proximity flow | ✅ Implemented |
+| Entity 8: User Role | `nepa_process_team_member__c` — structured role assignment linking User, Agency (Account), and Process with CEQ-required provenance fields | ✅ Implemented |
+| Entity 9: Legal Structure | `nepa_legal_structure__c` — statutory/regulatory citation library; lookup from IndividualApplication and nepa_decision_element__c | ✅ Implemented |
 
 All 6 implemented entities include the 5 custom provenance fields required by CEQ standard v1.2 (`Data Record Version`, `Data Source Agency`, `Data Source System`, `Record Owner Agency`, `Retrieved Timestamp`). `LastModifiedDate` (native Salesforce) satisfies the standard's `Last Updated` provenance property.
 

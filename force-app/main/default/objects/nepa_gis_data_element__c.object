@@ -329,6 +329,54 @@
         <trackHistory>false</trackHistory>
         <type>Url</type>
     </fields>
+    <fields>
+        <fullName>nepa_data_record_version__c</fullName>
+        <description>CEQ standard v1.2 provenance: version identifier for this data record.</description>
+        <label>Data Record Version</label>
+        <length>50</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_agency__c</fullName>
+        <description>CEQ standard v1.2 provenance: agency that is the source of this data record.</description>
+        <label>Data Source Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_system__c</fullName>
+        <description>CEQ standard v1.2 provenance: system of record that originated this data.</description>
+        <label>Data Source System</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_record_owner_agency__c</fullName>
+        <description>CEQ standard v1.2 provenance: agency responsible for maintaining this record.</description>
+        <label>Record Owner Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_retrieved_timestamp__c</fullName>
+        <description>CEQ standard v1.2 provenance: timestamp when this record was retrieved from the source system.</description>
+        <label>Retrieved Timestamp</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
     <label>NEPA GIS Data Element</label>
     <nameField>
         <label>GIS Data Element Name</label>

@@ -1477,6 +1477,114 @@
         <field>NEPA_Flow_Error__c.nepa_error_context__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <!-- nepa_legal_structure__c provenance fields (CEQ Entity 9) -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_legal_structure__c.nepa_data_record_version__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_legal_structure__c.nepa_data_source_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_legal_structure__c.nepa_data_source_system__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_legal_structure__c.nepa_record_owner_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_legal_structure__c.nepa_retrieved_timestamp__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- nepa_gis_data_element__c provenance fields (CEQ Entity 7) -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data_element__c.nepa_data_record_version__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data_element__c.nepa_data_source_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data_element__c.nepa_data_source_system__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data_element__c.nepa_record_owner_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data_element__c.nepa_retrieved_timestamp__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- nepa_process_team_member__c (CEQ Entity 8) — all fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_user__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_start_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_end_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_active__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_notes__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_data_record_version__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_data_source_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_data_source_system__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_record_owner_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_retrieved_timestamp__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>NEPA Permitting</label>
     <objectPermissions>
@@ -1647,7 +1755,18 @@
         <object>ApplicationTimeline</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
+    <!-- nepa_process_team_member__c object permissions (CEQ Entity 8) -->
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>nepa_process_team_member__c</object>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
     <!-- NepaCeqExportService classAccess omitted — class not yet implemented -->
+
     <tabSettings>
         <tab>nepa_engagement__c</tab>
         <visibility>Available</visibility>
@@ -1658,6 +1777,18 @@
     </tabSettings>
     <tabSettings>
         <tab>nepa_ar_export__c</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>nepa_gis_data_element__c</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>nepa_legal_structure__c</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>nepa_process_team_member__c</tab>
         <visibility>Available</visibility>
     </tabSettings>
 </PermissionSet>
