@@ -7,3 +7,4 @@ node_modules/
 *-failed-records.csv
 *-success-records.csv
 package-lock.json
+CLAUDE.md
