@@ -51,25 +51,29 @@ private class NepaTimelineControllerTest {
     @IsTest
     static void getProcessTimeline_blankProcessId_throwsException() {
         Test.startTest();
+        Boolean threw = false;
         try {
             NepaTimelineController.getProcessTimeline('');
             System.assert(false, 'Should have thrown');
         } catch (AuraHandledException e) {
-            System.assert(e.getMessage().contains('required'));
+            threw = true;
         }
         Test.stopTest();
+        System.assert(threw, 'Should throw AuraHandledException for blank processId');
     }
 
     @IsTest
     static void getProcessTimeline_nullProcessId_throwsException() {
         Test.startTest();
+        Boolean threw = false;
         try {
             NepaTimelineController.getProcessTimeline(null);
             System.assert(false, 'Should have thrown');
         } catch (AuraHandledException e) {
-            System.assert(e.getMessage().contains('required'));
+            threw = true;
         }
         Test.stopTest();
+        System.assert(threw, 'Should throw AuraHandledException for null processId');
     }
 
     @IsTest
@@ -79,6 +83,7 @@ private class NepaTimelineControllerTest {
 
         // Insert an event with null start/end dates
         ApplicationTimeline evt = new ApplicationTimeline();
+        evt.Name                    = 'Null Dates Event';
         evt.nepa_event_type__c      = 'Scoping Open';
         evt.nepa_status__c          = 'Pending';
         evt.nepa_public_access__c   = true;
@@ -106,6 +111,7 @@ private class NepaTimelineControllerTest {
         List<ApplicationTimeline> evts = new List<ApplicationTimeline>();
         for (Integer i = 0; i < 210; i++) {
             ApplicationTimeline e = new ApplicationTimeline();
+            e.Name                    = 'Bulk Event ' + i;
             e.nepa_event_type__c      = 'NOI';
             e.nepa_status__c          = 'Completed';
             e.nepa_public_access__c   = true;

@@ -215,11 +215,7 @@ private class NepaStageGateTest {
     @IsTest
     static void stageGate_baseline_reviewTypeFirstSet_stampsTargetDate() {
         Program proj = getProgram();
-        IndividualApplication ia = new IndividualApplication();
-        ia.Category = 'Permit';
-        ia.nepa_related_project__c = proj.Id;
-        ia.nepa_process_status__c = 'in progress';
-        ia.nepa_process_stage__c = 'Scoping';
+        IndividualApplication ia = NepaTestFactory.makeProcess(proj.Id, null, null, null);
         insert ia;
 
         ia.nepa_review_type__c = 'EIS';

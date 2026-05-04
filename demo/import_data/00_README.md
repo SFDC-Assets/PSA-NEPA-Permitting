@@ -32,16 +32,16 @@ Load files strictly in number order. Each file's parent records must exist befor
 | 03 | `03_Contact.csv` | Contact | 9 | `External_ID__c` | Account (02) |
 | 04 | `04_ServiceTerritory.csv` | ServiceTerritory | 1 | `External_ID__c` | OperatingHours (01) |
 | 05 | `05_WorkType.csv` | WorkType | 7 | `External_ID__c` | None |
-| 06 | `06_ServiceResource.csv` | ServiceResource | 7 | `External_ID__c` | None (RelatedRecordId wired by Apex step 18) |
-| 07 | `07_ServiceTerritoryMember.csv` | ServiceTerritoryMember | 7 | `External_ID__c` | ServiceTerritory (04), ServiceResource (06) |
+| 06 | *(skipped — Apex step 18)* | ServiceResource | 1 | — | `RelatedRecordId` requires User ID; created by Apex with running user |
+| 07 | *(skipped — Apex step 18)* | ServiceTerritoryMember | 1 | — | Depends on ServiceResource created in step 18 |
 | 08 | `08_Program.csv` | Program | 1 | `nepa_project_id__c` | Account (02) |
-| 09 | `09_IndividualApplication.csv` | IndividualApplication | 1 | `nepa_federal_unique_id__c` | Program (08), Contact (03) |
-| 10 | `10_ContentVersion.csv` | ContentVersion | 5 | insert (no ext ID) | IndividualApplication (09) — `nepa_process__c` wired by Apex step 18 |
-| 11 | `11_nepa_engagement__c.csv` | nepa_engagement__c | 5 | insert (no ext ID) | IndividualApplication (09) |
-| 12 | `12_ApplicationTimeline.csv` | ApplicationTimeline | 25 | insert (no ext ID) | IndividualApplication (09) |
+| 09 | *(skipped — Apex step 18)* | IndividualApplication | 1 | — | `LicenseTypeId` requires runtime RegulatoryAuthorizationType ID |
+| 10 | *(skipped — Apex step 18)* | ContentVersion | 6 | — | `VersionData` (Blob) cannot be set via Bulk API v2 CSV |
+| 11 | `11_nepa_engagement__c.csv` | nepa_engagement__c | 5 | insert (no ext ID) | `nepa_process__c` wired by Apex step 18 |
+| 12 | `12_ApplicationTimeline.csv` | ApplicationTimeline | 125 | insert (no ext ID) | `nepa_related_process__c` wired by Apex step 18 |
 | 13 | `13_WorkOrder.csv` | WorkOrder | 10 | `External_ID__c` | Account (02), ServiceTerritory (04), WorkType (05) |
-| 14 | `14_ServiceAppointment.csv` | ServiceAppointment | 10 | `External_ID__c` | WorkOrder (13), ServiceTerritory (04) |
-| 15 | `15_AssignedResource.csv` | AssignedResource | 11 | `External_ID__c` | ServiceAppointment (14), ServiceResource (06) |
+| 14 | *(skipped — Apex step 18)* | ServiceAppointment | 10 | — | `ParentRecordId` polymorphic; Bulk API v2 cannot resolve via external ID |
+| 15 | *(skipped — Apex step 18)* | AssignedResource | 10 | — | Depends on ServiceAppointments created in step 18 |
 | 16 | `16_PublicComplaint.csv` | PublicComplaint | 2 | insert (no ext ID) | Account (02), IndividualApplication (09) |
 | 17 | `17_nepa_litigation__c.csv` | nepa_litigation__c | 2 | insert (no ext ID) | Program (08) |
 | 18 | `18_postload_polymorphic.apex` | **Apex script** | — | — | Run after all CSVs; wires polymorphic lookups |
@@ -66,12 +66,16 @@ Load files strictly in number order. Each file's parent records must exist befor
 
 The following fields cannot be set via CSV bulk upsert. `18_postload_polymorphic.apex` handles all of them:
 
-| Field | Object | Resolution |
+| Field / Object | Why Apex | Resolution |
 |---|---|---|
-| `RelatedRecordId` | ServiceResource | Linked to Contact by `External_ID__c` match |
-| `WhatId` | Task | Linked to IndividualApplication (PSS standard object, no `__c`) |
-| `WhoId` | Task | Linked to Contact |
-| `nepa_process__c` | ContentVersion | Custom lookup to IndividualApplication — wired via Title match |
+| ServiceResource `RelatedRecordId` | Requires User ID (not Contact) | Created with running user's ID; 1 SR for demo (PSS enforces 1 Technician per User) |
+| ServiceTerritoryMember | Depends on SR created at runtime | Single STM created after SR |
+| IndividualApplication `LicenseTypeId` | Org-specific `RegulatoryAuthorizationType` ID | Apex queries/creates "NEPA Environmental Review" RAT at runtime |
+| ContentVersion `VersionData` | Bulk API v2 cannot supply base64 Blob in CSV | Created with `Blob.valueOf(' ')` placeholder; 6 documents including Comment Response required by FONSI gate CMT |
+| ServiceAppointment `ParentRecordId` | Polymorphic — Bulk API v2 cannot resolve via external ID notation | SA created after querying actual WorkOrder IDs |
+| AssignedResource | Depends on SA created at runtime | AR created after SA |
+| Task `WhatId` / `WhoId` | Polymorphic lookups | Wired by querying IA and Contact IDs after all records exist |
+| `nepa_process__c` | Cross-object wiring for engagement, timeline, complaint, CV | Wired by querying `nepa_federal_unique_id__c = 'IDI-38709'` |
 
 Run the Apex script:
 ```bash
@@ -170,7 +174,7 @@ sf data query --target-org $TARGET \
   --query "SELECT COUNT() FROM ApplicationTimeline WHERE nepa_related_process__r.nepa_federal_unique_id__c = 'IDI-38709'"
 
 sf data query --target-org $TARGET \
-  --query "SELECT COUNT() FROM ContentVersion WHERE Title LIKE 'Carrie Placer%' AND IsLatest = true"
+  --query "SELECT COUNT() FROM ContentVersion WHERE nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709' AND IsLatest = true"
 
 sf data query --target-org $TARGET \
   --query "SELECT COUNT() FROM PublicComplaint WHERE nepa_related_process__r.nepa_federal_unique_id__c = 'IDI-38709'"
@@ -191,7 +195,7 @@ sf data delete bulk --sobject PublicComplaint         --where "Subject LIKE 'ICL
 sf data delete bulk --sobject nepa_litigation__c      --where "nepa_citation__c LIKE '%9th Cir%'"  --target-org $TARGET --async
 sf data delete bulk --sobject ApplicationTimeline     --where "nepa_related_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
 sf data delete bulk --sobject nepa_engagement__c      --where "nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
-sf data delete bulk --sobject ContentVersion          --where "Title LIKE 'Carrie Placer Mine%'"   --target-org $TARGET --async
+sf data delete bulk --sobject ContentVersion          --where "nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
 sf data delete bulk --sobject IndividualApplication   --where "nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
 sf data delete bulk --sobject Program                 --where "nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'" --target-org $TARGET --async
 sf data delete bulk --sobject ServiceTerritoryMember  --where "External_ID__c LIKE 'DEMO_STM_%'"  --target-org $TARGET --async

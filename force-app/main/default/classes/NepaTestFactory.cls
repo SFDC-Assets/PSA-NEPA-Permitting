@@ -16,6 +16,31 @@ public class NepaTestFactory {
         return a.Id;
     }
 
+    // ── RegulatoryAuthorizationType cache ─────────────────────────────────────
+
+    private static Id licenseTypeId;
+
+    private static Id getOrCreateLicenseType() {
+        if (licenseTypeId != null) {
+            return licenseTypeId;
+        }
+        List<RegulatoryAuthorizationType> existing = [
+            SELECT Id FROM RegulatoryAuthorizationType
+            WHERE Name = 'NEPA Environmental Review' LIMIT 1
+        ];
+        if (!existing.isEmpty()) {
+            licenseTypeId = existing[0].Id;
+        } else {
+            RegulatoryAuthorizationType rat = new RegulatoryAuthorizationType(
+                Name = 'NEPA Environmental Review',
+                RegulatoryAuthCategory = 'Permit'
+            );
+            insert rat;
+            licenseTypeId = rat.Id;
+        }
+        return licenseTypeId;
+    }
+
     // ── Program (CEQ Project) ─────────────────────────────────────────────────
 
     /**
@@ -64,6 +89,7 @@ public class NepaTestFactory {
     public static IndividualApplication makeProcess(Id projectId, String reviewType, Date periodStart, Date periodEnd) {
         IndividualApplication ia = new IndividualApplication();
         ia.Category                                = 'Permit';
+        ia.LicenseTypeId                           = getOrCreateLicenseType();
         ia.nepa_related_project__c                 = projectId;
         ia.nepa_review_type__c                     = reviewType;
         ia.nepa_process_status__c                  = 'in progress';
@@ -124,6 +150,7 @@ public class NepaTestFactory {
     ) {
         IndividualApplication ia = new IndividualApplication();
         ia.Category                               = 'Permit';
+        ia.LicenseTypeId                          = getOrCreateLicenseType();
         ia.nepa_related_project__c                = projectId;
         ia.nepa_review_type__c                    = reviewType;
         ia.nepa_process_status__c                 = 'in progress';
@@ -234,27 +261,26 @@ public class NepaTestFactory {
         return insertContentVersionRecord(linkedEntityId, false, docType);
     }
 
+    private static Integer cvCounter = 0;
+
     private static ContentVersion insertContentVersionRecord(Id linkedEntityId, Boolean publicAccess, String docType) {
+        // Unique title per insert prevents ContentDocument index lock contention when
+        // multiple test classes run in parallel and Salesforce serializes on title dedup.
+        cvCounter++;
+        String uniqueLabel = docType + ' ' + cvCounter + ' ' + String.valueOf(linkedEntityId).right(4);
         ContentVersion cv = new ContentVersion();
-        cv.Title                  = 'Draft EIS Document';
-        cv.PathOnClient           = 'draft_eis.pdf';
-        cv.VersionData            = Blob.valueOf('test content');
-        cv.nepa_public_access__c  = publicAccess;
-        cv.nepa_document_type__c  = docType;
-        cv.nepa_status__c         = 'Draft';
-        cv.nepa_publish_date__c   = Date.today();
+        cv.Title                    = uniqueLabel;
+        cv.PathOnClient             = uniqueLabel.replaceAll('[^a-zA-Z0-9]', '_') + '.pdf';
+        cv.VersionData              = Blob.valueOf('test content');
+        cv.FirstPublishLocationId   = linkedEntityId;
+        cv.nepa_public_access__c    = publicAccess;
+        cv.nepa_document_type__c    = docType;
+        cv.nepa_status__c           = 'Draft';
+        cv.nepa_publish_date__c     = Date.today();
+        cv.nepa_process__c          = linkedEntityId;
         insert cv;
 
-        // Retrieve the auto-created ContentDocumentId, then link
         cv = [SELECT Id, ContentDocumentId FROM ContentVersion WHERE Id = :cv.Id];
-
-        ContentDocumentLink cdl = new ContentDocumentLink();
-        cdl.ContentDocumentId = cv.ContentDocumentId;
-        cdl.LinkedEntityId    = linkedEntityId;
-        cdl.ShareType         = 'V';
-        cdl.Visibility        = 'AllUsers';
-        insert cdl;
-
         return cv;
     }
 }

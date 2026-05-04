@@ -43,14 +43,14 @@ private class NepaCommentControllerTest {
         System.assertNotEquals(null, commentId, 'Should return the new comment Id');
 
         PublicComplaint created = [
-            SELECT Id, Name, nepa_comment_body__c, nepa_organization__c,
+            SELECT Id, Name, LastName, nepa_comment_body__c, nepa_organization__c,
                    nepa_category__c, nepa_public_source__c, Method_of_Submission__c,
                    nepa_public_access__c, nepa_email__c, nepa_date_submitted__c
             FROM PublicComplaint
             WHERE Id = :commentId
         ];
 
-        System.assertEquals('Jane Public',                               created.Name);
+        System.assertEquals('Jane Public',                               created.LastName);
         System.assertEquals('This project will harm migratory birds.',   created.nepa_comment_body__c);
         System.assertEquals('Sierra Club',                               created.nepa_organization__c);
         System.assertEquals('Wildlife',                                  created.nepa_category__c);

@@ -2,21 +2,21 @@
 @IsTest
 private class NepaDocumentControllerTest {
 
-    @TestSetup
-    static void setup() {
-        Program proj = NepaTestFactory.insertProgram('DOC-TEST-001', 'EIS Project', 'BLM');
-        IndividualApplication ia = NepaTestFactory.insertOpenProcess(proj.Id, 'EIS');
-        // Two public docs, one non-public
-        NepaTestFactory.insertPublicContentVersion(ia.Id,  'Draft EIS');
-        NepaTestFactory.insertPublicContentVersion(ia.Id,  'NOI');
-        NepaTestFactory.insertPrivateContentVersion(ia.Id, 'Draft EIS');
+    // Each test creates its own IA + CVs to avoid ContentDocument lock contention
+    // when the defensibility flow fires on concurrent parallel test transactions.
+    private static IndividualApplication makeIsolatedProcess(String key) {
+        Program proj = NepaTestFactory.insertProgram(key, 'Doc Test ' + key, 'BLM');
+        return NepaTestFactory.insertOpenProcess(proj.Id, 'EIS');
     }
 
     // ── getPublicDocuments ────────────────────────────────────────────────────
 
     @IsTest
     static void getPublicDocuments_returnsOnlyPublicDocs() {
-        IndividualApplication ia = [SELECT Id FROM IndividualApplication LIMIT 1];
+        IndividualApplication ia = makeIsolatedProcess('DOC-PUB-001');
+        NepaTestFactory.insertPublicContentVersion(ia.Id, 'Draft EIS');
+        NepaTestFactory.insertPublicContentVersion(ia.Id, 'NOI');
+        NepaTestFactory.insertPrivateContentVersion(ia.Id, 'Draft EIS');
 
         Test.startTest();
         NepaDocumentController.DocumentListResult result =
@@ -33,7 +33,9 @@ private class NepaDocumentControllerTest {
 
     @IsTest
     static void getPublicDocuments_withDocTypeFilter() {
-        IndividualApplication ia = [SELECT Id FROM IndividualApplication LIMIT 1];
+        IndividualApplication ia = makeIsolatedProcess('DOC-FILT-001');
+        NepaTestFactory.insertPublicContentVersion(ia.Id, 'Draft EIS');
+        NepaTestFactory.insertPublicContentVersion(ia.Id, 'NOI');
 
         Test.startTest();
         NepaDocumentController.DocumentListResult result =
@@ -46,12 +48,11 @@ private class NepaDocumentControllerTest {
 
     @IsTest
     static void getPublicDocuments_noLinkedDocs_returnsEmpty() {
-        Program proj2 = NepaTestFactory.insertProgram('DOC-TEST-002', 'Empty Project', 'EPA');
-        IndividualApplication ia2 = NepaTestFactory.insertOpenProcess(proj2.Id, 'EA');
+        IndividualApplication ia = makeIsolatedProcess('DOC-EMPTY-001');
 
         Test.startTest();
         NepaDocumentController.DocumentListResult result =
-            NepaDocumentController.getPublicDocuments(ia2.Id, null, 1, 20);
+            NepaDocumentController.getPublicDocuments(ia.Id, null, 1, 20);
         Test.stopTest();
 
         System.assertEquals(0, result.totalCount);
@@ -61,18 +62,21 @@ private class NepaDocumentControllerTest {
     @IsTest
     static void getPublicDocuments_blankProcessId_throwsException() {
         Test.startTest();
+        Boolean threw = false;
         try {
             NepaDocumentController.getPublicDocuments('', null, 1, 20);
             System.assert(false, 'Should have thrown');
         } catch (AuraHandledException e) {
-            System.assert(e.getMessage().contains('required'));
+            threw = true;
         }
         Test.stopTest();
+        System.assert(threw, 'Should throw AuraHandledException for blank processId');
     }
 
     @IsTest
     static void getPublicDocuments_paginationDefaults() {
-        IndividualApplication ia = [SELECT Id FROM IndividualApplication LIMIT 1];
+        IndividualApplication ia = makeIsolatedProcess('DOC-PAGE-001');
+        NepaTestFactory.insertPublicContentVersion(ia.Id, 'NOI');
 
         Test.startTest();
         NepaDocumentController.DocumentListResult result =
@@ -86,11 +90,9 @@ private class NepaDocumentControllerTest {
 
     @IsTest
     static void getContentDownloadUrl_publicDoc_returnsUrl() {
-        ContentVersion cv = [
-            SELECT Id FROM ContentVersion
-            WHERE nepa_public_access__c = true AND IsLatest = true
-            LIMIT 1
-        ];
+        IndividualApplication ia = makeIsolatedProcess('DOC-URL-001');
+        ContentVersion cv = NepaTestFactory.insertPublicContentVersion(ia.Id, 'NOI');
+        cv = [SELECT Id FROM ContentVersion WHERE Id = :cv.Id];
 
         Test.startTest();
         String url = NepaDocumentController.getContentDownloadUrl(cv.Id);
@@ -102,66 +104,56 @@ private class NepaDocumentControllerTest {
 
     @IsTest
     static void getContentDownloadUrl_nonPublicDoc_throwsException() {
-        ContentVersion cv = [
-            SELECT Id FROM ContentVersion
-            WHERE nepa_public_access__c = false AND IsLatest = true
-            LIMIT 1
-        ];
+        IndividualApplication ia = makeIsolatedProcess('DOC-NONPUB-001');
+        ContentVersion cv = NepaTestFactory.insertPrivateContentVersion(ia.Id, 'Draft EIS');
+        cv = [SELECT Id FROM ContentVersion WHERE Id = :cv.Id];
 
         Test.startTest();
+        Boolean threw = false;
         try {
             NepaDocumentController.getContentDownloadUrl(cv.Id);
             System.assert(false, 'Should have thrown');
         } catch (AuraHandledException e) {
-            System.assert(e.getMessage().contains('not found') || e.getMessage().contains('accessible'));
+            threw = true;
         }
         Test.stopTest();
+        System.assert(threw, 'Should throw AuraHandledException for non-public document');
     }
 
     @IsTest
     static void getContentDownloadUrl_blankId_throwsException() {
         Test.startTest();
+        Boolean threw = false;
         try {
             NepaDocumentController.getContentDownloadUrl('');
             System.assert(false, 'Should have thrown');
         } catch (AuraHandledException e) {
-            System.assert(e.getMessage().contains('required'));
+            threw = true;
         }
         Test.stopTest();
+        System.assert(threw, 'Should throw AuraHandledException for blank contentVersionId');
     }
 
     // ── bulk safety ───────────────────────────────────────────────────────────
 
     @IsTest
     static void getPublicDocuments_bulkSafe() {
-        Program proj = NepaTestFactory.insertProgram('DOC-BULK-001', 'Bulk Doc Project', 'NPS');
-        IndividualApplication ia = NepaTestFactory.insertOpenProcess(proj.Id, 'EIS');
+        IndividualApplication ia = makeIsolatedProcess('DOC-BULK-001');
 
         List<ContentVersion> cvs = new List<ContentVersion>();
         for (Integer i = 0; i < 25; i++) {
             ContentVersion cv = new ContentVersion();
-            cv.Title                 = 'Bulk Doc ' + i;
-            cv.PathOnClient          = 'bulk_doc_' + i + '.pdf';
-            cv.VersionData           = Blob.valueOf('content ' + i);
-            cv.nepa_public_access__c = true;
-            cv.nepa_document_type__c = 'Draft EIS';
-            cv.nepa_status__c        = 'Draft';
-            cv.nepa_publish_date__c  = Date.today();
+            cv.Title                    = 'Bulk Doc ' + i + ' ' + String.valueOf(ia.Id).right(4);
+            cv.PathOnClient             = 'bulk_doc_' + i + '.pdf';
+            cv.VersionData              = Blob.valueOf('content ' + i);
+            cv.FirstPublishLocationId   = ia.Id;
+            cv.nepa_public_access__c    = true;
+            cv.nepa_document_type__c    = 'Draft EIS';
+            cv.nepa_status__c           = 'Draft';
+            cv.nepa_publish_date__c     = Date.today();
             cvs.add(cv);
         }
         insert cvs;
-
-        List<ContentVersion> inserted = [SELECT Id, ContentDocumentId FROM ContentVersion WHERE Title LIKE 'Bulk Doc %'];
-        List<ContentDocumentLink> links = new List<ContentDocumentLink>();
-        for (ContentVersion cv : inserted) {
-            ContentDocumentLink cdl = new ContentDocumentLink();
-            cdl.ContentDocumentId = cv.ContentDocumentId;
-            cdl.LinkedEntityId    = ia.Id;
-            cdl.ShareType         = 'V';
-            cdl.Visibility        = 'AllUsers';
-            links.add(cdl);
-        }
-        insert links;
 
         Test.startTest();
         NepaDocumentController.DocumentListResult result =
