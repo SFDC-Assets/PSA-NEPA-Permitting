@@ -3,3 +3,6 @@ node_modules/
 .sfdx/
 .sf/
 *.log
+# Bulk API job result files
+*-failed-records.csv
+*-success-records.csv
