@@ -6,3 +6,4 @@ node_modules/
 # Bulk API job result files
 *-failed-records.csv
 *-success-records.csv
+package-lock.json
