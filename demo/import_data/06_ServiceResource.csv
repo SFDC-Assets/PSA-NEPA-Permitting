@@ -1,0 +1,8 @@
+External_ID__c,Name,ResourceType,IsActive,Description
+DEMO_SR_001,Kara Kirkpatrick-Kreitinger,T,TRUE,NEPA Specialist - BLM Owyhee Field Office. Lead coordinator for DOI-BLM-ID-B030-2019-0014-EA. RelatedRecordId linked via post-load Apex (Contact External_ID__c = DEMO_CON_001).
+DEMO_SR_002,Forrest Griggs,T,TRUE,Geologist - BLM Owyhee Field Office. Access road erosion cadastral boundary and reclamation bond review. RelatedRecordId linked via post-load Apex.
+DEMO_SR_003,Colleen Trese,T,TRUE,Wildlife Biologist (Sage-Grouse) - BLM Owyhee Field Office. PHMA and ARMPA conformance specialist. RelatedRecordId linked via post-load Apex.
+DEMO_SR_004,Marcus Webb,T,TRUE,Hydrologist - BLM Owyhee Field Office. Jordan Creek watershed specialist. RelatedRecordId linked via post-load Apex.
+DEMO_SR_005,Dana Ruiz,T,TRUE,Fisheries and Wildlife Biologist (Aquatic) - BLM Owyhee Field Office. Columbia spotted frog specialist. RelatedRecordId linked via post-load Apex.
+DEMO_SR_006,Trevor Hanks,T,TRUE,Wildlife Biologist (Avian/Big Game) - BLM Owyhee Field Office. MBTA and mule deer winter range specialist. RelatedRecordId linked via post-load Apex.
+DEMO_SR_007,Priya Nambiar,T,TRUE,Botanist - BLM Owyhee Field Office. Special status plants and reclamation seed mix approval. RelatedRecordId linked via post-load Apex.

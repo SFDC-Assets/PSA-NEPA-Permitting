@@ -313,13 +313,6 @@ Design notes:
             <operator>In</operator>
             <value><stringValue>Approved</stringValue></value>
         </filters>
-        <filters>
-            <field>RecordType.DeveloperName</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>nepa_permit_document</stringValue>
-            </value>
-        </filters>
         <getFirstRecordOnly>false</getFirstRecordOnly>
         <object>ContentVersion</object>
         <outputReference>col_ExistingDocs</outputReference>

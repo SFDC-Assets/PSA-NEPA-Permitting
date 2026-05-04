@@ -1,0 +1,632 @@
+/**
+ * Post-load script: create records that require runtime org IDs.
+ *
+ * Run AFTER all CSVs are loaded (files 01–19 via load-demo-data.sh).
+ * Handles objects that cannot be loaded via CSV due to:
+ *   - LicenseTypeId (IndividualApplication) — org-specific RegulatoryAuthorizationType ID
+ *   - RelatedRecordId (ServiceResource) — requires User ID, not Contact
+ *   - STM (ServiceTerritoryMember) — depends on ServiceResources created here
+ *   - Task.WhatId / WhoId — polymorphic, cannot resolve via CSV
+ *   - ContentVersion — requires VersionData Blob; cannot be loaded via Bulk API v2 CSV
+ *   - ServiceAppointment.ParentRecordId — polymorphic, Bulk API v2 cannot resolve via ext ID
+ *   - AssignedResource — depends on ServiceAppointments created here
+ *
+ * Run via: sf apex run --file demo/import_data/18_postload_polymorphic.apex --target-org <alias>
+ */
+
+// ── 0. RegulatoryAuthorizationType for IndividualApplication ─────────────────
+
+Id licenseTypeId;
+List<RegulatoryAuthorizationType> ratList = [
+    SELECT Id FROM RegulatoryAuthorizationType
+    WHERE Name = 'NEPA Environmental Review'
+    LIMIT 1
+];
+if (ratList.isEmpty()) {
+    RegulatoryAuthorizationType rat = new RegulatoryAuthorizationType(
+        Name                    = 'NEPA Environmental Review',
+        RegulatoryAuthCategory  = 'Permit'
+    );
+    insert rat;
+    licenseTypeId = rat.Id;
+} else {
+    licenseTypeId = ratList[0].Id;
+}
+System.debug('LicenseTypeId: ' + licenseTypeId);
+
+// ── 1. IndividualApplication upsert ──────────────────────────────────────────
+
+Id programId;
+for (Program p : [
+    SELECT Id, nepa_project_id__c
+    FROM Program
+    WHERE nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'
+    LIMIT 1
+]) {
+    programId = p.Id;
+}
+
+Id applicantContactId;
+for (Contact c : [SELECT Id FROM Contact WHERE External_ID__c = 'DEMO_CON_008' LIMIT 1]) {
+    applicantContactId = c.Id;
+}
+
+Id appId;
+List<IndividualApplication> existingApps = [
+    SELECT Id FROM IndividualApplication
+    WHERE nepa_federal_unique_id__c = 'IDI-38709'
+    LIMIT 1
+];
+
+IndividualApplication app = existingApps.isEmpty()
+    ? new IndividualApplication()
+    : existingApps[0];
+
+app.LicenseTypeId                         = licenseTypeId;
+app.Category                              = 'License';
+app.Status                                = 'Approved';
+app.nepa_federal_unique_id__c             = 'IDI-38709';
+app.nepa_related_project__c               = programId;
+app.nepa_applicant_contact__c             = applicantContactId;
+app.nepa_start_date__c                    = Date.newInstance(2017, 10, 18);
+app.nepa_completion_date__c               = Date.newInstance(2019, 11, 27);
+app.nepa_review_type__c                   = 'EA';
+app.nepa_review_timeline_type__c          = 'Standard';
+app.nepa_description__c                   = 'Sam Uhler and David Smith propose a 5-10 year placer gold mining operation on 15 acres of BLM-administered land adjacent to Jordan Creek in Owyhee County Idaho. The plan includes a seasonal mining window (March 1 - November 30) use of the existing 1.7-mile two-track access road a 50-foot Jordan Creek buffer silt fencing and full reclamation bonded to BLM botanist approval. Water withdrawal from Jordan Creek requires separate IDWR permit. Suction dredge requires EPA NPDES General Permit IDG370000.';
+app.nepa_disturbance_acres__c             = 15;
+app.nepa_risk_score__c                    = 87.40;
+app.nepa_risk_tier__c                     = 'High';
+app.nepa_plaintiff_risk_flag__c           = true;
+app.nepa_co_permits_required__c           = 'CWA Section 404;NHPA Section 106';
+app.nepa_defensibility_score__c           = 91;
+app.nepa_process_stage__c                 = 'Decision';
+app.nepa_process_code__c                  = 'IDI-38709';
+app.nepa_total_pages__c                   = 47;
+app.nepa_waiver_invoked__c                = false;
+app.nepa_connected_actions_identified__c  = true;
+app.nepa_supplementation_review_complete__c = false;
+app.nepa_record_completeness__c           = 100;
+
+if (existingApps.isEmpty()) {
+    insert app;
+    System.debug('IndividualApplication inserted: ' + app.Id);
+} else {
+    update app;
+    System.debug('IndividualApplication updated: ' + app.Id);
+}
+appId = app.Id;
+
+// ── 2. ServiceResource (linked to running user for demo) ─────────────────────
+// Salesforce enforces exactly 1 Technician ServiceResource per User.
+// All 7 DEMO_SR_* slots are mapped to a single SR for the running user.
+// STMs in step 3 all reference this SR Id.
+
+Id runningUserId = UserInfo.getUserId();
+Id demoSRId;
+
+// Find or create the one demo Technician SR for this user
+List<ServiceResource> existingSR = [
+    SELECT Id, External_ID__c, Name
+    FROM ServiceResource
+    WHERE External_ID__c = 'DEMO_SR_001'
+    LIMIT 1
+];
+if (!existingSR.isEmpty()) {
+    demoSRId = existingSR[0].Id;
+    System.debug('ServiceResource (existing): ' + demoSRId);
+} else {
+    // Check if a Technician SR already exists for this user under a different External_ID__c
+    List<ServiceResource> techSR = [
+        SELECT Id FROM ServiceResource
+        WHERE RelatedRecordId = :runningUserId AND ResourceType = 'T'
+        LIMIT 1
+    ];
+    if (!techSR.isEmpty()) {
+        ServiceResource sr = techSR[0];
+        sr.External_ID__c = 'DEMO_SR_001';
+        sr.Name           = 'NEPA Review Team (Demo)';
+        sr.IsActive       = true;
+        update sr;
+        demoSRId = sr.Id;
+        System.debug('ServiceResource (tagged existing): ' + demoSRId);
+    } else {
+        ServiceResource sr = new ServiceResource(
+            External_ID__c  = 'DEMO_SR_001',
+            Name            = 'NEPA Review Team (Demo)',
+            ResourceType    = 'T',
+            IsActive        = true,
+            RelatedRecordId = runningUserId
+        );
+        insert sr;
+        demoSRId = sr.Id;
+        System.debug('ServiceResource (inserted): ' + demoSRId);
+    }
+}
+
+// All 7 DEMO_SR_* slots resolve to the same SR for demo purposes
+Map<String, Id> srIdByExt = new Map<String, Id>{
+    'DEMO_SR_001' => demoSRId,
+    'DEMO_SR_002' => demoSRId,
+    'DEMO_SR_003' => demoSRId,
+    'DEMO_SR_004' => demoSRId,
+    'DEMO_SR_005' => demoSRId,
+    'DEMO_SR_006' => demoSRId,
+    'DEMO_SR_007' => demoSRId
+};
+
+// ── 3. ServiceTerritoryMember (one entry linking the demo SR to the territory) ─
+// All 7 specialist slots map to the same SR (demoSRId); one STM is sufficient.
+
+Id terrId;
+for (ServiceTerritory st : [
+    SELECT Id FROM ServiceTerritory WHERE External_ID__c = 'DEMO_TERR_001' LIMIT 1
+]) {
+    terrId = st.Id;
+}
+
+if (terrId != null) {
+    List<ServiceTerritoryMember> existingSTM = [
+        SELECT Id FROM ServiceTerritoryMember
+        WHERE External_ID__c = 'DEMO_STM_001'
+        LIMIT 1
+    ];
+    if (existingSTM.isEmpty()) {
+        ServiceTerritoryMember stm = new ServiceTerritoryMember(
+            External_ID__c     = 'DEMO_STM_001',
+            ServiceTerritoryId = terrId,
+            ServiceResourceId  = demoSRId,
+            TerritoryType      = 'P',
+            EffectiveStartDate = Date.newInstance(2019, 1, 1)
+        );
+        insert stm;
+        System.debug('ServiceTerritoryMember inserted: ' + stm.Id);
+    } else {
+        System.debug('ServiceTerritoryMember already exists: ' + existingSTM[0].Id);
+    }
+}
+
+// ── 4. ServiceAppointments and AssignedResources ─────────────────────────────
+// ServiceAppointment.ParentRecordId is polymorphic — Bulk API v2 cannot resolve
+// it via external ID, so we create SA/AR here after querying WorkOrder IDs.
+
+Map<String, Id> woIdByExt = new Map<String, Id>();
+for (WorkOrder wo : [
+    SELECT Id, External_ID__c
+    FROM WorkOrder
+    WHERE External_ID__c IN (
+        'DEMO_WO_001','DEMO_WO_002','DEMO_WO_003','DEMO_WO_004','DEMO_WO_005',
+        'DEMO_WO_006','DEMO_WO_007','DEMO_WO_008','DEMO_WO_009','DEMO_WO_010'
+    )
+]) {
+    woIdByExt.put(wo.External_ID__c, wo.Id);
+}
+
+Id terrId2;
+for (ServiceTerritory st : [
+    SELECT Id FROM ServiceTerritory WHERE External_ID__c = 'DEMO_TERR_001' LIMIT 1
+]) {
+    terrId2 = st.Id;
+}
+
+// SA definitions: extId -> {woExt, apptNum, start, end, actualStart, actualEnd, dur, durType, desc}
+List<Map<String,Object>> saDefs = new List<Map<String,Object>>{
+    new Map<String,Object>{'ext'=>'DEMO_SA_001','wo'=>'DEMO_WO_001','num'=>'SA-2019-0001',
+        'ss'=>DateTime.newInstance(2019,4,15,8,0,0),'se'=>DateTime.newInstance(2019,4,18,17,0,0),
+        'as'=>DateTime.newInstance(2019,4,15,8,0,0),'ae'=>DateTime.newInstance(2019,4,18,16,30,0),
+        'dur'=>480,'durType'=>'Minutes','desc'=>'Sage-grouse lek and PHMA survey T. 6 S. R. 5 W. Sec. 28.'},
+    new Map<String,Object>{'ext'=>'DEMO_SA_002','wo'=>'DEMO_WO_002','num'=>'SA-2019-0002',
+        'ss'=>DateTime.newInstance(2019,4,22,8,0,0),'se'=>DateTime.newInstance(2019,4,25,17,0,0),
+        'as'=>DateTime.newInstance(2019,4,22,8,0,0),'ae'=>DateTime.newInstance(2019,4,25,16,0,0),
+        'dur'=>480,'durType'=>'Minutes','desc'=>'Hydrology and water quality assessment.'},
+    new Map<String,Object>{'ext'=>'DEMO_SA_003','wo'=>'DEMO_WO_003','num'=>'SA-2019-0003',
+        'ss'=>DateTime.newInstance(2019,5,6,8,0,0),'se'=>DateTime.newInstance(2019,5,12,17,0,0),
+        'as'=>DateTime.newInstance(2019,5,6,8,0,0),'ae'=>DateTime.newInstance(2019,5,12,15,0,0),
+        'dur'=>480,'durType'=>'Minutes','desc'=>'Geology soils and access road assessment.'},
+    new Map<String,Object>{'ext'=>'DEMO_SA_004','wo'=>'DEMO_WO_004','num'=>'SA-2019-0004',
+        'ss'=>DateTime.newInstance(2019,4,10,6,0,0),'se'=>DateTime.newInstance(2019,4,12,12,0,0),
+        'as'=>DateTime.newInstance(2019,4,10,6,0,0),'ae'=>DateTime.newInstance(2019,4,12,11,30,0),
+        'dur'=>240,'durType'=>'Minutes','desc'=>'Migratory bird nesting survey spring window.'},
+    new Map<String,Object>{'ext'=>'DEMO_SA_005','wo'=>'DEMO_WO_005','num'=>'SA-2019-0005',
+        'ss'=>DateTime.newInstance(2019,5,20,8,0,0),'se'=>DateTime.newInstance(2019,5,28,17,0,0),
+        'as'=>DateTime.newInstance(2019,5,20,8,0,0),'ae'=>DateTime.newInstance(2019,5,28,16,0,0),
+        'dur'=>480,'durType'=>'Minutes','desc'=>'Columbia spotted frog and riparian survey.'},
+    new Map<String,Object>{'ext'=>'DEMO_SA_006','wo'=>'DEMO_WO_006','num'=>'SA-2019-0006',
+        'ss'=>DateTime.newInstance(2019,6,17,8,0,0),'se'=>DateTime.newInstance(2019,6,20,17,0,0),
+        'as'=>DateTime.newInstance(2019,6,17,8,0,0),'ae'=>DateTime.newInstance(2019,6,20,15,0,0),
+        'dur'=>360,'durType'=>'Minutes','desc'=>'Botanical survey site visit 1.'},
+    new Map<String,Object>{'ext'=>'DEMO_SA_007','wo'=>'DEMO_WO_007','num'=>'SA-2019-0007',
+        'ss'=>DateTime.newInstance(2019,8,25,8,0,0),'se'=>DateTime.newInstance(2019,8,28,17,0,0),
+        'as'=>DateTime.newInstance(2019,8,25,8,0,0),'ae'=>DateTime.newInstance(2019,8,28,15,30,0),
+        'dur'=>360,'durType'=>'Minutes','desc'=>'Botanical survey site visit 2.'},
+    new Map<String,Object>{'ext'=>'DEMO_SA_008','wo'=>'DEMO_WO_008','num'=>'SA-2019-0008',
+        'ss'=>DateTime.newInstance(2019,8,19,8,0,0),'se'=>DateTime.newInstance(2019,8,22,17,0,0),
+        'as'=>DateTime.newInstance(2019,8,19,8,0,0),'ae'=>DateTime.newInstance(2019,8,22,16,0,0),
+        'dur'=>360,'durType'=>'Minutes','desc'=>'Big game winter range assessment.'},
+    new Map<String,Object>{'ext'=>'DEMO_SA_009','wo'=>'DEMO_WO_009','num'=>'SA-2019-0009',
+        'ss'=>DateTime.newInstance(2019,7,29,8,0,0),'se'=>DateTime.newInstance(2019,8,15,17,0,0),
+        'as'=>DateTime.newInstance(2019,7,29,8,0,0),'ae'=>DateTime.newInstance(2019,8,15,16,0,0),
+        'dur'=>240,'durType'=>'Minutes','desc'=>'ICL comment response - office task.'},
+    new Map<String,Object>{'ext'=>'DEMO_SA_010','wo'=>'DEMO_WO_010','num'=>'SA-2019-0010',
+        'ss'=>DateTime.newInstance(2019,7,29,8,0,0),'se'=>DateTime.newInstance(2019,8,15,17,0,0),
+        'as'=>DateTime.newInstance(2019,7,29,8,0,0),'ae'=>DateTime.newInstance(2019,8,15,16,0,0),
+        'dur'=>240,'durType'=>'Minutes','desc'=>'OSC comment response - office task.'}
+};
+
+Set<String> existingSAExts = new Set<String>();
+for (ServiceAppointment sa : [
+    SELECT External_ID__c FROM ServiceAppointment
+    WHERE External_ID__c LIKE 'DEMO_SA_%'
+]) {
+    existingSAExts.add(sa.External_ID__c);
+}
+
+List<ServiceAppointment> saList = new List<ServiceAppointment>();
+for (Map<String,Object> def : saDefs) {
+    String ext = (String) def.get('ext');
+    if (!existingSAExts.contains(ext)) {
+        ServiceAppointment sa = new ServiceAppointment();
+        sa.External_ID__c       = ext;
+        sa.ParentRecordId       = woIdByExt.get((String) def.get('wo'));
+        sa.Status               = 'Completed';
+        sa.SchedStartTime       = (DateTime) def.get('ss');
+        sa.SchedEndTime         = (DateTime) def.get('se');
+        sa.ActualStartTime      = (DateTime) def.get('as');
+        sa.ActualEndTime        = (DateTime) def.get('ae');
+        sa.Duration             = (Integer)  def.get('dur');
+        sa.DurationType         = (String)   def.get('durType');
+        sa.Description          = (String)   def.get('desc');
+        if (terrId2 != null) { sa.ServiceTerritoryId = terrId2; }
+        saList.add(sa);
+    }
+}
+if (!saList.isEmpty()) {
+    insert saList;
+    System.debug('ServiceAppointments inserted: ' + saList.size());
+}
+
+// Re-query for IDs (both new and pre-existing)
+Map<String, Id> saIdByExt = new Map<String, Id>();
+for (ServiceAppointment sa : [
+    SELECT Id, External_ID__c FROM ServiceAppointment
+    WHERE External_ID__c LIKE 'DEMO_SA_%'
+]) {
+    saIdByExt.put(sa.External_ID__c, sa.Id);
+}
+
+// AssignedResources
+Map<String, Map<String, String>> arDefs = new Map<String, Map<String, String>>{
+    'DEMO_AR_001' => new Map<String,String>{'sa'=>'DEMO_SA_001','req'=>'true'},
+    'DEMO_AR_002' => new Map<String,String>{'sa'=>'DEMO_SA_002','req'=>'true'},
+    'DEMO_AR_004' => new Map<String,String>{'sa'=>'DEMO_SA_003','req'=>'true'},
+    'DEMO_AR_005' => new Map<String,String>{'sa'=>'DEMO_SA_004','req'=>'true'},
+    'DEMO_AR_006' => new Map<String,String>{'sa'=>'DEMO_SA_005','req'=>'true'},
+    'DEMO_AR_007' => new Map<String,String>{'sa'=>'DEMO_SA_006','req'=>'true'},
+    'DEMO_AR_008' => new Map<String,String>{'sa'=>'DEMO_SA_007','req'=>'true'},
+    'DEMO_AR_009' => new Map<String,String>{'sa'=>'DEMO_SA_008','req'=>'true'},
+    'DEMO_AR_010' => new Map<String,String>{'sa'=>'DEMO_SA_009','req'=>'true'},
+    'DEMO_AR_011' => new Map<String,String>{'sa'=>'DEMO_SA_010','req'=>'true'}
+};
+
+Set<String> existingARExts = new Set<String>();
+for (AssignedResource ar : [
+    SELECT External_ID__c FROM AssignedResource
+    WHERE External_ID__c LIKE 'DEMO_AR_%'
+]) {
+    existingARExts.add(ar.External_ID__c);
+}
+
+List<AssignedResource> arList = new List<AssignedResource>();
+for (String arExt : arDefs.keySet()) {
+    if (!existingARExts.contains(arExt)) {
+        Map<String,String> def = arDefs.get(arExt);
+        Id saId2 = saIdByExt.get(def.get('sa'));
+        if (saId2 != null) {
+            AssignedResource ar = new AssignedResource(
+                External_ID__c         = arExt,
+                ServiceAppointmentId   = saId2,
+                ServiceResourceId      = demoSRId,
+                IsRequiredResource     = def.get('req') == 'true'
+            );
+            arList.add(ar);
+        }
+    }
+}
+if (!arList.isEmpty()) {
+    insert arList;
+    System.debug('AssignedResources inserted: ' + arList.size());
+}
+
+// ── 5. Task.WhatId / WhoId ───────────────────────────────────────────────────
+
+Map<String, Id> contactByExt = new Map<String, Id>();
+for (Contact c : [
+    SELECT Id, External_ID__c
+    FROM Contact
+    WHERE External_ID__c IN ('DEMO_CON_001', 'DEMO_CON_008')
+]) {
+    contactByExt.put(c.External_ID__c, c.Id);
+}
+
+Id coordinatorId = contactByExt.get('DEMO_CON_001');
+Id applicantId   = contactByExt.get('DEMO_CON_008');
+
+Map<String, Map<String, Id>> taskWiring = new Map<String, Map<String, Id>>{
+    'DEMO_TASK_001' => new Map<String, Id>{ 'whatId' => appId, 'whoId' => coordinatorId },
+    'DEMO_TASK_002' => new Map<String, Id>{ 'whatId' => appId, 'whoId' => coordinatorId },
+    'DEMO_TASK_003' => new Map<String, Id>{ 'whatId' => appId, 'whoId' => coordinatorId },
+    'DEMO_TASK_004' => new Map<String, Id>{ 'whatId' => appId, 'whoId' => coordinatorId },
+    'DEMO_TASK_005' => new Map<String, Id>{ 'whatId' => appId, 'whoId' => coordinatorId },
+    'DEMO_TASK_006' => new Map<String, Id>{ 'whatId' => appId, 'whoId' => coordinatorId },
+    'DEMO_TASK_007' => new Map<String, Id>{ 'whatId' => appId, 'whoId' => coordinatorId },
+    'DEMO_TASK_008' => new Map<String, Id>{ 'whatId' => appId, 'whoId' => applicantId }
+};
+
+List<Task> tasks = [
+    SELECT Id, External_ID__c
+    FROM Task
+    WHERE External_ID__c IN :taskWiring.keySet()
+];
+for (Task t : tasks) {
+    Map<String, Id> refs = taskWiring.get(t.External_ID__c);
+    t.WhatId = refs.get('whatId');
+    t.WhoId  = refs.get('whoId');
+}
+if (!tasks.isEmpty()) {
+    update tasks;
+    System.debug('Task WhatId/WhoId updated: ' + tasks.size());
+}
+
+// ── 5. ContentVersion — create placeholders then wire nepa_process__c ─────────
+
+// Minimal 1-byte placeholder blob (a space character) used as VersionData so
+// Salesforce accepts the insert.  Real documents would replace these via Files.
+Blob placeholder = Blob.valueOf(' ');
+
+
+List<Map<String,Object>> cvDefs = new List<Map<String,Object>>{
+    new Map<String,Object>{
+        'title'    => 'Carrie Placer Mine Plan of Operations - Environmental Assessment',
+        'path'     => 'Carrie_Placer_Mine_EA.pdf',
+        'docType'  => 'Environmental Assessment',
+        'main'     => true,
+        'status'   => 'Approved',
+        'pubDate'  => Date.newInstance(2019, 7, 1),
+        'prepBy'   => 'BLM Owyhee Field Office - Kara Kirkpatrick-Kreitinger',
+        'pubAccess'=> true,
+        'arIncl'   => true,
+        'category' => 'Supporting Analysis',
+        'summary'  => 'Environmental Assessment for DOI-BLM-ID-B030-2019-0014-EA. Analyzes impacts on Jordan Creek water quality, redband trout habitat, sage-grouse PHMA, Columbia spotted frog riparian zone, and mule deer crucial winter range.'
+    },
+    new Map<String,Object>{
+        'title'    => 'Finding of No Significant Impact - Carrie Placer Mine',
+        'path'     => 'Carrie_Placer_Mine_FONSI.pdf',
+        'docType'  => 'FONSI',
+        'main'     => false,
+        'status'   => 'Approved',
+        'pubDate'  => Date.newInstance(2019, 11, 20),
+        'prepBy'   => 'BLM Owyhee Field Office - Forrest Griggs and Colleen Trese',
+        'pubAccess'=> true,
+        'arIncl'   => true,
+        'category' => 'Decision Record',
+        'summary'  => 'FONSI confirming no significant impact under Alternative A with required design features: 50-foot Jordan Creek buffer, silt fencing, steep-shoreline pond design, seasonal mining window March 1 - November 30, and full reclamation bond.'
+    },
+    new Map<String,Object>{
+        'title'    => 'Decision Record - Carrie Placer Mine Plan of Operations',
+        'path'     => 'Carrie_Placer_Mine_Decision_Record.pdf',
+        'docType'  => 'Other',
+        'main'     => false,
+        'status'   => 'Approved',
+        'pubDate'  => Date.newInstance(2019, 11, 27),
+        'prepBy'   => 'BLM Owyhee Field Office - Field Manager',
+        'pubAccess'=> true,
+        'arIncl'   => true,
+        'category' => 'Decision Record',
+        'summary'  => 'Decision Record approving Alternative A for the Carrie Placer Mine Plan of Operations with full suite of required design features. Signed by BLM Owyhee Field Manager November 27 2019.'
+    },
+    new Map<String,Object>{
+        'title'    => 'Affected Environment and Environmental Consequences Summary - Carrie Placer Mine',
+        'path'     => 'Carrie_Placer_Mine_Affected_Resources.pdf',
+        'docType'  => 'Alternatives Analysis',
+        'main'     => false,
+        'status'   => 'Approved',
+        'pubDate'  => Date.newInstance(2019, 11, 20),
+        'prepBy'   => 'BLM Owyhee Field Office Interdisciplinary Team',
+        'pubAccess'=> true,
+        'arIncl'   => true,
+        'category' => 'Supporting Analysis',
+        'summary'  => 'Summary of affected resources documenting baseline conditions across all seven resource disciplines: hydrology/water quality, wildlife, geology/soils, and botanical/cultural resources.'
+    },
+    new Map<String,Object>{
+        'title'    => 'Section 106 Tribal Consultation Certification - Shoshone-Paiute Tribes',
+        'path'     => 'Carrie_Placer_Mine_Tribal_Consultation.pdf',
+        'docType'  => 'Other',
+        'main'     => false,
+        'status'   => 'Approved',
+        'pubDate'  => Date.newInstance(2019, 3, 16),
+        'prepBy'   => 'Kara Kirkpatrick-Kreitinger - BLM Owyhee Field Office',
+        'pubAccess'=> true,
+        'arIncl'   => true,
+        'category' => 'Agency Communication',
+        'summary'  => 'Certification of completed government-to-government Section 106 NHPA consultation with Shoshone-Paiute Tribes. No historic properties affected determination.'
+    },
+    // Required by FONSI Issued gate: EA_Comment_Response CMT expects a Comment Response doc
+    new Map<String,Object>{
+        'title'    => 'Public Comment Response Summary - Carrie Placer Mine EA',
+        'path'     => 'Carrie_Placer_Mine_Comment_Response.pdf',
+        'docType'  => 'Comment Response',
+        'main'     => false,
+        'status'   => 'Approved',
+        'pubDate'  => Date.newInstance(2019, 8, 15),
+        'prepBy'   => 'BLM Owyhee Field Office - Kara Kirkpatrick-Kreitinger',
+        'pubAccess'=> true,
+        'arIncl'   => true,
+        'category' => 'Supporting Analysis',
+        'summary'  => 'Comment response summary addressing ICL air quality / mercury particulate comments and OSC sage-grouse lek buffer departure justification comments on the preliminary EA and FONSI.'
+    }
+};
+
+// Check which titles already exist (idempotent re-run)
+Set<String> existingTitles = new Set<String>();
+for (ContentVersion existing : [
+    SELECT Title FROM ContentVersion
+    WHERE Title IN (
+        'Carrie Placer Mine Plan of Operations - Environmental Assessment',
+        'Finding of No Significant Impact - Carrie Placer Mine',
+        'Decision Record - Carrie Placer Mine Plan of Operations',
+        'Affected Environment and Environmental Consequences Summary - Carrie Placer Mine',
+        'Section 106 Tribal Consultation Certification - Shoshone-Paiute Tribes',
+        'Public Comment Response Summary - Carrie Placer Mine EA'
+    )
+    AND IsLatest = true
+]) {
+    existingTitles.add(existing.Title);
+}
+
+List<ContentVersion> cvsToInsert = new List<ContentVersion>();
+for (Map<String,Object> def : cvDefs) {
+    String title = (String) def.get('title');
+    if (!existingTitles.contains(title)) {
+        ContentVersion cv = new ContentVersion();
+        cv.Title                    = title;
+        cv.PathOnClient             = (String)  def.get('path');
+        cv.VersionData              = placeholder;
+        cv.nepa_document_type__c    = (String)  def.get('docType');
+        cv.nepa_main_document__c    = (Boolean) def.get('main');
+        cv.nepa_status__c           = (String)  def.get('status');
+        cv.nepa_publish_date__c     = (Date)    def.get('pubDate');
+        cv.nepa_prepared_by__c      = (String)  def.get('prepBy');
+        cv.nepa_public_access__c    = (Boolean) def.get('pubAccess');
+        cv.nepa_ar_included__c      = (Boolean) def.get('arIncl');
+        cv.nepa_record_category__c  = (String)  def.get('category');
+        cv.nepa_document_summary__c = (String)  def.get('summary');
+        cv.nepa_process__c          = appId;
+        cvsToInsert.add(cv);
+    }
+}
+if (!cvsToInsert.isEmpty()) {
+    insert cvsToInsert;
+    System.debug('ContentVersion inserted: ' + cvsToInsert.size());
+}
+
+// Wire nepa_process__c on any pre-existing records that lack it
+List<ContentVersion> cvs = [
+    SELECT Id, Title, nepa_process__c
+    FROM ContentVersion
+    WHERE Title IN (
+        'Carrie Placer Mine Plan of Operations - Environmental Assessment',
+        'Finding of No Significant Impact - Carrie Placer Mine',
+        'Decision Record - Carrie Placer Mine Plan of Operations',
+        'Affected Environment and Environmental Consequences Summary - Carrie Placer Mine',
+        'Section 106 Tribal Consultation Certification - Shoshone-Paiute Tribes',
+        'Public Comment Response Summary - Carrie Placer Mine EA'
+    )
+    AND IsLatest = true
+    AND nepa_process__c = null
+];
+for (ContentVersion cv : cvs) {
+    cv.nepa_process__c = appId;
+}
+if (!cvs.isEmpty()) {
+    update cvs;
+    System.debug('ContentVersion.nepa_process__c back-wired: ' + cvs.size());
+}
+
+// ── 6. Wire engagement and timeline records to IndividualApplication ──────────
+// These were inserted as plain records; now link nepa_process__c / nepa_related_process__c
+
+// nepa_engagement__c.Name is auto-generated — match by null process instead
+List<nepa_engagement__c> engagements = [
+    SELECT Id, nepa_process__c
+    FROM nepa_engagement__c
+    WHERE nepa_process__c = null
+    LIMIT 50
+];
+for (nepa_engagement__c e : engagements) {
+    e.nepa_process__c = appId;
+}
+if (!engagements.isEmpty()) {
+    update engagements;
+    System.debug('nepa_engagement__c.nepa_process__c updated: ' + engagements.size());
+}
+
+List<ApplicationTimeline> timelines = [
+    SELECT Id, Name, nepa_related_process__c
+    FROM ApplicationTimeline
+    WHERE Name IN (
+        'Application Received',
+        'Pre-Application ID Team Consultation Completed',
+        'Section 106 Tribal Consultation Initiated',
+        'Sage-Grouse Lek Survey Window Opens',
+        'Migratory Bird Survey Spring Window Deadline',
+        'Sage-Grouse Lek Survey Completed',
+        'Section 106 Tribal Consultation Certified Complete',
+        'Hydrology and Water Quality Assessment Completed',
+        'IDWR Water Permit Application Initiated',
+        'Geology Soils and Access Road Assessment Completed',
+        'EPA NPDES NOI IDG370000 Filed',
+        'Columbia Spotted Frog Riparian Survey Completed',
+        'Botanical Survey First Site Visit Completed',
+        'EPA NPDES Agency Objection Window Cleared',
+        'Big Game Winter Range Assessment Completed',
+        'Botanical Survey Second Site Visit Completed',
+        'Preliminary EA Published for Public Comment',
+        'Public Comment Period Closed',
+        'ICL Comment Response Incorporated into EA',
+        'OSC Comment Response Incorporated into EA',
+        'IDWR Water Permit Received',
+        'EPA NPDES Authorization Received',
+        'Required Document Registry All Five Documents Verified',
+        'FONSI Signed',
+        'Decision Record Issued'
+    )
+];
+for (ApplicationTimeline tl : timelines) {
+    tl.nepa_related_process__c = appId;
+}
+if (!timelines.isEmpty()) {
+    List<Database.SaveResult> tlResults = Database.update(timelines, false);
+    Integer tlOk = 0;
+    for (Database.SaveResult sr : tlResults) { if (sr.isSuccess()) tlOk++; }
+    System.debug('ApplicationTimeline.nepa_related_process__c updated: ' + tlOk + '/' + timelines.size());
+    for (Integer i = 0; i < tlResults.size(); i++) {
+        if (!tlResults[i].isSuccess()) {
+            System.debug('Timeline skip (' + timelines[i].Name + '): ' + tlResults[i].getErrors()[0].getMessage().left(120));
+        }
+    }
+}
+
+List<PublicComplaint> complaints = [
+    SELECT Id, nepa_related_process__c
+    FROM PublicComplaint
+    WHERE Subject IN (
+        'ICL Comment - Air Quality Mercury and Dust Particulate',
+        'OSC Comment - Sage-Grouse Lek Buffer Departure Justification'
+    )
+];
+for (PublicComplaint pc : complaints) {
+    pc.nepa_related_process__c = appId;
+}
+if (!complaints.isEmpty()) {
+    update complaints;
+    System.debug('PublicComplaint.nepa_related_process__c updated: ' + complaints.size());
+}
+
+// ── 7. nepa_litigation__c → Program ──────────────────────────────────────────
+
+List<nepa_litigation__c> litCases = [
+    SELECT Id, nepa_related_project__c
+    FROM nepa_litigation__c
+    WHERE nepa_citation__c IN (
+        'Western Watersheds Project v. Bernhardt 958 F.3d 1124 (9th Cir. 2020)',
+        'Idaho Conservation League v. U.S. Forest Service 843 F.3d 1232 (9th Cir. 2016)'
+    )
+];
+for (nepa_litigation__c lit : litCases) {
+    lit.nepa_related_project__c = programId;
+}
+if (!litCases.isEmpty()) {
+    update litCases;
+    System.debug('nepa_litigation__c.nepa_related_project__c updated: ' + litCases.size());
+}
+
+System.debug('Post-load complete.');

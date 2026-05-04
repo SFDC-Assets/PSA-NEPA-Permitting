@@ -1,0 +1,2 @@
+External_ID__c,Name,IsActive,OperatingHours.External_ID__c,Street,City,State,PostalCode,Country,Latitude,Longitude,Description
+DEMO_TERR_001,BLM Owyhee Field Office - Idaho,TRUE,DEMO_OH_001,3948 Development Ave,Marsing,ID,83639,US,43.5454,-116.8065,BLM Owyhee Field Office service territory covering Owyhee County Idaho and adjacent Jordan Valley Oregon border. Includes T. 6 S. R. 5 W. project area for Carrie Placer Mine.

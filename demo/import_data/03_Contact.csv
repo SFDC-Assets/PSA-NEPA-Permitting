@@ -1,0 +1,10 @@
+External_ID__c,FirstName,LastName,Title,Email,Phone,Account.External_ID__c,Department,Description
+DEMO_CON_001,Kara,Kirkpatrick-Kreitinger,NEPA Specialist,kara.kirkpatrick-kreitinger@blm.gov,208-896-5912,DEMO_ACCT_001,NEPA/Environmental,Lead NEPA Specialist for BLM Owyhee Field Office. Coordinates interdisciplinary review teams manages administrative record and conducts Section 106 tribal consultation. Primary contact for DOI-BLM-ID-B030-2019-0014-EA.
+DEMO_CON_002,Forrest,Griggs,Geologist,forrest.griggs@blm.gov,208-896-5912,DEMO_ACCT_001,Geology/Soils,Geologist at BLM Owyhee Field Office. Reviews mining Plan of Operations for access road erosion cadastral boundaries and reclamation plans.
+DEMO_CON_003,Colleen,Trese,Wildlife Biologist,colleen.trese@blm.gov,208-896-5912,DEMO_ACCT_001,Wildlife,Wildlife Biologist at BLM Owyhee Field Office. Sage-grouse PHMA and ARMPA conformance specialist.
+DEMO_CON_004,Marcus,Webb,Hydrologist,marcus.webb@blm.gov,208-896-5912,DEMO_ACCT_001,Hydrology,Hydrologist at BLM Owyhee Field Office. Jordan Creek watershed specialist. Closure triggers IDWR co-permit task.
+DEMO_CON_005,Dana,Ruiz,Fisheries and Wildlife Biologist,dana.ruiz@blm.gov,208-896-5912,DEMO_ACCT_001,Wildlife,Aquatic/amphibian biologist at BLM Owyhee Field Office. Columbia spotted frog specialist.
+DEMO_CON_006,Trevor,Hanks,Wildlife Biologist,trevor.hanks@blm.gov,208-896-5912,DEMO_ACCT_001,Wildlife,Avian and big game biologist at BLM Owyhee Field Office. MBTA nesting survey and mule deer crucial winter range specialist.
+DEMO_CON_007,Priya,Nambiar,Botanist,priya.nambiar@blm.gov,208-896-5912,DEMO_ACCT_001,Botany/Cultural Resources,Botanist at BLM Owyhee Field Office. Special status plant surveys and reclamation seed mix approval.
+DEMO_CON_008,Sam,Uhler,Mining Claim Holder,sam.uhler@carrieplacermine.example,208-555-0142,DEMO_ACCT_002,,Co-applicant for Carrie Placer Mine Plan of Operations IDI-38709. Primary applicant portal user.
+DEMO_CON_009,David,Smith,Mining Claim Holder,david.smith@carrieplacermine.example,208-555-0198,DEMO_ACCT_002,,Co-applicant for Carrie Placer Mine Plan of Operations IDI-38709.
