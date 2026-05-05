@@ -1027,7 +1027,7 @@
     <validationRules>
         <fullName>VR_007_Clock_Pause_Date_Sequence</fullName>
         <active>true</active>
-        <description>VR-007: Blocks save when nepa_clock_pause_end__c is set to a date before nepa_clock_pause_start__c. Without this guard, nepa_clock_pause_days__c produces a negative number that is added to nepa_fra_statutory_deadline__c, artificially shortening the legal deadline — a federal FRA compliance violation.</description>
+        <description>VR-007: Blocks save when clock pause end is before start. Prevents negative nepa_clock_pause_days__c, which would shorten nepa_fra_statutory_deadline__c — an FRA compliance violation.</description>
         <errorConditionFormula>AND(
   NOT(ISBLANK(nepa_clock_pause_start__c)),
   NOT(ISBLANK(nepa_clock_pause_end__c)),
@@ -1204,6 +1204,26 @@
                 </value>
             </valueSetDefinition>
         </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_projected_completion_date__c</fullName>
+        <description>AI-projected completion date calculated by NEPA_Timeline_Risk_Assessor. Based on days-in-current-stage extrapolated against the review-type statutory baseline. Labeled as a projection to distinguish it from nepa_target_completion_date__c (statutory deadline set at intake). Do not use as an authoritative deadline — for coordinator situational awareness only. Required by OMB M-24-10: AI-derived dates must be clearly distinguished from official statutory dates.</description>
+        <inlineHelpText>AI projection only — not a statutory deadline. Set by Timeline Risk Assessor based on current pace.</inlineHelpText>
+        <label>Projected Completion Date (AI)</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>nepa_litigation_ai_confidence__c</fullName>
+        <description>AI confidence score (0–100%) for the litigation risk score computed by NEPA_Litigation_Risk_Scorer. Reflects the fraction of the four scoring factors (review type, agency, circuit, adjacent statutes) that resolved to explicit CMT records rather than defaults. 100% = all four factors matched explicit records. Required by OMB M-24-10: structured confidence metadata must accompany all AI-scored risk outputs.</description>
+        <inlineHelpText>Confidence in litigation risk score. Lower values mean more scoring factors fell back to defaults.</inlineHelpText>
+        <label>Litigation Risk AI Confidence</label>
+        <precision>5</precision>
+        <scale>1</scale>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Percent</type>
     </fields>
     <fields>
         <fullName>nepa_stage_gate_processed__c</fullName>

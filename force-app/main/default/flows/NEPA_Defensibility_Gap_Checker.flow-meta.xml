@@ -4,7 +4,7 @@
     <description>Evaluates defensibility gaps on an IndividualApplication by checking for required document types, public engagement events, and a minimum 30-day comment period. Triggered after save on ContentVersion (nepa_related_case_event__c changes), nepa_engagement__c, and IndividualApplication itself. Writes results to nepa_defensibility_gaps__c and nepa_defensibility_score__c.</description>
     <label>NEPA Defensibility Gap Checker</label>
     <processType>AutoLaunchedFlow</processType>
-    <status>Draft</status>
+    <status>Active</status>
 
     <!-- Assignments -->
     <assignments>
@@ -505,7 +505,7 @@
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
-            <field>nepa_related_case_event__r.ApplicationId</field>
+            <field>nepa_process__c</field>
             <operator>EqualTo</operator>
             <value>
                 <elementReference>inp_ProcessId</elementReference>
@@ -535,7 +535,7 @@
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
-            <field>nepa_related_case_event__r.ApplicationId</field>
+            <field>nepa_process__c</field>
             <operator>EqualTo</operator>
             <value>
                 <elementReference>inp_ProcessId</elementReference>
@@ -564,7 +564,7 @@
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
-            <field>nepa_related_case_event__r.ApplicationId</field>
+            <field>nepa_process__c</field>
             <operator>EqualTo</operator>
             <value>
                 <elementReference>inp_ProcessId</elementReference>
@@ -615,7 +615,7 @@
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
-            <field>nepa_related_case_event__r.ApplicationId</field>
+            <field>nepa_process__c</field>
             <operator>EqualTo</operator>
             <value>
                 <elementReference>inp_ProcessId</elementReference>

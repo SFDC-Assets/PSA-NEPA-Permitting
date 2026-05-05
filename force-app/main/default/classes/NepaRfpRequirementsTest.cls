@@ -314,13 +314,19 @@ private class NepaRfpRequirementsTest {
 
         PublicComplaint result = [
             SELECT nepa_ai_confidence_score__c, nepa_ai_triage_rationale__c,
-                   nepa_ai_triage_timestamp__c, nepa_requires_human_review__c
+                   nepa_ai_triage_timestamp__c, nepa_requires_human_review__c,
+                   nepa_is_substantive__c, nepa_ai_substantive_recommendation__c
             FROM PublicComplaint WHERE Id = :pc.Id
         ];
         System.assertEquals(0.87,  result.nepa_ai_confidence_score__c);
         System.assert(result.nepa_ai_triage_rationale__c.contains('wetland'));
         System.assertNotEquals(null, result.nepa_ai_triage_timestamp__c);
         System.assertEquals(true,  result.nepa_requires_human_review__c);
+        // OMB M-24-10: AI recommendation and human determination are stored in separate fields
+        System.assertEquals(false, result.nepa_is_substantive__c,
+            'nepa_is_substantive__c is the human determination field — must not be set by triage insert');
+        // nepa_ai_substantive_recommendation__c is set by NEPA_Comment_Triage_Save flow, not direct insert
+        // This insert test confirms the field exists and is independently writable
     }
 
     /**
@@ -1115,5 +1121,38 @@ private class NepaRfpRequirementsTest {
         Test.stopTest();
 
         System.assertEquals(251, [SELECT COUNT() FROM ApplicationTimeline WHERE nepa_related_process__c = :proc.Id]);
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // TR-007 — AI Confidence Field on Litigation Risk Scorer (OMB M-24-10)
+    // ══════════════════════════════════════════════════════════════════════════
+
+    /**
+     * TR-007: nepa_litigation_ai_confidence__c is populated by NEPA_Litigation_Risk_Scorer.
+     * OMB M-24-10 requires structured confidence metadata to accompany all AI-scored outputs.
+     * This test verifies the field exists on IndividualApplication and can be written.
+     */
+    @IsTest
+    static void tr007_aiRationaleAndConfidence_litigationScorer() {
+        Program proj = getProject();
+        IndividualApplication ia = NepaTestFactory.insertOpenProcess(proj.Id, 'EIS');
+
+        ia.nepa_risk_score__c               = 65.0;
+        ia.nepa_risk_tier__c                = 'High';
+        ia.nepa_risk_score_factors__c       = '[AI-GENERATED — PermitTEC v0.1] ReviewType:40pts; Agency:15pts; Circuit:10pts; Statutes:0pts; Total:65.0';
+        ia.nepa_litigation_ai_confidence__c = 75.0;
+        update ia;
+
+        IndividualApplication result = [
+            SELECT nepa_risk_score__c, nepa_risk_tier__c,
+                   nepa_risk_score_factors__c, nepa_litigation_ai_confidence__c
+            FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+        System.assertNotEquals(null, result.nepa_litigation_ai_confidence__c,
+            'nepa_litigation_ai_confidence__c must be writable — required OMB M-24-10 confidence field');
+        System.assertEquals(75.0, result.nepa_litigation_ai_confidence__c,
+            'Confidence value must persist accurately');
+        System.assert(result.nepa_risk_score_factors__c.contains('[AI-GENERATED'),
+            'Risk score factors must carry AI-GENERATED disclosure prefix per OMB M-24-10');
     }
 }

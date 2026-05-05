@@ -4,7 +4,7 @@
     <description>Before-save flow on ContentVersion Create and Update. Stamps nepa_fra_page_limit__c with the FRA statutory page limit for the document type (EA = 75, Draft EIS = 150, Final EIS = 300, per 42 U.S.C. 4336a). Also propagates nepa_is_appendix__c = true when nepa_section_type__c is blank and the document type is an appendix type. Does not write nepa_fra_overlimit__c — that is a formula field. Runs on create and on update when nepa_document_type__c changes.</description>
     <label>NEPA FRA Page Limit Setter</label>
     <processType>AutoLaunchedFlow</processType>
-    <status>Draft</status>
+    <status>Active</status>
 
     <!-- ── Decision: document type changed or new record ────────────────── -->
 

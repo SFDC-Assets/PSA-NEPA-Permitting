@@ -4,7 +4,7 @@
     <description>Priority 4: Timeline risk assessment for IndividualApplication. Fires after-save async when nepa_process_stage__c, nepa_process_status__c, or nepa_last_stage_transition__c changes. Computes nepa_timeline_risk_tier__c (On Track / At Risk / Stalled / Overdue) by comparing nepa_days_in_current_stage__c to review-type stage baselines. Sets nepa_estimated_completion_date__c based on remaining days at current pace. When tier transitions to At Risk or worse, creates an ApplicationTimeline event (Process Paused) and a coordinator escalation Task.</description>
     <label>NEPA Timeline Risk Assessor</label>
     <processType>AutoLaunchedFlow</processType>
-    <status>Draft</status>
+    <status>Active</status>
 
     <!-- ============================================================
          STEP 1: Capture previous tier for change detection
@@ -215,6 +215,21 @@
             <label>EIS</label>
             <description>EIS</description>
         </rules>
+        <rules>
+            <name>Baseline_OtherAuth</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_review_type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><stringValue>Other Authorization</stringValue></rightValue>
+            </conditions>
+            <!-- Other Authorization does not use EA/CE/EIS baselines — always On Track -->
+            <connector>
+                <targetReference>Assign_Tier_OnTrack</targetReference>
+            </connector>
+            <label>Other Authorization</label>
+            <description>Other Authorization pathway bypasses baseline evaluation — always On Track</description>
+        </rules>
     </decisions>
 
     <!-- ============================================================
@@ -334,7 +349,7 @@
     <formulas>
         <name>formula_ErrorContext</name>
         <dataType>String</dataType>
-        <expression>"ReviewType:" &amp; {!$Record.nepa_review_type__c} &amp; "|RiskTier:" &amp; {!var_RiskTier} &amp; "|PrevTier:" &amp; {!var_PreviousTier} &amp; "|BaselineDays:" &amp; TEXT({!var_BaselineDays})</expression>
+        <expression>"ReviewType:" &amp; TEXT({!$Record.nepa_review_type__c}) &amp; "|RiskTier:" &amp; {!var_RiskTier} &amp; "|PrevTier:" &amp; {!var_PreviousTier} &amp; "|BaselineDays:" &amp; TEXT({!var_BaselineDays})</expression>
     </formulas>
 
     <!-- ============================================================
@@ -348,16 +363,16 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <inputAssignments>
-            <field>IndividualApplicationId</field>
+            <field>nepa_related_process__c</field>
             <value><elementReference>$Record.Id</elementReference></value>
         </inputAssignments>
         <inputAssignments>
             <field>nepa_event_type__c</field>
-            <value><elementReference>$Label.c.NEPA_EventType_Process_Paused</elementReference></value>
+            <value><stringValue>Process Paused</stringValue></value>
         </inputAssignments>
         <inputAssignments>
             <field>nepa_status__c</field>
-            <value><elementReference>$Label.c.NEPA_Status_In_Progress</elementReference></value>
+            <value><stringValue>In Progress</stringValue></value>
         </inputAssignments>
         <inputAssignments>
             <field>nepa_event_description__c</field>
@@ -365,7 +380,7 @@
         </inputAssignments>
         <inputAssignments>
             <field>nepa_source__c</field>
-            <value><elementReference>$Label.c.NEPA_Source_Timeline_Risk_Assessor</elementReference></value>
+            <value><stringValue>NEPA_Timeline_Risk_Assessor</stringValue></value>
         </inputAssignments>
         <object>ApplicationTimeline</object>
         <connector>
@@ -442,7 +457,7 @@
             <value><elementReference>var_RiskTier</elementReference></value>
         </inputAssignments>
         <inputAssignments>
-            <field>nepa_estimated_completion_date__c</field>
+            <field>nepa_projected_completion_date__c</field>
             <value><elementReference>formula_EstimatedDate</elementReference></value>
         </inputAssignments>
         <object>IndividualApplication</object>
@@ -479,7 +494,7 @@
         </inputAssignments>
         <inputAssignments>
             <name>inp_FailedStep</name>
-            <value><elementReference>$Flow.CurrentStageLabel</elementReference></value>
+            <value><stringValue>NEPA_Timeline_Risk_Assessor</stringValue></value>
         </inputAssignments>
         <inputAssignments>
             <name>inp_ErrorContext</name>

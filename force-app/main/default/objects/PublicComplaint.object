@@ -440,6 +440,24 @@
             </valueSetDefinition>
         </valueSet>
     </fields>
+    <fields>
+        <fullName>nepa_ai_substantive_recommendation__c</fullName>
+        <description>AI-generated substantive determination written by the Comment Triage Agent. Read-only — do not edit. Human reviewers use nepa_is_substantive__c (human-only) to record the official determination. Separation required by OMB M-24-10: AI recommendations must not directly constitute adverse actions.</description>
+        <inlineHelpText>AI recommendation only. Official determination is in Is Substantive (human-set).</inlineHelpText>
+        <label>AI Substantive Recommendation</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Substantive</fullName><default>false</default><label>Substantive</label></value>
+                <value><fullName>Non-Substantive</fullName><default>false</default><label>Non-Substantive</label></value>
+                <value><fullName>Uncertain</fullName><default>false</default><label>Uncertain</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
     <validationRules>
         <fullName>NEPA_Comment_Period_Closed</fullName>
         <active>true</active>

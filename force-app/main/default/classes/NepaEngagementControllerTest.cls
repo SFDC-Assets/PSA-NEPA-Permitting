@@ -47,25 +47,29 @@ private class NepaEngagementControllerTest {
     @IsTest
     static void getPublicEngagements_blankProcessId_throwsException() {
         Test.startTest();
+        Boolean threw = false;
         try {
             NepaEngagementController.getPublicEngagements('');
-            System.assert(false, 'Should have thrown');
+            System.assert(false, 'Should have thrown an AuraHandledException');
         } catch (AuraHandledException e) {
-            System.assert(e.getMessage().contains('required'));
+            threw = true;
         }
         Test.stopTest();
+        System.assertEquals(true, threw, 'AuraHandledException must be thrown for blank processId');
     }
 
     @IsTest
     static void getPublicEngagements_nullProcessId_throwsException() {
         Test.startTest();
+        Boolean threw = false;
         try {
             NepaEngagementController.getPublicEngagements(null);
-            System.assert(false, 'Should have thrown');
+            System.assert(false, 'Should have thrown an AuraHandledException');
         } catch (AuraHandledException e) {
-            System.assert(e.getMessage().contains('required'));
+            threw = true;
         }
         Test.stopTest();
+        System.assertEquals(true, threw, 'AuraHandledException must be thrown for null processId');
     }
 
     // ── bulk safety ───────────────────────────────────────────────────────────

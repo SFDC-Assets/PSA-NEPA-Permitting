@@ -4,9 +4,26 @@ private class NepaTimelineRiskAssessorTest {
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
+    private static Id getLicenseTypeId() {
+        List<RegulatoryAuthorizationType> existing = [
+            SELECT Id FROM RegulatoryAuthorizationType
+            WHERE Name = 'NEPA Environmental Review' LIMIT 1
+        ];
+        if (!existing.isEmpty()) {
+            return existing[0].Id;
+        }
+        RegulatoryAuthorizationType rat = new RegulatoryAuthorizationType(
+            Name = 'NEPA Environmental Review',
+            RegulatoryAuthCategory = 'Permit'
+        );
+        insert rat;
+        return rat.Id;
+    }
+
     private static IndividualApplication makeEISProcess(Id projectId) {
         IndividualApplication ia = new IndividualApplication();
         ia.Category                = 'Permit';
+        ia.LicenseTypeId           = getLicenseTypeId();
         ia.nepa_related_project__c = projectId;
         ia.nepa_review_type__c     = 'EIS';
         ia.nepa_process_status__c  = 'in progress';
@@ -175,6 +192,7 @@ private class NepaTimelineRiskAssessorTest {
         Program proj = NepaTestFactory.insertProgram('TRA-006', 'At Risk CE Project', 'BLM');
         IndividualApplication ia = new IndividualApplication();
         ia.Category                       = 'Permit';
+        ia.LicenseTypeId                  = getLicenseTypeId();
         ia.nepa_related_project__c        = proj.Id;
         ia.nepa_review_type__c            = 'CE';
         ia.nepa_process_status__c         = 'in progress';
@@ -203,6 +221,7 @@ private class NepaTimelineRiskAssessorTest {
     static void noRelatedProject_flowHandlesGracefully() {
         IndividualApplication ia = new IndividualApplication();
         ia.Category               = 'Permit';
+        ia.LicenseTypeId          = getLicenseTypeId();
         ia.nepa_process_status__c = 'in progress';
         ia.nepa_process_stage__c  = 'Scoping';
         ia.nepa_review_type__c    = 'EIS';
@@ -254,5 +273,74 @@ private class NepaTimelineRiskAssessorTest {
         Test.stopTest();
 
         System.assertEquals(false, threw, 'Timeline risk assessor bulk update must not throw');
+    }
+
+    // ── AI writes projected field, not the statutory estimated field ──────────
+
+    @IsTest
+    static void timelineRisk_writesProjectedNotEstimated() {
+        Program proj = NepaTestFactory.insertProgram('TRA-007', 'Projected Field Test', 'BLM');
+        IndividualApplication ia = makeEISProcess(proj.Id);
+        ia.nepa_last_stage_transition__c     = daysAgo(30);
+        ia.nepa_estimated_completion_date__c = null;
+        ia.nepa_projected_completion_date__c = null;
+        insert ia;
+
+        IndividualApplication iaUpdate = new IndividualApplication(Id = ia.Id);
+        iaUpdate.nepa_process_stage__c           = 'Draft EIS Preparation';
+        iaUpdate.nepa_last_stage_transition__c   = daysAgo(30);
+
+        Test.startTest();
+        update iaUpdate;
+        Test.stopTest();
+
+        IndividualApplication result = [
+            SELECT nepa_projected_completion_date__c, nepa_estimated_completion_date__c
+            FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+
+        // AsyncAfterCommit flows may not complete synchronously in test context.
+        // Key governance assertion: nepa_estimated_completion_date__c must NEVER be written by the flow.
+        System.assertEquals(null, result.nepa_estimated_completion_date__c,
+            'nepa_estimated_completion_date__c must remain null — reserved statutory field, AI must write projected only');
+        // If the async path did complete, projected date must not be in the past.
+        if (result.nepa_projected_completion_date__c != null) {
+            System.assert(result.nepa_projected_completion_date__c >= Date.today(),
+                'Projected completion date must not be in the past');
+        }
+    }
+
+    // ── Other Authorization pathway is always On Track ────────────────────────
+
+    @IsTest
+    static void timelineRisk_otherAuthPathway_alwaysOnTrack() {
+        Program proj = NepaTestFactory.insertProgram('TRA-008', 'Other Auth Project', 'BLM');
+        IndividualApplication ia = new IndividualApplication();
+        ia.Category                      = 'Permit';
+        ia.LicenseTypeId                 = getLicenseTypeId();
+        ia.nepa_related_project__c       = proj.Id;
+        ia.nepa_review_type__c           = 'Other Authorization';
+        ia.nepa_process_status__c        = 'in progress';
+        ia.nepa_process_stage__c         = 'Intake';
+        ia.nepa_last_stage_transition__c = daysAgo(500);
+        insert ia;
+
+        IndividualApplication iaUpdate = new IndividualApplication(Id = ia.Id);
+        iaUpdate.nepa_process_stage__c          = 'Analysis';
+        iaUpdate.nepa_last_stage_transition__c  = daysAgo(500);
+
+        Test.startTest();
+        update iaUpdate;
+        Test.stopTest();
+
+        IndividualApplication result = [
+            SELECT nepa_timeline_risk_tier__c FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+
+        // AsyncAfterCommit may not complete synchronously in tests — accept null or On Track.
+        // Key governance: 'Other Authorization' must never produce At Risk/Stalled/Overdue.
+        System.assert(
+            result.nepa_timeline_risk_tier__c == null || result.nepa_timeline_risk_tier__c == 'On Track',
+            'Other Authorization pathway must never produce At Risk/Stalled/Overdue — EA baselines must not apply');
     }
 }

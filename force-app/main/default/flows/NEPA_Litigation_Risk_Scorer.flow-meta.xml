@@ -4,7 +4,7 @@
     <description>Calculates the composite litigation risk score on IndividualApplication using custom metadata weights for review type, lead agency, circuit, and adjacent statute exposure. Fires after save on IndividualApplication when key risk fields change.</description>
     <label>NEPA Litigation Risk Scorer</label>
     <processType>AutoLaunchedFlow</processType>
-    <status>Draft</status>
+    <status>Active</status>
     <assignments>
         <name>Assign_ReviewType_EIS</name>
         <label>Review Type EIS: 40 points</label>
@@ -687,6 +687,14 @@
             <label>Moderate (25-49)</label>
         </rules>
     </decisions>
+    <!-- Confidence: 50 base (review type + statute always scored) + 25 per CMT hit (agency, circuit) -->
+    <formulas>
+        <name>formula_AIConfidence</name>
+        <dataType>Number</dataType>
+        <expression>50 + IF(NOT(ISBLANK({!rec_AgencyRiskRate.Id})), 25, 0) + IF(NOT(ISBLANK({!rec_CircuitRiskWeight.Id})), 25, 0)</expression>
+        <scale>1</scale>
+    </formulas>
+
     <formulas>
         <name>formula_ErrorContext</name>
         <dataType>String</dataType>
@@ -758,7 +766,7 @@
         <filterLogic>and</filterLogic>
         <filters>
             <field>Agency_Name__c</field>
-            <operator>Contains</operator>
+            <operator>EqualTo</operator>
             <value>
                 <elementReference>rec_RelatedProject.nepa_lead_agency__c</elementReference>
             </value>
@@ -854,6 +862,12 @@
                 <elementReference>var_ExpeditedPenaltyApplied</elementReference>
             </value>
         </inputAssignments>
+        <inputAssignments>
+            <field>nepa_litigation_ai_confidence__c</field>
+            <value>
+                <elementReference>formula_AIConfidence</elementReference>
+            </value>
+        </inputAssignments>
         <object>IndividualApplication</object>
         <filters>
             <field>Id</field>
@@ -918,9 +932,16 @@
             </connector>
             <pathType>AsyncAfterCommit</pathType>
         </scheduledPaths>
-        <filterLogic>and</filterLogic>
+        <filterLogic>1 OR 2</filterLogic>
         <filters>
             <field>nepa_review_type__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_record_completeness__c</field>
             <operator>IsChanged</operator>
             <value>
                 <booleanValue>true</booleanValue>

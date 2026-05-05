@@ -4,7 +4,7 @@
     <description>Auto-creates an ApplicationTimeline event when a ContentVersion with record type nepa_permit_document is uploaded or its nepa_document_type__c is set. The event captures the document upload as an administrative record entry — event type = Document Upload, tier = Administrative Record. Ensures every document that enters the record system is reflected in the case timeline without manual entry. Fires after-save on ContentVersion (create only, permit_document record type).</description>
     <label>NEPA Administrative Record Auto-Create</label>
     <processType>AutoLaunchedFlow</processType>
-    <status>Draft</status>
+    <status>Active</status>
     <assignments>
         <name>Build_EventDescription</name>
         <label>Build Event Description</label>
@@ -135,12 +135,12 @@
     <formulas>
         <name>formula_EventDescription</name>
         <dataType>String</dataType>
-        <expression>"Document uploaded: " &amp; {!$Record.Title} &amp; " | Type: " &amp; {!$Record.nepa_document_type__c} &amp; " | Category: " &amp; {!$Record.nepa_record_category__c} &amp; " | AI Generated: " &amp; TEXT({!$Record.nepa_ai_generated__c})</expression>
+        <expression>"Document uploaded: " &amp; {!$Record.Title} &amp; " | Type: " &amp; TEXT({!$Record.nepa_document_type__c}) &amp; " | Category: " &amp; TEXT({!$Record.nepa_record_category__c}) &amp; " | AI Generated: " &amp; IF({!$Record.nepa_ai_generated__c}, "true", "false")</expression>
     </formulas>
     <formulas>
         <name>formula_ErrorContext</name>
         <dataType>String</dataType>
-        <expression>"DocType:" &amp; {!$Record.nepa_document_type__c} &amp; "|DocTitle:" &amp; {!$Record.Title} &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
+        <expression>"DocType:" &amp; TEXT({!$Record.nepa_document_type__c}) &amp; "|DocTitle:" &amp; {!$Record.Title}</expression>
     </formulas>
     <recordCreates>
         <name>Create_TimelineEvent</name>

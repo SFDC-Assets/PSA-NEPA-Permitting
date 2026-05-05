@@ -292,7 +292,7 @@
         </inputAssignments>
         <inputAssignments>
             <field>nepa_status__c</field>
-            <value><stringValue>Draft</stringValue></value>
+            <value><stringValue>AI Draft — Pending Review</stringValue></value>
         </inputAssignments>
         <inputAssignments>
             <field>nepa_document_summary__c</field>

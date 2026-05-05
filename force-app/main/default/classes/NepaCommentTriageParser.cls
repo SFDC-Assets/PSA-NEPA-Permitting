@@ -50,6 +50,9 @@ public with sharing class NepaCommentTriageParser {
 
         @InvocableVariable(label='Litigation Threat Basis' description='AI explanation of the specific legal/technical standard cited and the alleged deficiency')
         public String litigationThreatBasis;
+
+        @InvocableVariable(label='Response Status' description='Parsed response status: Pending, Draft, Reviewed, or Finalized — validated against whitelist before output')
+        public String responseStatus;
     }
 
     @InvocableMethod(
@@ -75,6 +78,7 @@ public with sharing class NepaCommentTriageParser {
         res.triageRationale = '';
         res.litigationThreat = False;
         res.litigationThreatBasis = '';
+        res.responseStatus = 'Pending';
 
         if (String.isBlank(req.triageJson)) {
             res.parseError = 'triageJson input is blank or null.';
@@ -123,10 +127,20 @@ public with sharing class NepaCommentTriageParser {
                 res.litigationThreatBasis = String.valueOf(parsed.get('litigation_threat_basis'));
             }
 
+            if (parsed.containsKey('response_status') && parsed.get('response_status') != null) {
+                res.responseStatus = String.valueOf(parsed.get('response_status'));
+            }
+
             // Validate sentiment is a known value; default to Neutral if unexpected
             Set<String> validSentiments = new Set<String>{'Supportive', 'Neutral', 'Opposed', 'Mixed'};
             if (!validSentiments.contains(res.sentiment)) {
                 res.sentiment = 'Neutral';
+            }
+
+            // Validate response status against allowed picklist values; default to Pending if unexpected
+            Set<String> validResponseStatuses = new Set<String>{'Pending', 'Draft', 'Reviewed', 'Finalized'};
+            if (!validResponseStatuses.contains(res.responseStatus)) {
+                res.responseStatus = 'Pending';
             }
 
             res.parseSuccess = True;

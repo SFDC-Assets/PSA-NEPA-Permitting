@@ -4,7 +4,7 @@
     <description>Priority 2: Routes IndividualApplication records after CE screening completes. Fires after-save async when nepa_screening_confidence__c or nepa_ce_pathway_recommendation__c is changed. High-confidence CE recommendation: creates an ApplicationTimeline CE Determination event and a task to activate the CE Action Plan. Medium-confidence: coordinator review task. EA-Required/EIS-Required: scoping task. Reads nepa_ce_pathway_recommendation__c (AI recommendation), NOT nepa_review_type__c (official pathway set by coordinator).</description>
     <label>NEPA CE Determination Router</label>
     <processType>AutoLaunchedFlow</processType>
-    <status>Draft</status>
+    <status>Active</status>
 
     <!-- ============================================================
          STEP 1: Capture screening values from the saved record
@@ -220,7 +220,7 @@
     <formulas>
         <name>formula_ErrorContext</name>
         <dataType>String</dataType>
-        <expression>"ReviewType:" &amp; {!var_ReviewType} &amp; "|Confidence:" &amp; TEXT({!var_Confidence}) &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
+        <expression>"ReviewType:" &amp; {!var_ReviewType} &amp; "|Confidence:" &amp; {!var_Confidence}</expression>
     </formulas>
 
     <!-- ============================================================
@@ -235,16 +235,16 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <inputAssignments>
-            <field>IndividualApplicationId</field>
+            <field>nepa_related_process__c</field>
             <value><elementReference>$Record.Id</elementReference></value>
         </inputAssignments>
         <inputAssignments>
             <field>nepa_event_type__c</field>
-            <value><elementReference>$Label.c.NEPA_EventType_CE_Determination</elementReference></value>
+            <value><stringValue>CE Determination</stringValue></value>
         </inputAssignments>
         <inputAssignments>
             <field>nepa_status__c</field>
-            <value><elementReference>$Label.c.NEPA_Status_Pending</elementReference></value>
+            <value><stringValue>Pending</stringValue></value>
         </inputAssignments>
         <inputAssignments>
             <field>nepa_event_description__c</field>
@@ -252,7 +252,7 @@
         </inputAssignments>
         <inputAssignments>
             <field>nepa_source__c</field>
-            <value><elementReference>$Label.c.NEPA_Source_CE_Screener</elementReference></value>
+            <value><stringValue>NEPA_CE_Determination_Router</stringValue></value>
         </inputAssignments>
         <inputAssignments>
             <field>nepa_tier__c</field>
@@ -335,7 +335,7 @@
         </inputAssignments>
         <inputAssignments>
             <name>inp_FailedStep</name>
-            <value><elementReference>var_CurrentStep</elementReference></value>
+            <value><stringValue>NEPA_CE_Determination_Router</stringValue></value>
         </inputAssignments>
         <inputAssignments>
             <name>inp_ErrorContext</name>

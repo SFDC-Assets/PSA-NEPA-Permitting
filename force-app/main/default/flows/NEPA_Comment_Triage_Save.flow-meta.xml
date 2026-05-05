@@ -99,10 +99,11 @@
             </value>
         </assignmentItems>
         <assignmentItems>
-            <assignToReference>var_Comment.nepa_is_substantive__c</assignToReference>
+            <!-- OMB M-24-10: write AI output to recommendation field only; nepa_is_substantive__c is human-only -->
+            <assignToReference>var_Comment.nepa_ai_substantive_recommendation__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>inp_IsSubstantive</elementReference>
+                <elementReference>formula_AIRecommendation</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -154,12 +155,22 @@
                 <elementReference>inp_LitigationThreatBasis</elementReference>
             </value>
         </assignmentItems>
+        <connector>
+            <targetReference>Decision_LitigationThreat</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- Only set legal review status when threat IS flagged; when false, leave existing value untouched -->
+    <assignments>
+        <name>Assign_LegalReviewPending</name>
+        <label>Set Legal Review Status: Pending</label>
+        <locationX>0</locationX>
+        <locationY>540</locationY>
         <assignmentItems>
-            <!-- Auto-set legal review status to Pending when litigation threat is flagged -->
             <assignToReference>var_Comment.nepa_legal_review_status__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>formula_LegalReviewStatus</elementReference>
+                <stringValue>Pending Legal Review</stringValue>
             </value>
         </assignmentItems>
         <connector>
@@ -286,16 +297,88 @@
         </rules>
     </decisions>
 
+    <!-- Routes to Assign_LegalReviewPending when threat is flagged; bypasses when false -->
+    <decisions>
+        <name>Decision_LitigationThreat</name>
+        <label>Litigation Threat Flagged?</label>
+        <locationX>0</locationX>
+        <locationY>510</locationY>
+        <defaultConnectorLabel>No threat — preserve existing status</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Update_Comment</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>LitigationThreat_True</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>inp_LitigationThreat</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_LegalReviewPending</targetReference>
+            </connector>
+            <label>Threat Flagged</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         STEP 4b: DECISION — Human Review Required?
+         OMB M-24-10: low-confidence or EJ-flagged triage must route
+         to a human coordinator before the record is considered triaged.
+    ============================================================ -->
+
+    <decisions>
+        <name>Decision_RequiresHumanReview</name>
+        <label>Requires Human Review?</label>
+        <locationX>0</locationX>
+        <locationY>720</locationY>
+        <defaultConnectorLabel>No review needed</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Assign_Success</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>NeedsHumanReview</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>inp_RequiresHumanReview</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>inp_AIConfidenceScore</leftValueReference>
+                <operator>LessThan</operator>
+                <rightValue>
+                    <numberValue>70</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_HumanReviewTask</targetReference>
+            </connector>
+            <label>Review Required</label>
+        </rules>
+    </decisions>
+
     <!-- ============================================================
          FORMULAS
     ============================================================ -->
 
+    <!-- Due date for human review tasks: TODAY() + 2 business days -->
     <formulas>
-        <name>formula_LegalReviewStatus</name>
+        <name>formula_ReviewDueDate</name>
+        <dataType>Date</dataType>
+        <expression>TODAY() + 2</expression>
+    </formulas>
+
+    <!-- Maps inp_IsSubstantive boolean to the restricted picklist value on nepa_ai_substantive_recommendation__c -->
+    <formulas>
+        <name>formula_AIRecommendation</name>
         <dataType>String</dataType>
-        <!-- Sets Pending Legal Review when litigation_threat is true; empty string otherwise
-             so existing legal_review_status__c values are not overwritten on non-threat saves -->
-        <expression>IF({!inp_LitigationThreat}, "Pending Legal Review", "")</expression>
+        <expression>IF({!inp_IsSubstantive}, "Substantive", "Non-Substantive")</expression>
     </formulas>
 
     <!-- ============================================================
@@ -326,6 +409,7 @@
         <object>PublicComplaint</object>
         <outputReference>var_Comment</outputReference>
         <queriedFields>Id</queriedFields>
+        <queriedFields>nepa_legal_review_status__c</queriedFields>
     </recordLookups>
 
     <!-- ============================================================
@@ -338,13 +422,59 @@
         <locationX>0</locationX>
         <locationY>600</locationY>
         <connector>
-            <targetReference>Assign_Success</targetReference>
+            <targetReference>Decision_RequiresHumanReview</targetReference>
         </connector>
         <faultConnector>
             <targetReference>Assign_Error_UpdateFault</targetReference>
         </faultConnector>
         <inputReference>var_Comment</inputReference>
     </recordUpdates>
+
+    <!-- ============================================================
+         STEP 4c: CREATE TASK — Human Review Required
+         High-priority task assigned to record owner; due in 2 days.
+    ============================================================ -->
+
+    <recordCreates>
+        <name>Create_HumanReviewTask</name>
+        <label>Create Human Review Task</label>
+        <locationX>0</locationX>
+        <locationY>840</locationY>
+        <connector>
+            <targetReference>Assign_Success</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <stringValue>AI Triage Review Required — Low Confidence or EJ Flag</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhatId</field>
+            <value>
+                <elementReference>inp_CommentId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Priority</field>
+            <value>
+                <stringValue>High</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Not Started</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ActivityDate</field>
+            <value>
+                <elementReference>formula_ReviewDueDate</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Task</object>
+    </recordCreates>
 
     <!-- ============================================================
          START

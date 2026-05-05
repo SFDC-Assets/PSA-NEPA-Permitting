@@ -4,7 +4,7 @@
     <description>Calls NEPA_Defensibility_Gap_Checker when a ContentVersion with a NEPA document type is linked to a case event. Resolves the parent IndividualApplication Id and passes it to the gap checker subflow.</description>
     <label>NEPA Defensibility Trigger - Document</label>
     <processType>AutoLaunchedFlow</processType>
-    <status>Draft</status>
+    <status>Active</status>
     <assignments>
         <name>Assign_ProcessId</name>
         <label>Set Process Id</label>
@@ -91,7 +91,7 @@
     <formulas>
         <name>formula_ErrorContext</name>
         <dataType>String</dataType>
-        <expression>"ProcessId:" &amp; {!var_ProcessId} &amp; "|DocType:" &amp; {!$Record.nepa_document_type__c} &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
+        <expression>"ProcessId:" &amp; {!var_ProcessId} &amp; "|DocType:" &amp; TEXT({!$Record.nepa_document_type__c}) &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
     </formulas>
     <recordLookups>
         <name>Get_CaseEvent</name>

@@ -88,15 +88,23 @@ private class NepaCommentControllerTest {
             LIMIT 1
         ];
 
+        ContentVersion cv = new ContentVersion();
+        cv.Title           = 'Test Attachment';
+        cv.PathOnClient    = 'test.txt';
+        cv.VersionData     = Blob.valueOf('test content');
+        cv.IsMajorVersion  = true;
+        insert cv;
+
         NepaCommentController.CommentInput input = makeInput(ia.Id);
-        input.contentVersionId = 'fakeContentVersionId';
+        input.contentVersionId = cv.Id;
 
         Test.startTest();
         String commentId = NepaCommentController.submitComment(input);
         Test.stopTest();
 
         PublicComplaint created = [SELECT nepa_document_location_ref__c FROM PublicComplaint WHERE Id = :commentId];
-        System.assertEquals('fakeContentVersionId', created.nepa_document_location_ref__c);
+        System.assertEquals(String.valueOf(cv.Id), created.nepa_document_location_ref__c,
+            'nepa_document_location_ref__c must store the ContentVersion Id');
     }
 
     @IsTest

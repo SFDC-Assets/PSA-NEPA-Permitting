@@ -17,7 +17,7 @@
             <assignToReference>var_AgencyAbbr</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>rec_RelatedProject.nepa_lead_agency__r.Name</elementReference>
+                <elementReference>rec_RelatedProject.nepa_record_owner_agency__c</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -363,6 +363,32 @@
         </connector>
     </assignments>
 
+    <!-- GIS not yet complete: stamp nepa_processing_status__c = Pending GIS and exit.
+         The screener will re-run when nepa_extraordinary_circumstances__c is set by the GIS IP. -->
+    <assignments>
+        <name>Assign_DeferGISReview</name>
+        <label>Defer — GIS Proximity Pending</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ClassificationBasis</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>CE screening deferred: GIS proximity check has not yet completed. Screener will re-run automatically when GIS data is available.</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_ReviewType</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Pending GIS</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Build_ClassificationBasis</targetReference>
+        </connector>
+    </assignments>
+
     <!-- ============================================================
          STAGE ENTRY: Default inp_EvaluationDate to nepa_start_date__c when
          not explicitly set by a caller. Prevents all CMT temporal filters
@@ -426,32 +452,6 @@
             <label>GIS Complete or No Project</label>
         </rules>
     </decisions>
-
-    <!-- GIS not yet complete: stamp nepa_processing_status__c = Pending GIS and exit.
-         The screener will re-run when nepa_extraordinary_circumstances__c is set by the GIS IP. -->
-    <assignments>
-        <name>Assign_DeferGISReview</name>
-        <label>Defer — GIS Proximity Pending</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_ClassificationBasis</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>CE screening deferred: GIS proximity check has not yet completed. Screener will re-run automatically when GIS data is available.</stringValue>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_ReviewType</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>Pending GIS</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Build_ClassificationBasis</targetReference>
-        </connector>
-    </assignments>
 
     <!-- ============================================================
          STAGE 0-A: Does the application have a related project?
@@ -881,7 +881,7 @@
     <formulas>
         <name>formula_ErrorContext</name>
         <dataType>String</dataType>
-        <expression>"Agency:" &amp; {!var_AgencyAbbr} &amp; "|ReviewType:" &amp; {!var_ReviewType} &amp; "|CECode:" &amp; {!var_CECode} &amp; "|Confidence:" &amp; TEXT({!var_Confidence}) &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
+        <expression>"Agency:" &amp; {!var_AgencyAbbr} &amp; "|ReviewType:" &amp; {!var_ReviewType} &amp; "|CECode:" &amp; {!var_CECode} &amp; "|Confidence:" &amp; {!var_Confidence} &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
     </formulas>
 
     <!-- AI AUP: maps internal var_ReviewType + confidence to the human-facing recommendation picklist value -->
@@ -918,7 +918,7 @@
         <object>Program</object>
         <outputReference>rec_RelatedProject</outputReference>
         <queriedFields>Id</queriedFields>
-        <queriedFields>nepa_lead_agency__r.Name</queriedFields>
+        <queriedFields>nepa_record_owner_agency__c</queriedFields>
         <queriedFields>nepa_project_sector__c</queriedFields>
         <queriedFields>nepa_project_type__c</queriedFields>
         <queriedFields>nepa_applicant_naics__c</queriedFields>
@@ -1383,7 +1383,7 @@
             </connector>
             <pathType>AsyncAfterCommit</pathType>
         </scheduledPaths>
-        <filterLogic>or</filterLogic>
+        <filterLogic>(1 OR 2 OR 3 OR 4) AND 5 AND 6</filterLogic>
         <filters>
             <field>nepa_action_type__c</field>
             <operator>IsChanged</operator>
@@ -1403,6 +1403,20 @@
             <field>nepa_related_project__c</field>
             <operator>IsChanged</operator>
             <value><booleanValue>true</booleanValue></value>
+        </filters>
+        <filters>
+            <field>nepa_review_type__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>EIS</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_review_type__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>EA</stringValue>
+            </value>
         </filters>
     </start>
 

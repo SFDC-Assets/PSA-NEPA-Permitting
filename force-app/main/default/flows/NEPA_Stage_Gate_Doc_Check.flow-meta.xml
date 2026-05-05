@@ -300,7 +300,7 @@ Design notes:
         <connector>
             <targetReference>Loop_RequiredDocs</targetReference>
         </connector>
-        <filterLogic>and</filterLogic>
+        <filterLogic>1 AND 2 AND 3 AND 4</filterLogic>
         <filters>
             <field>nepa_process__c</field>
             <operator>EqualTo</operator>
@@ -318,6 +318,13 @@ Design notes:
             <operator>EqualTo</operator>
             <value>
                 <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_draft_source__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>AI-Generated</stringValue>
             </value>
         </filters>
         <getFirstRecordOnly>false</getFirstRecordOnly>
