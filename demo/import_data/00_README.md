@@ -46,6 +46,7 @@ Load files strictly in number order. Each file's parent records must exist befor
 | 17 | `17_nepa_litigation__c.csv` | nepa_litigation__c | 2 | insert (no ext ID) | Program (08) |
 | 18 | `18_postload_polymorphic.apex` | **Apex script** | — | — | Run after all CSVs; wires polymorphic lookups |
 | 19 | `19_Task.csv` | Task | 8 | `External_ID__c` | Loaded before or after Apex; WhatId/WhoId wired by step 18 |
+| 20 | `20_entities789_demo_data.apex` | **Apex script** | — | — | Run after step 18; creates RegulatoryAuthority (4), RegulatoryCode (7), nepa_process_team_member__c (7), Polygon (1), nepa_gis_data_element__c (5); wires Program lat/lon/polygon and IndividualApplication.nepa_legal_structure__c |
 
 ---
 
@@ -119,7 +120,15 @@ IndividualApplication (09)  [nepa_federal_unique_id__c = IDI-38709]
   ├── nepa_engagement__c.nepa_process__c (11)
   ├── ApplicationTimeline.nepa_related_process__c (12)
   ├── PublicComplaint.nepa_related_process__c (16)
-  └── Task.WhatId (19) — wired by Apex
+  ├── Task.WhatId (19) — wired by Apex
+  ├── nepa_process_team_member__c.nepa_process__c (20) — 7 ID team members
+  └── nepa_legal_structure__c → RegulatoryCode '43 CFR § 3809.11' (20)
+
+Program (08)  [also]
+  ├── nepa_location_lat__c = 42.8701 (20)
+  ├── nepa_location_lon__c = -116.9227 (20)
+  └── nepa_polygon__c → Polygon (20)
+        └── nepa_gis_data_element__c.nepa_polygon__c (20) — 5 GIS layers
 
 WorkOrder (13)
   └── ServiceAppointment.ParentRecordId (14)
@@ -205,4 +214,11 @@ sf data delete bulk --sobject ServiceTerritory        --where "External_ID__c LI
 sf data delete bulk --sobject Contact                 --where "External_ID__c LIKE 'DEMO_CON_%'"   --target-org $TARGET --async
 sf data delete bulk --sobject Account                 --where "External_ID__c LIKE 'DEMO_ACCT_%'"  --target-org $TARGET --async
 sf data delete bulk --sobject OperatingHours          --where "External_ID__c LIKE 'DEMO_OH_%'"    --target-org $TARGET --async
+
+# Step 20 cleanup (run before Program/IndividualApplication deletes above)
+sf data delete bulk --sobject nepa_gis_data_element__c --where "nepa_data_source_system__c IN ('BLM GeoBOE','NHD+ High Resolution','ArcGIS Online — SGMA PHMA','USFWS ArcGIS Online — ESA Critical Habitat','National Wetlands Inventory')" --target-org $TARGET --async
+sf data delete bulk --sobject nepa_process_team_member__c --where "nepa_data_source_system__c = 'eNEPA'" --target-org $TARGET --async
+sf data delete bulk --sobject Polygon                 --where "Name = 'Carrie Placer Mine Claim Boundary — IDI-38709'" --target-org $TARGET --async
+sf data delete bulk --sobject RegulatoryCode          --where "Name IN ('42 U.S.C. § 4321','40 CFR § 1501.5','40 CFR § 1501.9','43 CFR § 3809.11','16 U.S.C. § 1536(a)','54 U.S.C. § 306108','33 U.S.C. § 1342')" --target-org $TARGET --async
+sf data delete bulk --sobject RegulatoryAuthority     --where "Name IN ('CEQ','DOI-BLM','Congress','EPA')" --target-org $TARGET --async
 ```

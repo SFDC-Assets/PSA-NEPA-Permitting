@@ -4,8 +4,8 @@
 // Creates: 3 projects (EIS, EA, CE), 3 processes, 3 documents, 4 public comments,
 //          2 engagement events, 3 timeline events, 3 GIS data elements,
 //          5 process team members, and 4 regulatory citations (RegulatoryCode).
-// Safe to run multiple times — project IDs are unique so duplicates will cause a
-// DUPLICATE_VALUE error on nepa_project_id__c if run twice. Clear data first if needed.
+// Not idempotent — project IDs are unique; re-running will fail on nepa_project_id__c.
+// Clear existing seed data before re-running.
 
 // ── 1. Agency accounts ────────────────────────────────────────────────────────
 Account blm = new Account(Name = 'Bureau of Land Management');
@@ -63,8 +63,25 @@ insert new List<Program>{ eisProject, eaProject, ceProject };
 // ── 3. Processes (CEQ Entity 2: Process) ─────────────────────────────────────
 Date today = Date.today();
 
+// LicenseTypeId is org-specific; get-or-create at runtime
+Id licenseTypeId;
+List<RegulatoryAuthorizationType> ratList = [
+    SELECT Id FROM RegulatoryAuthorizationType
+    WHERE Name = 'NEPA Environmental Review' LIMIT 1
+];
+if (ratList.isEmpty()) {
+    RegulatoryAuthorizationType rat = new RegulatoryAuthorizationType(
+        Name = 'NEPA Environmental Review', RegulatoryAuthCategory = 'Permit'
+    );
+    insert rat;
+    licenseTypeId = rat.Id;
+} else {
+    licenseTypeId = ratList[0].Id;
+}
+
 IndividualApplication eisProcess = new IndividualApplication();
 eisProcess.Category                               = 'Permit';
+eisProcess.LicenseTypeId                          = licenseTypeId;
 eisProcess.nepa_related_project__c                = eisProject.Id;
 eisProcess.nepa_review_type__c                    = 'EIS';
 eisProcess.nepa_process_status__c                 = 'in progress';
@@ -78,6 +95,7 @@ eisProcess.nepa_last_stage_transition__c          = DateTime.now().addDays(-120)
 
 IndividualApplication eaProcess = new IndividualApplication();
 eaProcess.Category                               = 'Permit';
+eaProcess.LicenseTypeId                          = licenseTypeId;
 eaProcess.nepa_related_project__c                = eaProject.Id;
 eaProcess.nepa_review_type__c                    = 'EA';
 eaProcess.nepa_process_status__c                 = 'in progress';
@@ -91,6 +109,7 @@ eaProcess.nepa_last_stage_transition__c          = DateTime.now().addDays(-45);
 
 IndividualApplication ceProcess = new IndividualApplication();
 ceProcess.Category                               = 'Permit';
+ceProcess.LicenseTypeId                          = licenseTypeId;
 ceProcess.nepa_related_project__c                = ceProject.Id;
 ceProcess.nepa_review_type__c                    = 'CE';
 ceProcess.nepa_process_status__c                 = 'in progress';
@@ -265,7 +284,7 @@ insert new List<nepa_gis_data_element__c>{
         nepa_coordinate_system__c   = 'WGS84',
         nepa_access_information__c  = 'https://gis.blm.gov/arcgis/rest/services/lands/BLM_Natl_SMA_Grazing_Allotments/FeatureServer/0',
         nepa_bounding_box__c        = '-109.5,42.5,-107.8,43.8',
-        nepa_database_reference__c  = 'BLM National Surface Management Agency',
+        nepa_database_reference__c  = true,
         nepa_data_source_agency__c  = 'Bureau of Land Management',
         nepa_data_source_system__c  = 'BLM GeoCommunicator',
         nepa_data_record_version__c = '3.2',
@@ -278,7 +297,7 @@ insert new List<nepa_gis_data_element__c>{
         nepa_coordinate_system__c   = 'WGS84',
         nepa_access_information__c  = 'https://services.arcgis.com/QVENGdaPbd4LUkLV/arcgis/rest/services/USFWS_Critical_Habitat/FeatureServer/0',
         nepa_bounding_box__c        = '-110.0,42.0,-107.0,44.5',
-        nepa_database_reference__c  = 'USFWS Critical Habitat Portal',
+        nepa_database_reference__c  = true,
         nepa_data_source_agency__c  = 'Fish and Wildlife Service',
         nepa_data_source_system__c  = 'USFWS IPaC',
         nepa_data_record_version__c = '2024.1',
@@ -291,7 +310,7 @@ insert new List<nepa_gis_data_element__c>{
         nepa_coordinate_system__c   = 'WGS84',
         nepa_access_information__c  = 'https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer',
         nepa_bounding_box__c        = '-109.5,42.5,-107.8,43.8',
-        nepa_database_reference__c  = 'FEMA National Flood Hazard Layer',
+        nepa_database_reference__c  = true,
         nepa_data_source_agency__c  = 'FEMA',
         nepa_data_source_system__c  = 'FEMA NFHL',
         nepa_data_record_version__c = '2.3.3',
