@@ -50,6 +50,7 @@ public with sharing class NepaDocumentController {
             FROM ContentDocumentLink
             WHERE LinkedEntityId = :processId
             WITH USER_MODE
+            LIMIT 1000
         ];
 
         if (links.isEmpty()) {
