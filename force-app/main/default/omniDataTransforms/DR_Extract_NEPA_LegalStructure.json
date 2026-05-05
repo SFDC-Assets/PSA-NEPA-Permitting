@@ -1,0 +1,26 @@
+{
+  "Name": "DR_Extract_NEPA_LegalStructure",
+  "Type": "Extract",
+  "IsActive__c": false,
+  "Description": "CEQ Entity 9 (Legal Structure): extracts a single RegulatoryCode record by Id for a Process. Input: legalStructureId (IndividualApplication.nepa_legal_structure__c). Output path: legal_structure. Returns empty when no legal structure is linked.",
+  "SObjectType": "RegulatoryCode",
+  "WhereClause": "Id = :legalStructureId",
+  "OutputPath": "legal_structure",
+  "Mappings": [
+    {"SObjectField": "Id", "OutputKey": "id", "DataType": "STRING"},
+    {"SObjectField": "Name", "OutputKey": "citation", "DataType": "STRING"},
+    {"SObjectField": "Subject", "OutputKey": "subject", "DataType": "STRING"},
+    {"SObjectField": "Description", "OutputKey": "description", "DataType": "STRING"},
+    {"SObjectField": "EffectiveFrom", "OutputKey": "effective_from", "DataType": "DATETIME"},
+    {"SObjectField": "EffectiveTo", "OutputKey": "effective_to", "DataType": "DATETIME"},
+    {"SObjectField": "ExternalUrl", "OutputKey": "external_url", "DataType": "STRING"},
+    {"SObjectField": "nepa_compliance_requirements__c", "OutputKey": "compliance_requirements", "DataType": "STRING"},
+    {"SObjectField": "nepa_text_content__c", "OutputKey": "text_content", "DataType": "STRING"},
+    {"SObjectField": "nepa_data_record_version__c", "OutputKey": "data_record_version", "DataType": "STRING"},
+    {"SObjectField": "nepa_data_source_agency__c", "OutputKey": "data_source_agency", "DataType": "STRING"},
+    {"SObjectField": "nepa_data_source_system__c", "OutputKey": "data_source_system", "DataType": "STRING"},
+    {"SObjectField": "nepa_record_owner_agency__c", "OutputKey": "record_owner_agency", "DataType": "STRING"},
+    {"SObjectField": "nepa_retrieved_timestamp__c", "OutputKey": "retrieved_timestamp", "DataType": "DATETIME"},
+    {"SObjectField": "LastModifiedDate", "OutputKey": "last_updated", "DataType": "DATETIME"}
+  ]
+}

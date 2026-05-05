@@ -23,6 +23,7 @@
     {"SObjectField": "nepa_location_lat__c", "OutputKey": "location_latitude", "DataType": "DECIMAL"},
     {"SObjectField": "nepa_location_lon__c", "OutputKey": "location_longitude", "DataType": "DECIMAL"},
     {"SObjectField": "nepa_location_text__c", "OutputKey": "location_text", "DataType": "STRING"},
+    {"SObjectField": "nepa_polygon__c", "OutputKey": "polygon_id", "DataType": "STRING"},
     {"SObjectField": "nepa_parent_project__c", "OutputKey": "parent_project_id", "DataType": "STRING"},
     {"SObjectField": "nepa_data_record_version__c", "OutputKey": "data_record_version", "DataType": "STRING"},
     {"SObjectField": "nepa_data_source_agency__c", "OutputKey": "data_source_agency", "DataType": "STRING"},

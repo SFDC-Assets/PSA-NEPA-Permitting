@@ -635,6 +635,9 @@
         <members>DR_Extract_NEPA_Comment</members>
         <members>DR_Extract_NEPA_EngagementEvent</members>
         <members>DR_Extract_NEPA_CaseEvent</members>
+        <members>DR_Extract_NEPA_GISData</members>
+        <members>DR_Extract_NEPA_TeamMember</members>
+        <members>DR_Extract_NEPA_LegalStructure</members>
         <!-- CE Intake: DataRaptor Load -->
         <members>DR_Load_NEPA_Process</members>
         <name>OmniDataTransform</name>

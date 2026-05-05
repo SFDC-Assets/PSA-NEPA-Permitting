@@ -1,0 +1,27 @@
+{
+  "Name": "DR_Extract_NEPA_GISData",
+  "Type": "Extract",
+  "IsActive__c": false,
+  "Description": "CEQ Entity 7 (GIS Data): extracts nepa_gis_data_element__c records linked to a Project via the shared Polygon record. Input: polygonId (Program.nepa_polygon__c). Output path: gis_data.",
+  "SObjectType": "nepa_gis_data_element__c",
+  "WhereClause": "nepa_polygon__c = :polygonId",
+  "OutputPath": "gis_data",
+  "Mappings": [
+    {"SObjectField": "Id", "OutputKey": "id", "DataType": "STRING"},
+    {"SObjectField": "Name", "OutputKey": "name", "DataType": "STRING"},
+    {"SObjectField": "nepa_polygon__c", "OutputKey": "polygon_id", "DataType": "STRING"},
+    {"SObjectField": "nepa_purpose__c", "OutputKey": "purpose", "DataType": "STRING"},
+    {"SObjectField": "nepa_format__c", "OutputKey": "format", "DataType": "STRING"},
+    {"SObjectField": "nepa_access_method__c", "OutputKey": "access_method", "DataType": "STRING"},
+    {"SObjectField": "nepa_access_information__c", "OutputKey": "access_information", "DataType": "STRING"},
+    {"SObjectField": "nepa_coordinate_system__c", "OutputKey": "coordinate_system", "DataType": "STRING"},
+    {"SObjectField": "nepa_bounding_box__c", "OutputKey": "bounding_box", "DataType": "STRING"},
+    {"SObjectField": "nepa_database_reference__c", "OutputKey": "references_official_database", "DataType": "BOOLEAN"},
+    {"SObjectField": "nepa_data_record_version__c", "OutputKey": "data_record_version", "DataType": "STRING"},
+    {"SObjectField": "nepa_data_source_agency__c", "OutputKey": "data_source_agency", "DataType": "STRING"},
+    {"SObjectField": "nepa_data_source_system__c", "OutputKey": "data_source_system", "DataType": "STRING"},
+    {"SObjectField": "nepa_record_owner_agency__c", "OutputKey": "record_owner_agency", "DataType": "STRING"},
+    {"SObjectField": "nepa_retrieved_timestamp__c", "OutputKey": "retrieved_timestamp", "DataType": "DATETIME"},
+    {"SObjectField": "LastModifiedDate", "OutputKey": "last_updated", "DataType": "DATETIME"}
+  ]
+}
