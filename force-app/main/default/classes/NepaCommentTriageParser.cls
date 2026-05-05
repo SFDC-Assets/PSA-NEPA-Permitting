@@ -103,7 +103,8 @@ public with sharing class NepaCommentTriageParser {
             }
 
             if (parsed.containsKey('confidence_score') && parsed.get('confidence_score') != null) {
-                res.confidenceScore = Decimal.valueOf(String.valueOf(parsed.get('confidence_score')));
+                Decimal rawScore = Decimal.valueOf(String.valueOf(parsed.get('confidence_score')));
+                res.confidenceScore = Math.max(0, Math.min(100, rawScore));
             }
 
             if (parsed.containsKey('cluster_hint') && parsed.get('cluster_hint') != null) {

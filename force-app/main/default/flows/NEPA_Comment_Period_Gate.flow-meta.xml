@@ -4,7 +4,7 @@
     <description>Before-save kill-switch for the portal comment submission form. Runs on every PublicComplaint insert. Uses cross-object field references ($Record.nepa_related_process__r.*) instead of a Get Records element — zero SOQL consumed regardless of batch size, safe for bulk API inserts of any volume. Compares $Flow.CurrentDateTime (UTC, second precision) to the exact comment period end datetime. Throws addError if the deadline has passed. Mandate 1: automates exact-minute intake gating for compressed 5-day comment periods under federal emergency procedures.</description>
     <label>NEPA Comment Period Gate</label>
     <processType>AutoLaunchedFlow</processType>
-    <status>Draft</status>
+    <status>Active</status>
 
     <!-- ── Decisions ──────────────────────────────────────────────────────── -->
 

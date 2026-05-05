@@ -91,10 +91,11 @@ public with sharing class NepaCommentEJDetector {
      */
     @TestVisible
     private static String normalizeDiacritics(String input) {
-        // Map covering all precomposed Latin letters with diacritics (Unicode blocks
-        // Latin-1 Supplement U+00C0-00FF and Latin Extended-A U+0100-017E) that an
-        // adversary might substitute for ASCII base letters in EJ/tribal keywords.
-        String s = input;
+        // Strip zero-width Unicode characters before diacritic normalization.
+        // U+200B (Zero Width Space), U+200C (ZWNJ), U+200D (ZWJ), U+FEFF (BOM/ZWNBSP),
+        // U+00AD (Soft Hyphen) — all invisible characters that break keyword matching
+        // when inserted between letters (e.g. "e​nvironmental ju‌stice").
+        String s = input.replaceAll('[\\u200B\\u200C\\u200D\\uFEFF\\u00AD]', '');
         s = s.replaceAll('[àáâãäåāăą]', 'a');
         s = s.replaceAll('[ÀÁÂÃÄÅĀĂĄ]', 'a');
         s = s.replaceAll('[èéêëēĕėęě]', 'e');

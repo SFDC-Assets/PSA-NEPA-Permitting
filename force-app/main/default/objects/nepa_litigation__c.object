@@ -305,7 +305,7 @@
         <trackTrending>false</trackTrending>
         <type>Lookup</type>
     </fields>
-    <!-- Provenance fields (CEQ Standard v1.2 pattern) -->
+    <!-- Provenance fields (CEQ Standard v1.2 — all 5 required) -->
     <fields>
         <fullName>nepa_data_source_system__c</fullName>
         <description>The system or database where the data originally came from.</description>
@@ -329,6 +329,39 @@
         <trackTrending>false</trackTrending>
         <type>Text</type>
         <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_agency__c</fullName>
+        <description>The agency or organization that published or owns the source data. CEQ Standard v1.2 provenance field 3 of 5.</description>
+        <inlineHelpText>Agency that owns the source data (e.g., PNNL for PermitTEC corpus).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Source Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_record_owner_agency__c</fullName>
+        <description>The agency responsible for maintaining this record in the NEPA system of record. CEQ Standard v1.2 provenance field 4 of 5.</description>
+        <inlineHelpText>Agency responsible for maintaining this record.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Record Owner Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_retrieved_timestamp__c</fullName>
+        <description>The date and time this record was retrieved or ingested from the source system. CEQ Standard v1.2 provenance field 5 of 5.</description>
+        <inlineHelpText>Timestamp when this record was retrieved from the source system.</inlineHelpText>
+        <label>Retrieved Timestamp</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
     </fields>
     <fields>
         <fullName>nepa_extraction_quality__c</fullName>

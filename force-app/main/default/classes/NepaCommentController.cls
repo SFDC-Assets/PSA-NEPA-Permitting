@@ -43,7 +43,11 @@ public with sharing class NepaCommentController {
         }
 
         if (String.isNotBlank(input.contentVersionId)) {
-            comment.nepa_document_location_ref__c = input.contentVersionId;
+            try {
+                comment.nepa_document_location_ref__c = String.valueOf(Id.valueOf(input.contentVersionId));
+            } catch (StringException e) {
+                throw auraEx('Invalid attachment reference');
+            }
         }
 
         if (!Schema.sObjectType.PublicComplaint.isCreateable()) {

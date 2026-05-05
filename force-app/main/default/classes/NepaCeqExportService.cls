@@ -41,9 +41,10 @@ global with sharing class NepaCeqExportService {
                 handleList(req, res);
             }
         } catch (Exception e) {
+            System.debug(LoggingLevel.ERROR, 'NepaCeqExportService error: ' + e.getMessage() + ' | ' + e.getStackTraceString());
             res.statusCode = 500;
             res.responseBody = Blob.valueOf(
-                JSON.serialize(errorResponse('SERVER_ERROR', e.getMessage()))
+                JSON.serialize(errorResponse('SERVER_ERROR', 'An internal error occurred. Contact your administrator.'))
             );
         }
     }
@@ -135,7 +136,8 @@ global with sharing class NepaCeqExportService {
 
         // Count query — uses same filters, no LIMIT/OFFSET
         Integer totalCount = Database.countQuery(
-            'SELECT COUNT() FROM IndividualApplication' + whereClause
+            'SELECT COUNT() FROM IndividualApplication' + whereClause,
+            AccessLevel.USER_MODE
         );
 
         List<IndividualApplication> records = Database.query(
@@ -157,7 +159,8 @@ global with sharing class NepaCeqExportService {
             + ' FROM IndividualApplication'
             + whereClause
             + ' ORDER BY nepa_start_date__c DESC NULLS LAST, Id ASC'
-            + ' LIMIT :pageSize OFFSET :offset'
+            + ' LIMIT :pageSize OFFSET :offset',
+            AccessLevel.USER_MODE
         );
 
         List<Map<String, Object>> dtos = new List<Map<String, Object>>();

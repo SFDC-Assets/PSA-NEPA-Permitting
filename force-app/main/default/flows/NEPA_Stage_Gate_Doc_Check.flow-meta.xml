@@ -313,6 +313,13 @@ Design notes:
             <operator>In</operator>
             <value><stringValue>Approved</stringValue></value>
         </filters>
+        <filters>
+            <field>IsLatest</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
         <getFirstRecordOnly>false</getFirstRecordOnly>
         <object>ContentVersion</object>
         <outputReference>col_ExistingDocs</outputReference>

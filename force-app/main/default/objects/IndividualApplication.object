@@ -1024,6 +1024,18 @@
         <errorMessage>The prior EIS is more than 5 years old. A supplementation review is required under 40 CFR 1502.9(c). Check "Supplementation Review Complete" after the responsible official makes a written determination.</errorMessage>
     </validationRules>
 
+    <validationRules>
+        <fullName>VR_007_Clock_Pause_Date_Sequence</fullName>
+        <active>true</active>
+        <description>VR-007: Blocks save when nepa_clock_pause_end__c is set to a date before nepa_clock_pause_start__c. Without this guard, nepa_clock_pause_days__c produces a negative number that is added to nepa_fra_statutory_deadline__c, artificially shortening the legal deadline — a federal FRA compliance violation.</description>
+        <errorConditionFormula>AND(
+  NOT(ISBLANK(nepa_clock_pause_start__c)),
+  NOT(ISBLANK(nepa_clock_pause_end__c)),
+  nepa_clock_pause_end__c &lt; nepa_clock_pause_start__c
+)</errorConditionFormula>
+        <errorMessage>Clock resume date cannot be before the clock pause start date. Correct the dates to ensure the statutory deadline calculation is accurate.</errorMessage>
+    </validationRules>
+
     <!-- Screener run timestamp — prevents CE Screener write-back from re-triggering Risk Scorer -->
     <fields>
         <fullName>nepa_screener_last_run__c</fullName>

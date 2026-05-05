@@ -15,9 +15,6 @@
     <start>
         <locationX>176</locationX>
         <locationY>48</locationY>
-        <connector>
-            <targetReference>CheckCoordinatesPresent</targetReference>
-        </connector>
         <filterLogic>1 OR 2</filterLogic>
         <filters>
             <field>nepa_location_lat__c</field>
@@ -35,6 +32,12 @@
         </filters>
         <object>Program</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <scheduledPaths>
+            <connector>
+                <targetReference>CheckCoordinatesPresent</targetReference>
+            </connector>
+            <pathType>AsyncAfterCommit</pathType>
+        </scheduledPaths>
         <triggerType>RecordAfterSave</triggerType>
         <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
     </start>

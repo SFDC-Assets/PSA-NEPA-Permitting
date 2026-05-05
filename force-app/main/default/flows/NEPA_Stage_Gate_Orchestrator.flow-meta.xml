@@ -269,7 +269,7 @@
             <name>Stage_Intake</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>rec_ParentProcess.nepa_process_status__c</leftValueReference>
+                <leftValueReference>rec_ParentProcess.nepa_process_stage__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Intake</stringValue>
@@ -284,7 +284,7 @@
             <name>Stage_Scoping</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>rec_ParentProcess.nepa_process_status__c</leftValueReference>
+                <leftValueReference>rec_ParentProcess.nepa_process_stage__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Scoping</stringValue>
@@ -299,7 +299,7 @@
             <name>Stage_Analysis</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>rec_ParentProcess.nepa_process_status__c</leftValueReference>
+                <leftValueReference>rec_ParentProcess.nepa_process_stage__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Analysis</stringValue>
@@ -314,7 +314,7 @@
             <name>Stage_Review</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>rec_ParentProcess.nepa_process_status__c</leftValueReference>
+                <leftValueReference>rec_ParentProcess.nepa_process_stage__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Review</stringValue>
@@ -329,7 +329,7 @@
             <name>Stage_Decision</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>rec_ParentProcess.nepa_process_status__c</leftValueReference>
+                <leftValueReference>rec_ParentProcess.nepa_process_stage__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Decision</stringValue>
@@ -344,7 +344,7 @@
             <name>Stage_Screening</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>rec_ParentProcess.nepa_process_status__c</leftValueReference>
+                <leftValueReference>rec_ParentProcess.nepa_process_stage__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>Screening</stringValue>
@@ -359,7 +359,7 @@
             <name>Stage_CEDetermination</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>rec_ParentProcess.nepa_process_status__c</leftValueReference>
+                <leftValueReference>rec_ParentProcess.nepa_process_stage__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
                     <stringValue>CE Determination</stringValue>
@@ -510,7 +510,7 @@
         <object>IndividualApplication</object>
         <outputReference>rec_ParentProcess</outputReference>
         <queriedFields>Id</queriedFields>
-        <queriedFields>nepa_process_status__c</queriedFields>
+        <queriedFields>nepa_process_stage__c</queriedFields>
         <queriedFields>nepa_review_type__c</queriedFields>
         <queriedFields>OwnerId</queriedFields>
     </recordLookups>
@@ -569,7 +569,7 @@
             <targetReference>Handle_Error</targetReference>
         </faultConnector>
         <inputAssignments>
-            <field>nepa_process_status__c</field>
+            <field>nepa_process_stage__c</field>
             <value>
                 <elementReference>var_NextStage</elementReference>
             </value>
