@@ -64,7 +64,7 @@ public with sharing class NepaCommentTriageParser {
         return results;
     }
 
-    @SuppressWarnings('PMD.CyclomaticComplexity,PMD.StdCyclomaticComplexity,PMD.CognitiveComplexity,PMD.NcssMethodCount')
+    @SuppressWarnings('PMD.CyclomaticComplexity,PMD.StdCyclomaticComplexity,PMD.CognitiveComplexity,PMD.NcssMethodCount,PMD.NcssCount')
     private static Result parseTriageJson(Request req) {
         Result res = new Result();
         res.parseSuccess = False;

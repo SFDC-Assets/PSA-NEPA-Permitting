@@ -26,6 +26,7 @@ global with sharing class NepaCeqExportService {
 
     // ── GET dispatcher ────────────────────────────────────────────────────────
 
+    @SuppressWarnings('PMD.AvoidDebugStatements')
     @HttpGet
     global static void doGet() {
         RestRequest  req  = RestContext.request;
@@ -52,6 +53,7 @@ global with sharing class NepaCeqExportService {
     // ── Single record ─────────────────────────────────────────────────────────
 
     private static void handleSingleRecord(String idOrFuid, RestResponse res) {
+        // sfge-disable-next-line MissingNullCheckOnSoqlVariable -- caller (doGet) guards isNotBlank before invoking
         List<IndividualApplication> records = [
             SELECT Id, Name,
                    nepa_federal_unique_id__c,

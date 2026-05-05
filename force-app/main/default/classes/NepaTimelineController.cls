@@ -22,6 +22,7 @@ public with sharing class NepaTimelineController {
             throw new AuraHandledException('processId is required');
         }
 
+        // sfge-disable-next-line MissingNullCheckOnSoqlVariable -- String.isBlank guard at top of method
         List<ApplicationTimeline> events = [
             SELECT Id,
                    nepa_event_type__c,

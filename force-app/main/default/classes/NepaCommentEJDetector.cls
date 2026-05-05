@@ -81,13 +81,12 @@ public with sharing class NepaCommentEJDetector {
     // ── Core scanning logic ──────────────────────────────────────────────────
 
     /**
-     * Strips Latin diacritics (accents) from a string so that bypass attempts using
-     * lookalike characters (e.g. "nàtive" for "native") are caught by keyword matching.
-     * Uses Normalizer.Form.NFD to decompose accented characters into base + combining marks,
-     * then strips all Unicode combining marks (category Mn).
-     * Apex does not have java.text.Normalizer, so we handle the common Latin-1 Supplement and
-     * Latin Extended-A ranges with a static replacement map covering all accented characters
-     * appearing in EJ/tribal keyword bypass attempts.
+     * Strips Latin diacritics and zero-width Unicode characters from a string so that
+     * bypass attempts using lookalike or invisible characters are caught by keyword matching.
+     * Apex lacks java.text.Normalizer, so Latin-1 Supplement and Latin Extended-A ranges
+     * are handled with static regex replacements.
+     * @param input Raw comment text to normalize
+     * @return Normalized string with diacritics and zero-width characters removed
      */
     @TestVisible
     private static String normalizeDiacritics(String input) {

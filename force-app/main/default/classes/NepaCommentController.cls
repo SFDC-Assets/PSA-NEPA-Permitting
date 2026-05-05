@@ -86,6 +86,7 @@ public with sharing class NepaCommentController {
     }
 
     private static void assertCommentPeriodOpen(String processId) {
+        // sfge-disable-next-line MissingNullCheckOnSoqlVariable -- validateInput() guards isBlank before this method is called
         List<IndividualApplication> processes = [
             SELECT nepa_public_comment_period_start__c,
                    nepa_public_comment_period_end_date__c

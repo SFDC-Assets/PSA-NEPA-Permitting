@@ -23,6 +23,7 @@ public with sharing class NepaEngagementController {
             throw new AuraHandledException('processId is required');
         }
 
+        // sfge-disable-next-line MissingNullCheckOnSoqlVariable -- String.isBlank guard at top of method
         List<nepa_engagement__c> engagements = [
             SELECT Id,
                    Name,

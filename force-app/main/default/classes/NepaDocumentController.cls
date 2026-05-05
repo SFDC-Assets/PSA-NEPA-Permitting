@@ -45,6 +45,7 @@ public with sharing class NepaDocumentController {
         Integer safePageNumber = (pageNumber != null && pageNumber > 0)                                ? pageNumber : 1;
         Integer offset         = (safePageNumber - 1) * safePageSize;
 
+        // sfge-disable-next-line MissingNullCheckOnSoqlVariable -- String.isBlank guard at line 40
         List<ContentDocumentLink> links = [
             SELECT ContentDocumentId
             FROM ContentDocumentLink
@@ -99,6 +100,7 @@ public with sharing class NepaDocumentController {
             throw auraEx('contentVersionId is required');
         }
 
+        // sfge-disable-next-line MissingNullCheckOnSoqlVariable -- String.isBlank guard at line 98
         List<ContentVersion> versions = [
             SELECT Id, ContentDocumentId, nepa_public_access__c
             FROM ContentVersion
@@ -146,6 +148,10 @@ public with sharing class NepaDocumentController {
     }
 
     private static List<ContentVersion> queryDocuments(Set<Id> docIds, String typeFilter, Integer limitNum, Integer offsetNum) {
+        Integer safeLimit  = (limitNum  != null && limitNum  > 0) ? limitNum  : 20;
+        Integer safeOffset = (offsetNum != null && offsetNum >= 0) ? offsetNum : 0;
+        if (safeLimit  == null) { safeLimit  = 20; }
+        if (safeOffset == null) { safeOffset = 0; }
         if (typeFilter != null) {
             return [
                 SELECT Id,
@@ -160,8 +166,8 @@ public with sharing class NepaDocumentController {
                   AND IsLatest = true
                 WITH USER_MODE
                 ORDER BY nepa_publish_date__c DESC NULLS LAST
-                LIMIT :limitNum
-                OFFSET :offsetNum
+                LIMIT :safeLimit
+                OFFSET :safeOffset
             ];
         }
         return [
@@ -176,8 +182,8 @@ public with sharing class NepaDocumentController {
               AND IsLatest = true
             WITH USER_MODE
             ORDER BY nepa_publish_date__c DESC NULLS LAST
-            LIMIT :limitNum
-            OFFSET :offsetNum
+            LIMIT :safeLimit
+            OFFSET :safeOffset
         ];
     }
 }

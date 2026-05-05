@@ -100,6 +100,7 @@ public with sharing class NepaProjectController {
             AccessLevel.USER_MODE
         );
 
+        // sfge-disable-next-line ApexFlsViolation -- USER_MODE enforces FLS at runtime; sfge cannot resolve dynamic query field names
         List<Program> programs = Database.query(
             'SELECT Id, nepa_project_id__c, nepa_project_title__c, nepa_lead_agency__c, nepa_lead_agency__r.Name, nepa_start_date__c, ' +
             '(SELECT Id, nepa_federal_unique_id__c, nepa_review_type__c, nepa_process_stage__c, ' +
@@ -136,6 +137,7 @@ public with sharing class NepaProjectController {
             throw auraEx('federalUniqueId is required');
         }
 
+        // sfge-disable-next-line MissingNullCheckOnSoqlVariable -- String.isBlank guard immediately above
         List<Program> programs = [
             SELECT Id,
                    nepa_project_id__c,
@@ -204,6 +206,7 @@ public with sharing class NepaProjectController {
     public static List<OpenCommentPeriod> getOpenCommentPeriods() {
         Date today = Date.today();
 
+        // sfge-disable-next-line MissingNullCheckOnSoqlVariable -- today is always non-null (Date.today() never returns null)
         List<IndividualApplication> openProcesses = [
             SELECT Id,
                    nepa_federal_unique_id__c,
