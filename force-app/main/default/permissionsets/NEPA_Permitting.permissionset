@@ -380,6 +380,11 @@
         <field>Program.nepa_retrieved_timestamp__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Program.nepa_gis_proximity_complete__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <!-- ContentVersion (Entity 3: Documents) fields -->
     <fieldPermissions>
         <editable>true</editable>
@@ -1319,6 +1324,16 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>IndividualApplication.nepa_clock_pause_reason__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_processing_status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_stage_gate_processed__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <!-- Phase 5: Vermont Yankee litigation threat fields — flag and basis written by agent/flow; legal_review_status editable by counsel -->

@@ -4,7 +4,7 @@
     <description>Stage-gate orchestration for IndividualApplication. When an ApplicationTimeline event's nepa_status__c transitions to Completed: (1) stamps nepa_last_stage_transition__c on the parent IndividualApplication, (2) advances nepa_process_status__c to the next stage per the gate sequence, (3) closes the completed Action Plan task and creates the opening task for the next stage, (4) sends an email alert to the next assigned entity. Fires after-save on ApplicationTimeline when nepa_status__c changes to Completed.</description>
     <label>NEPA Stage Gate Orchestrator</label>
     <processType>AutoLaunchedFlow</processType>
-    <status>Draft</status>
+    <status>Active</status>
 
     <assignments>
         <name>Assign_Stage_Scoping</name>
@@ -149,7 +149,7 @@
             <assignToReference>var_CompletedStageLabel</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>rec_ParentProcess.nepa_process_status__c</elementReference>
+                <elementReference>rec_ParentProcess.nepa_process_stage__c</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -244,9 +244,35 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Assign_NextStage</targetReference>
+                <targetReference>Decision_AlreadyProcessed</targetReference>
             </connector>
             <label>Process Found</label>
+        </rules>
+    </decisions>
+
+    <!-- Idempotency guard: if this process was already advanced by a concurrent
+         ApplicationTimeline completion in the same async batch, exit without
+         advancing the stage again. Prevents stage-skip under race conditions. -->
+    <decisions>
+        <name>Decision_AlreadyProcessed</name>
+        <label>Stage Gate Already Processed for This Process?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Not yet processed — proceed</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Assign_NextStage</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Already_Processed</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>rec_ParentProcess.nepa_stage_gate_processed__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <label>Already Processed — exit</label>
         </rules>
     </decisions>
 
@@ -437,6 +463,15 @@
         <expression>"CompletedStage:" &amp; {!var_CompletedStageLabel} &amp; "|NextStage:" &amp; {!var_NextStage} &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
     </formulas>
 
+    <!-- Reconstructs the exact Task Subject written by Create_NextStageTask for
+         the completed stage. EqualTo filter on this value is selective because
+         the subject uniquely identifies the stage opening task. -->
+    <formulas>
+        <name>formula_CompletedStageTaskSubject</name>
+        <dataType>String</dataType>
+        <expression>"Begin " &amp; {!var_CompletedStageLabel} &amp; " stage"</expression>
+    </formulas>
+
     <recordCreates>
         <name>Create_NextStageTask</name>
         <label>Create Next Stage Opening Task</label>
@@ -513,6 +548,7 @@
         <queriedFields>nepa_process_stage__c</queriedFields>
         <queriedFields>nepa_review_type__c</queriedFields>
         <queriedFields>OwnerId</queriedFields>
+        <queriedFields>nepa_stage_gate_processed__c</queriedFields>
     </recordLookups>
 
     <recordLookups>
@@ -542,11 +578,15 @@
                 <stringValue>Completed</stringValue>
             </value>
         </filters>
+        <!-- EqualTo on Subject instead of Contains: prevents full-table scan on
+             unindexed text field. Tasks created by Create_NextStageTask use the
+             exact "Begin {stage} stage" pattern; match against the completed-stage
+             label using the same prefix so the filter stays selective. -->
         <filters>
             <field>Subject</field>
-            <operator>Contains</operator>
+            <operator>EqualTo</operator>
             <value>
-                <elementReference>var_CompletedStageLabel</elementReference>
+                <elementReference>formula_CompletedStageTaskSubject</elementReference>
             </value>
         </filters>
         <getFirstRecordOnly>true</getFirstRecordOnly>
@@ -578,6 +618,21 @@
             <field>nepa_last_stage_transition__c</field>
             <value>
                 <elementReference>var_TransitionTimestamp</elementReference>
+            </value>
+        </inputAssignments>
+        <!-- CEQ Standard v1.2 provenance: stamp retrieved timestamp on every data mutation -->
+        <inputAssignments>
+            <field>nepa_retrieved_timestamp__c</field>
+            <value>
+                <elementReference>$Flow.CurrentDateTime</elementReference>
+            </value>
+        </inputAssignments>
+        <!-- Idempotency flag: prevents a concurrent completion of a second ApplicationTimeline
+             record for the same process from advancing the stage a second time -->
+        <inputAssignments>
+            <field>nepa_stage_gate_processed__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
             </value>
         </inputAssignments>
         <object>IndividualApplication</object>
@@ -678,9 +733,15 @@
                 <booleanValue>true</booleanValue>
             </value>
         </filters>
-        <connector>
-            <targetReference>Decision_HasParentProcess</targetReference>
-        </connector>
+        <!-- AsyncAfterCommit prevents 2 SOQL + 3 DML per record from exhausting
+             the 150 DML limit when 51+ ApplicationTimeline records complete in
+             one bulk transaction. Each async run gets its own governor context. -->
+        <scheduledPaths>
+            <connector>
+                <targetReference>Decision_HasParentProcess</targetReference>
+            </connector>
+            <pathType>AsyncAfterCommit</pathType>
+        </scheduledPaths>
     </start>
 
     <!-- ============================================================

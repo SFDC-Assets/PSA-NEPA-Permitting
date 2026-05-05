@@ -4,7 +4,7 @@
     <description>Three-tier CE screening for IndividualApplication. Stage 0: NAICS routing (sets agency namespace + confidence modifier). Stage 1: Tier 1 high-confidence sector+type rules. Stage 2: Tier 2 action-type discriminators. Post-match: acreage threshold and GIS extraordinary circumstances checks. Writes nepa_review_type__c, nepa_process_code__c, nepa_screening_confidence__c, nepa_classification_basis__c back to IndividualApplication. Fires after-save on create/update when screening input fields change.</description>
     <label>NEPA CE Screener</label>
     <processType>AutoLaunchedFlow</processType>
-    <status>Draft</status>
+    <status>Active</status>
 
     <!-- Extract agency abbreviation from Account name (first word) -->
     <assignments>
@@ -144,7 +144,7 @@
             <value><stringValue> | Downgraded to EA: disturbance acres exceeds CE threshold.</stringValue></value>
         </assignmentItems>
         <connector>
-            <targetReference>Decision_GISCircumstances</targetReference>
+            <targetReference>Decision_GISProximityReady</targetReference>
         </connector>
     </assignments>
 
@@ -221,7 +221,7 @@
             <value><stringValue> | Downgraded to EA: disturbance acres exceeds CE threshold.</stringValue></value>
         </assignmentItems>
         <connector>
-            <targetReference>Decision_GISCircumstances</targetReference>
+            <targetReference>Decision_GISProximityReady</targetReference>
         </connector>
     </assignments>
 
@@ -253,7 +253,7 @@
             <value><stringValue>No CE screening rule matched sector/type/action-type combination. Defaulting to EA. SME review required.</stringValue></value>
         </assignmentItems>
         <connector>
-            <targetReference>Decision_GISCircumstances</targetReference>
+            <targetReference>Decision_GISProximityReady</targetReference>
         </connector>
     </assignments>
 
@@ -364,6 +364,96 @@
     </assignments>
 
     <!-- ============================================================
+         STAGE ENTRY: Default inp_EvaluationDate to nepa_start_date__c when
+         not explicitly set by a caller. Prevents all CMT temporal filters
+         from producing empty results on record-triggered async invocation.
+    ============================================================ -->
+    <assignments>
+        <name>Init_EvaluationDate</name>
+        <label>Default Evaluation Date to Application Start Date</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>inp_EvaluationDate</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.nepa_start_date__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_HasRelatedProject</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- ============================================================
+         STAGE GIS GATE: Before evaluating extraordinary circumstances,
+         confirm the async GIS proximity check has completed on the parent
+         Program. If GIS is still pending, route to deferred state so the
+         screener does not incorrectly clear the GIS stage on stale null data.
+         CE Screener will re-fire when nepa_extraordinary_circumstances__c
+         is later set by the GIS IP (field-change trigger).
+    ============================================================ -->
+    <decisions>
+        <name>Decision_GISProximityReady</name>
+        <label>GIS Proximity Check Complete?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>GIS Pending — defer to manual review</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Assign_DeferGISReview</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>GIS_Ready</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>rec_RelatedProject.nepa_gis_proximity_complete__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <!-- No related project means no GIS flag to check — proceed directly -->
+                <leftValueReference>rec_RelatedProject</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Decision_GISCircumstances</targetReference>
+            </connector>
+            <label>GIS Complete or No Project</label>
+        </rules>
+    </decisions>
+
+    <!-- GIS not yet complete: stamp nepa_processing_status__c = Pending GIS and exit.
+         The screener will re-run when nepa_extraordinary_circumstances__c is set by the GIS IP. -->
+    <assignments>
+        <name>Assign_DeferGISReview</name>
+        <label>Defer — GIS Proximity Pending</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ClassificationBasis</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>CE screening deferred: GIS proximity check has not yet completed. Screener will re-run automatically when GIS data is available.</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_ReviewType</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Pending GIS</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Build_ClassificationBasis</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- ============================================================
          STAGE 0-A: Does the application have a related project?
     ============================================================ -->
     <decisions>
@@ -374,7 +464,7 @@
         <locationY>0</locationY>
         <defaultConnectorLabel>No Project — skip to GIS check</defaultConnectorLabel>
         <defaultConnector>
-            <targetReference>Decision_GISCircumstances</targetReference>
+            <targetReference>Decision_GISProximityReady</targetReference>
         </defaultConnector>
         <rules>
             <name>Has_Related_Project</name>
@@ -579,7 +669,7 @@
                 <rightValue><booleanValue>true</booleanValue></rightValue>
             </conditions>
             <connector>
-                <targetReference>Decision_GISCircumstances</targetReference>
+                <targetReference>Decision_GISProximityReady</targetReference>
             </connector>
             <label>Needs GIS Check</label>
             <description>Needs GIS Check</description>
@@ -716,7 +806,7 @@
                 <rightValue><booleanValue>true</booleanValue></rightValue>
             </conditions>
             <connector>
-                <targetReference>Decision_GISCircumstances</targetReference>
+                <targetReference>Decision_GISProximityReady</targetReference>
             </connector>
             <label>Needs GIS Check</label>
             <description>Needs GIS Check</description>
@@ -832,6 +922,7 @@
         <queriedFields>nepa_project_sector__c</queriedFields>
         <queriedFields>nepa_project_type__c</queriedFields>
         <queriedFields>nepa_applicant_naics__c</queriedFields>
+        <queriedFields>nepa_gis_proximity_complete__c</queriedFields>
     </recordLookups>
 
     <recordLookups>
@@ -1288,7 +1379,7 @@
         <triggerType>RecordAfterSave</triggerType>
         <scheduledPaths>
             <connector>
-                <targetReference>Decision_HasRelatedProject</targetReference>
+                <targetReference>Init_EvaluationDate</targetReference>
             </connector>
             <pathType>AsyncAfterCommit</pathType>
         </scheduledPaths>

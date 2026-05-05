@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>After-save flow on Program. Fires when nepa_location_lat__c or nepa_location_lon__c is changed and both are non-null. Invokes NEPA_GIS_Proximity_IP asynchronously to query federal ArcGIS endpoints and write protection area findings back to nepa_protection_areas__c, nepa_gis_last_checked__c, and nepa_extraordinary_circumstances__c. Add new layers by inserting NEPA_GIS_Layer__mdt records — no flow changes needed.</description>
+    <description>After-save flow on Program. Fires when nepa_location_lat__c or nepa_location_lon__c is changed and both are non-null. Invokes NEPA_GIS_Proximity_IP asynchronously (AsyncAfterCommit) to query federal ArcGIS endpoints and write protection area findings back to nepa_protection_areas__c, nepa_gis_last_checked__c, and nepa_extraordinary_circumstances__c. On success, sets nepa_gis_proximity_complete__c = true so NEPA_CE_Screener can detect that GIS data is available before evaluating extraordinary circumstances. On IP fault, creates a coordinator Task and logs the error via NEPA_Error_Logger. Add new layers by inserting NEPA_GIS_Layer__mdt records — no flow changes needed.</description>
     <environments>Default</environments>
     <interviewLabel>NEPA GIS Proximity Check {!$Flow.CurrentDateTime}</interviewLabel>
     <label>NEPA GIS Proximity Check</label>
@@ -41,7 +41,7 @@
         <triggerType>RecordAfterSave</triggerType>
         <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
     </start>
-    <status>Draft</status>
+    <status>Active</status>
 
     <!-- Gate: only proceed when both lat AND lon are present -->
     <decisions>
@@ -74,7 +74,9 @@
         </rules>
     </decisions>
 
-    <!-- Invoke NEPA_GIS_Proximity_IP as async subflow -->
+    <!-- Invoke NEPA_GIS_Proximity_IP as async subflow.
+         On success, connector sets nepa_gis_proximity_complete__c = true.
+         On fault, routes to Handle_GIS_Fault to create a coordinator Task and log the error. -->
     <subflows>
         <name>InvokeGISProximityIP</name>
         <label>Invoke GIS Proximity IP</label>
@@ -88,6 +90,148 @@
             </value>
         </inputAssignments>
         <storeOutputAutomatically>false</storeOutputAutomatically>
+        <connector>
+            <targetReference>Set_GISComplete</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_GIS_Fault</targetReference>
+        </faultConnector>
     </subflows>
+
+    <!-- On success: stamp nepa_gis_proximity_complete__c = true on the Program record -->
+    <recordUpdates>
+        <name>Set_GISComplete</name>
+        <label>Set GIS Proximity Complete</label>
+        <locationX>176</locationX>
+        <locationY>408</locationY>
+        <faultConnector>
+            <targetReference>Handle_GIS_Fault</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>nepa_gis_proximity_complete__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <object>Program</object>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+    </recordUpdates>
+
+    <!-- On fault: capture message, create coordinator alert Task, log to NEPA_Error_Logger -->
+    <assignments>
+        <name>Handle_GIS_Fault</name>
+        <label>Capture GIS Fault Message</label>
+        <locationX>400</locationX>
+        <locationY>288</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Create_GIS_ErrorTask</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- Create a Task on the linked IndividualApplication owner alerting them GIS failed -->
+    <recordCreates>
+        <name>Create_GIS_ErrorTask</name>
+        <label>Create GIS Error Alert Task</label>
+        <locationX>400</locationX>
+        <locationY>408</locationY>
+        <faultConnector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <stringValue>GIS Proximity Check Failed — Manual Review Required</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhatId</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>$Record.OwnerId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Open</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Priority</field>
+            <value>
+                <stringValue>High</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Description</field>
+            <value>
+                <stringValue>The automated GIS proximity check (NEPA_GIS_Proximity_IP) failed for this project. The CE Screener will defer to manual GIS review until this is resolved. Please manually verify proximity to sensitive areas and update nepa_extraordinary_circumstances__c, nepa_protection_areas__c, and nepa_gis_last_checked__c, then check nepa_gis_proximity_complete__c to unblock CE screening. Error: {!var_ErrorMessage}</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Task</object>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
+    </recordCreates>
+
+    <!-- code-analyzer-suppress flow:MissingFaultHandler - terminal error handler; fault-handling Call_ErrorLogger would be circular -->
+    <subflows>
+        <name>Call_ErrorLogger</name>
+        <label>Log GIS Flow Error</label>
+        <locationX>400</locationX>
+        <locationY>528</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value><stringValue>NEPA_GIS_Proximity_Check</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value><elementReference>var_ErrorMessage</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value><elementReference>$Record.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RunningUserId</name>
+            <value><elementReference>$User.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_FailedStep</name>
+            <value><stringValue>InvokeGISProximityIP</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorContext</name>
+            <value><elementReference>var_ErrorMessage</elementReference></value>
+        </inputAssignments>
+    </subflows>
+
+    <!-- VARIABLES -->
+    <variables>
+        <name>var_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
 
 </Flow>

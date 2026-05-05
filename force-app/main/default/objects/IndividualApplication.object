@@ -1170,4 +1170,48 @@
         <trackHistory>false</trackHistory>
         <type>TextArea</type>
     </fields>
+    <fields>
+        <fullName>nepa_processing_status__c</fullName>
+        <description>System-managed lifecycle indicator surfaced on the Experience Cloud portal. Set by automation at each processing stage: Pending GIS when the record is created and GIS proximity check is queued; Pending CE Screening when GIS completes and CE screener is queued; Ready for Review when CE screening recommendation is written; Error when any automated step fails. Allows coordinators and applicants to see where the application is in the automated pipeline without accessing internal Salesforce records.</description>
+        <inlineHelpText>Current automated processing stage. Set by workflow — do not edit manually.</inlineHelpText>
+        <label>Processing Status</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Pending GIS</fullName>
+                    <default>false</default>
+                    <label>Pending GIS</label>
+                </value>
+                <value>
+                    <fullName>Pending CE Screening</fullName>
+                    <default>false</default>
+                    <label>Pending CE Screening</label>
+                </value>
+                <value>
+                    <fullName>Ready for Review</fullName>
+                    <default>false</default>
+                    <label>Ready for Review</label>
+                </value>
+                <value>
+                    <fullName>Error</fullName>
+                    <default>false</default>
+                    <label>Error</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_stage_gate_processed__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Idempotency guard for NEPA_Stage_Gate_Orchestrator. Set to true by the orchestrator after it successfully advances nepa_process_stage__c. Reset to false by a before-save flow when nepa_status__c on the parent ApplicationTimeline record changes away from Completed, or when a new ApplicationTimeline event is opened. Prevents concurrent ApplicationTimeline completions for the same process from advancing the stage twice in a race condition.</description>
+        <inlineHelpText>Internal idempotency flag — managed by Stage Gate Orchestrator. Do not edit manually.</inlineHelpText>
+        <label>Stage Gate Processed</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
 </CustomObject>
