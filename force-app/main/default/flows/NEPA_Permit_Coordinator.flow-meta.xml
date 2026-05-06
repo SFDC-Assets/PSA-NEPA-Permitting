@@ -257,6 +257,7 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
 
+    <!-- code-analyzer-suppress flow:SameRecordUpdate — intentional async after-save write-back via AsyncAfterCommit scheduledPath; this is the recommended pattern for expensive same-record updates -->
     <recordUpdates>
         <name>Update_IA_PermitFields</name>
         <label>Write Permit Data to IndividualApplication</label>

@@ -66,6 +66,12 @@ public with sharing class NepaCommentEJDetector {
 
     // ── Invocable entry point ─────────────────────────────────────────────────
 
+    /**
+     * Deterministic keyword scan for EJ, tribal sovereignty, sacred sites,
+     * low-income impact, and civil rights triggers across a batch of comment requests.
+     * @param requests List of Request wrappers containing comment text to scan
+     * @return List of Result wrappers; one per input, each indicating whether human review is required
+     */
     @InvocableMethod(
         label='Detect EJ and Tribal Sovereignty Triggers'
         description='Deterministic gate that scans public comment text for Environmental Justice, tribal sovereignty, sacred sites, low-income impact, and civil rights keywords before AI triage. Returns true when mandatory human review is required per federal EJ guidelines.'

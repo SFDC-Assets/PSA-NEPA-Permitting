@@ -6,7 +6,7 @@
  *   PC-004/PC-005  AI triage writes to recommendation field; human classification field is protected
  *   PC-004         Legal review status preserved across re-triage; AI cannot overwrite attorney state
  *   PC-004         Low-confidence or EJ-flagged triage triggers human review Task
- *   PC-004         Response status whitelist prevents hallucinated values from reaching the record
+ *   PC-004         Response status allowlist prevents hallucinated values from reaching the record
  *   TL-003         Timeline Risk Assessor writes to projected (AI) field, not estimated (statutory) field
  *   TL-003         Other Authorization pathway is not evaluated against EA baselines
  *   DM-005         Stage Gate Doc Check blocks AI-generated documents from satisfying gate requirements
@@ -137,7 +137,7 @@ private class NepaAIGovernanceTest {
     }
 
     @IsTest
-    static void triage_responseStatus_whitelist_rejectsInvalidValue() {
+    static void triage_responseStatus_allowlist_rejectsInvalidValue() {
         NepaCommentTriageParser.Request req = new NepaCommentTriageParser.Request();
         req.triageJson = '{"sentiment":"Neutral","is_substantive":false,"confidence_score":80,'
             + '"cluster_hint":"","triage_rationale":"test","litigation_threat":false,'
@@ -168,7 +168,7 @@ private class NepaAIGovernanceTest {
         Test.stopTest();
 
         System.assertEquals('Draft', results[0].responseStatus,
-            'Valid response_status "Draft" must pass through whitelist unchanged');
+            'Valid response_status "Draft" must pass through allowlist unchanged');
     }
 
     // ── Station 2: Timeline Risk Assessor ────────────────────────────────────
@@ -177,8 +177,7 @@ private class NepaAIGovernanceTest {
     static void timelineRisk_writesProjectedNotEstimated() {
         Program proj = NepaTestFactory.insertProgram('GOV-010', 'Governance Timeline Test', 'BLM');
         IndividualApplication ia = NepaTestFactory.insertOpenProcess(proj.Id, 'EA');
-        ia.nepa_process_stage__c        = 'Scoping';
-        ia.nepa_days_in_current_stage__c = null;
+        ia.nepa_process_stage__c             = 'Scoping';
         ia.nepa_estimated_completion_date__c = null;
         ia.nepa_projected_completion_date__c = null;
         update ia;
@@ -221,26 +220,13 @@ private class NepaAIGovernanceTest {
 
     // ── Station 3: Generative Content / Document Gate ────────────────────────
 
-    @IsTest
-    static void stageGateDocs_humanDocSatisfiesGate() {
-        Program proj = NepaTestFactory.insertProgram('GOV-020', 'Governance Doc Gate Test', 'BLM');
-        IndividualApplication ia = NepaTestFactory.insertOpenProcess(proj.Id, 'EIS');
-
-        ContentVersion cv = NepaTestFactory.insertPublicContentVersion(ia.Id, 'Draft EIS');
-        cv.nepa_status__c      = 'Approved';
-        cv.nepa_draft_source__c = 'Human-Authored';
-        cv.nepa_reviewer__c    = UserInfo.getUserId();
-        cv.nepa_reviewed_date__c = Date.today();
-        update cv;
-
+    /** Creates a Decision Issued timeline event for processId and attempts to complete it; returns true if a DmlException was thrown. */
+    private static Boolean attemptDecisionGateComplete(Id processId) {
         ApplicationTimeline evt = new ApplicationTimeline();
-        evt.IndividualApplicationId  = ia.Id;
-        evt.nepa_related_process__c  = ia.Id;
-        evt.nepa_event_type__c       = 'Decision Issued';
-        evt.nepa_status__c           = 'In Progress';
+        evt.nepa_related_process__c = processId;
+        evt.nepa_event_type__c      = 'Decision Issued';
+        evt.nepa_status__c          = 'In Progress';
         insert evt;
-
-        Test.startTest();
         evt.nepa_status__c = 'Completed';
         Boolean threw = false;
         try {
@@ -248,6 +234,22 @@ private class NepaAIGovernanceTest {
         } catch (DmlException e) {
             threw = true;
         }
+        return threw;
+    }
+
+    @IsTest
+    static void stageGateDocs_humanDocSatisfiesGate() {
+        Program proj = NepaTestFactory.insertProgram('GOV-020', 'Governance Doc Gate Test', 'BLM');
+        IndividualApplication ia = NepaTestFactory.insertOpenProcess(proj.Id, 'EIS');
+        ContentVersion cv = NepaTestFactory.insertPublicContentVersion(ia.Id, 'Draft EIS');
+        cv.nepa_status__c        = 'Approved';
+        cv.nepa_draft_source__c  = 'Human-Authored';
+        cv.nepa_reviewer__c      = UserInfo.getUserId();
+        cv.nepa_reviewed_date__c = Date.today();
+        update cv;
+
+        Test.startTest();
+        Boolean threw = attemptDecisionGateComplete(ia.Id);
         Test.stopTest();
 
         System.assertEquals(false, threw,
@@ -258,29 +260,15 @@ private class NepaAIGovernanceTest {
     static void stageGateDocs_aiDocumentBlockedFromGate() {
         Program proj = NepaTestFactory.insertProgram('GOV-021', 'Governance AI Doc Gate Test', 'BLM');
         IndividualApplication ia = NepaTestFactory.insertOpenProcess(proj.Id, 'EIS');
-
         ContentVersion cv = NepaTestFactory.insertPublicContentVersion(ia.Id, 'Draft EIS');
-        cv.nepa_status__c       = 'Approved';
-        cv.nepa_draft_source__c = 'AI-Generated';
-        cv.nepa_reviewer__c     = UserInfo.getUserId();
+        cv.nepa_status__c        = 'Approved';
+        cv.nepa_draft_source__c  = 'AI-Generated';
+        cv.nepa_reviewer__c      = UserInfo.getUserId();
         cv.nepa_reviewed_date__c = Date.today();
         update cv;
 
-        ApplicationTimeline evt = new ApplicationTimeline();
-        evt.IndividualApplicationId  = ia.Id;
-        evt.nepa_related_process__c  = ia.Id;
-        evt.nepa_event_type__c       = 'Decision Issued';
-        evt.nepa_status__c           = 'In Progress';
-        insert evt;
-
         Test.startTest();
-        evt.nepa_status__c = 'Completed';
-        Boolean threw = false;
-        try {
-            update evt;
-        } catch (DmlException e) {
-            threw = true;
-        }
+        Boolean threw = attemptDecisionGateComplete(ia.Id);
         Test.stopTest();
 
         System.assertEquals(true, threw,

@@ -1,5 +1,6 @@
 /** Shared test data factory for NEPA controller unit tests. */
 @IsTest
+@SuppressWarnings('PMD.ExcessivePublicCount')
 public class NepaTestFactory {
 
     // ── Field declarations ────────────────────────────────────────────────────
@@ -184,6 +185,11 @@ public class NepaTestFactory {
 
     /**
      * Inserts and returns an IndividualApplication with DateTime-precision comment period boundaries.
+     * @param projectId Parent Program Id
+     * @param reviewType Value for nepa_review_type__c (CE/EA/EIS)
+     * @param periodStart DateTime the comment period opens
+     * @param periodEnd DateTime the comment period closes (exact-minute precision)
+     * @return Saved IndividualApplication record
      */
     @SuppressWarnings('PMD.ExcessiveParameterList')
     public static IndividualApplication insertProcessWithDateTimes(

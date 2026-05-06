@@ -1,4 +1,4 @@
-@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage,PMD.MethodNamingConventions,PMD.ApexUnitTestClassShouldHaveRunAs')
+@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage,PMD.MethodNamingConventions,PMD.ApexUnitTestClassShouldHaveRunAs,PMD.CyclomaticComplexity')
 /**
  * Requirements coverage test class — fills gaps identified in RFP requirements audit.
  *

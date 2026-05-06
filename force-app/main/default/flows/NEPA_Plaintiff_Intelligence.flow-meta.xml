@@ -9,7 +9,7 @@
     <assignments>
         <name>Assign_MatchedProfile</name>
         <label>Capture Matched Profile</label>
-        <description>Store the matched profile fields for use in downstream task creation.</description>
+        <description>Store the matched profile fields for use in downstream task creation. Sets var_MatchFound flag and loops back so DML runs outside the loop.</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -47,8 +47,13 @@
                 <elementReference>Loop_CheckProfiles.Typical_Causes__c</elementReference>
             </value>
         </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_MatchFound</assignToReference>
+            <operator>Assign</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </assignmentItems>
         <connector>
-            <targetReference>Get_ParentApplication</targetReference>
+            <targetReference>Loop_CheckProfiles</targetReference>
         </connector>
     </assignments>
 
@@ -161,6 +166,28 @@
         </rules>
     </decisions>
 
+    <decisions>
+        <name>Decision_MatchFound</name>
+        <label>High-Risk Profile Matched?</label>
+        <description>Post-loop gate — routes to Get_ParentApplication only when var_MatchFound was set inside the loop. Keeps all DML outside the loop.</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No Match — End</defaultConnectorLabel>
+        <rules>
+            <name>Match_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_MatchFound</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><booleanValue>true</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_ParentApplication</targetReference>
+            </connector>
+            <label>Match Found</label>
+        </rules>
+    </decisions>
+
     <formulas>
         <name>formula_OrgNameContainsProfile</name>
         <description>True when the commenter org name contains the profile org name (case-insensitive).</description>
@@ -194,7 +221,7 @@
     <loops>
         <name>Loop_CheckProfiles</name>
         <label>Loop Through Plaintiff Profiles</label>
-        <description>Loop Through Plaintiff Profiles</description>
+        <description>Loop Through Plaintiff Profiles. On exhaustion routes to Decision_MatchFound so DML runs outside the loop, avoiding DbInLoop violations.</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <collectionReference>var_PlaintiffProfiles</collectionReference>
@@ -203,7 +230,7 @@
             <targetReference>Decision_KeywordMatch</targetReference>
         </nextValueConnector>
         <noMoreValuesConnector>
-            <targetReference>End_NoMatch</targetReference>
+            <targetReference>Decision_MatchFound</targetReference>
         </noMoreValuesConnector>
     </loops>
 
@@ -364,6 +391,14 @@
         <triggerType>RecordAfterSave</triggerType>
     </start>
 
+    <variables>
+        <name>var_MatchFound</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value><booleanValue>false</booleanValue></value>
+    </variables>
     <variables>
         <name>var_MatchedCaseCount</name>
         <dataType>Number</dataType>

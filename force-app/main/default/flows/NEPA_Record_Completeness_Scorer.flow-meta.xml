@@ -399,10 +399,10 @@
             </value>
         </filters>
         <filters>
-            <field>RecordTypeId</field>
+            <field>RecordType.DeveloperName</field>
             <operator>EqualTo</operator>
             <value>
-                <stringValue>012ak00000B8n6rAAB</stringValue>
+                <stringValue>nepa_permit_document</stringValue>
             </value>
         </filters>
         <getFirstRecordOnly>false</getFirstRecordOnly>
@@ -498,10 +498,10 @@
         </scheduledPaths>
         <filterLogic>and</filterLogic>
         <filters>
-            <field>RecordTypeId</field>
+            <field>RecordType.DeveloperName</field>
             <operator>EqualTo</operator>
             <value>
-                <stringValue>012ak00000B8n6rAAB</stringValue>
+                <stringValue>nepa_permit_document</stringValue>
             </value>
         </filters>
     </start>

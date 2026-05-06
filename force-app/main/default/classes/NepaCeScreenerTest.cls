@@ -19,6 +19,7 @@ private class NepaCeScreenerTest {
     /**
      * Creates a Program with BLM as lead agency + sector/type that matches T1_BLM_13
      * (Energy Production / Land-based Oil → CE recommendation).
+     * @return Unsaved Program record with BLM agency and Energy sector
      */
     private static Program makeBLMEnergyProject() {
         Account agency = new Account(Name = 'BLM');

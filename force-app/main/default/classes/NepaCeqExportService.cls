@@ -26,6 +26,10 @@ global with sharing class NepaCeqExportService {
 
     // ── GET dispatcher ────────────────────────────────────────────────────────
 
+    /**
+     * Handles all GET requests to /nepa/v1/processes/*.
+     * Routes to single-record or list handler based on the path suffix.
+     */
     @SuppressWarnings('PMD.AvoidDebugStatements')
     @HttpGet
     global static void doGet() {

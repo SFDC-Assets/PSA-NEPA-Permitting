@@ -18,11 +18,13 @@
 @SuppressWarnings('PMD.StdCyclomaticComplexity')
 public with sharing class NepaCommentTriageParser {
 
+    /** Input wrapper carrying the raw JSON string from the NEPA_Comment_Triage_Analysis prompt. */
     public class Request {
         @InvocableVariable(label='Triage JSON' description='Raw JSON string returned by the NEPA_Comment_Triage_Analysis prompt template' required=true)
         public String triageJson;
     }
 
+    /** Output wrapper with typed scalar fields parsed from the triage JSON. */
     public class Result {
         @InvocableVariable(label='Sentiment' description='Parsed sentiment: Supportive, Neutral, Opposed, or Mixed')
         public String sentiment;
@@ -51,10 +53,15 @@ public with sharing class NepaCommentTriageParser {
         @InvocableVariable(label='Litigation Threat Basis' description='AI explanation of the specific legal/technical standard cited and the alleged deficiency')
         public String litigationThreatBasis;
 
-        @InvocableVariable(label='Response Status' description='Parsed response status: Pending, Draft, Reviewed, or Finalized — validated against whitelist before output')
+        @InvocableVariable(label='Response Status' description='Parsed response status: Pending, Draft, Reviewed, or Finalized — validated against allowlist before output')
         public String responseStatus;
     }
 
+    /**
+     * Parses a batch of triage JSON strings into typed Result records.
+     * @param requests List of Request wrappers, each containing a raw triage JSON string
+     * @return List of Result wrappers in the same order as the input; parseSuccess=false on any parse failure
+     */
     @InvocableMethod(
         label='Parse NEPA Comment Triage JSON'
         description='Parses the structured JSON output from the NEPA_Comment_Triage_Analysis prompt template into typed scalar fields for deterministic use in the Comment Triage agent.'

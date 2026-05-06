@@ -101,6 +101,12 @@
     <start>
         <locationX>0</locationX>
         <locationY>0</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>nepa_related_process__c</field>
+            <operator>IsNull</operator>
+            <value><booleanValue>false</booleanValue></value>
+        </filters>
         <connector>
             <targetReference>Decision_HasRelatedProcess</targetReference>
         </connector>

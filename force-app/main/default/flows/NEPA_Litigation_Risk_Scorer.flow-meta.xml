@@ -824,6 +824,7 @@
         <queriedFields>Statute_Key__c</queriedFields>
         <queriedFields>Risk_Points__c</queriedFields>
     </recordLookups>
+    <!-- code-analyzer-suppress flow:SameRecordUpdate — intentional async after-save write-back via AsyncAfterCommit scheduledPath; this is the recommended pattern for expensive same-record updates -->
     <recordUpdates>
         <name>Update_RiskFields</name>
         <label>Update Risk Fields</label>

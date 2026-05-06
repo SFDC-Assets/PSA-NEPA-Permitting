@@ -282,6 +282,7 @@
         <outputReference>rec_CreatedEvent</outputReference>
         <queriedFields>Id</queriedFields>
     </recordLookups>
+    <!-- code-analyzer-suppress flow:SameRecordUpdate — intentional async after-save write-back via AsyncAfterCommit scheduledPath; updates ContentVersion (the trigger record) to backlink the created timeline event; this is the recommended pattern for post-commit same-record updates -->
     <recordUpdates>
         <name>Backlink_Document</name>
         <label>Set nepa_related_case_event__c on ContentVersion</label>
@@ -362,10 +363,10 @@
         <triggerType>RecordAfterSave</triggerType>
         <filterLogic>and</filterLogic>
         <filters>
-            <field>RecordTypeId</field>
+            <field>RecordType.DeveloperName</field>
             <operator>EqualTo</operator>
             <value>
-                <stringValue>012ak00000B8n6rAAB</stringValue>
+                <stringValue>nepa_permit_document</stringValue>
             </value>
         </filters>
         <filters>

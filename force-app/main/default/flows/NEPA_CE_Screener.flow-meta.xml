@@ -989,6 +989,7 @@
          The specific-agency query fires first; if it matches, ALL-rules
          are skipped, giving agency-specific rules precedence.
     ============================================================ -->
+    <!-- code-analyzer-suppress flow:PreventPassingUserDataIntoElementWithoutSharing — queries NEPA_CE_Screening_Rule__mdt (custom metadata); CMT records are agency-controlled configuration, not user-mutable data; no privilege escalation path exists -->
     <recordLookups>
         <name>Get_Tier1Rule</name>
         <label>Get Tier 1 Screening Rule (Agency-specific)</label>
@@ -1061,6 +1062,7 @@
     </recordLookups>
 
     <!-- Tier 1 ALL-agency fallback: only reached when the agency-specific query returned nothing -->
+    <!-- code-analyzer-suppress flow:PreventPassingUserDataIntoElementWithoutSharing — queries NEPA_CE_Screening_Rule__mdt (custom metadata); CMT records are agency-controlled configuration, not user-mutable data; no privilege escalation path exists -->
     <recordLookups>
         <name>Get_Tier1Rule_ALL</name>
         <label>Get Tier 1 Screening Rule (ALL agencies)</label>
@@ -1135,6 +1137,7 @@
          Only reached when Tier 1 had no match.
          Same agency-specific → ALL fallback pattern as Tier 1.
     ============================================================ -->
+    <!-- code-analyzer-suppress flow:PreventPassingUserDataIntoElementWithoutSharing — queries NEPA_CE_Screening_Rule__mdt (custom metadata); CMT records are agency-controlled configuration, not user-mutable data; no privilege escalation path exists -->
     <recordLookups>
         <name>Get_Tier2Rule</name>
         <label>Get Tier 2 Screening Rule (Agency-specific)</label>
@@ -1206,6 +1209,7 @@
         <sortOrder>Asc</sortOrder>
     </recordLookups>
 
+    <!-- code-analyzer-suppress flow:PreventPassingUserDataIntoElementWithoutSharing — queries NEPA_CE_Screening_Rule__mdt (custom metadata); CMT records are agency-controlled configuration, not user-mutable data; no privilege escalation path exists -->
     <recordLookups>
         <name>Get_Tier2Rule_ALL</name>
         <label>Get Tier 2 Screening Rule (ALL agencies)</label>

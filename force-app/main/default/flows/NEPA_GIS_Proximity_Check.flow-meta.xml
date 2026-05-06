@@ -99,6 +99,7 @@
     </subflows>
 
     <!-- On success: stamp nepa_gis_proximity_complete__c = true on the Program record -->
+    <!-- code-analyzer-suppress flow:SameRecordUpdate — intentional async after-save write-back via AsyncAfterCommit scheduledPath; this is the recommended pattern for expensive same-record updates -->
     <recordUpdates>
         <name>Set_GISComplete</name>
         <label>Set GIS Proximity Complete</label>

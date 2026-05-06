@@ -23,6 +23,8 @@ private class NepaSlaEscalationMonitorTest {
     /**
      * Creates a process with nepa_sla_due_date__c in the past so it is
      * overdue when the scheduled flow runs.
+     * @param reviewType Value for nepa_review_type__c (CE/EA/EIS)
+     * @return Saved IndividualApplication record with overdue SLA
      */
     private static IndividualApplication insertOverdueProcess(String reviewType) {
         Program proj = NepaTestFactory.insertProgram(
@@ -44,6 +46,9 @@ private class NepaSlaEscalationMonitorTest {
     /**
      * Creates a process whose SLA due date is within the warning window
      * (EIS warning = 30 days before due; we set due date 15 days out).
+     * @param reviewType Value for nepa_review_type__c (CE/EA/EIS)
+     * @param daysUntilDue Days from today to set nepa_sla_due_date__c
+     * @return Saved IndividualApplication record within the SLA warning window
      */
     private static IndividualApplication insertWarningWindowProcess(String reviewType, Integer daysUntilDue) {
         Program proj = NepaTestFactory.insertProgram(
@@ -62,6 +67,21 @@ private class NepaSlaEscalationMonitorTest {
         return ia;
     }
 
+    /** Runs the SLA Escalation Monitor flow; returns true when a Chatter-disabled FlowException is caught. */
+    private static Boolean runSlaMonitorFlow() {
+        try {
+            Flow.Interview.NEPA_SLA_Escalation_Monitor interview =
+                new Flow.Interview.NEPA_SLA_Escalation_Monitor(new Map<String, Object>());
+            interview.start();
+            return false;
+        } catch (System.FlowException fe) {
+            Boolean chatterError = fe.getMessage().contains('not enabled for feeds') ||
+                                   fe.getMessage().contains('CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY');
+            if (!chatterError) { throw fe; }
+            return true;
+        }
+    }
+
     // ── Overdue: flow sets nepa_sla_overdue__c = true ────────────────────────
 
     @IsTest
@@ -69,17 +89,7 @@ private class NepaSlaEscalationMonitorTest {
         IndividualApplication ia = insertOverdueProcess('EIS');
 
         Test.startTest();
-        Boolean flowException = false;
-        try {
-            Flow.Interview.NEPA_SLA_Escalation_Monitor interview =
-                new Flow.Interview.NEPA_SLA_Escalation_Monitor(new Map<String, Object>());
-            interview.start();
-        } catch (System.FlowException fe) {
-            // FeedItem on IndividualApplication requires Chatter enabled — org config gap
-            flowException = fe.getMessage().contains('not enabled for feeds') ||
-                            fe.getMessage().contains('CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY');
-            if (!flowException) { throw fe; }
-        }
+        Boolean flowException = runSlaMonitorFlow();
         Test.stopTest();
 
         if (!flowException) {
@@ -99,16 +109,7 @@ private class NepaSlaEscalationMonitorTest {
         IndividualApplication ia = insertWarningWindowProcess('EIS', 15);
 
         Test.startTest();
-        Boolean flowException = false;
-        try {
-            Flow.Interview.NEPA_SLA_Escalation_Monitor interview =
-                new Flow.Interview.NEPA_SLA_Escalation_Monitor(new Map<String, Object>());
-            interview.start();
-        } catch (System.FlowException fe) {
-            flowException = fe.getMessage().contains('not enabled for feeds') ||
-                            fe.getMessage().contains('CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY');
-            if (!flowException) { throw fe; }
-        }
+        Boolean flowException = runSlaMonitorFlow();
         Test.stopTest();
 
         if (!flowException) {
@@ -231,16 +232,7 @@ private class NepaSlaEscalationMonitorTest {
         IndividualApplication eaIa = insertOverdueProcess('EA');
 
         Test.startTest();
-        Boolean flowException = false;
-        try {
-            Flow.Interview.NEPA_SLA_Escalation_Monitor interview =
-                new Flow.Interview.NEPA_SLA_Escalation_Monitor(new Map<String, Object>());
-            interview.start();
-        } catch (System.FlowException fe) {
-            flowException = fe.getMessage().contains('not enabled for feeds') ||
-                            fe.getMessage().contains('CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY');
-            if (!flowException) { throw fe; }
-        }
+        Boolean flowException = runSlaMonitorFlow();
         Test.stopTest();
 
         if (!flowException) {
