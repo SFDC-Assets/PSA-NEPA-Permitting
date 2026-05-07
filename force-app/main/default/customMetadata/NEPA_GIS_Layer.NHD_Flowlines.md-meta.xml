@@ -1,26 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>FWS Critical Habitat</label>
+    <label>NHD Flowlines</label>
     <protected>false</protected>
     <values>
+        <field>GIS_Layer_Developer_Name__c</field>
+        <value xsi:type="xsd:string">NHD_Flowlines</value>
+    </values>
+    <values>
         <field>Service_URL__c</field>
-        <value xsi:type="xsd:string">https://services.arcgis.com/QVENGdaPbd4LUkLV/ArcGIS/rest/services/USFWS_Critical_Habitat/FeatureServer</value>
+        <value xsi:type="xsd:string">https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer</value>
     </values>
     <values>
         <field>Layer_Number__c</field>
-        <value xsi:type="xsd:decimal">0</value>
+        <value xsi:type="xsd:decimal">1</value>
     </values>
     <values>
         <field>Buffer_Miles__c</field>
-        <value xsi:type="xsd:decimal">1.0</value>
+        <value xsi:type="xsd:decimal">0.5</value>
     </values>
     <values>
         <field>Layer_Label__c</field>
-        <value xsi:type="xsd:string">FWS Critical Habitat</value>
+        <value xsi:type="xsd:string">NHD Flowlines (Streams and Rivers)</value>
     </values>
     <values>
         <field>Result_Key_Field__c</field>
-        <value xsi:type="xsd:string">GEN_STAT</value>
+        <value xsi:type="xsd:string">GNIS_NAME</value>
     </values>
     <values>
         <field>Query_Template__c</field>
@@ -28,15 +32,15 @@
     </values>
     <values>
         <field>Named_Credential__c</field>
-        <value xsi:type="xsd:string">NEPA_GIS_FWS</value>
+        <value xsi:type="xsd:string">NEPA_GIS_USGS</value>
     </values>
     <values>
         <field>Extraordinary_Circumstances_Keyword__c</field>
-        <value xsi:type="xsd:string">CRITICAL HABITAT,DESIGNATED,PROPOSED</value>
+        <value xsi:type="xsd:string">STREAM,RIVER,CREEK,CANAL,DITCH</value>
     </values>
     <values>
         <field>Priority__c</field>
-        <value xsi:type="xsd:decimal">30</value>
+        <value xsi:type="xsd:decimal">5</value>
     </values>
     <values>
         <field>Active__c</field>

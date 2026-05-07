@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>APT_Developer_Name__c</fullName>
+    <label>APT Developer Name</label>
+    <type>Text</type>
+    <length>80</length>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <description>DeveloperName of the discipline-specific Action Plan Template to fire when a Work Order for this discipline is created (Status = New, nepa_auto_generated__c = true). Read by NEPA_WO_Milestone_Setter flow. Leave blank if no APT applies to this discipline.</description>
+</CustomField>

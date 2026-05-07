@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TriggerLayerId__c</fullName>
+    <label>Runtime Trigger Layer ID</label>
+    <type>Text</type>
+    <length>18</length>
+    <required>false</required>
+    <unique>false</unique>
+    <externalId>false</externalId>
+    <description>Runtime-only carrier field. Never set in CMT records. NEPA_Team_Assembly_Orchestrator populates this field on the in-memory SObject variable (var_CurrentPair) to pass the nepa_detected_protection_layer__c record ID alongside CMT template fields to NEPA_Work_Order_Generator. Allows a single typed NEPA_Layer_Discipline__mdt collection to carry both CMT data and runtime context without a custom intermediate object.</description>
+    <inlineHelpText>Set at runtime by NEPA_Team_Assembly_Orchestrator. Do not populate in CMT records.</inlineHelpText>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+</CustomField>

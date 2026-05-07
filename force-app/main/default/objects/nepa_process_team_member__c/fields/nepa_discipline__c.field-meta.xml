@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_discipline__c</fullName>
+    <label>Discipline</label>
+    <type>Text</type>
+    <length>100</length>
+    <required>false</required>
+    <unique>false</unique>
+    <externalId>false</externalId>
+    <description>Specialist discipline copied from NEPA_Layer_Discipline__mdt.Discipline__c at team assembly time. Denormalized for reporting and filtering without traversing the CMT. Must match ServiceResource.nepa_discipline__c exactly. Set by NEPA_Team_Assembly_Orchestrator when nepa_assembly_source__c = GIS_Auto_Assembly.</description>
+    <inlineHelpText>Specialist discipline for this team role (e.g., Hydrologist, Geologist). Set automatically by GIS team assembly.</inlineHelpText>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+</CustomField>

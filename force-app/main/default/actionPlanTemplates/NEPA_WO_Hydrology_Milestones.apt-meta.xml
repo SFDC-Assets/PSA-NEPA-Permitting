@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ActionPlanTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Field survey milestones for a hydrologist Work Order triggered by NWI Wetlands or other aquatic/riparian GIS layer detection. Covers pre-survey prep, field assessment, CWA/NPDES review, and delineation report. Target object: WorkOrder.</description>
+    <isAdHocItemCreationEnabled>false</isAdHocItemCreationEnabled>
+    <name>NEPA WO Hydrology Milestones</name>
+    <targetEntityType>WorkOrder</targetEntityType>
+    <uniqueName>NEPA_WO_Hydrology_Milestones</uniqueName>
+    <actionPlanTemplateItem>
+        <displayOrder>1</displayOrder>
+        <isRequired>true</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Pre-Survey Desktop Review</name>
+        <uniqueName>NEPA_WO_Hydro_1_Desktop</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Pre-Survey Desktop Review — Hydrology</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Review NWI Wetlands layer detection output, USGS NHD flowlines, and project-area topo maps. Identify all water features within 300 feet of the project footprint. Compile jurisdictional determination history for the APE. Request hydric soils data from NRCS Web Soil Survey. Document any prior Section 404/401 permits for the parcel.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>2</displayOrder>
+        <isRequired>true</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Wetland and Waterway Field Assessment</name>
+        <uniqueName>NEPA_WO_Hydro_2_Field</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Wetland and Waterway Field Assessment</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Conduct field-based wetland delineation per the Corps of Engineers Wetland Delineation Manual (1987) and applicable regional supplement. Document hydrology indicators, hydric soils, and hydrophytic vegetation. GPS-mark all wetland boundaries, OHWM, and ephemeral/intermittent channel crossings. Photograph and complete data forms for each sample point. Note any evidence of prior disturbance or fill.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>3</displayOrder>
+        <isRequired>true</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>CWA Section 404/401 and NPDES Review</name>
+        <uniqueName>NEPA_WO_Hydro_3_CWA</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>CWA Section 404/401 and NPDES Permit Review</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Determine whether project activities require CWA Section 404 individual or nationwide permit (NWP). Document applicable NWP conditions and general conditions checklist. Evaluate need for 401 Water Quality Certification from state agency. Assess stormwater discharge triggers for NPDES Construction General Permit (CGP) coverage. Identify any ACOE pre-construction notification (PCN) requirements.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>4</displayOrder>
+        <isRequired>true</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Hydrology Assessment Report</name>
+        <uniqueName>NEPA_WO_Hydro_4_Report</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Hydrology Assessment Report — Final Submission</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Compile wetland delineation report, CWA jurisdictional determination summary, permit triggers matrix, and recommended mitigation or avoidance measures. Upload final report as ContentVersion linked to this Work Order and to the NEPA IndividualApplication. Confirm Section 7 USFWS coordination needs for any aquatic T&amp;E species. Mark Work Order Status = Completed when report is approved by NEPA lead.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+</ActionPlanTemplate>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>WO_Duration_Minutes__c</fullName>
+    <label>WO Duration Minutes</label>
+    <type>Number</type>
+    <precision>5</precision>
+    <scale>0</scale>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <description>Default WorkOrder.Duration in minutes. Used by NEPA_Work_Order_Generator when creating field survey Work Orders. Field coordinators can adjust the duration on individual Work Orders after creation. Example: 480 = one full field day.</description>
+</CustomField>

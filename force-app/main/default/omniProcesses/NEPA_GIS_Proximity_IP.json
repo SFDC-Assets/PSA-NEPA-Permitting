@@ -6,7 +6,7 @@
   "VersionNumber": 1,
   "IsActive": true,
   "IsIntegrationProcedure": true,
-  "Description": "GIS proximity Integration Procedure. Accepts a NEPA Project ID, loads the project centroid coordinates, queries all active NEPA_GIS_Layer__mdt-registered federal FeatureServer endpoints within the configured buffer distance, aggregates findings into a human-readable protection areas summary, and writes results back to the Program record. Adding a new federal layer requires only a new CMT record — no IP changes. Called by the NEPA_GIS_Proximity after-save Flow and optionally invoked directly from the NEPA Project record page.",
+  "Description": "GIS proximity Integration Procedure. Accepts a NEPA Project ID, loads the project centroid coordinates, queries all active NEPA_GIS_Layer__mdt-registered federal FeatureServer endpoints within the configured buffer distance, aggregates findings into a human-readable protection areas summary, writes individual nepa_detected_protection_layer__c records (upserted on nepa_upsert_key__c for idempotency), and writes results back to the Program record. Adding a new federal layer requires only a new CMT record — no IP changes. Called by the NEPA_GIS_Proximity after-save Flow and optionally invoked directly from the NEPA Project record page.",
   "PropertySetConfig": {
     "persistentComponent": true,
     "trackingCustomData": {},
@@ -91,6 +91,16 @@
           {
             "name": "LayerResultLines",
             "value": "",
+            "valueType": "value"
+          },
+          {
+            "name": "GISCheckedTimestamp",
+            "value": "NOW()",
+            "valueType": "formula"
+          },
+          {
+            "name": "DetectedLayerRecords",
+            "value": [],
             "valueType": "value"
           }
         ]
@@ -255,9 +265,70 @@
       }
     },
     {
-      "Name": "HandleCalloutError",
+      "Name": "AccumulateLayerRecord",
       "Type": "Set Values",
       "SequenceNumber": 11,
+      "Level": 1,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "assignmentRules": [
+          {
+            "name": "CurrentLayerRecord.nepa_upsert_key__c",
+            "value": "%projectId% & '_' & %CurrentLayer:DeveloperName%",
+            "valueType": "formula"
+          },
+          {
+            "name": "CurrentLayerRecord.nepa_program__c",
+            "value": "%projectId%",
+            "valueType": "reference"
+          },
+          {
+            "name": "CurrentLayerRecord.nepa_layer_developer_name__c",
+            "value": "%CurrentLayer:DeveloperName%",
+            "valueType": "reference"
+          },
+          {
+            "name": "CurrentLayerRecord.nepa_layer_label__c",
+            "value": "%CurrentLayer:Layer_Label__c%",
+            "valueType": "reference"
+          },
+          {
+            "name": "CurrentLayerRecord.nepa_feature_name__c",
+            "value": "%FirstFeatureName%",
+            "valueType": "reference"
+          },
+          {
+            "name": "CurrentLayerRecord.nepa_feature_count__c",
+            "value": "%FeatureCount%",
+            "valueType": "reference"
+          },
+          {
+            "name": "CurrentLayerRecord.nepa_is_hit__c",
+            "value": "IF(%CurrentLayer:Layer_Number__c% == -1, %HasFeatures% || %EJIndexValue% != null, %HasFeatures%)",
+            "valueType": "formula"
+          },
+          {
+            "name": "CurrentLayerRecord.nepa_extraordinary_circumstances_triggered__c",
+            "value": "%KeywordTriggered%",
+            "valueType": "reference"
+          },
+          {
+            "name": "CurrentLayerRecord.nepa_gis_run_timestamp__c",
+            "value": "%GISCheckedTimestamp%",
+            "valueType": "reference"
+          },
+          {
+            "name": "DetectedLayerRecords[+]",
+            "value": "%CurrentLayerRecord%",
+            "valueType": "reference"
+          }
+        ]
+      }
+    },
+    {
+      "Name": "HandleCalloutError",
+      "Type": "Set Values",
+      "SequenceNumber": 12,
       "Level": 1,
       "IsActive": true,
       "PropertySetConfig": {
@@ -278,7 +349,7 @@
     {
       "Name": "FinalizeResult",
       "Type": "Set Values",
-      "SequenceNumber": 12,
+      "SequenceNumber": 13,
       "Level": 0,
       "IsActive": true,
       "PropertySetConfig": {
@@ -287,19 +358,32 @@
             "name": "FinalProtectionAreasSummary",
             "value": "IF(%ProtectionAreasSummary% == '', 'No protected areas identified within buffer distance.', %ProtectionAreasSummary%)",
             "valueType": "formula"
-          },
-          {
-            "name": "GISCheckedTimestamp",
-            "value": "NOW()",
-            "valueType": "formula"
           }
         ]
       }
     },
     {
+      "Name": "SaveDetectedLayers",
+      "Type": "DataRaptor Load Action",
+      "SequenceNumber": 14,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "bundleName": "DR_Upsert_Detected_Layer",
+        "inputMap": [
+          {
+            "name": "DetectedLayerRecords",
+            "value": "%DetectedLayerRecords%",
+            "valueType": "reference"
+          }
+        ],
+        "outputPath": "DetectedLayerSaveResult"
+      }
+    },
+    {
       "Name": "SaveResultsToProject",
       "Type": "DataRaptor Load Action",
-      "SequenceNumber": 13,
+      "SequenceNumber": 15,
       "Level": 0,
       "IsActive": true,
       "PropertySetConfig": {
@@ -332,7 +416,7 @@
     {
       "Name": "BuildResponse",
       "Type": "Set Values",
-      "SequenceNumber": 14,
+      "SequenceNumber": 16,
       "Level": 0,
       "IsActive": true,
       "PropertySetConfig": {

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_feature_count__c</fullName>
+    <label>Feature Count</label>
+    <type>Number</type>
+    <precision>5</precision>
+    <scale>0</scale>
+    <required>false</required>
+    <defaultValue>0</defaultValue>
+    <description>Count of features returned by the ArcGIS spatial proximity query. 0 = no hit; nepa_is_hit__c = false. Used with nepa_is_hit__c to filter records for team assembly.</description>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+</CustomField>

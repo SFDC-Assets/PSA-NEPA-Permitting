@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_extraordinary_circumstances_triggered__c</fullName>
+    <label>EC Triggered</label>
+    <type>Checkbox</type>
+    <defaultValue>false</defaultValue>
+    <description>True when this layer's Extraordinary_Circumstances_Keyword__c matched one or more features found in the proximity query. When any detected layer has EC Triggered = true, the parent Program.nepa_extraordinary_circumstances__c is set to true, which may downgrade a CE to EA.</description>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+</CustomField>

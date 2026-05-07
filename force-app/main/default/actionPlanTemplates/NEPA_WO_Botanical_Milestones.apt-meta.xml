@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ActionPlanTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Field survey milestones for a Botanist Work Order. Two seasonal site visits (June-July and August) for rare plant detection, plus seed mix approval. Target object: WorkOrder.</description>
+    <isAdHocItemCreationEnabled>false</isAdHocItemCreationEnabled>
+    <name>NEPA WO Botanical Milestones</name>
+    <targetEntityType>WorkOrder</targetEntityType>
+    <uniqueName>NEPA_WO_Botanical_Milestones</uniqueName>
+    <actionPlanTemplateItem>
+        <displayOrder>1</displayOrder>
+        <isRequired>true</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Botanical Desktop Review and Survey Planning</name>
+        <uniqueName>NEPA_WO_Bot_1_Desktop</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Botanical Desktop Review and Survey Planning</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Query USDA PLANTS database, state Natural Heritage Program, and BLM sensitive species list for all T&amp;E and BLM sensitive plant species with documented occurrences within 5 miles of project APE. Review herbarium records and state/federal GIS occurrence layers. Identify peak bloom windows for each species requiring detection surveys. Pull USGS topo and aerial imagery to map suitable habitat patches within APE. Prepare species-specific survey protocols and field data forms.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>2</displayOrder>
+        <isRequired>true</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Site Visit 1 — Early Season Survey (June–July)</name>
+        <uniqueName>NEPA_WO_Bot_2_Visit1</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Botanical Site Visit 1 — Early Season Survey (June–July)</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Conduct early-season floristic survey of entire APE plus 50-foot buffer. Survey all suitable habitat patches for early-blooming T&amp;E and BLM sensitive species. Use 100% coverage transect methodology for high-potential habitat; modified-Whittaker or targeted search for lower-potential areas. Document all occurrences with GPS coordinates, population size, phenological stage, and condition. Photograph representative individuals. Note general vegetation community composition for each habitat patch.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>3</displayOrder>
+        <isRequired>true</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Site Visit 2 — Late Season Survey (August)</name>
+        <uniqueName>NEPA_WO_Bot_3_Visit2</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Botanical Site Visit 2 — Late Season Survey (August)</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Conduct late-season floristic survey targeting late-blooming species not detectable in June-July survey. Re-survey any high-potential habitat patches with negative results from Visit 1 to confirm absence. Document any changes in population condition since Visit 1. Collect voucher specimens for any unidentified individuals requiring taxonomic confirmation. Update GPS data and population size estimates. Photograph all new detections.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>4</displayOrder>
+        <isRequired>true</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Reclamation Seed Mix Approval</name>
+        <uniqueName>NEPA_WO_Bot_4_SeedMix</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Reclamation Seed Mix Review and Approval</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Develop native seed mix appropriate to plant communities documented in survey. Use only locally adapted, weed-free seed from certified sources. Avoid invasive or noxious weed species. Specify seeding rates (lbs PLS/acre) for each species component. Verify mix against BLM state office approved seed lists and habitat type. Document measures to control cheatgrass (Bromus tectorum) and other annual invasives during reclamation. Upload seed mix memo as ContentVersion. Mark Work Order Status = Completed when report and seed mix are approved by NEPA lead.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+</ActionPlanTemplate>

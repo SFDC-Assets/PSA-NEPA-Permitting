@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>EPA NEPAssist Water</label>
+    <protected>false</protected>
+    <values>
+        <field>GIS_Layer_Developer_Name__c</field>
+        <value xsi:type="xsd:string">EPA_NEPAssist_Water</value>
+    </values>
+    <values>
+        <field>Discipline__c</field>
+        <value xsi:type="xsd:string">Hydrologist</value>
+    </values>
+    <values>
+        <field>Work_Type_Developer_Name__c</field>
+        <value xsi:type="xsd:string">DEMO_WT_001</value>
+    </values>
+    <values>
+        <field>WO_Subject_Template__c</field>
+        <value xsi:type="xsd:string">Impaired Waters and Special Designations Review - {ProjectName}</value>
+    </values>
+    <values>
+        <field>WO_Description_Template__c</field>
+        <value xsi:type="xsd:string">Water resources review triggered by EPA NEPAssist Water layer detection ({LayerLabel}). Evaluate project proximity to CWA Section 303(d) impaired water bodies, determine whether the project could contribute to existing impairments or affect Total Maximum Daily Load (TMDL) requirements. Assess overlap with sole-source aquifer designations under the Safe Drinking Water Act. Determine if any affected waterways hold Wild and Scenic River designation under the Wild and Scenic Rivers Act (16 U.S.C. §1271), which requires agency review and finding of no direct and adverse effect on the values for which the river was designated.</value>
+    </values>
+    <values>
+        <field>WO_Duration_Minutes__c</field>
+        <value xsi:type="xsd:decimal">240</value>
+    </values>
+    <values>
+        <field>WO_Priority__c</field>
+        <value xsi:type="xsd:string">High</value>
+    </values>
+    <values>
+        <field>APT_Developer_Name__c</field>
+        <value xsi:type="xsd:string">NEPA_WO_Hydrology_Milestones</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>Sort_Order__c</field>
+        <value xsi:type="xsd:decimal">12</value>
+    </values>
+</CustomMetadata>

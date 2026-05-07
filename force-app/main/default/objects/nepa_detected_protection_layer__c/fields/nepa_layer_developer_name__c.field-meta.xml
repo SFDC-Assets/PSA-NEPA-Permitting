@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_layer_developer_name__c</fullName>
+    <label>Layer Developer Name</label>
+    <type>Text</type>
+    <length>80</length>
+    <required>true</required>
+    <unique>false</unique>
+    <externalId>false</externalId>
+    <description>DeveloperName from NEPA_GIS_Layer__mdt. Foreign key to NEPA_Layer_Discipline__mdt.GIS_Layer_Developer_Name__c. Used by team assembly flow to resolve discipline and Work Order template. Combined with nepa_program__c to form the upsert key for idempotent re-runs.</description>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+</CustomField>

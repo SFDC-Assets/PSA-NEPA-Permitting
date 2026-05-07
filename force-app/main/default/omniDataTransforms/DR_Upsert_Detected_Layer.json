@@ -1,0 +1,20 @@
+{
+  "Name": "DR_Upsert_Detected_Layer",
+  "Type": "Load",
+  "IsActive__c": true,
+  "Description": "Bulk-upserts nepa_detected_protection_layer__c records from a collection built during the NEPA_GIS_Proximity_IP loop. Upsert key: nepa_upsert_key__c ({programId}_{layerDeveloperName}). Re-running the GIS proximity check for the same project updates existing detection records rather than creating duplicates. Called by Step 14 (SaveDetectedLayers) of NEPA_GIS_Proximity_IP after the layer loop completes.",
+  "SObjectType": "nepa_detected_protection_layer__c",
+  "OperationType": "Upsert",
+  "UpsertKey": "nepa_upsert_key__c",
+  "Mappings": [
+    {"InputKey": "nepa_upsert_key__c",                              "SObjectField": "nepa_upsert_key__c",                              "DataType": "STRING"},
+    {"InputKey": "nepa_program__c",                                 "SObjectField": "nepa_program__c",                                 "DataType": "STRING"},
+    {"InputKey": "nepa_layer_developer_name__c",                    "SObjectField": "nepa_layer_developer_name__c",                    "DataType": "STRING"},
+    {"InputKey": "nepa_layer_label__c",                             "SObjectField": "nepa_layer_label__c",                             "DataType": "STRING"},
+    {"InputKey": "nepa_feature_name__c",                            "SObjectField": "nepa_feature_name__c",                            "DataType": "STRING"},
+    {"InputKey": "nepa_feature_count__c",                           "SObjectField": "nepa_feature_count__c",                           "DataType": "DECIMAL"},
+    {"InputKey": "nepa_is_hit__c",                                  "SObjectField": "nepa_is_hit__c",                                  "DataType": "BOOLEAN"},
+    {"InputKey": "nepa_extraordinary_circumstances_triggered__c",   "SObjectField": "nepa_extraordinary_circumstances_triggered__c",   "DataType": "BOOLEAN"},
+    {"InputKey": "nepa_gis_run_timestamp__c",                       "SObjectField": "nepa_gis_run_timestamp__c",                       "DataType": "DATETIME"}
+  ]
+}

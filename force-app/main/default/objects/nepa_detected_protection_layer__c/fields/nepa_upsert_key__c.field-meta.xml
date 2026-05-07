@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_upsert_key__c</fullName>
+    <label>Upsert Key</label>
+    <type>Text</type>
+    <length>255</length>
+    <required>false</required>
+    <unique>false</unique>
+    <externalId>true</externalId>
+    <description>Composite external ID for idempotent upsert. Set by DR_Upsert_Detected_Layer to {programId}_{layerDeveloperName}. Re-running the GIS proximity check for the same project + layer updates the existing record rather than creating a duplicate. Must be a writable Text field (not formula) to serve as the Salesforce upsert external ID key.</description>
+    <inlineHelpText>Composite upsert key set automatically by the GIS proximity IP. Format: {ProgramId}_{LayerDeveloperName}.</inlineHelpText>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+</CustomField>

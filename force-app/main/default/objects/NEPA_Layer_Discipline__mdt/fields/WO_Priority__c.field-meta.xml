@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>WO_Priority__c</fullName>
+    <label>WO Priority</label>
+    <type>Text</type>
+    <length>10</length>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <description>WorkOrder.Priority to set at creation. Must be a valid picklist value: High or Normal. Layers with extraordinary-circumstances potential (wetlands, critical habitat) default to High; informational layers (EJScreen) default to Normal.</description>
+</CustomField>

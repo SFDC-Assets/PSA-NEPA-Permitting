@@ -1778,6 +1778,106 @@
         <object>nepa_process_team_member__c</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
+    <!-- nepa_detected_protection_layer__c (GIS-driven team assembly) -->
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>nepa_detected_protection_layer__c</object>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <!-- nepa_detected_protection_layer__c fields — nepa_program__c (MasterDetail) omitted: system-managed -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_detected_protection_layer__c.nepa_layer_developer_name__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_detected_protection_layer__c.nepa_layer_label__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_detected_protection_layer__c.nepa_feature_name__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_detected_protection_layer__c.nepa_feature_count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_detected_protection_layer__c.nepa_extraordinary_circumstances_triggered__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_detected_protection_layer__c.nepa_gis_run_timestamp__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_detected_protection_layer__c.nepa_is_hit__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- nepa_upsert_key__c: formula field — read-only, set by system -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>nepa_detected_protection_layer__c.nepa_upsert_key__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- nepa_process_team_member__c new Phase 2 fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_service_resource__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_assembly_source__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_trigger_layer__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_discipline__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- WorkOrder NEPA fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>WorkOrder.nepa_process__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>WorkOrder.nepa_trigger_layer__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>WorkOrder.nepa_discipline__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>WorkOrder.nepa_auto_generated__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- ServiceResource NEPA discipline field -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ServiceResource.nepa_discipline__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <!-- NepaCeqExportService classAccess omitted — class not yet implemented -->
 
     <tabSettings>
@@ -1802,6 +1902,10 @@
     </tabSettings>
     <tabSettings>
         <tab>nepa_process_team_member__c</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>nepa_detected_protection_layer__c</tab>
         <visibility>Available</visibility>
     </tabSettings>
 </PermissionSet>

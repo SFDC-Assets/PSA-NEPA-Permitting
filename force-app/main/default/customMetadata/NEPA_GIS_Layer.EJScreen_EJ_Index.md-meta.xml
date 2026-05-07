@@ -4,11 +4,11 @@
     <protected>false</protected>
     <values>
         <field>Service_URL__c</field>
-        <value xsi:type="xsd:string">https://ejscreen.epa.gov/mapper/ejscreenRESTbroker.aspx</value>
+        <value xsi:type="xsd:string">https://geopub.epa.gov/arcgis/rest/services/ejscreen/ejscreen_v2023_with_as_cnmi_gu_vi/MapServer</value>
     </values>
     <values>
         <field>Layer_Number__c</field>
-        <value xsi:type="xsd:decimal">-1</value>
+        <value xsi:type="xsd:decimal">0</value>
     </values>
     <values>
         <field>Buffer_Miles__c</field>
@@ -24,11 +24,11 @@
     </values>
     <values>
         <field>Query_Template__c</field>
-        <value xsi:type="xsd:string">https://ejscreen.epa.gov/mapper/ejscreenRESTbroker.aspx?latitude={lat}&amp;longitude={lon}&amp;unit=miles&amp;distance=1&amp;f=json</value>
+        <value xsi:nil="true"/>
     </values>
     <values>
         <field>Named_Credential__c</field>
-        <value xsi:type="xsd:string">NEPA_GIS_EJScreen</value>
+        <value xsi:type="xsd:string">NEPA_GIS_EPA_GeoPub</value>
     </values>
     <values>
         <field>Extraordinary_Circumstances_Keyword__c</field>

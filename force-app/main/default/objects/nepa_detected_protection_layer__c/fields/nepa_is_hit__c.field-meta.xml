@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_is_hit__c</fullName>
+    <label>Is Hit</label>
+    <type>Checkbox</type>
+    <defaultValue>false</defaultValue>
+    <description>True when this layer returned at least one feature (nepa_feature_count__c > 0) or, for EJScreen-type layers (Layer_Number__c = -1), when an EJ index value is present. NEPA_Team_Assembly_Orchestrator filters on nepa_is_hit__c = true to identify which specialists are needed.</description>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+</CustomField>

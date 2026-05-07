@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sort_Order__c</fullName>
+    <label>Sort Order</label>
+    <type>Number</type>
+    <precision>3</precision>
+    <scale>0</scale>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <description>Controls the order in which disciplines are assembled when multiple protection layers are detected. Lower numbers assemble first. Suggested ordering: 10=Hydrologist, 20=Wildlife, 30=Geologist, 40=Botanist, 50=Aquatic, 60=Avian/Big Game, 70=NEPA Specialist.</description>
+</CustomField>

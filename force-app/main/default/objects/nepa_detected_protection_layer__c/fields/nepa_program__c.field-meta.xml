@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_program__c</fullName>
+    <label>Program</label>
+    <type>MasterDetail</type>
+    <referenceTo>Program</referenceTo>
+    <relationshipLabel>Detected Protection Layers</relationshipLabel>
+    <relationshipName>Detected_Protection_Layers</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+    <description>Parent NEPA Project (Program) whose GIS proximity check produced this detection. Cascade delete — layer records are removed when the project is deleted.</description>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+</CustomField>

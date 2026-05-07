@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>WO_Description_Template__c</fullName>
+    <label>WO Description Template</label>
+    <type>LongTextArea</type>
+    <length>1024</length>
+    <visibleLines>5</visibleLines>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <description>Template for WorkOrder.Description. Supports {LayerLabel} and {ProjectName} substitution tokens. Should include regulatory trigger context, survey scope, and applicable statutes (e.g., ESA Section 7, CWA Section 404, MBTA).</description>
+</CustomField>

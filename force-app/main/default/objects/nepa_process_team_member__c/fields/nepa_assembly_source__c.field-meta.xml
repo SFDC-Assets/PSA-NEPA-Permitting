@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_assembly_source__c</fullName>
+    <label>Assembly Source</label>
+    <type>Text</type>
+    <length>50</length>
+    <required>false</required>
+    <unique>false</unique>
+    <externalId>false</externalId>
+    <description>Records how this team member was added to the process. GIS_Auto_Assembly: created by NEPA_Team_Assembly_Orchestrator when protection layers were detected. Manual: added by a coordinator directly. Stage_Gate: added by NEPA_Stage_Gate_Orchestrator at a process milestone. Used to distinguish auto-assembled members from manually added ones during idempotent re-assembly.</description>
+    <inlineHelpText>How this team member was added: GIS_Auto_Assembly, Manual, or Stage_Gate.</inlineHelpText>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+</CustomField>

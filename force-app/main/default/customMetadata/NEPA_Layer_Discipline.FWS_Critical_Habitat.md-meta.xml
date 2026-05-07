@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>FWS Critical Habitat</label>
+    <protected>false</protected>
+    <values>
+        <field>GIS_Layer_Developer_Name__c</field>
+        <value xsi:type="xsd:string">FWS_Critical_Habitat</value>
+    </values>
+    <values>
+        <field>Discipline__c</field>
+        <value xsi:type="xsd:string">Wildlife Biologist (Sage-Grouse)</value>
+    </values>
+    <values>
+        <field>Work_Type_Developer_Name__c</field>
+        <value xsi:type="xsd:string">DEMO_WT_002</value>
+    </values>
+    <values>
+        <field>WO_Subject_Template__c</field>
+        <value xsi:type="xsd:string">Critical Habitat and Species Survey - {ProjectName}</value>
+    </values>
+    <values>
+        <field>WO_Description_Template__c</field>
+        <value xsi:type="xsd:string">Wildlife survey triggered by USFWS Critical Habitat GIS proximity detection ({LayerLabel}). Assess listed species presence, critical habitat unit boundaries, and ESA Section 7 formal consultation requirements. Evaluate ARMPA conformance for sage-grouse PHMA and RHMA designations. Document seasonal survey windows and any required lek disturbance buffers.</value>
+    </values>
+    <values>
+        <field>WO_Duration_Minutes__c</field>
+        <value xsi:type="xsd:decimal">480</value>
+    </values>
+    <values>
+        <field>WO_Priority__c</field>
+        <value xsi:type="xsd:string">High</value>
+    </values>
+    <values>
+        <field>APT_Developer_Name__c</field>
+        <value xsi:type="xsd:string">NEPA_WO_SageGrouse_Milestones</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>Sort_Order__c</field>
+        <value xsi:type="xsd:decimal">20</value>
+    </values>
+</CustomMetadata>

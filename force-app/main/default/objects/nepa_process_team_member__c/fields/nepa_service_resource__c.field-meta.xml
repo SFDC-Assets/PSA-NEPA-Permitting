@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_service_resource__c</fullName>
+    <label>Service Resource</label>
+    <type>Lookup</type>
+    <referenceTo>ServiceResource</referenceTo>
+    <relationshipLabel>NEPA Team Assignments</relationshipLabel>
+    <relationshipName>NEPA_Team_Assignments</relationshipName>
+    <required>false</required>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>FSL ServiceResource assigned to this NEPA process team role. Populated by NEPA_Team_Assembly_Orchestrator during GIS-driven auto-assembly. Null for manually added team members or assignments predating this field. Cleared (SetNull) if the ServiceResource record is deleted.</description>
+    <inlineHelpText>The FSL Service Resource (specialist) assigned to this team role. Auto-populated when the team is assembled from GIS protection layer detection.</inlineHelpText>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+</CustomField>

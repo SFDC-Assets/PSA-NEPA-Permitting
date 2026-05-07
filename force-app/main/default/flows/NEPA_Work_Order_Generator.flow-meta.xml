@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>Autolaunched subflow called by NEPA_Team_Assembly_Orchestrator. Accepts the NEPA IndividualApplication ID, Program ID, Program Name, Account ID, and a collection of LayerDisciplinePair records. Loads all WorkTypes once, then loops over each pair to build a WorkOrder with subject/description tokens replaced. Bulk-creates all Work Orders in a single DML. Returns count of Work Orders created. Adding a new layer/discipline only requires a NEPA_Layer_Discipline__mdt record — no changes here.</description>
+    <environments>Default</environments>
+    <interviewLabel>NEPA Work Order Generator {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>NEPA Work Order Generator</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>176</locationX>
+        <locationY>48</locationY>
+        <connector>
+            <targetReference>GetAllWorkTypes</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- Step 1: Load all WorkTypes once — avoids per-discipline SOQL       -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <recordLookups>
+        <name>GetAllWorkTypes</name>
+        <label>Get All Work Types</label>
+        <locationX>176</locationX>
+        <locationY>168</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_BuildWorkOrders</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>WorkType</object>
+        <outputReference>var_AllWorkTypes</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Name</queriedFields>
+        <queriedFields>External_ID__c</queriedFields>
+    </recordLookups>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- Step 2: Loop over discipline pairs, build WO collection            -->
+    <!-- No Get Records inside loop — WorkTypes already loaded              -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <loops>
+        <name>Loop_BuildWorkOrders</name>
+        <label>Loop: Build Work Order for Each Discipline Pair</label>
+        <locationX>176</locationX>
+        <locationY>288</locationY>
+        <collectionReference>inp_LayerDisciplinePairs</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Loop_FindWorkType</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Decision_WorkOrdersToCreate</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+
+    <!-- Inner loop: find WorkType in already-loaded collection -->
+    <loops>
+        <name>Loop_FindWorkType</name>
+        <label>Loop: Find WorkType in Loaded Collection</label>
+        <locationX>400</locationX>
+        <locationY>288</locationY>
+        <collectionReference>var_AllWorkTypes</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Decision_WorkTypeMatches</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Assign_ClearWorkTypeId</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+
+    <decisions>
+        <name>Decision_WorkTypeMatches</name>
+        <label>WorkType ExternalId Matches?</label>
+        <locationX>640</locationX>
+        <locationY>288</locationY>
+        <defaultConnectorLabel>No Match — Next WorkType</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Loop_FindWorkType</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>WorkTypeMatches</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_AllWorkTypes.External_ID__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>inp_LayerDisciplinePairs.Work_Type_Developer_Name__c</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_CaptureWorkTypeId</targetReference>
+            </connector>
+            <label>WorkType Found</label>
+        </rules>
+    </decisions>
+
+    <assignments>
+        <name>Assign_CaptureWorkTypeId</name>
+        <label>Capture WorkType ID</label>
+        <locationX>880</locationX>
+        <locationY>288</locationY>
+        <assignmentItems>
+            <assignToReference>var_MatchedWorkTypeId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AllWorkTypes.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <!-- Exit inner loop immediately after match -->
+        <connector>
+            <targetReference>Assign_BuildWorkOrder</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_ClearWorkTypeId</name>
+        <label>Clear WorkType ID (No Match)</label>
+        <locationX>400</locationX>
+        <locationY>408</locationY>
+        <assignmentItems>
+            <assignToReference>var_MatchedWorkTypeId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue></stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Assign_BuildWorkOrder</targetReference>
+        </connector>
+    </assignments>
+
+    <formulas>
+        <name>formula_WOSubject</name>
+        <dataType>String</dataType>
+        <expression>SUBSTITUTE(SUBSTITUTE({!inp_LayerDisciplinePairs.WO_Subject_Template__c}, "{ProjectName}", {!inp_ProgramName}), "{LayerLabel}", {!inp_LayerDisciplinePairs.GIS_Layer_Developer_Name__c})</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_WODescription</name>
+        <dataType>String</dataType>
+        <expression>SUBSTITUTE(SUBSTITUTE({!inp_LayerDisciplinePairs.WO_Description_Template__c}, "{ProjectName}", {!inp_ProgramName}), "{LayerLabel}", {!inp_LayerDisciplinePairs.GIS_Layer_Developer_Name__c})</expression>
+    </formulas>
+
+    <assignments>
+        <name>Assign_BuildWorkOrder</name>
+        <label>Build Work Order Record</label>
+        <locationX>640</locationX>
+        <locationY>408</locationY>
+        <assignmentItems>
+            <assignToReference>var_NewWO.Subject</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula_WOSubject</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWO.Description</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula_WODescription</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWO.WorkTypeId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_MatchedWorkTypeId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWO.AccountId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>inp_AccountId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWO.Duration</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>inp_LayerDisciplinePairs.WO_Duration_Minutes__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWO.DurationType</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Minutes</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWO.Priority</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>inp_LayerDisciplinePairs.WO_Priority__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWO.Status</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>New</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWO.nepa_process__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>inp_RelatedAppId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWO.nepa_trigger_layer__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>inp_LayerDisciplinePairs.TriggerLayerId__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWO.nepa_discipline__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>inp_LayerDisciplinePairs.Discipline__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWO.nepa_auto_generated__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWorkOrders</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>var_NewWO</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_BuildWorkOrders</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- Step 3: Bulk-create all Work Orders                                -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <decisions>
+        <name>Decision_WorkOrdersToCreate</name>
+        <label>Work Orders to Create?</label>
+        <locationX>176</locationX>
+        <locationY>528</locationY>
+        <defaultConnectorLabel>No Work Orders — End</defaultConnectorLabel>
+        <rules>
+            <name>WorkOrdersReady</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_NewWorkOrders</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_WorkOrders</targetReference>
+            </connector>
+            <label>Work Orders Ready</label>
+        </rules>
+    </decisions>
+
+    <recordCreates>
+        <name>Create_WorkOrders</name>
+        <label>Bulk Create Work Orders</label>
+        <locationX>176</locationX>
+        <locationY>648</locationY>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputReference>var_NewWorkOrders</inputReference>
+    </recordCreates>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- Error handler                                                      -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <assignments>
+        <name>Handle_Error</name>
+        <label>Capture Fault Message</label>
+        <locationX>440</locationX>
+        <locationY>648</locationY>
+        <assignmentItems>
+            <assignToReference>out_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- INPUT VARIABLES                                                    -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <variables>
+        <name>inp_RelatedAppId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <variables>
+        <name>inp_ProgramId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <variables>
+        <name>inp_ProgramName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <variables>
+        <name>inp_AccountId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <variables>
+        <name>inp_LayerDisciplinePairs</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <objectType>NEPA_Layer_Discipline__mdt</objectType>
+    </variables>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- OUTPUT VARIABLES                                                   -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <variables>
+        <name>out_WorkOrdersCreated</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+        <scale>0</scale>
+    </variables>
+
+    <variables>
+        <name>out_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- WORKING VARIABLES                                                  -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <variables>
+        <name>var_AllWorkTypes</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>WorkType</objectType>
+    </variables>
+
+    <variables>
+        <name>var_MatchedWorkTypeId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <variables>
+        <name>var_NewWorkOrders</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>WorkOrder</objectType>
+    </variables>
+
+    <variables>
+        <name>var_NewWO</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>WorkOrder</objectType>
+    </variables>
+
+</Flow>

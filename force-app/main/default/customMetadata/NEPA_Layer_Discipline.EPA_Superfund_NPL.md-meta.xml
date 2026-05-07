@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>EPA Superfund NPL</label>
+    <protected>false</protected>
+    <values>
+        <field>GIS_Layer_Developer_Name__c</field>
+        <value xsi:type="xsd:string">EPA_Superfund_NPL</value>
+    </values>
+    <values>
+        <field>Discipline__c</field>
+        <value xsi:type="xsd:string">Geologist</value>
+    </values>
+    <values>
+        <field>Work_Type_Developer_Name__c</field>
+        <value xsi:type="xsd:string">DEMO_WT_006</value>
+    </values>
+    <values>
+        <field>WO_Subject_Template__c</field>
+        <value xsi:type="xsd:string">Geology, Soils, and Contamination Assessment - {ProjectName}</value>
+    </values>
+    <values>
+        <field>WO_Description_Template__c</field>
+        <value xsi:type="xsd:string">Geology and soils assessment triggered by EPA Superfund NPL Site GIS proximity detection ({LayerLabel}). Evaluate potential contamination migration pathways, soil stability, access road erosion risk, and reclamation bond requirements. Document CERCLA coordination needs and any required Phase I/II Environmental Site Assessment triggers. Review cadastral boundaries and reclamation seed mix suitability.</value>
+    </values>
+    <values>
+        <field>WO_Duration_Minutes__c</field>
+        <value xsi:type="xsd:decimal">480</value>
+    </values>
+    <values>
+        <field>WO_Priority__c</field>
+        <value xsi:type="xsd:string">High</value>
+    </values>
+    <values>
+        <field>APT_Developer_Name__c</field>
+        <value xsi:type="xsd:string">NEPA_WO_Geology_Milestones</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>Sort_Order__c</field>
+        <value xsi:type="xsd:decimal">30</value>
+    </values>
+</CustomMetadata>

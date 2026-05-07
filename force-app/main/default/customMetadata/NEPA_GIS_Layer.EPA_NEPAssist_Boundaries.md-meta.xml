@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>FWS Critical Habitat</label>
+    <label>EPA NEPAssist Boundaries</label>
     <protected>false</protected>
     <values>
+        <field>GIS_Layer_Developer_Name__c</field>
+        <value xsi:type="xsd:string">EPA_NEPAssist_Boundaries</value>
+    </values>
+    <values>
         <field>Service_URL__c</field>
-        <value xsi:type="xsd:string">https://services.arcgis.com/QVENGdaPbd4LUkLV/ArcGIS/rest/services/USFWS_Critical_Habitat/FeatureServer</value>
+        <value xsi:type="xsd:string">https://geopub.epa.gov/ArcGIS/rest/services/NEPAssist/Boundaries/MapServer</value>
     </values>
     <values>
         <field>Layer_Number__c</field>
@@ -16,11 +20,11 @@
     </values>
     <values>
         <field>Layer_Label__c</field>
-        <value xsi:type="xsd:string">FWS Critical Habitat</value>
+        <value xsi:type="xsd:string">EPA NEPAssist Boundaries (Tribal Lands / Non-Attainment)</value>
     </values>
     <values>
         <field>Result_Key_Field__c</field>
-        <value xsi:type="xsd:string">GEN_STAT</value>
+        <value xsi:type="xsd:string">NAME</value>
     </values>
     <values>
         <field>Query_Template__c</field>
@@ -28,15 +32,15 @@
     </values>
     <values>
         <field>Named_Credential__c</field>
-        <value xsi:type="xsd:string">NEPA_GIS_FWS</value>
+        <value xsi:type="xsd:string">NEPA_GIS_EPA_GeoPub</value>
     </values>
     <values>
         <field>Extraordinary_Circumstances_Keyword__c</field>
-        <value xsi:type="xsd:string">CRITICAL HABITAT,DESIGNATED,PROPOSED</value>
+        <value xsi:type="xsd:string">TRIBAL,INDIAN,NON-ATTAINMENT,NONATTAINMENT,WILDERNESS</value>
     </values>
     <values>
         <field>Priority__c</field>
-        <value xsi:type="xsd:decimal">30</value>
+        <value xsi:type="xsd:decimal">35</value>
     </values>
     <values>
         <field>Active__c</field>

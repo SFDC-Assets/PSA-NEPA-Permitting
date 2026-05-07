@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>WO_Subject_Template__c</fullName>
+    <label>WO Subject Template</label>
+    <type>Text</type>
+    <length>255</length>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <description>Template string for WorkOrder.Subject. Supports {LayerLabel} and {ProjectName} as substitution tokens, replaced at Work Order creation time. Example: "Hydrology and Water Quality Assessment - {ProjectName}".</description>
+</CustomField>

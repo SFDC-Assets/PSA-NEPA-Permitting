@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_process__c</fullName>
+    <label>NEPA Process</label>
+    <type>Lookup</type>
+    <referenceTo>IndividualApplication</referenceTo>
+    <relationshipLabel>NEPA Work Orders</relationshipLabel>
+    <relationshipName>NEPA_Work_Orders</relationshipName>
+    <required>false</required>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>The NEPA IndividualApplication (review process) this field-survey Work Order supports. Populated by NEPA_Work_Order_Generator at creation. Enables reporting work orders by review type, stage, and process status. Cleared (SetNull) if the IndividualApplication is deleted.</description>
+    <inlineHelpText>The NEPA review process (EA, EIS, CE) this Work Order supports.</inlineHelpText>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+</CustomField>

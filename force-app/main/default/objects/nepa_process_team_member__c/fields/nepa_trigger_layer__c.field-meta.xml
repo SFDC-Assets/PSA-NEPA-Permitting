@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_trigger_layer__c</fullName>
+    <label>Trigger Layer</label>
+    <type>Lookup</type>
+    <referenceTo>nepa_detected_protection_layer__c</referenceTo>
+    <relationshipLabel>Triggered Team Assignments</relationshipLabel>
+    <relationshipName>Triggered_Team_Assignments</relationshipName>
+    <required>false</required>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>The nepa_detected_protection_layer__c record whose detection triggered this specialist's auto-assembly onto the process team. Provides a full audit trail: which federal protection layer was found at the project location that required this discipline. Null for manually added team members.</description>
+    <inlineHelpText>The detected protection layer (e.g., NWI Wetlands, USFWS Critical Habitat) that triggered this specialist's assignment to the team.</inlineHelpText>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+</CustomField>

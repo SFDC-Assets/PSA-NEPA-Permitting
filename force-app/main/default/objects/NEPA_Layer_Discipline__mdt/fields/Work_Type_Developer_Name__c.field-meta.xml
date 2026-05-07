@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Work_Type_Developer_Name__c</fullName>
+    <label>Work Type Developer Name</label>
+    <type>Text</type>
+    <length>80</length>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <description>Matches WorkType.ExternalId for the field survey Work Order type to create. Used by NEPA_Work_Order_Generator to look up the correct WorkType record. Example: DEMO_WT_001 (Hydrology and Water Quality Assessment).</description>
+</CustomField>

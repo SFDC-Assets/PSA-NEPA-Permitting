@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>NEPA Detected Protection Layer</label>
+    <pluralLabel>NEPA Detected Protection Layers</pluralLabel>
+    <description>One record per detected federal protection layer per GIS proximity run. Replaces the unstructured nepa_protection_areas__c text summary with queryable records. Used by NEPA_Team_Assembly_Orchestrator to assemble specialist teams and create field-survey Work Orders. Add new NEPA_Layer_Discipline__mdt records to route new layers to disciplines without modifying flows.</description>
+    <nameField>
+        <label>Detection Number</label>
+        <type>AutoNumber</type>
+        <displayFormat>DL-{0000}</displayFormat>
+        <trackHistory>false</trackHistory>
+    </nameField>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <sharingModel>ControlledByParent</sharingModel>
+    <enableHistory>false</enableHistory>
+    <enableActivities>false</enableActivities>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableFeeds>false</enableFeeds>
+    <enableBulkApi>true</enableBulkApi>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+</CustomObject>

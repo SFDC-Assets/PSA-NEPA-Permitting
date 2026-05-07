@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Discipline__c</fullName>
+    <label>Discipline</label>
+    <type>Text</type>
+    <length>100</length>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <description>Specialist discipline required for field review of this protection layer. Must exactly match ServiceResource.nepa_discipline__c. Used by NEPA_Team_Assembly_Orchestrator to find the right resource via Get Records filter. Example values: Hydrologist, Wildlife Biologist (Sage-Grouse), Geologist, Botanist, NEPA Specialist.</description>
+</CustomField>

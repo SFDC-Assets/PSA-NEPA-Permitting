@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>GIS_Layer_Developer_Name__c</fullName>
+    <label>GIS Layer Developer Name</label>
+    <type>Text</type>
+    <length>80</length>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <description>Must exactly match the DeveloperName of a NEPA_GIS_Layer__mdt record. This is the foreign key used by NEPA_Team_Assembly_Orchestrator to route a detected protection layer to the correct specialist discipline. Case-sensitive.</description>
+</CustomField>

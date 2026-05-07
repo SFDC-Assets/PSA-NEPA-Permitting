@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_gis_run_timestamp__c</fullName>
+    <label>GIS Run Timestamp</label>
+    <type>DateTime</type>
+    <required>false</required>
+    <description>Timestamp when the NEPA_GIS_Proximity_IP ran and produced this detection. Updated in place on each re-run via upsert, so always reflects the most recent check. Mirrors Program.nepa_gis_last_checked__c.</description>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+</CustomField>
