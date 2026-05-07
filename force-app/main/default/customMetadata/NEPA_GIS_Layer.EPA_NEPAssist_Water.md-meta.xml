@@ -3,10 +3,6 @@
     <label>EPA NEPAssist Water Resources</label>
     <protected>false</protected>
     <values>
-        <field>GIS_Layer_Developer_Name__c</field>
-        <value xsi:type="xsd:string">EPA_NEPAssist_Water</value>
-    </values>
-    <values>
         <field>Service_URL__c</field>
         <value xsi:type="xsd:string">https://geopub.epa.gov/ArcGIS/rest/services/NEPAssist/Water/MapServer</value>
     </values>

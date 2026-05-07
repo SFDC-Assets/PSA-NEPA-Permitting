@@ -3,10 +3,6 @@
     <label>NHD Flowlines</label>
     <protected>false</protected>
     <values>
-        <field>GIS_Layer_Developer_Name__c</field>
-        <value xsi:type="xsd:string">NHD_Flowlines</value>
-    </values>
-    <values>
         <field>Service_URL__c</field>
         <value xsi:type="xsd:string">https://hydro.nationalmap.gov/arcgis/rest/services/nhd/MapServer</value>
     </values>

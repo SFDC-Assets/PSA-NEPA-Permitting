@@ -232,6 +232,8 @@ deploy "object schemas" \
     --metadata "CustomObject:NEPA_Statute_Risk_Weight__mdt" \
     --metadata "CustomObject:NEPA_GIS_Layer__mdt" \
     --metadata "CustomObject:NEPA_Plaintiff_Profile__mdt" \
+    --metadata "CustomObject:NEPA_Layer_Discipline__mdt" \
+    --metadata "CustomObject:nepa_detected_protection_layer__c" \
     --target-org "$TARGET_ORG"
 
 # ── phase 2: custom fields on all objects ─────────────────────────────────────
@@ -326,11 +328,30 @@ FLOWS=(
     NEPA_Error_Logger
     NEPA_Error_Event_Handler
     NEPA_FlowError_CountIncrementer
+    NEPA_Work_Order_Generator
+    NEPA_Team_Assembly_Orchestrator
+    NEPA_WO_Milestone_Setter
 )
 
 for flow in "${FLOWS[@]}"; do
     deploy_flow "$flow"
 done
+
+# ── phase 8b: action plan templates ──────────────────────────────────────────
+phase_header "Phase 8b: Action Plan Templates"
+deploy "action plan templates" \
+    --source-dir force-app/main/default/actionPlanTemplates \
+    --target-org "$TARGET_ORG"
+
+# ── phase 8c: omniprocess + omnidatatransforms ────────────────────────────────
+# Deploy DataRaptors before the IP that calls them, then the IP.
+phase_header "Phase 8c: OmniStudio DataRaptors and Integration Procedures"
+deploy "omnidatatransforms" \
+    --source-dir force-app/main/default/omniDataTransforms \
+    --target-org "$TARGET_ORG"
+deploy "omniprocesses" \
+    --source-dir force-app/main/default/omniProcesses \
+    --target-org "$TARGET_ORG"
 
 # ── phase 9: custom tabs ──────────────────────────────────────────────────────
 phase_header "Phase 9: Custom tabs"
@@ -438,6 +459,9 @@ else
     echo "       NEPA_Permit_Coordinator"
     echo "       NEPA_FRA_Page_Limit_Setter"
     echo "       NEPA_GIS_Proximity_Check"
+    echo "       NEPA_Work_Order_Generator"
+    echo "       NEPA_Team_Assembly_Orchestrator"
+    echo "       NEPA_WO_Milestone_Setter"
     echo "       NEPA_EIS_Section_Assembler"
     echo "       NEPA_EIS_Section_Draft_Trigger"
     echo "       NEPA_AdminRecord_AutoCreate"
@@ -450,6 +474,9 @@ else
     echo ""
     echo "    4. Seed demo data (optional):"
     echo "       sf apex run --file scripts/seed-sample-data.apex --target-org $TARGET_ORG"
+    echo ""
+    echo "    4b. Seed ServiceResource discipline values (GIS team assembly):"
+    echo "       sf apex run --file demo/import_data/21_postload_discipline.apex --target-org $TARGET_ORG"
     echo ""
     echo "    5. OmniStudio (if needed):"
     echo "       sf project deploy start --source-dir force-app/main/default/omniDataTransforms --target-org $TARGET_ORG"

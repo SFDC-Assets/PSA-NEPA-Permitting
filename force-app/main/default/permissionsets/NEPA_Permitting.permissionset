@@ -2,194 +2,293 @@
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <description>Provides access to NEPA Permitting compliant data model. Implements CEQ NEPA and Permitting Data and Technology Standard v1.2. Requires additional Public Sector Access permission set to be assigned.</description>
     <!-- IndividualApplication (Entity 2: Process) fields -->
-    <!-- P2 Data Quality fields -->
+    <!-- Program (Entity 1: Project) fields -->
+    <!-- nepa_engagement__c (Entity 5: Public Engagement Events) -->
+    <!-- CE Screening fields (Priority 2: Automated CE Screening) -->
+    <!-- nepa_action_type__c, nepa_disturbance_acres__c, nepa_extraordinary_circumstances__c are editable: applicant/PM fills these in at intake -->
+    <!-- Junction object fields: all junction fields (Agency__c, Processes__c, nepa_Project__c, nepa_role__c) are required — omitted from fieldPermissions -->
+    <!-- Mandate 1: Comment period gating fields -->
+    <!-- Mandate 3: APA expedited review penalty fields -->
+    <!-- nepa_review_timeline_type__c is editable: PM sets this at intake -->
+    <!-- Phase 5: nepa_ar_export__c fields — status written by batch; PM can create/read; counsel can read -->
+    <!-- NEPA_Flow_Error__c fields (written by flows, readable by admins) -->
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>NEPA Permitting</label>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_decision_document_type__c</field>
+        <field>ApplicationTimeline.nepa_assigned_entity__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_total_pages__c</field>
+        <field>ApplicationTimeline.nepa_data_record_version__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApplicationTimeline.nepa_data_source_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApplicationTimeline.nepa_data_source_system__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApplicationTimeline.nepa_end_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApplicationTimeline.nepa_event_description__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- ApplicationTimeline (Entity 6: Case Events) custom fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApplicationTimeline.nepa_event_type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApplicationTimeline.nepa_following_segment__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApplicationTimeline.nepa_outcome__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApplicationTimeline.nepa_parent_case_event__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApplicationTimeline.nepa_public_access__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApplicationTimeline.nepa_record_owner_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApplicationTimeline.nepa_related_engagement__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApplicationTimeline.nepa_related_process__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApplicationTimeline.nepa_retrieved_timestamp__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApplicationTimeline.nepa_source__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApplicationTimeline.nepa_start_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApplicationTimeline.nepa_status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApplicationTimeline.nepa_tier__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.nepa_agency_adopted_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- Phase 5: AR export index fields on ContentVersion (written by batch job) -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>ContentVersion.nepa_ar_included__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>IndividualApplication.nepa_pages_missing__c</field>
+        <field>ContentVersion.nepa_ar_index_number__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_ce_rationale_supplemental__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- P6 Phase 1 Completion fields -->
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_plaintiff_risk_flag__c</field>
+        <field>ContentVersion.nepa_contributing_agencies__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_connected_actions_identified__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- P5 Litigation Guardrail fields -->
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_small_sample_warning__c</field>
+        <field>ContentVersion.nepa_data_record_version__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_waiver_invoked__c</field>
+        <field>ContentVersion.nepa_data_source_agency__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_waiver_statute_cite__c</field>
+        <field>ContentVersion.nepa_data_source_system__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- Phase 5: Sponsor chain-of-custody fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.nepa_document_custody__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_tiering_to_prior_eis__c</field>
+        <field>ContentVersion.nepa_document_files__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_prior_nepa_date__c</field>
+        <field>ContentVersion.nepa_document_revision__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_supplementation_review_complete__c</field>
+        <field>ContentVersion.nepa_document_summary__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_esa_consultation_status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- AI AUP compliance fields -->
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_ce_pathway_recommendation__c</field>
+        <field>ContentVersion.nepa_document_type__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>IndividualApplication.nepa_risk_score_is_ai__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- Phase 1 Risk Intelligence fields (read-only — written by Flows) -->
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_comment_period_days__c</field>
+        <field>ContentVersion.nepa_draft_source__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>IndividualApplication.nepa_risk_score__c</field>
+        <field>ContentVersion.nepa_fra_overlimit__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>IndividualApplication.nepa_risk_tier__c</field>
+        <field>ContentVersion.nepa_fra_page_limit__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <!-- Phase 5: FRA page limit fields — page_limit and fra_overlimit set by flow/formula (read-only); page_count and is_appendix editable -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.nepa_is_appendix__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.nepa_main_document__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.nepa_notes__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.nepa_page_count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.nepa_prepared_by__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.nepa_public_access__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.nepa_publish_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.nepa_record_category__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.nepa_record_owner_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.nepa_related_case_event__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- ContentVersion (Entity 3: Documents) fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.nepa_related_document__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.nepa_retrieved_timestamp__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.nepa_revision_number__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- Mandate 4: AI EIS draft document fields (read-only — written by NEPA_EIS_Section_Assembler Flow) -->
     <fieldPermissions>
         <editable>false</editable>
-        <field>IndividualApplication.nepa_risk_score_factors__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_risk_score_updated__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_predicted_challenge_grounds__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_challenge_prediction_notes__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_defensibility_score__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_defensibility_gaps__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_defensibility_updated__c</field>
+        <field>ContentVersion.nepa_section_type__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_completion_date__c</field>
+        <field>ContentVersion.nepa_sponsor_submitted_by__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_federal_unique_id__c</field>
+        <field>ContentVersion.nepa_status__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_joint_lead_agency__c</field>
+        <field>ContentVersion.nepa_supplement_number__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_process_outcome__c</field>
+        <field>ContentVersion.nepa_url__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_process_stage__c</field>
+        <field>ContentVersion.nepa_volume_title__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <!-- nepa_screening_confidence__c and nepa_classification_basis__c are read-only: written by NEPA_CE_Screener Flow -->
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_public_comment_period_end_date__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>IndividualApplication.nepa_public_comment_period_start__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>IndividualApplication.nepa_purpose_need__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>IndividualApplication.nepa_related_project__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>IndividualApplication.nepa_start_date__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>IndividualApplication.nepa_review_type__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>IndividualApplication.nepa_process_status__c</field>
+        <field>IndividualApplication.nepa_action_type__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -199,22 +298,80 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_process_code__c</field>
+        <field>IndividualApplication.nepa_applicant_contact__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- AI AUP compliance fields -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_ce_pathway_recommendation__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_description__c</field>
+        <field>IndividualApplication.nepa_ce_rationale_supplemental__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_challenge_prediction_notes__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_classification_basis__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_clock_pause_days__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_notes__c</field>
+        <field>IndividualApplication.nepa_clock_pause_end__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_parent_process__c</field>
+        <field>IndividualApplication.nepa_clock_pause_reason__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_clock_pause_start__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_clock_paused__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- P5 Permit Coordinator fields (read-only — written by NEPA_Permit_Coordinator Flow) -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_co_permits_required__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- Phase 1 Risk Intelligence fields (read-only — written by Flows) -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_comment_period_days__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_completion_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_connected_actions_identified__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_cooperating_agencies__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -233,8 +390,216 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_days_in_current_stage__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- P2 Data Quality fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_decision_document_type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_defensibility_gaps__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_defensibility_score__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_defensibility_updated__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_description__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_disturbance_acres__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_esa_consultation_status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_estimated_completion_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_expedited_risk_penalty_applied__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_extraordinary_circumstances__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_federal_unique_id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_flow_error_count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_fra_adjusted_deadline__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- Phase 5: FRA statutory clock fields — nepa_clock_pause_days__c and nepa_fra_adjusted_deadline__c are formulas (read-only) -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_fra_statutory_deadline__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_joint_lead_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- Priority 6: Workflow Orchestration fields (read-only — written by NEPA_Stage_Gate Flow) -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_last_stage_transition__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_litigation_ai_confidence__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_missing_documents__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_notes__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_pages_missing__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_parent_process__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- P6 Phase 1 Completion fields -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_plaintiff_risk_flag__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- IndividualApplication Tier 3 wiring fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_polygon__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- nepa_portal_comment_intake_open__c is a formula checkbox — read-only by nature -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_portal_comment_intake_open__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_predicted_challenge_grounds__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_prior_nepa_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_process_code__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_process_outcome__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_process_stage__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_process_status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_processing_status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- AI Governance fields: OMB M-24-10 structured output and separation of AI recommendation from human determination -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_projected_completion_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_public_comment_period_end_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_public_comment_period_start__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_purpose_need__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- Priority 9: Administrative Record Completeness fields (read-only — written by NEPA_Administrative_Record_Checker Flow) -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_record_completeness__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_record_completeness_updated__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>IndividualApplication.nepa_record_owner_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_regulatory_citation__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_related_project__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -242,16 +607,170 @@
         <field>IndividualApplication.nepa_retrieved_timestamp__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- Program (Entity 1: Project) fields -->
-    <!-- P2 Data Quality fields -->
+    <!-- nepa_expedited_risk_penalty_applied__c is read-only: written by NEPA_Litigation_Risk_Scorer Flow -->
     <fieldPermissions>
         <editable>true</editable>
-        <field>Program.nepa_primary_sector__c</field>
+        <field>IndividualApplication.nepa_review_timeline_type__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Program.nepa_sponsor_type__c</field>
+        <field>IndividualApplication.nepa_review_type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_rfi_count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_risk_score__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_risk_score_factors__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_risk_score_is_ai__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_risk_score_updated__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_risk_tier__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_screener_last_run__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_screening_confidence__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- IndividualApplication SLA / intake / operational fields -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_sla_due_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_sla_overdue__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_sla_warning_sent__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- P5 Litigation Guardrail fields -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_small_sample_warning__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_stage_gate_processed__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_start_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_submission_complete__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_supplementation_review_complete__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_target_completion_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_tiering_to_prior_eis__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- Priority 4: Timeline Risk fields (read-only — written by NEPA_Timeline_Risk_Assessor Flow; nepa_days_in_current_stage__c is formula) -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_timeline_risk_tier__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_total_pages__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_waiver_invoked__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_waiver_statute_cite__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>NEPA_Flow_Error__c.nepa_error_context__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- Note: nepa_flow_api_name__c is required on NEPA_Flow_Error__c and cannot be listed in fieldPermissions -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>NEPA_Flow_Error__c.nepa_error_message__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>NEPA_Flow_Error__c.nepa_failed_step__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>NEPA_Flow_Error__c.nepa_occurred_at__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>NEPA_Flow_Error__c.nepa_record_id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>NEPA_Flow_Error__c.nepa_running_user__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Program.nepa_adjacent_statutes__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- CE Screening field (Priority 2) -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Program.nepa_applicant_naics__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <!-- Phase 1 Risk Intelligence fields -->
@@ -262,17 +781,53 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Program.nepa_adjacent_statutes__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
         <field>Program.nepa_current_status__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Program.nepa_data_record_version__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Program.nepa_data_source_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Program.nepa_data_source_system__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Program.nepa_extraordinary_circumstances__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Program.nepa_funding__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Program.nepa_gis_last_checked__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Program.nepa_gis_proximity_complete__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Program.nepa_lead_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- Program roll-up from litigation -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Program.nepa_litigation_count__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -282,7 +837,33 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Program.nepa_location_lat__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Program.nepa_location_lon__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Program.nepa_location_text__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Program.nepa_parent_project__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Program.nepa_polygon__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- P2 Data Quality fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Program.nepa_primary_sector__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -312,62 +893,12 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Program.nepa_start_date__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
         <field>Program.nepa_project_type__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Program.nepa_funding__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Program.nepa_location_lat__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Program.nepa_location_lon__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Program.nepa_location_text__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
         <field>Program.nepa_protection_areas__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Program.nepa_gis_last_checked__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Program.nepa_extraordinary_circumstances__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Program.nepa_data_record_version__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Program.nepa_data_source_agency__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Program.nepa_data_source_system__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -381,124 +912,13 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
-        <field>Program.nepa_gis_proximity_complete__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- ContentVersion (Entity 3: Documents) fields -->
-    <fieldPermissions>
         <editable>true</editable>
-        <field>ContentVersion.nepa_related_document__c</field>
+        <field>Program.nepa_sponsor_type__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>ContentVersion.nepa_notes__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_document_revision__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_document_type__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_prepared_by__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_public_access__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_publish_date__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_revision_number__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_supplement_number__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_volume_title__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_url__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_related_case_event__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_contributing_agencies__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_document_summary__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_document_files__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_record_category__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_data_record_version__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_data_source_agency__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_data_source_system__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_record_owner_agency__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_retrieved_timestamp__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_main_document__c</field>
+        <field>Program.nepa_start_date__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <!-- PublicComplaint (Entity 4: Comments) fields -->
@@ -509,22 +929,28 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>PublicComplaint.nepa_parent_document__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
         <field>PublicComplaint.nepa_agency_response__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <!-- AI Triage Audit Trail fields (OMB M-24-10) -->
     <fieldPermissions>
         <editable>true</editable>
-        <field>PublicComplaint.nepa_public_access__c</field>
+        <field>PublicComplaint.nepa_ai_confidence_score__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>PublicComplaint.nepa_ai_substantive_recommendation__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>PublicComplaint.nepa_organization__c</field>
+        <field>PublicComplaint.nepa_ai_triage_rationale__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_ai_triage_timestamp__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -533,18 +959,13 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
-        <field>PublicComplaint.nepa_date_submitted__c</field>
+        <editable>false</editable>
+        <field>PublicComplaint.nepa_cluster_id__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>PublicComplaint.nepa_document_location_ref__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>PublicComplaint.nepa_public_source__c</field>
+        <field>PublicComplaint.nepa_comment_body__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -564,7 +985,94 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>PublicComplaint.nepa_date_submitted__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_document_location_ref__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_email__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_human_override__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>PublicComplaint.nepa_is_substantive__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_legal_review_status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>PublicComplaint.nepa_litigation_threat_basis__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- Phase 5: Vermont Yankee litigation threat fields — flag and basis written by agent/flow; legal_review_status editable by counsel -->
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>PublicComplaint.nepa_litigation_threat_flag__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_organization__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_parent_document__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- PublicComplaint PII redaction fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_pii_redacted__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_public_access__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_public_source__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>PublicComplaint.nepa_record_owner_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_redacted_body__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_related_process__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_requires_human_review__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_response_status__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -578,516 +1086,10 @@
         <field>PublicComplaint.nepa_sentiment__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>PublicComplaint.nepa_is_substantive__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>PublicComplaint.nepa_cluster_id__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>PublicComplaint.nepa_response_status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>PublicComplaint.nepa_comment_body__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>PublicComplaint.nepa_email__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- AI Triage Audit Trail fields (OMB M-24-10) -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>PublicComplaint.nepa_ai_confidence_score__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>PublicComplaint.nepa_ai_triage_rationale__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>PublicComplaint.nepa_requires_human_review__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>PublicComplaint.nepa_human_override__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>PublicComplaint.nepa_ai_triage_timestamp__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- nepa_engagement__c (Entity 5: Public Engagement Events) -->
-    <!-- nepa_process__c, nepa_engagement_type__c, nepa_start_datetime__c are required fields — omitted from fieldPermissions -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_end_datetime__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_location_format__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_location__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_attendance_count__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_public_access__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_notes__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_data_record_version__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_data_source_agency__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_data_source_system__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_record_owner_agency__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_retrieved_timestamp__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- ApplicationTimeline (Entity 6: Case Events) custom fields -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ApplicationTimeline.nepa_event_type__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ApplicationTimeline.nepa_event_description__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ApplicationTimeline.nepa_source__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ApplicationTimeline.nepa_tier__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ApplicationTimeline.nepa_status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ApplicationTimeline.nepa_outcome__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ApplicationTimeline.nepa_assigned_entity__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ApplicationTimeline.nepa_following_segment__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ApplicationTimeline.nepa_public_access__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ApplicationTimeline.nepa_parent_case_event__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ApplicationTimeline.nepa_related_engagement__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ApplicationTimeline.nepa_data_record_version__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ApplicationTimeline.nepa_data_source_agency__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ApplicationTimeline.nepa_data_source_system__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ApplicationTimeline.nepa_record_owner_agency__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ApplicationTimeline.nepa_retrieved_timestamp__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ApplicationTimeline.nepa_start_date__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ApplicationTimeline.nepa_end_date__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ApplicationTimeline.nepa_related_process__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- Priority 6: Workflow Orchestration fields (read-only — written by NEPA_Stage_Gate Flow) -->
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_last_stage_transition__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>IndividualApplication.nepa_target_completion_date__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- Priority 4: Timeline Risk fields (read-only — written by NEPA_Timeline_Risk_Assessor Flow; nepa_days_in_current_stage__c is formula) -->
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_timeline_risk_tier__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_estimated_completion_date__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_days_in_current_stage__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- Priority 9: Administrative Record Completeness fields (read-only — written by NEPA_Administrative_Record_Checker Flow) -->
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_record_completeness__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_missing_documents__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_record_completeness_updated__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- CE Screening fields (Priority 2: Automated CE Screening) -->
-    <!-- nepa_action_type__c, nepa_disturbance_acres__c, nepa_extraordinary_circumstances__c are editable: applicant/PM fills these in at intake -->
-    <!-- nepa_screening_confidence__c and nepa_classification_basis__c are read-only: written by NEPA_CE_Screener Flow -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>IndividualApplication.nepa_action_type__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>IndividualApplication.nepa_disturbance_acres__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>IndividualApplication.nepa_regulatory_citation__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_screening_confidence__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>IndividualApplication.nepa_extraordinary_circumstances__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_classification_basis__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- Program roll-up from litigation -->
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>Program.nepa_litigation_count__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Program.nepa_polygon__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- CE Screening field (Priority 2) -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Program.nepa_applicant_naics__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- nepa_litigation__c (PermitTEC litigation cases) fields -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_litigation__c.nepa_case_title__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_litigation__c.nepa_citation__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_litigation__c.nepa_court__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_litigation__c.nepa_circuit__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_litigation__c.nepa_plaintiff__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_litigation__c.nepa_defendant__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_litigation__c.nepa_ruling_date__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_litigation__c.nepa_prevailing_party__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_litigation__c.nepa_in_nepatec__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_litigation__c.nepa_contested_project_name__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_litigation__c.nepa_llm_keywords__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_litigation__c.nepa_related_project__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_litigation__c.nepa_data_source_system__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_litigation__c.nepa_data_record_version__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_litigation__c.nepa_extraction_quality__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- Junction object fields: all junction fields (Agency__c, Processes__c, nepa_Project__c, nepa_role__c) are required — omitted from fieldPermissions -->
-    <!-- nepa_decision_modification__c — nepa_process__c, nepa_modification_type__c, nepa_decision_element_affected__c, nepa_attribution_type__c are required — omitted per Salesforce FLS rules for required fields -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_modification__c.nepa_attributed_cluster_id__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_modification__c.nepa_attributed_cluster_count__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_modification__c.nepa_final_eis_section__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_modification__c.nepa_modification_date__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_modification__c.nepa_recorded_by__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- nepa_comment_attribution__c — junction; nepa_modification__c and nepa_comment__c are required — omitted per Salesforce FLS rules for required fields -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_comment_attribution__c.nepa_attribution_note__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- nepa_project_analogous_case__c — junction; nepa_project__c is MasterDetail (required/system), nepa_litigation__c is Lookup -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_project_analogous_case__c.nepa_litigation__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>nepa_project_analogous_case__c.nepa_similarity_score__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_project_analogous_case__c.nepa_match_basis__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_project_analogous_case__c.nepa_annotated_by__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_project_analogous_case__c.nepa_coordinator_notes__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- nepa_process_related_agencies__c interagency coordination fields -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_process_related_agencies__c.nepa_input_due_date__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_process_related_agencies__c.nepa_input_status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- nepa_project_agency_relationship__c fields -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_project_agency_relationship__c.nepa_Project__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- nepa_engagement__c core fields -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_document__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- nepa_engagement__c engagement quality fields -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_registered_count__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_comments_received_count__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_advance_notice_days__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_ada_accessible__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_ada_accommodations__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_translation_services__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_interpreter_languages__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_notification_channels__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_transcript_available__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
     <!-- RegulatoryCode (CEQ Entity 9) custom fields -->
     <fieldPermissions>
         <editable>true</editable>
         <field>RegulatoryCode.nepa_compliance_requirements__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>RegulatoryCode.nepa_text_content__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1115,333 +1117,46 @@
         <field>RegulatoryCode.nepa_retrieved_timestamp__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_decision_element__c (MFR #3/#4) fields -->
     <fieldPermissions>
         <editable>true</editable>
-        <field>nepa_decision_element__c.nepa_legal_reference__c</field>
+        <field>RegulatoryCode.nepa_text_content__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <!-- ServiceResource NEPA discipline field -->
     <fieldPermissions>
         <editable>true</editable>
-        <field>nepa_decision_element__c.nepa_category__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_element__c.nepa_review_type__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_element__c.nepa_threshold__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_element__c.nepa_threshold_unit__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_element__c.nepa_spatial_indicator__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_element__c.nepa_spatial_reference__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_element__c.nepa_evaluation_method__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_element__c.nepa_expected_data__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_element__c.nepa_active__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- nepa_gis_data_element__c (MFR #6) fields -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_gis_data_element__c.nepa_polygon__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_gis_data_element__c.nepa_format__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_gis_data_element__c.nepa_access_method__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_gis_data_element__c.nepa_coordinate_system__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_gis_data_element__c.nepa_bounding_box__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_gis_data_element__c.nepa_purpose__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_gis_data_element__c.nepa_database_reference__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_gis_data_element__c.nepa_access_information__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- IndividualApplication Tier 3 wiring fields -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>IndividualApplication.nepa_polygon__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- Mandate 1: Comment period gating fields -->
-    <!-- nepa_portal_comment_intake_open__c is a formula checkbox — read-only by nature -->
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_portal_comment_intake_open__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- IndividualApplication SLA / intake / operational fields -->
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_sla_due_date__c</field>
+        <field>ServiceResource.nepa_discipline__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
-        <field>IndividualApplication.nepa_sla_warning_sent__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_sla_overdue__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_screener_last_run__c</field>
+        <field>WorkOrder.nepa_auto_generated__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_applicant_contact__c</field>
+        <field>WorkOrder.nepa_discipline__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- WorkOrder NEPA fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>WorkOrder.nepa_process__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_submission_complete__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_rfi_count__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_flow_error_count__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- P5 Permit Coordinator fields (read-only — written by NEPA_Permit_Coordinator Flow) -->
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_co_permits_required__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_cooperating_agencies__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>PublicComplaint.nepa_related_process__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- Mandate 3: APA expedited review penalty fields -->
-    <!-- nepa_review_timeline_type__c is editable: PM sets this at intake -->
-    <!-- nepa_expedited_risk_penalty_applied__c is read-only: written by NEPA_Litigation_Risk_Scorer Flow -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>IndividualApplication.nepa_review_timeline_type__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_expedited_risk_penalty_applied__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- Phase 5: FRA statutory clock fields — nepa_clock_pause_days__c and nepa_fra_adjusted_deadline__c are formulas (read-only) -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>IndividualApplication.nepa_fra_statutory_deadline__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>IndividualApplication.nepa_clock_paused__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>IndividualApplication.nepa_clock_pause_start__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>IndividualApplication.nepa_clock_pause_end__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_clock_pause_days__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_fra_adjusted_deadline__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>IndividualApplication.nepa_clock_pause_reason__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_processing_status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_stage_gate_processed__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- AI Governance fields: OMB M-24-10 structured output and separation of AI recommendation from human determination -->
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_projected_completion_date__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>IndividualApplication.nepa_litigation_ai_confidence__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>PublicComplaint.nepa_ai_substantive_recommendation__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- Phase 5: Vermont Yankee litigation threat fields — flag and basis written by agent/flow; legal_review_status editable by counsel -->
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>PublicComplaint.nepa_litigation_threat_flag__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>PublicComplaint.nepa_litigation_threat_basis__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>PublicComplaint.nepa_legal_review_status__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- PublicComplaint PII redaction fields -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>PublicComplaint.nepa_pii_redacted__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>PublicComplaint.nepa_redacted_body__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- Phase 5: FRA page limit fields — page_limit and fra_overlimit set by flow/formula (read-only); page_count and is_appendix editable -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_is_appendix__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_page_count__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>ContentVersion.nepa_fra_page_limit__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>ContentVersion.nepa_fra_overlimit__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- Phase 5: Sponsor chain-of-custody fields -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_document_custody__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_sponsor_submitted_by__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_agency_adopted_date__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- Phase 5: AR export index fields on ContentVersion (written by batch job) -->
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>ContentVersion.nepa_ar_included__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>ContentVersion.nepa_ar_index_number__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- Phase 5: nepa_ar_export__c fields — status written by batch; PM can create/read; counsel can read -->
-    <!-- nepa_process__c, nepa_export_status__c, nepa_export_type__c are required fields — omitted per Salesforce FLS rules for required fields -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_ar_export__c.nepa_requested_date__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>nepa_ar_export__c.nepa_completed_date__c</field>
+        <field>WorkOrder.nepa_trigger_layer__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
         <field>nepa_ar_export__c.nepa_comment_count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>nepa_ar_export__c.nepa_completed_date__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1464,47 +1179,258 @@
         <field>nepa_ar_export__c.nepa_requested_by__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- Mandate 4: AI EIS draft document fields (read-only — written by NEPA_EIS_Section_Assembler Flow) -->
+    <!-- nepa_process__c, nepa_export_status__c, nepa_export_type__c are required fields — omitted per Salesforce FLS rules for required fields -->
     <fieldPermissions>
-        <editable>false</editable>
-        <field>ContentVersion.nepa_section_type__c</field>
+        <editable>true</editable>
+        <field>nepa_ar_export__c.nepa_requested_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- nepa_comment_attribution__c — junction; nepa_modification__c and nepa_comment__c are required — omitted per Salesforce FLS rules for required fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_comment_attribution__c.nepa_attribution_note__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
-        <field>ContentVersion.nepa_draft_source__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- NEPA_Flow_Error__c fields (written by flows, readable by admins) -->
-    <!-- Note: nepa_flow_api_name__c is required on NEPA_Flow_Error__c and cannot be listed in fieldPermissions -->
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>NEPA_Flow_Error__c.nepa_error_message__c</field>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_active__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
-        <field>NEPA_Flow_Error__c.nepa_record_id__c</field>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_category__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
-        <field>NEPA_Flow_Error__c.nepa_occurred_at__c</field>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_evaluation_method__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
-        <field>NEPA_Flow_Error__c.nepa_running_user__c</field>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_expected_data__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- nepa_decision_element__c (MFR #3/#4) fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_legal_reference__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
-        <field>NEPA_Flow_Error__c.nepa_failed_step__c</field>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_review_type__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_spatial_indicator__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_spatial_reference__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_threshold__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_threshold_unit__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_modification__c.nepa_attributed_cluster_count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- nepa_decision_modification__c — nepa_process__c, nepa_modification_type__c, nepa_decision_element_affected__c, nepa_attribution_type__c are required — omitted per Salesforce FLS rules for required fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_modification__c.nepa_attributed_cluster_id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_modification__c.nepa_final_eis_section__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_modification__c.nepa_modification_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_modification__c.nepa_recorded_by__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_detected_protection_layer__c.nepa_ec_triggered__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_detected_protection_layer__c.nepa_feature_count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_detected_protection_layer__c.nepa_feature_name__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_detected_protection_layer__c.nepa_gis_run_timestamp__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_detected_protection_layer__c.nepa_is_hit__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- nepa_detected_protection_layer__c fields — nepa_program__c (MasterDetail) omitted: system-managed -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_detected_protection_layer__c.nepa_layer_label__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- nepa_upsert_key__c: formula field — read-only, set by system -->
+    <fieldPermissions>
         <editable>false</editable>
-        <field>NEPA_Flow_Error__c.nepa_error_context__c</field>
+        <field>nepa_detected_protection_layer__c.nepa_upsert_key__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_ada_accessible__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_ada_accommodations__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_advance_notice_days__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_attendance_count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_comments_received_count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_data_record_version__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_data_source_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_data_source_system__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- nepa_engagement__c core fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_document__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- nepa_process__c, nepa_engagement_type__c, nepa_start_datetime__c are required fields — omitted from fieldPermissions -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_end_datetime__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_interpreter_languages__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_location__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_location_format__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_notes__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_notification_channels__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_public_access__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_record_owner_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- nepa_engagement__c engagement quality fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_registered_count__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_retrieved_timestamp__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_transcript_available__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_translation_services__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data_element__c.nepa_access_information__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data_element__c.nepa_access_method__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data_element__c.nepa_bounding_box__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data_element__c.nepa_coordinate_system__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <!-- nepa_gis_data_element__c provenance fields (CEQ Entity 7) -->
@@ -1525,6 +1451,27 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>nepa_gis_data_element__c.nepa_database_reference__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data_element__c.nepa_format__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- nepa_gis_data_element__c (MFR #6) fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data_element__c.nepa_polygon__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data_element__c.nepa_purpose__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>nepa_gis_data_element__c.nepa_record_owner_agency__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1533,25 +1480,91 @@
         <field>nepa_gis_data_element__c.nepa_retrieved_timestamp__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_process_team_member__c (CEQ Entity 8) — all fields -->
+    <!-- nepa_litigation__c (PermitTEC litigation cases) fields -->
     <fieldPermissions>
         <editable>true</editable>
-        <field>nepa_process_team_member__c.nepa_user__c</field>
+        <field>nepa_litigation__c.nepa_case_title__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>nepa_process_team_member__c.nepa_agency__c</field>
+        <field>nepa_litigation__c.nepa_circuit__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>nepa_process_team_member__c.nepa_start_date__c</field>
+        <field>nepa_litigation__c.nepa_citation__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>nepa_process_team_member__c.nepa_end_date__c</field>
+        <field>nepa_litigation__c.nepa_contested_project_name__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_litigation__c.nepa_court__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_litigation__c.nepa_data_record_version__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_litigation__c.nepa_data_source_system__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_litigation__c.nepa_defendant__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_litigation__c.nepa_extraction_quality__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_litigation__c.nepa_in_nepatec__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_litigation__c.nepa_llm_keywords__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_litigation__c.nepa_plaintiff__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_litigation__c.nepa_prevailing_party__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_litigation__c.nepa_related_project__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_litigation__c.nepa_ruling_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- nepa_process_related_agencies__c interagency coordination fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_related_agencies__c.nepa_input_due_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_related_agencies__c.nepa_input_status__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1561,7 +1574,12 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>nepa_process_team_member__c.nepa_notes__c</field>
+        <field>nepa_process_team_member__c.nepa_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_assembly_source__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1581,6 +1599,21 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_discipline__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_end_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_notes__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>nepa_process_team_member__c.nepa_record_owner_agency__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1589,8 +1622,61 @@
         <field>nepa_process_team_member__c.nepa_retrieved_timestamp__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <hasActivationRequired>false</hasActivationRequired>
-    <label>NEPA Permitting</label>
+    <!-- nepa_process_team_member__c new Phase 2 fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_service_resource__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_start_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_trigger_layer__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- nepa_process_team_member__c (CEQ Entity 8) — all fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_process_team_member__c.nepa_user__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- nepa_project_agency_relationship__c fields -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_project_agency_relationship__c.nepa_Project__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_project_analogous_case__c.nepa_annotated_by__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_project_analogous_case__c.nepa_coordinator_notes__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- nepa_project_analogous_case__c — junction; nepa_project__c is MasterDetail (required/system), nepa_litigation__c is Lookup -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_project_analogous_case__c.nepa_litigation__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_project_analogous_case__c.nepa_match_basis__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>nepa_project_analogous_case__c.nepa_similarity_score__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>false</allowDelete>
@@ -1788,96 +1874,6 @@
         <object>nepa_detected_protection_layer__c</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    <!-- nepa_detected_protection_layer__c fields — nepa_program__c (MasterDetail) omitted: system-managed -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_detected_protection_layer__c.nepa_layer_developer_name__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_detected_protection_layer__c.nepa_layer_label__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_detected_protection_layer__c.nepa_feature_name__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_detected_protection_layer__c.nepa_feature_count__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_detected_protection_layer__c.nepa_extraordinary_circumstances_triggered__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_detected_protection_layer__c.nepa_gis_run_timestamp__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_detected_protection_layer__c.nepa_is_hit__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- nepa_upsert_key__c: formula field — read-only, set by system -->
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>nepa_detected_protection_layer__c.nepa_upsert_key__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- nepa_process_team_member__c new Phase 2 fields -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_process_team_member__c.nepa_service_resource__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_process_team_member__c.nepa_assembly_source__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_process_team_member__c.nepa_trigger_layer__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_process_team_member__c.nepa_discipline__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- WorkOrder NEPA fields -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>WorkOrder.nepa_process__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>WorkOrder.nepa_trigger_layer__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>WorkOrder.nepa_discipline__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>WorkOrder.nepa_auto_generated__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- ServiceResource NEPA discipline field -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ServiceResource.nepa_discipline__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
     <!-- NepaCeqExportService classAccess omitted — class not yet implemented -->
 
     <tabSettings>
@@ -1902,10 +1898,6 @@
     </tabSettings>
     <tabSettings>
         <tab>nepa_process_team_member__c</tab>
-        <visibility>Available</visibility>
-    </tabSettings>
-    <tabSettings>
-        <tab>nepa_detected_protection_layer__c</tab>
         <visibility>Available</visibility>
     </tabSettings>
 </PermissionSet>

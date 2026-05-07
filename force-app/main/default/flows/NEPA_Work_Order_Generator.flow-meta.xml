@@ -22,89 +22,8 @@
     <status>Active</status>
 
     <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <!-- Step 1: Load all WorkTypes once — avoids per-discipline SOQL       -->
+    <!-- ASSIGNMENTS                                                        -->
     <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <recordLookups>
-        <name>GetAllWorkTypes</name>
-        <label>Get All Work Types</label>
-        <locationX>176</locationX>
-        <locationY>168</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Loop_BuildWorkOrders</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Handle_Error</targetReference>
-        </faultConnector>
-        <getFirstRecordOnly>false</getFirstRecordOnly>
-        <object>WorkType</object>
-        <outputReference>var_AllWorkTypes</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>Name</queriedFields>
-        <queriedFields>External_ID__c</queriedFields>
-    </recordLookups>
-
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <!-- Step 2: Loop over discipline pairs, build WO collection            -->
-    <!-- No Get Records inside loop — WorkTypes already loaded              -->
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <loops>
-        <name>Loop_BuildWorkOrders</name>
-        <label>Loop: Build Work Order for Each Discipline Pair</label>
-        <locationX>176</locationX>
-        <locationY>288</locationY>
-        <collectionReference>inp_LayerDisciplinePairs</collectionReference>
-        <iterationOrder>Asc</iterationOrder>
-        <nextValueConnector>
-            <targetReference>Loop_FindWorkType</targetReference>
-        </nextValueConnector>
-        <noMoreValuesConnector>
-            <targetReference>Decision_WorkOrdersToCreate</targetReference>
-        </noMoreValuesConnector>
-    </loops>
-
-    <!-- Inner loop: find WorkType in already-loaded collection -->
-    <loops>
-        <name>Loop_FindWorkType</name>
-        <label>Loop: Find WorkType in Loaded Collection</label>
-        <locationX>400</locationX>
-        <locationY>288</locationY>
-        <collectionReference>var_AllWorkTypes</collectionReference>
-        <iterationOrder>Asc</iterationOrder>
-        <nextValueConnector>
-            <targetReference>Decision_WorkTypeMatches</targetReference>
-        </nextValueConnector>
-        <noMoreValuesConnector>
-            <targetReference>Assign_ClearWorkTypeId</targetReference>
-        </noMoreValuesConnector>
-    </loops>
-
-    <decisions>
-        <name>Decision_WorkTypeMatches</name>
-        <label>WorkType ExternalId Matches?</label>
-        <locationX>640</locationX>
-        <locationY>288</locationY>
-        <defaultConnectorLabel>No Match — Next WorkType</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Loop_FindWorkType</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>WorkTypeMatches</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>var_AllWorkTypes.External_ID__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <elementReference>inp_LayerDisciplinePairs.Work_Type_Developer_Name__c</elementReference>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Assign_CaptureWorkTypeId</targetReference>
-            </connector>
-            <label>WorkType Found</label>
-        </rules>
-    </decisions>
-
     <assignments>
         <name>Assign_CaptureWorkTypeId</name>
         <label>Capture WorkType ID</label>
@@ -114,7 +33,7 @@
             <assignToReference>var_MatchedWorkTypeId</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>var_AllWorkTypes.Id</elementReference>
+                <elementReference>var_CurrentWorkTypeId</elementReference>
             </value>
         </assignmentItems>
         <!-- Exit inner loop immediately after match -->
@@ -139,18 +58,6 @@
             <targetReference>Assign_BuildWorkOrder</targetReference>
         </connector>
     </assignments>
-
-    <formulas>
-        <name>formula_WOSubject</name>
-        <dataType>String</dataType>
-        <expression>SUBSTITUTE(SUBSTITUTE({!inp_LayerDisciplinePairs.WO_Subject_Template__c}, "{ProjectName}", {!inp_ProgramName}), "{LayerLabel}", {!inp_LayerDisciplinePairs.GIS_Layer_Developer_Name__c})</expression>
-    </formulas>
-
-    <formulas>
-        <name>formula_WODescription</name>
-        <dataType>String</dataType>
-        <expression>SUBSTITUTE(SUBSTITUTE({!inp_LayerDisciplinePairs.WO_Description_Template__c}, "{ProjectName}", {!inp_ProgramName}), "{LayerLabel}", {!inp_LayerDisciplinePairs.GIS_Layer_Developer_Name__c})</expression>
-    </formulas>
 
     <assignments>
         <name>Assign_BuildWorkOrder</name>
@@ -189,7 +96,7 @@
             <assignToReference>var_NewWO.Duration</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>inp_LayerDisciplinePairs.WO_Duration_Minutes__c</elementReference>
+                <elementReference>var_WODurationMinutes</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -203,7 +110,7 @@
             <assignToReference>var_NewWO.Priority</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>inp_LayerDisciplinePairs.WO_Priority__c</elementReference>
+                <elementReference>var_WOPriority</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -224,14 +131,14 @@
             <assignToReference>var_NewWO.nepa_trigger_layer__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>inp_LayerDisciplinePairs.TriggerLayerId__c</elementReference>
+                <elementReference>var_TriggerLayerId</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
             <assignToReference>var_NewWO.nepa_discipline__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>inp_LayerDisciplinePairs.Discipline__c</elementReference>
+                <elementReference>var_Discipline</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -253,9 +160,139 @@
         </connector>
     </assignments>
 
+    <assignments>
+        <name>Assign_CaptureTargetWorkType</name>
+        <label>Capture CMT String Fields for This Pair</label>
+        <locationX>176</locationX>
+        <locationY>168</locationY>
+        <assignmentItems>
+            <assignToReference>var_TargetWorkTypeName</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>inp_LayerDisciplinePairs.Work_Type_Developer_Name__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_WOSubjectTemplate</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>inp_LayerDisciplinePairs.WO_Subject_Template__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_WODescriptionTemplate</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>inp_LayerDisciplinePairs.WO_Description_Template__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_LayerLabel</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>inp_LayerDisciplinePairs.GIS_Layer_Developer_Name__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_WODurationMinutes</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_WODurationMinutes</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_WOPriority</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_WOPriority</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_TriggerLayerId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_TriggerLayerId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_Discipline</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_Discipline</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_FindWorkType</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_CaptureExternalId</name>
+        <label>Capture WorkType External ID and Id</label>
+        <locationX>640</locationX>
+        <locationY>168</locationY>
+        <assignmentItems>
+            <assignToReference>var_CurrentWorkTypeExternalId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AllWorkTypes.External_ID__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CurrentWorkTypeId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AllWorkTypes.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_WorkTypeMatches</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Handle_Error</name>
+        <label>Capture Fault Message</label>
+        <locationX>440</locationX>
+        <locationY>648</locationY>
+        <assignmentItems>
+            <assignToReference>out_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+
     <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <!-- Step 3: Bulk-create all Work Orders                                -->
+    <!-- DECISIONS                                                           -->
     <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <decisions>
+        <name>Decision_WorkTypeMatches</name>
+        <label>WorkType ExternalId Matches?</label>
+        <locationX>640</locationX>
+        <locationY>288</locationY>
+        <defaultConnectorLabel>No Match — Next WorkType</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Loop_FindWorkType</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>WorkTypeMatches</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_CurrentWorkTypeExternalId</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>var_TargetWorkTypeName</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_CaptureWorkTypeId</targetReference>
+            </connector>
+            <label>WorkType Found</label>
+        </rules>
+    </decisions>
+
     <decisions>
         <name>Decision_WorkOrdersToCreate</name>
         <label>Work Orders to Create?</label>
@@ -279,6 +316,57 @@
         </rules>
     </decisions>
 
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- FORMULAS                                                            -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <formulas>
+        <name>formula_WOSubject</name>
+        <dataType>String</dataType>
+        <expression>SUBSTITUTE(SUBSTITUTE({!var_WOSubjectTemplate}, "{ProjectName}", {!inp_ProgramName}), "{LayerLabel}", {!var_LayerLabel})</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_WODescription</name>
+        <dataType>String</dataType>
+        <expression>SUBSTITUTE(SUBSTITUTE({!var_WODescriptionTemplate}, "{ProjectName}", {!inp_ProgramName}), "{LayerLabel}", {!var_LayerLabel})</expression>
+    </formulas>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- LOOPS                                                               -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <loops>
+        <name>Loop_BuildWorkOrders</name>
+        <label>Loop: Build Work Order for Each Discipline Pair</label>
+        <locationX>176</locationX>
+        <locationY>288</locationY>
+        <collectionReference>inp_LayerDisciplinePairs</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_CaptureTargetWorkType</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Decision_WorkOrdersToCreate</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+
+    <loops>
+        <name>Loop_FindWorkType</name>
+        <label>Loop: Find WorkType in Loaded Collection</label>
+        <locationX>400</locationX>
+        <locationY>288</locationY>
+        <collectionReference>var_AllWorkTypes</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_CaptureExternalId</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Assign_ClearWorkTypeId</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- RECORD CREATES                                                     -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
     <recordCreates>
         <name>Create_WorkOrders</name>
         <label>Bulk Create Work Orders</label>
@@ -291,24 +379,30 @@
     </recordCreates>
 
     <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <!-- Error handler                                                      -->
+    <!-- RECORD LOOKUPS                                                     -->
     <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <assignments>
-        <name>Handle_Error</name>
-        <label>Capture Fault Message</label>
-        <locationX>440</locationX>
-        <locationY>648</locationY>
-        <assignmentItems>
-            <assignToReference>out_ErrorMessage</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>$Flow.FaultMessage</elementReference>
-            </value>
-        </assignmentItems>
-    </assignments>
+    <recordLookups>
+        <name>GetAllWorkTypes</name>
+        <label>Get All Work Types</label>
+        <locationX>176</locationX>
+        <locationY>168</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_BuildWorkOrders</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>WorkType</object>
+        <outputReference>var_AllWorkTypes</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Name</queriedFields>
+        <queriedFields>External_ID__c</queriedFields>
+    </recordLookups>
 
     <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <!-- INPUT VARIABLES                                                    -->
+    <!-- VARIABLES                                                          -->
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <variables>
         <name>inp_RelatedAppId</name>
@@ -351,9 +445,6 @@
         <objectType>NEPA_Layer_Discipline__mdt</objectType>
     </variables>
 
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <!-- OUTPUT VARIABLES                                                   -->
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
     <variables>
         <name>out_WorkOrdersCreated</name>
         <dataType>Number</dataType>
@@ -371,9 +462,6 @@
         <isOutput>true</isOutput>
     </variables>
 
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <!-- WORKING VARIABLES                                                  -->
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
     <variables>
         <name>var_AllWorkTypes</name>
         <dataType>SObject</dataType>
@@ -385,6 +473,30 @@
 
     <variables>
         <name>var_MatchedWorkTypeId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <variables>
+        <name>var_CurrentWorkTypeExternalId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <variables>
+        <name>var_CurrentWorkTypeId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <variables>
+        <name>var_TargetWorkTypeName</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -407,6 +519,64 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
         <objectType>WorkOrder</objectType>
+    </variables>
+
+
+    <variables>
+        <name>var_WOSubjectTemplate</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <variables>
+        <name>var_WODescriptionTemplate</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <variables>
+        <name>var_LayerLabel</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <variables>
+        <name>var_WODurationMinutes</name>
+        <dataType>Number</dataType>
+        <scale>0</scale>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <variables>
+        <name>var_WOPriority</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <variables>
+        <name>var_TriggerLayerId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <variables>
+        <name>var_Discipline</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
     </variables>
 
 </Flow>

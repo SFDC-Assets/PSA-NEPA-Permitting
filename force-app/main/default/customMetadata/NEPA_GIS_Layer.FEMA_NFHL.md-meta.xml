@@ -3,10 +3,6 @@
     <label>FEMA National Flood Hazard Layer</label>
     <protected>false</protected>
     <values>
-        <field>GIS_Layer_Developer_Name__c</field>
-        <value xsi:type="xsd:string">FEMA_NFHL</value>
-    </values>
-    <values>
         <field>Service_URL__c</field>
         <value xsi:type="xsd:string">https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer</value>
     </values>

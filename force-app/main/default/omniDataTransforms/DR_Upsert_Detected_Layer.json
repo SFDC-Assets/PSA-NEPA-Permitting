@@ -14,7 +14,7 @@
     {"InputKey": "nepa_feature_name__c",                            "SObjectField": "nepa_feature_name__c",                            "DataType": "STRING"},
     {"InputKey": "nepa_feature_count__c",                           "SObjectField": "nepa_feature_count__c",                           "DataType": "DECIMAL"},
     {"InputKey": "nepa_is_hit__c",                                  "SObjectField": "nepa_is_hit__c",                                  "DataType": "BOOLEAN"},
-    {"InputKey": "nepa_extraordinary_circumstances_triggered__c",   "SObjectField": "nepa_extraordinary_circumstances_triggered__c",   "DataType": "BOOLEAN"},
+    {"InputKey": "nepa_ec_triggered__c",   "SObjectField": "nepa_ec_triggered__c",   "DataType": "BOOLEAN"},
     {"InputKey": "nepa_gis_run_timestamp__c",                       "SObjectField": "nepa_gis_run_timestamp__c",                       "DataType": "DATETIME"}
   ]
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>After-save async flow on Program. Fires when nepa_gis_proximity_complete__c changes to true. Queries nepa_detected_protection_layer__c records where nepa_is_hit__c = true, resolves unique disciplines from NEPA_Layer_Discipline__mdt, finds matching ServiceResource by nepa_discipline__c, bulk-creates nepa_process_team_member__c records, and invokes NEPA_Work_Order_Generator to create field-survey Work Orders per discipline. On re-run, deactivates existing auto-assembled team members and cancels auto-generated Work Orders before re-assembling. CMT-driven: adding a new layer/discipline requires only a NEPA_Layer_Discipline__mdt record — no flow changes.</description>
+    <description>After-save async flow on Program. Fires when nepa_gis_proximity_complete__c changes to true. Queries nepa_detected_protection_layer__c records where nepa_is_hit__c = true, resolves unique disciplines from NEPA_Layer_Discipline__mdt, finds matching ServiceResource by nepa_discipline__c, bulk-creates nepa_process_team_member__c records, and creates field-survey Work Orders per discipline inline. On re-run, deactivates existing auto-assembled team members and cancels auto-generated Work Orders before re-assembling. CMT-driven: adding a new layer/discipline requires only a NEPA_Layer_Discipline__mdt record — no flow changes.</description>
     <environments>Default</environments>
     <interviewLabel>NEPA Team Assembly Orchestrator {!$Flow.CurrentDateTime}</interviewLabel>
     <label>NEPA Team Assembly Orchestrator</label>
@@ -12,17 +12,10 @@
         </value>
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
+    <status>Active</status>
     <start>
         <locationX>176</locationX>
         <locationY>48</locationY>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>nepa_gis_proximity_complete__c</field>
-            <operator>IsChanged</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
         <filters>
             <field>nepa_gis_proximity_complete__c</field>
             <operator>EqualTo</operator>
@@ -41,49 +34,405 @@
         <triggerType>RecordAfterSave</triggerType>
         <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
     </start>
-    <status>Active</status>
-
     <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <!-- Step 1: Find active NEPA process linked to this Program            -->
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <recordLookups>
-        <name>GetRelatedProcess</name>
-        <label>Get Related NEPA Process</label>
-        <locationX>176</locationX>
-        <locationY>168</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+    <assignments>
+        <name>Assign_AddDisciplinePair</name>
+        <label>Add Discipline to Unique List</label>
+        <locationX>1120</locationX>
+        <locationY>1728</locationY>
+        <assignmentItems>
+            <assignToReference>var_UniqueDisciplines</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>var_CMTDiscipline</elementReference>
+            </value>
+        </assignmentItems>
         <connector>
-            <targetReference>Decision_ProcessFound</targetReference>
+            <targetReference>GetServiceResource</targetReference>
         </connector>
-        <faultConnector>
-            <targetReference>Handle_Error</targetReference>
-        </faultConnector>
-        <filterLogic>1 AND 2</filterLogic>
-        <filters>
-            <field>nepa_related_project__c</field>
-            <operator>EqualTo</operator>
+    </assignments>
+    <assignments>
+        <name>Assign_BuildTeamMember</name>
+        <label>Build Team Member Record</label>
+        <locationX>880</locationX>
+        <locationY>1968</locationY>
+        <assignmentItems>
+            <assignToReference>var_NewMember.nepa_process__c</assignToReference>
+            <operator>Assign</operator>
             <value>
-                <elementReference>$Record.Id</elementReference>
+                <elementReference>var_RelatedProcess.Id</elementReference>
             </value>
-        </filters>
-        <filters>
-            <field>nepa_process_status__c</field>
-            <operator>NotEqualTo</operator>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewMember.nepa_service_resource__c</assignToReference>
+            <operator>Assign</operator>
             <value>
-                <stringValue>Completed</stringValue>
+                <elementReference>var_MatchedSR.Id</elementReference>
             </value>
-        </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
-        <object>IndividualApplication</object>
-        <outputReference>var_RelatedProcess</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>Name</queriedFields>
-        <queriedFields>OwnerId</queriedFields>
-        <queriedFields>AccountId</queriedFields>
-        <sortField>CreatedDate</sortField>
-        <sortOrder>Desc</sortOrder>
-    </recordLookups>
-
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewMember.nepa_discipline__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_CMTDiscipline</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewMember.nepa_assembly_source__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>GIS_Auto_Assembly</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewMember.nepa_active__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewTeamMembers</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>var_NewMember</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_MatchCMTForLayer</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_UnmatchedDiscipline</name>
+        <label>Log Unmatched Discipline</label>
+        <locationX>640</locationX>
+        <locationY>2088</locationY>
+        <assignmentItems>
+            <assignToReference>var_UnmatchedDisciplines</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>var_CMTDiscipline</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_MatchCMTForLayer</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Handle_Error</name>
+        <label>Capture Fault Message</label>
+        <locationX>880</locationX>
+        <locationY>408</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Create_ErrorTask</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Handle_WO_Fault</name>
+        <label>Capture WO Generator Fault</label>
+        <locationX>440</locationX>
+        <locationY>2328</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Create_ErrorTask</targetReference>
+        </connector>
+    </assignments>
+    <!-- Inline WO generation: capture CMT pair fields into plain vars -->
+    <assignments>
+        <name>Assign_CapturePairFieldsForWO</name>
+        <label>Capture Pair Fields for WO Build</label>
+        <locationX>400</locationX>
+        <locationY>2448</locationY>
+        <assignmentItems>
+            <assignToReference>var_WOTargetWorkType</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AllCMTForWO.Work_Type_Developer_Name__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_WOSubjectTpl</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AllCMTForWO.WO_Subject_Template__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_WODescriptionTpl</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AllCMTForWO.WO_Description_Template__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_WODuration</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AllCMTForWO.WO_Duration_Minutes__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_WOPriority</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AllCMTForWO.WO_Priority__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_WODiscipline</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AllLayerDisciplines.Discipline__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_WODisciplineIsUnique</targetReference>
+        </connector>
+    </assignments>
+    <!-- Inline WO generation: capture WorkType fields from inner loop item -->
+    <assignments>
+        <name>Assign_CaptureWTFields</name>
+        <label>Capture WorkType External ID and Id</label>
+        <locationX>640</locationX>
+        <locationY>2448</locationY>
+        <assignmentItems>
+            <assignToReference>var_CurrentWTExternalId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AllWorkTypes.External_ID__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CurrentWTId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AllWorkTypes.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_WTMatches</targetReference>
+        </connector>
+    </assignments>
+    <!-- Inline WO generation: store matched WorkType Id -->
+    <assignments>
+        <name>Assign_MatchedWTId</name>
+        <label>Store Matched WorkType Id</label>
+        <locationX>880</locationX>
+        <locationY>2448</locationY>
+        <assignmentItems>
+            <assignToReference>var_MatchedWTId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_CurrentWTId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Assign_BuildWORecord</targetReference>
+        </connector>
+    </assignments>
+    <!-- Inline WO generation: build WorkOrder SObject and add to collection -->
+    <assignments>
+        <name>Assign_BuildWORecord</name>
+        <label>Build Work Order Record</label>
+        <locationX>640</locationX>
+        <locationY>2568</locationY>
+        <assignmentItems>
+            <assignToReference>var_NewWO.Subject</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula_WOSubjectInline</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWO.Description</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula_WODescriptionInline</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWO.WorkTypeId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_MatchedWTId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWO.AccountId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_RelatedProcess.AccountId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWO.Duration</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_WODuration</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWO.DurationType</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Minutes</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWO.Priority</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_WOPriority</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWO.Status</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>New</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWO.nepa_process__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_RelatedProcess.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWO.nepa_discipline__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_WODiscipline</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWO.nepa_auto_generated__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewWOsCollection</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>var_NewWO</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_MatchedWTId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue></stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_BuildWOs</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_CaptureHitLayerKey</name>
+        <label>Capture Hit Layer Developer Name and Id</label>
+        <locationX>176</locationX>
+        <locationY>1848</locationY>
+        <assignmentItems>
+            <assignToReference>var_HitLayerDevName</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_HitLayers.nepa_layer_developer_name__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_HitLayerId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_HitLayers.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_MatchCMTForLayer</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_CaptureCMTLayerKey</name>
+        <label>Capture CMT Fields from Current Layer Discipline Record</label>
+        <locationX>640</locationX>
+        <locationY>1728</locationY>
+        <assignmentItems>
+            <assignToReference>var_CMTGISLayerDevName</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AllLayerDisciplines.GIS_Layer_Developer_Name__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CMTDiscipline</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AllLayerDisciplines.Discipline__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CMTWorkTypeDeveloperName</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AllCMTForWO.Work_Type_Developer_Name__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CMTWOSubjectTemplate</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AllCMTForWO.WO_Subject_Template__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CMTWODescriptionTemplate</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AllCMTForWO.WO_Description_Template__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CMTWODurationMinutes</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AllCMTForWO.WO_Duration_Minutes__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CMTWOPriority</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AllCMTForWO.WO_Priority__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_CMTAPTDeveloperName</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AllLayerDisciplines.APT_Developer_Name__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_CMTMatchesLayer</targetReference>
+        </connector>
+    </assignments>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
     <decisions>
         <name>Decision_ProcessFound</name>
         <label>Active NEPA Process Found?</label>
@@ -109,7 +458,376 @@
             <label>Process Found</label>
         </rules>
     </decisions>
-
+    <decisions>
+        <name>Decision_ReRunOrFirstTime</name>
+        <label>Re-Run or First Time?</label>
+        <locationX>176</locationX>
+        <locationY>528</locationY>
+        <defaultConnectorLabel>First Time — Assemble Team</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>GetDetectedLayers</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>IsReRun</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_ExistingAutoTeam</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_DeactivatedMembers</targetReference>
+            </connector>
+            <label>Re-Run — Deactivate Previous Team</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Decision_AutoWOsExist</name>
+        <label>Auto WOs to Cancel?</label>
+        <locationX>176</locationX>
+        <locationY>1008</locationY>
+        <defaultConnectorLabel>No Auto WOs — Continue</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>GetDetectedLayers</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>AutoWOsExist</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_ExistingAutoWOs</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_CancelledWOs</targetReference>
+            </connector>
+            <label>Auto WOs Exist</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Decision_LayersFound</name>
+        <label>Any Hit Layers?</label>
+        <locationX>176</locationX>
+        <locationY>1488</locationY>
+        <defaultConnectorLabel>No Hits — Log and End</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Create_NoHitsTask</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>LayersFound</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_HitLayers</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>GetAllLayerDisciplines</targetReference>
+            </connector>
+            <label>Layers Hit</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Decision_CMTMatchesLayer</name>
+        <label>CMT Matches Current Layer?</label>
+        <locationX>640</locationX>
+        <locationY>1728</locationY>
+        <defaultConnectorLabel>No Match — Next CMT</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Loop_MatchCMTForLayer</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>CMTMatches</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_CMTGISLayerDevName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>var_HitLayerDevName</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Decision_DisciplineAlreadyAdded</targetReference>
+            </connector>
+            <label>CMT Match Found</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Decision_DisciplineAlreadyAdded</name>
+        <label>Discipline Already in Unique List?</label>
+        <locationX>880</locationX>
+        <locationY>1728</locationY>
+        <defaultConnectorLabel>New Discipline — Add to List</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Assign_AddDisciplinePair</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>DisciplineAlreadyAdded</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_UniqueDisciplines</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <elementReference>var_CMTDiscipline</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Loop_MatchCMTForLayer</targetReference>
+            </connector>
+            <label>Already Added</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Decision_DisciplinesFound</name>
+        <label>Any Discipline Pairs Matched?</label>
+        <locationX>176</locationX>
+        <locationY>1848</locationY>
+        <defaultConnectorLabel>No CMT Matches — Log and End</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Create_NoCMTMatchTask</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>DisciplinesFound</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_UniqueDisciplines</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>GetAllWorkTypes</targetReference>
+            </connector>
+            <label>Pairs Found</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Decision_WODisciplineIsUnique</name>
+        <label>WO Discipline In Unique List?</label>
+        <locationX>640</locationX>
+        <locationY>2448</locationY>
+        <defaultConnectorLabel>Not In List — Skip</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Loop_BuildWOs</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>WODisciplineIsUnique</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_UniqueDisciplines</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <elementReference>var_WODiscipline</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Loop_FindWTForPair</targetReference>
+            </connector>
+            <label>In Unique List</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Decision_SRFound</name>
+        <label>Service Resource Found?</label>
+        <locationX>640</locationX>
+        <locationY>1968</locationY>
+        <defaultConnectorLabel>No SR — Log Unmatched</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Assign_UnmatchedDiscipline</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>SRFound</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_MatchedSR</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_BuildTeamMember</targetReference>
+            </connector>
+            <label>SR Found</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Decision_TeamMembersBuilt</name>
+        <label>Team Members to Create?</label>
+        <locationX>176</locationX>
+        <locationY>2088</locationY>
+        <defaultConnectorLabel>No Members — Log Unmatched</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Decision_UnmatchedDisciplines</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>TeamMembersReady</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_NewTeamMembers</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_TeamMembers</targetReference>
+            </connector>
+            <label>Members Ready</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Decision_UnmatchedDisciplines</name>
+        <label>Unmatched Disciplines?</label>
+        <locationX>176</locationX>
+        <locationY>2808</locationY>
+        <defaultConnectorLabel>All Matched — End</defaultConnectorLabel>
+        <rules>
+            <name>UnmatchedExist</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_UnmatchedDisciplines</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_UnmatchedTask</targetReference>
+            </connector>
+            <label>Unmatched Exist</label>
+        </rules>
+    </decisions>
+    <!-- Inline WO generation: WorkType ExternalId match? -->
+    <decisions>
+        <name>Decision_WTMatches</name>
+        <label>WorkType ExternalId Matches Target?</label>
+        <locationX>880</locationX>
+        <locationY>2448</locationY>
+        <defaultConnectorLabel>No Match — Next WorkType</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Loop_FindWTForPair</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>WTMatches</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_CurrentWTExternalId</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>var_WOTargetWorkType</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_MatchedWTId</targetReference>
+            </connector>
+            <label>WorkType Found</label>
+        </rules>
+    </decisions>
+    <!-- Inline WO generation: any WOs to create? -->
+    <decisions>
+        <name>Decision_WOsToCreate</name>
+        <label>Work Orders to Create?</label>
+        <locationX>176</locationX>
+        <locationY>2688</locationY>
+        <defaultConnectorLabel>No Work Orders — Continue</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Decision_UnmatchedDisciplines</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>WOsReady</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_NewWOsCollection</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_WorkOrdersInline</targetReference>
+            </connector>
+            <label>Work Orders Ready</label>
+        </rules>
+    </decisions>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <formulas>
+        <name>formula_WOSubjectInline</name>
+        <dataType>String</dataType>
+        <expression>SUBSTITUTE(SUBSTITUTE({!var_WOSubjectTpl}, "{ProjectName}", {!$Record.Name}), "{LayerLabel}", {!var_WODiscipline})</expression>
+    </formulas>
+    <formulas>
+        <name>formula_WODescriptionInline</name>
+        <dataType>String</dataType>
+        <expression>SUBSTITUTE(SUBSTITUTE({!var_WODescriptionTpl}, "{ProjectName}", {!$Record.Name}), "{LayerLabel}", {!var_WODiscipline})</expression>
+    </formulas>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <loops>
+        <name>Loop_BuildUniqueDisciplines</name>
+        <label>Loop: Build Unique Discipline Pairs</label>
+        <locationX>176</locationX>
+        <locationY>1728</locationY>
+        <collectionReference>var_HitLayers</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_CaptureHitLayerKey</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Decision_TeamMembersBuilt</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
+        <name>Loop_MatchCMTForLayer</name>
+        <label>Loop: Find CMT Match for Current Layer</label>
+        <locationX>400</locationX>
+        <locationY>1728</locationY>
+        <collectionReference>var_AllLayerDisciplines</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_CaptureCMTLayerKey</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Loop_BuildUniqueDisciplines</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <!-- Inline WO generation: outer loop over discipline pairs -->
+    <loops>
+        <name>Loop_BuildWOs</name>
+        <label>Loop: Build WO for Each Discipline Pair</label>
+        <locationX>176</locationX>
+        <locationY>2448</locationY>
+        <collectionReference>var_AllCMTForWO</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_CapturePairFieldsForWO</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Decision_WOsToCreate</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <!-- Inline WO generation: inner loop to find matching WorkType -->
+    <loops>
+        <name>Loop_FindWTForPair</name>
+        <label>Loop: Find WorkType for Current Pair</label>
+        <locationX>400</locationX>
+        <locationY>2448</locationY>
+        <collectionReference>var_AllWorkTypes</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_CaptureWTFields</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Assign_BuildWORecord</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
     <recordCreates>
         <name>Create_NoProcessTask</name>
         <label>Create No-Process Alert Task</label>
@@ -153,321 +871,6 @@
         </inputAssignments>
         <object>Task</object>
     </recordCreates>
-
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <!-- Step 2: Check for existing auto-assembled team (re-run detection)  -->
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <recordLookups>
-        <name>CheckExistingAutoTeam</name>
-        <label>Check Existing Auto Team Members</label>
-        <locationX>176</locationX>
-        <locationY>408</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Decision_ReRunOrFirstTime</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Handle_Error</targetReference>
-        </faultConnector>
-        <filterLogic>1 AND 2</filterLogic>
-        <filters>
-            <field>nepa_process__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>var_RelatedProcess.Id</elementReference>
-            </value>
-        </filters>
-        <filters>
-            <field>nepa_assembly_source__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>GIS_Auto_Assembly</stringValue>
-            </value>
-        </filters>
-        <getFirstRecordOnly>false</getFirstRecordOnly>
-        <object>nepa_process_team_member__c</object>
-        <outputReference>var_ExistingAutoTeam</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>nepa_active__c</queriedFields>
-    </recordLookups>
-
-    <decisions>
-        <name>Decision_ReRunOrFirstTime</name>
-        <label>Re-Run or First Time?</label>
-        <locationX>176</locationX>
-        <locationY>528</locationY>
-        <defaultConnectorLabel>First Time — Assemble Team</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>GetDetectedLayers</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>IsReRun</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>var_ExistingAutoTeam</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Loop_DeactivateExistingMembers</targetReference>
-            </connector>
-            <label>Re-Run — Deactivate Previous Team</label>
-        </rules>
-    </decisions>
-
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <!-- Step 3 (re-run): Deactivate existing auto team members             -->
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <loops>
-        <name>Loop_DeactivateExistingMembers</name>
-        <label>Loop: Stamp Deactivation on Existing Members</label>
-        <locationX>176</locationX>
-        <locationY>648</locationY>
-        <collectionReference>var_ExistingAutoTeam</collectionReference>
-        <iterationOrder>Asc</iterationOrder>
-        <nextValueConnector>
-            <targetReference>Assign_DeactivateMember</targetReference>
-        </nextValueConnector>
-        <noMoreValuesConnector>
-            <targetReference>Update_DeactivatedMembers</targetReference>
-        </noMoreValuesConnector>
-    </loops>
-
-    <assignments>
-        <name>Assign_DeactivateMember</name>
-        <label>Stamp Deactivation Fields</label>
-        <locationX>400</locationX>
-        <locationY>648</locationY>
-        <assignmentItems>
-            <assignToReference>var_CurrentMember.Id</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>var_ExistingAutoTeam.Id</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CurrentMember.nepa_active__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <booleanValue>false</booleanValue>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_MembersToDeactivate</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>var_CurrentMember</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Loop_DeactivateExistingMembers</targetReference>
-        </connector>
-    </assignments>
-
-    <!-- code-analyzer-suppress flow:SameRecordUpdate — bulk DML outside loop intentional -->
-    <recordUpdates>
-        <name>Update_DeactivatedMembers</name>
-        <label>Bulk Deactivate Team Members</label>
-        <locationX>176</locationX>
-        <locationY>768</locationY>
-        <connector>
-            <targetReference>GetExistingAutoWOs</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Handle_Error</targetReference>
-        </faultConnector>
-        <inputReference>var_MembersToDeactivate</inputReference>
-    </recordUpdates>
-
-    <!-- Cancel existing auto-generated Work Orders before re-assembly -->
-    <recordLookups>
-        <name>GetExistingAutoWOs</name>
-        <label>Get Existing Auto-Generated Work Orders</label>
-        <locationX>176</locationX>
-        <locationY>888</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Decision_AutoWOsExist</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Handle_Error</targetReference>
-        </faultConnector>
-        <filterLogic>1 AND 2</filterLogic>
-        <filters>
-            <field>nepa_process__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>var_RelatedProcess.Id</elementReference>
-            </value>
-        </filters>
-        <filters>
-            <field>nepa_auto_generated__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
-        <getFirstRecordOnly>false</getFirstRecordOnly>
-        <object>WorkOrder</object>
-        <outputReference>var_ExistingAutoWOs</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>Status</queriedFields>
-    </recordLookups>
-
-    <decisions>
-        <name>Decision_AutoWOsExist</name>
-        <label>Auto WOs to Cancel?</label>
-        <locationX>176</locationX>
-        <locationY>1008</locationY>
-        <defaultConnectorLabel>No Auto WOs — Continue</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>GetDetectedLayers</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>AutoWOsExist</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>var_ExistingAutoWOs</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Loop_CancelExistingWOs</targetReference>
-            </connector>
-            <label>Auto WOs Exist</label>
-        </rules>
-    </decisions>
-
-    <loops>
-        <name>Loop_CancelExistingWOs</name>
-        <label>Loop: Stamp Cancelled on Auto WOs</label>
-        <locationX>176</locationX>
-        <locationY>1128</locationY>
-        <collectionReference>var_ExistingAutoWOs</collectionReference>
-        <iterationOrder>Asc</iterationOrder>
-        <nextValueConnector>
-            <targetReference>Assign_CancelWO</targetReference>
-        </nextValueConnector>
-        <noMoreValuesConnector>
-            <targetReference>Update_CancelledWOs</targetReference>
-        </noMoreValuesConnector>
-    </loops>
-
-    <assignments>
-        <name>Assign_CancelWO</name>
-        <label>Stamp Cancelled Status</label>
-        <locationX>400</locationX>
-        <locationY>1128</locationY>
-        <assignmentItems>
-            <assignToReference>var_CurrentWO.Id</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>var_ExistingAutoWOs.Id</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CurrentWO.Status</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>Canceled</stringValue>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_WOsToCancel</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>var_CurrentWO</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Loop_CancelExistingWOs</targetReference>
-        </connector>
-    </assignments>
-
-    <recordUpdates>
-        <name>Update_CancelledWOs</name>
-        <label>Bulk Cancel Auto Work Orders</label>
-        <locationX>176</locationX>
-        <locationY>1248</locationY>
-        <connector>
-            <targetReference>GetDetectedLayers</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Handle_Error</targetReference>
-        </faultConnector>
-        <inputReference>var_WOsToCancel</inputReference>
-    </recordUpdates>
-
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <!-- Step 4: Load hit layers and all active CMT records                 -->
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <recordLookups>
-        <name>GetDetectedLayers</name>
-        <label>Get Hit Detected Layers</label>
-        <locationX>176</locationX>
-        <locationY>1368</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Decision_LayersFound</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Handle_Error</targetReference>
-        </faultConnector>
-        <filterLogic>1 AND 2</filterLogic>
-        <filters>
-            <field>nepa_program__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.Id</elementReference>
-            </value>
-        </filters>
-        <filters>
-            <field>nepa_is_hit__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
-        <getFirstRecordOnly>false</getFirstRecordOnly>
-        <object>nepa_detected_protection_layer__c</object>
-        <outputReference>var_HitLayers</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>nepa_layer_developer_name__c</queriedFields>
-        <queriedFields>nepa_layer_label__c</queriedFields>
-        <sortField>nepa_layer_developer_name__c</sortField>
-        <sortOrder>Asc</sortOrder>
-    </recordLookups>
-
-    <decisions>
-        <name>Decision_LayersFound</name>
-        <label>Any Hit Layers?</label>
-        <locationX>176</locationX>
-        <locationY>1488</locationY>
-        <defaultConnectorLabel>No Hits — Log and End</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Create_NoHitsTask</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>LayersFound</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>var_HitLayers</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>GetAllLayerDisciplines</targetReference>
-            </connector>
-            <label>Layers Hit</label>
-        </rules>
-    </decisions>
-
     <recordCreates>
         <name>Create_NoHitsTask</name>
         <label>Create No GIS Hits Info Task</label>
@@ -511,238 +914,6 @@
         </inputAssignments>
         <object>Task</object>
     </recordCreates>
-
-    <!-- Load all active CMT records once — no per-discipline SOQL in the next loop -->
-    <recordLookups>
-        <name>GetAllLayerDisciplines</name>
-        <label>Get All Active Layer Discipline CMT Records</label>
-        <locationX>176</locationX>
-        <locationY>1608</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Loop_BuildUniqueDisciplines</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Handle_Error</targetReference>
-        </faultConnector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Active__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
-        <getFirstRecordOnly>false</getFirstRecordOnly>
-        <object>NEPA_Layer_Discipline__mdt</object>
-        <outputReference>var_AllLayerDisciplines</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>GIS_Layer_Developer_Name__c</queriedFields>
-        <queriedFields>Discipline__c</queriedFields>
-        <queriedFields>Work_Type_Developer_Name__c</queriedFields>
-        <queriedFields>WO_Subject_Template__c</queriedFields>
-        <queriedFields>WO_Description_Template__c</queriedFields>
-        <queriedFields>WO_Duration_Minutes__c</queriedFields>
-        <queriedFields>WO_Priority__c</queriedFields>
-        <queriedFields>APT_Developer_Name__c</queriedFields>
-        <queriedFields>Sort_Order__c</queriedFields>
-        <sortField>Sort_Order__c</sortField>
-        <sortOrder>Asc</sortOrder>
-    </recordLookups>
-
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <!-- Step 5: Build unique discipline list from hit layers × CMT         -->
-    <!-- No SOQL inside this loop — var_AllLayerDisciplines already loaded  -->
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <loops>
-        <name>Loop_BuildUniqueDisciplines</name>
-        <label>Loop: Build Unique Discipline Pairs</label>
-        <locationX>176</locationX>
-        <locationY>1728</locationY>
-        <collectionReference>var_HitLayers</collectionReference>
-        <iterationOrder>Asc</iterationOrder>
-        <nextValueConnector>
-            <targetReference>Loop_MatchCMTForLayer</targetReference>
-        </nextValueConnector>
-        <noMoreValuesConnector>
-            <targetReference>Decision_DisciplinesFound</targetReference>
-        </noMoreValuesConnector>
-    </loops>
-
-    <!-- Inner loop: find the CMT record for this hit layer -->
-    <loops>
-        <name>Loop_MatchCMTForLayer</name>
-        <label>Loop: Find CMT Match for Current Layer</label>
-        <locationX>400</locationX>
-        <locationY>1728</locationY>
-        <collectionReference>var_AllLayerDisciplines</collectionReference>
-        <iterationOrder>Asc</iterationOrder>
-        <nextValueConnector>
-            <targetReference>Decision_CMTMatchesLayer</targetReference>
-        </nextValueConnector>
-        <noMoreValuesConnector>
-            <targetReference>Loop_BuildUniqueDisciplines</targetReference>
-        </noMoreValuesConnector>
-    </loops>
-
-    <decisions>
-        <name>Decision_CMTMatchesLayer</name>
-        <label>CMT Matches Current Layer?</label>
-        <locationX>640</locationX>
-        <locationY>1728</locationY>
-        <defaultConnectorLabel>No Match — Next CMT</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Loop_MatchCMTForLayer</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>CMTMatches</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>var_AllLayerDisciplines.GIS_Layer_Developer_Name__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <elementReference>var_HitLayers.nepa_layer_developer_name__c</elementReference>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Decision_DisciplineAlreadyAdded</targetReference>
-            </connector>
-            <label>CMT Match Found</label>
-        </rules>
-    </decisions>
-
-    <decisions>
-        <name>Decision_DisciplineAlreadyAdded</name>
-        <label>Discipline Already in Unique List?</label>
-        <locationX>880</locationX>
-        <locationY>1728</locationY>
-        <defaultConnectorLabel>New Discipline — Add to List</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Assign_AddDisciplinePair</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>DisciplineAlreadyAdded</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>var_UniqueDisciplines</leftValueReference>
-                <operator>Contains</operator>
-                <rightValue>
-                    <elementReference>var_AllLayerDisciplines.Discipline__c</elementReference>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Loop_MatchCMTForLayer</targetReference>
-            </connector>
-            <label>Already Added</label>
-        </rules>
-    </decisions>
-
-    <assignments>
-        <name>Assign_AddDisciplinePair</name>
-        <label>Add Discipline Pair to Collections</label>
-        <locationX>1120</locationX>
-        <locationY>1728</locationY>
-        <assignmentItems>
-            <assignToReference>var_UniqueDisciplines</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>var_AllLayerDisciplines.Discipline__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CurrentPair.Discipline__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>var_AllLayerDisciplines.Discipline__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CurrentPair.Work_Type_Developer_Name__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>var_AllLayerDisciplines.Work_Type_Developer_Name__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CurrentPair.WO_Subject_Template__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>var_AllLayerDisciplines.WO_Subject_Template__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CurrentPair.WO_Description_Template__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>var_AllLayerDisciplines.WO_Description_Template__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CurrentPair.WO_Duration_Minutes__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>var_AllLayerDisciplines.WO_Duration_Minutes__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CurrentPair.WO_Priority__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>var_AllLayerDisciplines.WO_Priority__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CurrentPair.APT_Developer_Name__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>var_AllLayerDisciplines.APT_Developer_Name__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CurrentPair.TriggerLayerId__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>var_HitLayers.Id</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_LayerDisciplinePairs</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>var_CurrentPair</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Loop_MatchCMTForLayer</targetReference>
-        </connector>
-    </assignments>
-
-    <decisions>
-        <name>Decision_DisciplinesFound</name>
-        <label>Any Discipline Pairs Matched?</label>
-        <locationX>176</locationX>
-        <locationY>1848</locationY>
-        <defaultConnectorLabel>No CMT Matches — Log and End</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Create_NoCMTMatchTask</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>DisciplinesFound</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>var_LayerDisciplinePairs</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Loop_FindServiceResources</targetReference>
-            </connector>
-            <label>Pairs Found</label>
-        </rules>
-    </decisions>
-
     <recordCreates>
         <name>Create_NoCMTMatchTask</name>
         <label>Create No CMT Match Alert Task</label>
@@ -786,356 +957,19 @@
         </inputAssignments>
         <object>Task</object>
     </recordCreates>
-
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <!-- Step 6: Find ServiceResource per discipline (one SOQL per pair)    -->
-    <!-- Acceptable: typically 4–8 disciplines; SOQL outside inner loop    -->
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <loops>
-        <name>Loop_FindServiceResources</name>
-        <label>Loop: Find ServiceResource for Each Discipline</label>
-        <locationX>176</locationX>
-        <locationY>1968</locationY>
-        <collectionReference>var_LayerDisciplinePairs</collectionReference>
-        <iterationOrder>Asc</iterationOrder>
-        <nextValueConnector>
-            <targetReference>GetServiceResource</targetReference>
-        </nextValueConnector>
-        <noMoreValuesConnector>
-            <targetReference>Decision_TeamMembersBuilt</targetReference>
-        </noMoreValuesConnector>
-    </loops>
-
-    <!-- One Get Records per discipline — acceptable given typical list of 4–8 items -->
-    <recordLookups>
-        <name>GetServiceResource</name>
-        <label>Get Service Resource for Discipline</label>
-        <locationX>400</locationX>
-        <locationY>1968</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Decision_SRFound</targetReference>
-        </connector>
-        <filterLogic>1 AND 2</filterLogic>
-        <filters>
-            <field>nepa_discipline__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>var_LayerDisciplinePairs.Discipline__c</elementReference>
-            </value>
-        </filters>
-        <filters>
-            <field>IsActive</field>
-            <operator>EqualTo</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
-        <object>ServiceResource</object>
-        <outputReference>var_MatchedSR</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>Name</queriedFields>
-        <queriedFields>nepa_discipline__c</queriedFields>
-    </recordLookups>
-
-    <decisions>
-        <name>Decision_SRFound</name>
-        <label>Service Resource Found?</label>
-        <locationX>640</locationX>
-        <locationY>1968</locationY>
-        <defaultConnectorLabel>No SR — Log Unmatched</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Assign_UnmatchedDiscipline</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>SRFound</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>var_MatchedSR</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Assign_BuildTeamMember</targetReference>
-            </connector>
-            <label>SR Found</label>
-        </rules>
-    </decisions>
-
-    <assignments>
-        <name>Assign_BuildTeamMember</name>
-        <label>Build Team Member Record</label>
-        <locationX>880</locationX>
-        <locationY>1968</locationY>
-        <assignmentItems>
-            <assignToReference>var_NewMember.nepa_process__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>var_RelatedProcess.Id</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_NewMember.nepa_service_resource__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>var_MatchedSR.Id</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_NewMember.nepa_discipline__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>var_LayerDisciplinePairs.Discipline__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_NewMember.nepa_assembly_source__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>GIS_Auto_Assembly</stringValue>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_NewMember.nepa_active__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_NewMember.nepa_trigger_layer__c</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>var_LayerDisciplinePairs.TriggerLayerId__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_NewTeamMembers</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>var_NewMember</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Loop_FindServiceResources</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Assign_UnmatchedDiscipline</name>
-        <label>Log Unmatched Discipline</label>
-        <locationX>640</locationX>
-        <locationY>2088</locationY>
-        <assignmentItems>
-            <assignToReference>var_UnmatchedDisciplines</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>var_LayerDisciplinePairs.Discipline__c</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Loop_FindServiceResources</targetReference>
-        </connector>
-    </assignments>
-
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <!-- Step 7: Bulk-create team members and invoke WO generator           -->
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <decisions>
-        <name>Decision_TeamMembersBuilt</name>
-        <label>Team Members to Create?</label>
-        <locationX>176</locationX>
-        <locationY>2088</locationY>
-        <defaultConnectorLabel>No Members — Log Unmatched</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Decision_UnmatchedDisciplines</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>TeamMembersReady</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>var_NewTeamMembers</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Create_TeamMembers</targetReference>
-            </connector>
-            <label>Members Ready</label>
-        </rules>
-    </decisions>
-
     <recordCreates>
         <name>Create_TeamMembers</name>
         <label>Bulk Create Team Members</label>
         <locationX>176</locationX>
         <locationY>2208</locationY>
         <connector>
-            <targetReference>InvokeWOGenerator</targetReference>
+            <targetReference>GetAllWorkTypes</targetReference>
         </connector>
         <faultConnector>
             <targetReference>Handle_Error</targetReference>
         </faultConnector>
         <inputReference>var_NewTeamMembers</inputReference>
     </recordCreates>
-
-    <subflows>
-        <name>InvokeWOGenerator</name>
-        <label>Invoke NEPA Work Order Generator</label>
-        <locationX>176</locationX>
-        <locationY>2328</locationY>
-        <flowName>NEPA_Work_Order_Generator</flowName>
-        <inputAssignments>
-            <name>inp_RelatedAppId</name>
-            <value>
-                <elementReference>var_RelatedProcess.Id</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_ProgramId</name>
-            <value>
-                <elementReference>$Record.Id</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_ProgramName</name>
-            <value>
-                <elementReference>$Record.Name</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_AccountId</name>
-            <value>
-                <elementReference>var_RelatedProcess.AccountId</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_LayerDisciplinePairs</name>
-            <value>
-                <elementReference>var_LayerDisciplinePairs</elementReference>
-            </value>
-        </inputAssignments>
-        <storeOutputAutomatically>false</storeOutputAutomatically>
-        <connector>
-            <targetReference>Decision_UnmatchedDisciplines</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Handle_WO_Fault</targetReference>
-        </faultConnector>
-    </subflows>
-
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <!-- Step 8: Log any unmatched disciplines                              -->
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <decisions>
-        <name>Decision_UnmatchedDisciplines</name>
-        <label>Unmatched Disciplines?</label>
-        <locationX>176</locationX>
-        <locationY>2448</locationY>
-        <defaultConnectorLabel>All Matched — End</defaultConnectorLabel>
-        <rules>
-            <name>UnmatchedExist</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>var_UnmatchedDisciplines</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Create_UnmatchedTask</targetReference>
-            </connector>
-            <label>Unmatched Exist</label>
-        </rules>
-    </decisions>
-
-    <recordCreates>
-        <name>Create_UnmatchedTask</name>
-        <label>Create Unmatched Disciplines Alert Task</label>
-        <locationX>440</locationX>
-        <locationY>2448</locationY>
-        <inputAssignments>
-            <field>Subject</field>
-            <value>
-                <stringValue>Team Assembly: Manual Assignment Required for Unmatched Disciplines</stringValue>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>WhatId</field>
-            <value>
-                <elementReference>$Record.Id</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>OwnerId</field>
-            <value>
-                <elementReference>$Record.OwnerId</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>Status</field>
-            <value>
-                <stringValue>Open</stringValue>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>Priority</field>
-            <value>
-                <stringValue>High</stringValue>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>Description</field>
-            <value>
-                <stringValue>One or more specialist disciplines required for GIS-detected protection layers could not be matched to an active ServiceResource. Manual team assignment is required. Verify that ServiceResource records exist with matching nepa_discipline__c values for all NEPA_Layer_Discipline__mdt Discipline__c entries.</stringValue>
-            </value>
-        </inputAssignments>
-        <object>Task</object>
-    </recordCreates>
-
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <!-- Error handlers                                                     -->
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <assignments>
-        <name>Handle_Error</name>
-        <label>Capture Fault Message</label>
-        <locationX>880</locationX>
-        <locationY>408</locationY>
-        <assignmentItems>
-            <assignToReference>var_ErrorMessage</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>$Flow.FaultMessage</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Create_ErrorTask</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Handle_WO_Fault</name>
-        <label>Capture WO Generator Fault</label>
-        <locationX>440</locationX>
-        <locationY>2328</locationY>
-        <assignmentItems>
-            <assignToReference>var_ErrorMessage</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>$Flow.FaultMessage</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Create_ErrorTask</targetReference>
-        </connector>
-    </assignments>
-
     <recordCreates>
         <name>Create_ErrorTask</name>
         <label>Create Error Alert Task</label>
@@ -1182,7 +1016,406 @@
         </inputAssignments>
         <object>Task</object>
     </recordCreates>
-
+    <recordCreates>
+        <name>Create_UnmatchedTask</name>
+        <label>Create Unmatched Disciplines Alert Task</label>
+        <locationX>440</locationX>
+        <locationY>2808</locationY>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <stringValue>Team Assembly: Manual Assignment Required for Unmatched Disciplines</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhatId</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>$Record.OwnerId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Open</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Priority</field>
+            <value>
+                <stringValue>High</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Description</field>
+            <value>
+                <stringValue>One or more specialist disciplines required for GIS-detected protection layers could not be matched to an active ServiceResource. Manual team assignment is required. Verify that ServiceResource records exist with matching nepa_discipline__c values for all NEPA_Layer_Discipline__mdt Discipline__c entries.</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Task</object>
+    </recordCreates>
+    <!-- Inline WO generation: bulk create Work Orders -->
+    <recordCreates>
+        <name>Create_WorkOrdersInline</name>
+        <label>Bulk Create Work Orders</label>
+        <locationX>176</locationX>
+        <locationY>2688</locationY>
+        <connector>
+            <targetReference>Decision_UnmatchedDisciplines</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_WO_Fault</targetReference>
+        </faultConnector>
+        <inputReference>var_NewWOsCollection</inputReference>
+    </recordCreates>
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <recordLookups>
+        <name>GetRelatedProcess</name>
+        <label>Get Related NEPA Process</label>
+        <locationX>176</locationX>
+        <locationY>168</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_ProcessFound</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>1 AND 2</filterLogic>
+        <filters>
+            <field>nepa_related_project__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_process_status__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Completed</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>IndividualApplication</object>
+        <outputReference>var_RelatedProcess</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Name</queriedFields>
+        <queriedFields>OwnerId</queriedFields>
+        <queriedFields>AccountId</queriedFields>
+        <sortField>CreatedDate</sortField>
+        <sortOrder>Desc</sortOrder>
+    </recordLookups>
+    <recordLookups>
+        <name>CheckExistingAutoTeam</name>
+        <label>Check Existing Auto Team Members</label>
+        <locationX>176</locationX>
+        <locationY>408</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_ReRunOrFirstTime</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>1 AND 2</filterLogic>
+        <filters>
+            <field>nepa_process__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_RelatedProcess.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_assembly_source__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>GIS_Auto_Assembly</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>nepa_process_team_member__c</object>
+        <outputReference>var_ExistingAutoTeam</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>nepa_active__c</queriedFields>
+    </recordLookups>
+    <recordLookups>
+        <name>GetExistingAutoWOs</name>
+        <label>Get Existing Auto-Generated Work Orders</label>
+        <locationX>176</locationX>
+        <locationY>888</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_AutoWOsExist</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>1 AND 2</filterLogic>
+        <filters>
+            <field>nepa_process__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_RelatedProcess.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_auto_generated__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>WorkOrder</object>
+        <outputReference>var_ExistingAutoWOs</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Status</queriedFields>
+    </recordLookups>
+    <recordLookups>
+        <name>GetDetectedLayers</name>
+        <label>Get Hit Detected Layers</label>
+        <locationX>176</locationX>
+        <locationY>1368</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_LayersFound</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>1 AND 2</filterLogic>
+        <filters>
+            <field>nepa_program__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_is_hit__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>nepa_detected_protection_layer__c</object>
+        <outputReference>var_HitLayers</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>nepa_layer_developer_name__c</queriedFields>
+        <queriedFields>nepa_layer_label__c</queriedFields>
+        <sortField>nepa_layer_developer_name__c</sortField>
+        <sortOrder>Asc</sortOrder>
+    </recordLookups>
+    <recordLookups>
+        <name>GetAllLayerDisciplines</name>
+        <label>Get All Active Layer Discipline CMT Records</label>
+        <locationX>176</locationX>
+        <locationY>1608</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_BuildUniqueDisciplines</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Active__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>NEPA_Layer_Discipline__mdt</object>
+        <outputReference>var_AllLayerDisciplines</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>GIS_Layer_Developer_Name__c</queriedFields>
+        <queriedFields>Discipline__c</queriedFields>
+        <queriedFields>Work_Type_Developer_Name__c</queriedFields>
+        <queriedFields>WO_Subject_Template__c</queriedFields>
+        <queriedFields>WO_Description_Template__c</queriedFields>
+        <queriedFields>WO_Duration_Minutes__c</queriedFields>
+        <queriedFields>WO_Priority__c</queriedFields>
+        <queriedFields>APT_Developer_Name__c</queriedFields>
+        <queriedFields>Sort_Order__c</queriedFields>
+        <sortField>Sort_Order__c</sortField>
+        <sortOrder>Asc</sortOrder>
+    </recordLookups>
+    <recordLookups>
+        <name>GetServiceResource</name>
+        <label>Get Service Resource for Discipline</label>
+        <locationX>400</locationX>
+        <locationY>1968</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_SRFound</targetReference>
+        </connector>
+        <filterLogic>1 AND 2</filterLogic>
+        <filters>
+            <field>nepa_discipline__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_CMTDiscipline</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>IsActive</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ServiceResource</object>
+        <outputReference>var_MatchedSR</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Name</queriedFields>
+        <queriedFields>nepa_discipline__c</queriedFields>
+    </recordLookups>
+    <!-- Inline WO generation: load all WorkTypes once -->
+    <recordLookups>
+        <name>GetAllWorkTypes</name>
+        <label>Get All Work Types</label>
+        <locationX>176</locationX>
+        <locationY>2328</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>GetAllCMTForWO</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_WO_Fault</targetReference>
+        </faultConnector>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>WorkType</object>
+        <outputReference>var_AllWorkTypes</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Name</queriedFields>
+        <queriedFields>External_ID__c</queriedFields>
+    </recordLookups>
+    <!-- Inline WO generation: separate CMT query so loop collection differs from var_AllLayerDisciplines -->
+    <recordLookups>
+        <name>GetAllCMTForWO</name>
+        <label>Get CMT Records for WO Build</label>
+        <locationX>176</locationX>
+        <locationY>2388</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_BuildWOs</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_WO_Fault</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Active__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>NEPA_Layer_Discipline__mdt</object>
+        <outputReference>var_AllCMTForWO</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Discipline__c</queriedFields>
+        <queriedFields>Work_Type_Developer_Name__c</queriedFields>
+        <queriedFields>WO_Subject_Template__c</queriedFields>
+        <queriedFields>WO_Description_Template__c</queriedFields>
+        <queriedFields>WO_Duration_Minutes__c</queriedFields>
+        <queriedFields>WO_Priority__c</queriedFields>
+        <sortField>Sort_Order__c</sortField>
+        <sortOrder>Asc</sortOrder>
+    </recordLookups>
+    <recordUpdates>
+        <name>Update_DeactivatedMembers</name>
+        <label>Bulk Deactivate Team Members</label>
+        <locationX>176</locationX>
+        <locationY>648</locationY>
+        <connector>
+            <targetReference>GetExistingAutoWOs</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>1 AND 2 AND 3</filterLogic>
+        <filters>
+            <field>nepa_process__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_RelatedProcess.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_assembly_source__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>GIS_Auto_Assembly</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_active__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>nepa_active__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <object>nepa_process_team_member__c</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_CancelledWOs</name>
+        <label>Bulk Cancel Auto Work Orders</label>
+        <locationX>176</locationX>
+        <locationY>1008</locationY>
+        <connector>
+            <targetReference>GetDetectedLayers</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>1 AND 2 AND 3</filterLogic>
+        <filters>
+            <field>nepa_process__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_RelatedProcess.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_auto_generated__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Status</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Canceled</stringValue>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Canceled</stringValue>
+            </value>
+        </inputAssignments>
+        <object>WorkOrder</object>
+    </recordUpdates>
     <!-- code-analyzer-suppress flow:MissingFaultHandler - terminal error handler; fault on error logger would be circular -->
     <subflows>
         <name>Call_ErrorLogger</name>
@@ -1207,9 +1440,6 @@
             <value><elementReference>$User.Id</elementReference></value>
         </inputAssignments>
     </subflows>
-
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <!-- VARIABLES                                                          -->
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <variables>
         <name>var_RelatedProcess</name>
@@ -1219,7 +1449,6 @@
         <isOutput>false</isOutput>
         <objectType>IndividualApplication</objectType>
     </variables>
-
     <variables>
         <name>var_ExistingAutoTeam</name>
         <dataType>SObject</dataType>
@@ -1228,25 +1457,6 @@
         <isOutput>false</isOutput>
         <objectType>nepa_process_team_member__c</objectType>
     </variables>
-
-    <variables>
-        <name>var_MembersToDeactivate</name>
-        <dataType>SObject</dataType>
-        <isCollection>true</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>nepa_process_team_member__c</objectType>
-    </variables>
-
-    <variables>
-        <name>var_CurrentMember</name>
-        <dataType>SObject</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>nepa_process_team_member__c</objectType>
-    </variables>
-
     <variables>
         <name>var_ExistingAutoWOs</name>
         <dataType>SObject</dataType>
@@ -1255,25 +1465,6 @@
         <isOutput>false</isOutput>
         <objectType>WorkOrder</objectType>
     </variables>
-
-    <variables>
-        <name>var_WOsToCancel</name>
-        <dataType>SObject</dataType>
-        <isCollection>true</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>WorkOrder</objectType>
-    </variables>
-
-    <variables>
-        <name>var_CurrentWO</name>
-        <dataType>SObject</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>WorkOrder</objectType>
-    </variables>
-
     <variables>
         <name>var_HitLayers</name>
         <dataType>SObject</dataType>
@@ -1282,7 +1473,6 @@
         <isOutput>false</isOutput>
         <objectType>nepa_detected_protection_layer__c</objectType>
     </variables>
-
     <variables>
         <name>var_AllLayerDisciplines</name>
         <dataType>SObject</dataType>
@@ -1291,7 +1481,6 @@
         <isOutput>false</isOutput>
         <objectType>NEPA_Layer_Discipline__mdt</objectType>
     </variables>
-
     <variables>
         <name>var_UniqueDisciplines</name>
         <dataType>String</dataType>
@@ -1299,25 +1488,6 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
-
-    <variables>
-        <name>var_LayerDisciplinePairs</name>
-        <dataType>SObject</dataType>
-        <isCollection>true</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>NEPA_Layer_Discipline__mdt</objectType>
-    </variables>
-
-    <variables>
-        <name>var_CurrentPair</name>
-        <dataType>SObject</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>NEPA_Layer_Discipline__mdt</objectType>
-    </variables>
-
     <variables>
         <name>var_MatchedSR</name>
         <dataType>SObject</dataType>
@@ -1326,7 +1496,6 @@
         <isOutput>false</isOutput>
         <objectType>ServiceResource</objectType>
     </variables>
-
     <variables>
         <name>var_NewTeamMembers</name>
         <dataType>SObject</dataType>
@@ -1335,7 +1504,6 @@
         <isOutput>false</isOutput>
         <objectType>nepa_process_team_member__c</objectType>
     </variables>
-
     <variables>
         <name>var_NewMember</name>
         <dataType>SObject</dataType>
@@ -1344,7 +1512,6 @@
         <isOutput>false</isOutput>
         <objectType>nepa_process_team_member__c</objectType>
     </variables>
-
     <variables>
         <name>var_UnmatchedDisciplines</name>
         <dataType>String</dataType>
@@ -1352,7 +1519,6 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
-
     <variables>
         <name>var_ErrorMessage</name>
         <dataType>String</dataType>
@@ -1360,5 +1526,173 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
+    <!-- Inline WO generation: new variables -->
+    <variables>
+        <name>var_AllWorkTypes</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>WorkType</objectType>
+    </variables>
+    <variables>
+        <name>var_NewWO</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>WorkOrder</objectType>
+    </variables>
+    <variables>
+        <name>var_NewWOsCollection</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>WorkOrder</objectType>
+    </variables>
+    <variables>
+        <name>var_WOTargetWorkType</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_WOSubjectTpl</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_WODescriptionTpl</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_WODuration</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+    </variables>
+    <variables>
+        <name>var_WOPriority</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_WODiscipline</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_CurrentWTExternalId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_CurrentWTId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_MatchedWTId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_CMTGISLayerDevName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_HitLayerDevName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
 
+    <variables>
+        <name>var_CMTDiscipline</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_CMTWorkTypeDeveloperName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_CMTWOSubjectTemplate</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_CMTWODescriptionTemplate</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_CMTWODurationMinutes</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+    </variables>
+    <variables>
+        <name>var_CMTWOPriority</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_CMTAPTDeveloperName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_HitLayerId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_AllCMTForWO</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>NEPA_Layer_Discipline__mdt</objectType>
+    </variables>
 </Flow>

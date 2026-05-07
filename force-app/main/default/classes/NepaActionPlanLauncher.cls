@@ -1,21 +1,10 @@
-/**
- * Invocable Apex called by NEPA_WO_Milestone_Setter to launch an Action Plan
- * Template against a newly created auto-generated Work Order.
- *
- * Flow passes: recordId (WorkOrder.Id), aptDeveloperName (ActionPlanTemplate.uniqueName).
- * Uses ConnectApi.ActionPlan.createActionPlan if available; falls back to DML
- * insertion of ActionPlan + ActionPlanItem for orgs without full FSL Action Plan
- * entitlement.
- *
- * Declared with @InvocableMethod so Flow can call it as an Apex Action element.
- */
 public with sharing class NepaActionPlanLauncher {
 
     public class LaunchRequest {
         @InvocableVariable(label='Record Id' description='WorkOrder.Id to attach the Action Plan to' required=true)
         public String recordId;
 
-        @InvocableVariable(label='APT Developer Name' description='ActionPlanTemplate.uniqueName to launch' required=true)
+        @InvocableVariable(label='APT Developer Name' description='ActionPlanTemplate.UniqueName to launch' required=true)
         public String aptDeveloperName;
     }
 
@@ -34,7 +23,6 @@ public with sharing class NepaActionPlanLauncher {
     )
     public static List<LaunchResult> launch(List<LaunchRequest> requests) {
         List<LaunchResult> results = new List<LaunchResult>();
-
         for (LaunchRequest req : requests) {
             LaunchResult res = new LaunchResult();
             try {
@@ -44,55 +32,42 @@ public with sharing class NepaActionPlanLauncher {
             }
             results.add(res);
         }
-
         return results;
     }
 
     private static String launchTemplate(String recordId, String aptDeveloperName) {
+        // Find the template by UniqueName
         List<ActionPlanTemplate> templates = [
-            SELECT Id, Name, TargetEntityType
+            SELECT Id, Name
             FROM ActionPlanTemplate
             WHERE UniqueName = :aptDeveloperName
-                AND IsActive = true
             LIMIT 1
         ];
-
         if (templates.isEmpty()) {
+            throw new AuraHandledException('ActionPlanTemplate not found: ' + aptDeveloperName);
+        }
+
+        // Find the active published version
+        List<ActionPlanTemplateVersion> versions = [
+            SELECT Id
+            FROM ActionPlanTemplateVersion
+            WHERE ActionPlanTemplateId = :templates[0].Id
+                AND Status = 'Active'
+            ORDER BY Version DESC
+            LIMIT 1
+        ];
+        if (versions.isEmpty()) {
             throw new AuraHandledException(
-                'ActionPlanTemplate not found or inactive: ' + aptDeveloperName
+                'No active ActionPlanTemplateVersion found for: ' + aptDeveloperName
             );
         }
 
-        ActionPlanTemplate apt = templates[0];
-
-        List<ActionPlanTemplateItem> items = [
-            SELECT Id, DisplayOrder, IsRequired, Name, ItemEntityType,
-                   ActionPlanTemplateId
-            FROM ActionPlanTemplateItem
-            WHERE ActionPlanTemplateId = :apt.Id
-            ORDER BY DisplayOrder ASC
-        ];
-
         ActionPlan ap = new ActionPlan();
-        ap.Name                  = apt.Name;
-        ap.ActionPlanTemplateId  = apt.Id;
-        ap.TargetId              = recordId;
-        ap.StartDate             = Date.today();
+        ap.Name                         = templates[0].Name;
+        ap.ActionPlanTemplateVersionId  = versions[0].Id;
+        ap.TargetId                     = recordId;
+        ap.StartDate                    = Date.today();
         insert ap;
-
-        if (!items.isEmpty()) {
-            List<ActionPlanItem> apItems = new List<ActionPlanItem>();
-            for (ActionPlanTemplateItem ti : items) {
-                ActionPlanItem api = new ActionPlanItem();
-                api.ActionPlanId            = ap.Id;
-                api.ActionPlanTemplateItemId = ti.Id;
-                api.IsRequired              = ti.IsRequired;
-                api.DisplayOrder            = ti.DisplayOrder;
-                api.ItemEntityType          = ti.ItemEntityType;
-                apItems.add(api);
-            }
-            insert apItems;
-        }
 
         return ap.Id;
     }

@@ -50,40 +50,59 @@
     <status>Active</status>
 
     <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <!-- Step 1: Find CMT row for this Work Order's discipline              -->
+    <!-- ACTION CALLS                                                       -->
     <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <recordLookups>
-        <name>GetDisciplineCMT</name>
-        <label>Get Discipline CMT Record</label>
+    <actionCalls>
+        <name>Launch_ActionPlanTemplate</name>
+        <label>Launch Action Plan Template</label>
         <locationX>176</locationX>
-        <locationY>168</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <locationY>408</locationY>
+        <actionName>NepaActionPlanLauncher</actionName>
+        <actionType>apex</actionType>
         <connector>
-            <targetReference>Decision_CMTFound</targetReference>
+            <targetReference>Decision_APTLaunchError</targetReference>
         </connector>
-        <filterLogic>1 AND 2</filterLogic>
-        <filters>
-            <field>Discipline__c</field>
-            <operator>EqualTo</operator>
+        <faultConnector>
+            <targetReference>Handle_APT_Fault</targetReference>
+        </faultConnector>
+        <inputParameters>
+            <name>recordId</name>
             <value>
-                <elementReference>$Record.nepa_discipline__c</elementReference>
+                <elementReference>$Record.Id</elementReference>
             </value>
-        </filters>
-        <filters>
-            <field>Active__c</field>
-            <operator>EqualTo</operator>
+        </inputParameters>
+        <inputParameters>
+            <name>aptDeveloperName</name>
             <value>
-                <booleanValue>true</booleanValue>
+                <elementReference>var_DisciplineCMT.APT_Developer_Name__c</elementReference>
             </value>
-        </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
-        <object>NEPA_Layer_Discipline__mdt</object>
-        <outputReference>var_DisciplineCMT</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>Discipline__c</queriedFields>
-        <queriedFields>APT_Developer_Name__c</queriedFields>
-    </recordLookups>
+        </inputParameters>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
 
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- ASSIGNMENTS                                                        -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <assignments>
+        <name>Handle_APT_Fault</name>
+        <label>Capture APT Fault Message</label>
+        <locationX>440</locationX>
+        <locationY>408</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Create_FaultTask</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- DECISIONS                                                           -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
     <decisions>
         <name>Decision_CMTFound</name>
         <label>CMT Found with APT?</label>
@@ -114,38 +133,6 @@
         </rules>
     </decisions>
 
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <!-- Step 2: Launch discipline-specific Action Plan Template via Apex   -->
-    <!-- NepaActionPlanLauncher invocable accepts recordId + aptDeveloperName -->
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <actionCalls>
-        <name>Launch_ActionPlanTemplate</name>
-        <label>Launch Action Plan Template</label>
-        <locationX>176</locationX>
-        <locationY>408</locationY>
-        <actionName>NepaActionPlanLauncher</actionName>
-        <actionType>apex</actionType>
-        <connector>
-            <targetReference>Decision_APTLaunchError</targetReference>
-        </connector>
-        <faultConnector>
-            <targetReference>Handle_APT_Fault</targetReference>
-        </faultConnector>
-        <inputParameters>
-            <name>recordId</name>
-            <value>
-                <elementReference>$Record.Id</elementReference>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>aptDeveloperName</name>
-            <value>
-                <elementReference>var_DisciplineCMT.APT_Developer_Name__c</elementReference>
-            </value>
-        </inputParameters>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </actionCalls>
-
     <decisions>
         <name>Decision_APTLaunchError</name>
         <label>APT Launch Succeeded?</label>
@@ -169,6 +156,9 @@
         </rules>
     </decisions>
 
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- RECORD CREATES                                                     -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
     <recordCreates>
         <name>Create_APT_ErrorTask</name>
         <label>Create APT Launch Error Task</label>
@@ -213,26 +203,6 @@
         <object>Task</object>
     </recordCreates>
 
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <!-- Fault handler for Apex action callout failure                      -->
-    <!-- ═══════════════════════════════════════════════════════════════════ -->
-    <assignments>
-        <name>Handle_APT_Fault</name>
-        <label>Capture APT Fault Message</label>
-        <locationX>440</locationX>
-        <locationY>408</locationY>
-        <assignmentItems>
-            <assignToReference>var_ErrorMessage</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>$Flow.FaultMessage</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Create_FaultTask</targetReference>
-        </connector>
-    </assignments>
-
     <recordCreates>
         <name>Create_FaultTask</name>
         <label>Create Fault Alert Task</label>
@@ -276,6 +246,41 @@
         </inputAssignments>
         <object>Task</object>
     </recordCreates>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- RECORD LOOKUPS                                                     -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <recordLookups>
+        <name>GetDisciplineCMT</name>
+        <label>Get Discipline CMT Record</label>
+        <locationX>176</locationX>
+        <locationY>168</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_CMTFound</targetReference>
+        </connector>
+        <filterLogic>1 AND 2</filterLogic>
+        <filters>
+            <field>Discipline__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.nepa_discipline__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Active__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>NEPA_Layer_Discipline__mdt</object>
+        <outputReference>var_DisciplineCMT</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Discipline__c</queriedFields>
+        <queriedFields>APT_Developer_Name__c</queriedFields>
+    </recordLookups>
 
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <!-- VARIABLES                                                          -->
