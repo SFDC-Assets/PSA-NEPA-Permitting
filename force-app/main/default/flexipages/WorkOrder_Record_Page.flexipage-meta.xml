@@ -34,7 +34,63 @@
         <type>Region</type>
     </flexiPageRegions>
 
-    <!-- ASSIGNMENT — Column 1 -->
+    <!-- WORK ORDER — Column 1 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Subject</fieldItem>
+                <identifier>wo_subject</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Status</fieldItem>
+                <identifier>wo_status</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Priority</fieldItem>
+                <identifier>wo_priority</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.WorkTypeId</fieldItem>
+                <identifier>wo_work_type</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Duration</fieldItem>
+                <identifier>wo_duration</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>wo-core-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- WORK ORDER — Column 2 -->
     <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
@@ -43,213 +99,7 @@
                     <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_process__c</fieldItem>
-                <identifier>tm_process</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_user__c</fieldItem>
-                <identifier>tm_user</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_role_type__c</fieldItem>
-                <identifier>tm_role_type</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_agency__c</fieldItem>
-                <identifier>tm_agency</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>tm-assignment-c1</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- ASSIGNMENT — Column 2 -->
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_active__c</fieldItem>
-                <identifier>tm_active</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_start_date__c</fieldItem>
-                <identifier>tm_start_date</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_end_date__c</fieldItem>
-                <identifier>tm_end_date</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_notes__c</fieldItem>
-                <identifier>tm_notes</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>tm-assignment-c2</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- ASSIGNMENT — Columns Wrapper -->
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>tm-assignment-c1</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>tm_assignment_col1</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>tm-assignment-c2</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>tm_assignment_col2</identifier>
-            </componentInstance>
-        </itemInstances>
-        <name>tm-assignment-cols</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- PROVENANCE — Column 1 -->
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_data_record_version__c</fieldItem>
-                <identifier>tm_prov_version</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_data_source_agency__c</fieldItem>
-                <identifier>tm_prov_source_agency</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_data_source_system__c</fieldItem>
-                <identifier>tm_prov_source_system</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>tm-prov-c1</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- PROVENANCE — Column 2 -->
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_record_owner_agency__c</fieldItem>
-                <identifier>tm_prov_owner_agency</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_retrieved_timestamp__c</fieldItem>
-                <identifier>tm_prov_retrieved</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>tm-prov-c2</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- PROVENANCE — Columns Wrapper -->
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>tm-prov-c1</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>tm_prov_col1</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>tm-prov-c2</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>tm_prov_col2</identifier>
-            </componentInstance>
-        </itemInstances>
-        <name>tm-prov-cols</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- GIS AUTO-ASSEMBLY — Column 1 -->
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_assembly_source__c</fieldItem>
-                <identifier>tm_assembly_source</identifier>
+                <identifier>wo_nepa_process</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -259,23 +109,7 @@
                     <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_discipline__c</fieldItem>
-                <identifier>tm_discipline</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>tm-gis-c1</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- GIS AUTO-ASSEMBLY — Column 2 -->
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_service_resource__c</fieldItem>
-                <identifier>tm_service_resource</identifier>
+                <identifier>wo_nepa_discipline</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -285,36 +119,86 @@
                     <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_trigger_layer__c</fieldItem>
-                <identifier>tm_trigger_layer</identifier>
+                <identifier>wo_nepa_trigger_layer</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>tm-gis-c2</name>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_auto_generated__c</fieldItem>
+                <identifier>wo_nepa_auto_generated</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.AccountId</fieldItem>
+                <identifier>wo_account</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>wo-core-c2</name>
         <type>Facet</type>
     </flexiPageRegions>
 
-    <!-- GIS AUTO-ASSEMBLY — Columns Wrapper -->
+    <!-- WORK ORDER — Columns Wrapper -->
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>body</name>
-                    <value>tm-gis-c1</value>
+                    <value>wo-core-c1</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:column</componentName>
-                <identifier>tm_gis_col1</identifier>
+                <identifier>wo_core_col1</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>body</name>
-                    <value>tm-gis-c2</value>
+                    <value>wo-core-c2</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:column</componentName>
-                <identifier>tm_gis_col2</identifier>
+                <identifier>wo_core_col2</identifier>
             </componentInstance>
         </itemInstances>
-        <name>tm-gis-cols</name>
+        <name>wo-core-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- DESCRIPTION — full width -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Description</fieldItem>
+                <identifier>wo_description</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>wo-desc-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>wo-desc-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>wo_desc_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>wo-desc-cols</name>
         <type>Facet</type>
     </flexiPageRegions>
 
@@ -324,7 +208,7 @@
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
-                    <value>tm-assignment-cols</value>
+                    <value>wo-core-cols</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>horizontalAlignment</name>
@@ -332,17 +216,17 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>label</name>
-                    <value>Assignment</value>
+                    <value>Work Order Details</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
-                <identifier>tm_section_assignment</identifier>
+                <identifier>wo_section_core</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
-                    <value>tm-gis-cols</value>
+                    <value>wo-desc-cols</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>horizontalAlignment</name>
@@ -350,28 +234,10 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>label</name>
-                    <value>GIS Auto-Assembly</value>
+                    <value>Description</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
-                <identifier>tm_section_gis</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>columns</name>
-                    <value>tm-prov-cols</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>horizontalAlignment</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>label</name>
-                    <value>Data Provenance</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:fieldSection</componentName>
-                <identifier>tm_section_provenance</identifier>
+                <identifier>wo_section_desc</identifier>
             </componentInstance>
         </itemInstances>
         <mode>Replace</mode>
@@ -507,9 +373,9 @@
         <type>Region</type>
     </flexiPageRegions>
 
-    <masterLabel>NEPA Process Team Member Record Page</masterLabel>
+    <masterLabel>NEPA Work Order Record Page</masterLabel>
     <parentFlexiPage>flexipage__default_rec_L</parentFlexiPage>
-    <sobjectType>nepa_process_team_member__c</sobjectType>
+    <sobjectType>WorkOrder</sobjectType>
     <template>
         <name>flexipage:recordHomeTemplateDesktop</name>
     </template>

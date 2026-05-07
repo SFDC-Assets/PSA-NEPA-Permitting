@@ -280,6 +280,16 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
+                <fieldItem>Record.nepa_data_source_agency__c</fieldItem>
+                <identifier>lit_prov_source_agency</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
                 <fieldItem>Record.nepa_data_source_system__c</fieldItem>
                 <identifier>lit_prov_source_system</identifier>
             </fieldInstance>

@@ -1293,7 +1293,7 @@
         <field>nepa_detected_protection_layer__c.nepa_is_hit__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_detected_protection_layer__c fields — nepa_program__c (MasterDetail) omitted: system-managed -->
+    <!-- nepa_detected_protection_layer__c fields — nepa_program__c (MasterDetail) and nepa_layer_developer_name__c (Required) omitted: system-managed -->
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_detected_protection_layer__c.nepa_layer_label__c</field>
@@ -1874,6 +1874,26 @@
         <object>nepa_detected_protection_layer__c</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
+    <!-- WorkOrder (FSL) — created by NEPA_Work_Order_Generator flow -->
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>WorkOrder</object>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <!-- ServiceResource (FSL) — read-only; system-managed by FSL -->
+    <objectPermissions>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>ServiceResource</object>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
     <!-- NepaCeqExportService classAccess omitted — class not yet implemented -->
     <classAccesses>
         <apexClass>NepaLayerDisciplineResolver</apexClass>
@@ -1906,6 +1926,14 @@
     </tabSettings>
     <tabSettings>
         <tab>nepa_process_team_member__c</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>nepa_detected_protection_layer__c</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>standard-WorkOrder</tab>
         <visibility>Available</visibility>
     </tabSettings>
 </PermissionSet>
