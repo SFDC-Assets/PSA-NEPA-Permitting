@@ -16,7 +16,7 @@ public with sharing class NepaLayerDisciplineResolver {
         @InvocableVariable(label='Related App Id' required=true)
         public Id relatedAppId;
         @InvocableVariable(label='Account Id' required=false)
-        public Id accountId;
+        public String accountId;
     }
 
     public class Result {
@@ -153,6 +153,7 @@ public with sharing class NepaLayerDisciplineResolver {
                         nepa_process__c           = req.relatedAppId,
                         nepa_service_resource__c  = srId,
                         nepa_discipline__c        = cmt.Discipline__c,
+                        nepa_role_type__c         = 'Field Team Member',
                         nepa_assembly_source__c   = 'GIS_Auto_Assembly',
                         nepa_active__c            = true,
                         nepa_trigger_layer__c     = layerId
@@ -171,7 +172,7 @@ public with sharing class NepaLayerDisciplineResolver {
                     Subject                = woSubject,
                     Description            = woDesc,
                     WorkTypeId             = workTypeId,
-                    AccountId              = req.accountId,
+                    AccountId              = String.isNotBlank(req.accountId) ? (Id) req.accountId : null,
                     Duration               = cmt.WO_Duration_Minutes__c,
                     DurationType           = 'Minutes',
                     Priority               = String.isNotBlank(cmt.WO_Priority__c) ? cmt.WO_Priority__c : 'Normal',
