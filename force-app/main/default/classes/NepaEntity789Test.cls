@@ -11,8 +11,8 @@
  *   and multiple role assignments per process.
  *
  * Entity 9 — RegulatoryCode (PSS standard object + custom fields): CRUD,
- *   custom field persistence, lookup from nepa_decision_element__c, and
- *   lookup from IndividualApplication.nepa_legal_structure__c.
+ *   custom field persistence, lookup from nepa_decision_element__c.
+ *   RegulatoryCode is a standalone Entity 9 — no FK on IndividualApplication.
  */
 @IsTest
 private class NepaEntity789Test {
@@ -370,16 +370,17 @@ private class NepaEntity789Test {
     }
 
     @IsTest
-    static void regulatoryCode_lookup_from_individualApplication() {
+    static void regulatoryCode_standalone_queryable_by_citation() {
+        // RegulatoryCode is standalone Entity 9 — no FK on IndividualApplication.
+        // Verify records are queryable by citation (Name) and custom fields persist.
         RegulatoryCode rc = NepaTestFactory.insertRegulatoryCode('42 U.S.C. 4332', 'NEPA Statute');
-        IndividualApplication proc = getProcess();
-        proc.nepa_legal_structure__c = rc.Id;
-        update proc;
 
-        IndividualApplication result = [
-            SELECT nepa_legal_structure__c FROM IndividualApplication WHERE Id = :proc.Id
+        RegulatoryCode result = [
+            SELECT Id, Name, Subject, nepa_compliance_requirements__c
+            FROM RegulatoryCode WHERE Name = '42 U.S.C. 4332' LIMIT 1
         ];
-        System.assertEquals(rc.Id, result.nepa_legal_structure__c);
+        System.assertEquals(rc.Id, result.Id);
+        System.assertEquals('NEPA Statute', result.Subject);
     }
 
     @IsTest

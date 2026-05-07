@@ -20,6 +20,7 @@ Open-source NEPA permitting accelerator built on Salesforce Public Sector Soluti
 | 006 | [PII / CUI Protection Architecture](#adr-006--pii--cui-protection-architecture) | Accepted |
 | 007 | [LDV and Data Skew Mitigations](#adr-007--ldv-and-data-skew-mitigations) | Accepted |
 | 008 | [Agentforce / RAG Data Readiness](#adr-008--agentforce--rag-data-readiness) | Accepted |
+| 009 | [Apex Bridge for Flow-to-OmniIP Invocation](#adr-009--apex-bridge-for-flow-to-omniip-invocation) | Accepted |
 
 ---
 
@@ -310,6 +311,62 @@ Phase 1 structures comment and document metadata fields specifically for Phase 2
 - **Section tagging is manual until Phase 2.** The `nepa_section_tags__c` field exists in Phase 1 but is populated manually or left blank. Phase 2 Agentforce document ingestion actions will auto-tag sections based on document structure analysis.
 - **Validation rule for AI-generated content is deferred.** The `nepa_ai_generated__c` / `nepa_reviewer__c` / `nepa_reviewed_date__c` fields are deployed in Phase 1, but the enforcement validation rule is a Phase 2 deliverable. During Phase 1, these fields are informational only.
 - **HTML sanitization scope.** The comment body validation rule must balance sanitization (removing harmful markup) with preservation (some public comment submission systems embed light formatting). The exact regex pattern should be tested against a representative sample of the agency's actual comment submissions before activation.
+
+---
+
+## ADR 009 -- Apex Bridge for Flow-to-OmniIP Invocation
+
+**Status:** Accepted
+**Date:** 2026-05-07
+**Deciders:** GPS Accelerators architecture team
+
+### Context
+
+`NEPA_GIS_Proximity_Check` is a record-triggered Flow that must invoke `NEPA_GISProximityIP` (an OmniStudio Integration Procedure) asynchronously after a Program record's coordinates are saved. The natural approach in Flow is a `<subflows>` element referencing the IP by developer name.
+
+During deployment it was discovered that OmniIntegrationProcedures are stored as `OmniProcess` sObject records, not as Flow records. The Metadata API resolves `<subflows>` references by looking up a Flow record with the matching developer name. When the referenced name resolves to an `OmniProcess` record instead of a Flow record, the platform does not return a structured error. Instead, it crashes at the HTTP transport level during Flow activation with `UNKNOWN_EXCEPTION`, leaving no actionable error message.
+
+This behavior is reproducible across org types and is not caused by Flow XML syntax errors, XML encoding issues, or deployment configuration. It is an architectural constraint of the Metadata API: `<subflows>` only resolves Flow-type records.
+
+### Decision
+
+All Flow invocations of OmniIntegrationProcedures use an Apex `@InvocableMethod` bridge class. The Flow calls the bridge via `<actionCalls actionType=apex>`, and the bridge calls the IP at runtime via the OmniStudio service API.
+
+**Bridge class:** `NepaGISProximityIPInvoker`
+
+**Correct OmniStudio service invocation pattern:**
+
+```apex
+omnistudio.IntegrationProcedureService svc = new omnistudio.IntegrationProcedureService();
+Object result = svc.invokeMethod('runIntegrationService', inputMap, outputMap, options);
+```
+
+**Why `invokeMethod` and not `runIntegrationService`:**
+The `omnistudio.IntegrationProcedureService` class in the installed package version exposes `invokeMethod(String, Map, Map, Map)` as an instance method. The static `runIntegrationService()` overload and the inner `IntegrationProcedureRunner` class referenced in OmniStudio documentation do not exist in this package version — attempting to call them produces a compile-time error. The correct method was discovered by probing the instance in an anonymous Apex execution.
+
+**Flow element shape:**
+
+```xml
+<actionCalls>
+    <name>InvokeGISProximityIP</name>
+    <actionName>NepaGISProximityIPInvoker</actionName>
+    <actionType>apex</actionType>
+    <inputParameters>
+        <name>projectId</name>
+        <value><elementReference>$Record.Id</elementReference></value>
+    </inputParameters>
+    <connector>...</connector>
+    <faultConnector>...</faultConnector>
+</actionCalls>
+```
+
+### Consequences
+
+- **One Apex class per IP invocation.** Each OmniIntegrationProcedure called from a Flow requires its own `@InvocableMethod` bridge class. For this accelerator that is currently one class (`NepaGISProximityIPInvoker`). If additional IPs are added to the GIS or team-assembly pipeline, new bridge classes follow the same pattern.
+- **`callout=true` on the `@InvocableMethod`.** The IP performs HTTP callouts to ArcGIS endpoints. The `@InvocableMethod` annotation requires `callout=true` to allow callouts in the async execution context. Without it, the IP call fails with a callout-not-allowed exception.
+- **Deployment order dependency.** The Apex bridge class must be deployed before the Flow that references it. Phase 7 (Apex) precedes Phase 8 (Flows) in `deploy.sh` — this ordering is correct and intentional.
+- **OmniStudio package version sensitivity.** The `invokeMethod` API was confirmed working in the OmniStudio package version present in NEPADEV and NEPADEMO as of 2026-05-07. If the org is upgraded to a newer OmniStudio package version that changes the service API, the bridge class method call must be re-verified against the new package.
+- **ADR 002 partial exception.** ADR 002 establishes a flow-only, no-Apex policy for risk intelligence automation. This Apex bridge is a narrow exception: it is a thin infrastructure adapter with no business logic. All business logic remains in the IP and the Flow. The bridge class is a single method with no conditional branching beyond exception handling.
 
 ---
 

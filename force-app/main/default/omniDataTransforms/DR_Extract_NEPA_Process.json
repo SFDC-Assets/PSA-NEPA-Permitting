@@ -21,7 +21,6 @@
     {"SObjectField": "nepa_related_project__c", "OutputKey": "project_id", "DataType": "STRING"},
     {"SObjectField": "nepa_parent_process__c", "OutputKey": "parent_process_id", "DataType": "STRING"},
     {"SObjectField": "nepa_joint_lead_agency__c", "OutputKey": "joint_lead_agency", "DataType": "STRING"},
-    {"SObjectField": "nepa_legal_structure__c", "OutputKey": "legal_structure_id", "DataType": "STRING"},
     {"SObjectField": "nepa_start_date__c", "OutputKey": "start_date", "DataType": "DATE"},
     {"SObjectField": "nepa_completion_date__c", "OutputKey": "completion_date", "DataType": "DATE"},
     {"SObjectField": "nepa_public_comment_period_start__c", "OutputKey": "public_comment_period_start", "DataType": "DATE"},

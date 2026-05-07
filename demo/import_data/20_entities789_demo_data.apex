@@ -160,7 +160,8 @@ for (Map<String, String> def : rcDefs) {
         RegulatoryCode rc = new RegulatoryCode();
         rc.Name                           = citation;
         rc.Subject                        = def.get('subject');
-        rc.Description                    = def.get('description');
+        String descVal = def.get('description');
+        rc.Description                    = (descVal != null && descVal.length() > 255) ? descVal.substring(0, 255) : descVal;
         rc.ExternalUrl                    = def.get('externalUrl');
         rc.nepa_compliance_requirements__c = def.get('compliance');
         rc.RegulatoryAuthorityId          = raIdByName.get(def.get('authority'));
@@ -179,17 +180,11 @@ if (!rcsToInsert.isEmpty()) {
     System.debug('RegulatoryCode inserted: ' + rcsToInsert.size());
 }
 
-// ── 9c. Wire IndividualApplication.nepa_legal_structure__c → 43 CFR § 3809.11 ─
-
-Id planOfOpsRcId = rcIdByCitation.get('43 CFR § 3809.11');
-if (planOfOpsRcId != null) {
-    IndividualApplication ia = new IndividualApplication(
-        Id                   = appId,
-        nepa_legal_structure__c = planOfOpsRcId
-    );
-    update ia;
-    System.debug('IndividualApplication.nepa_legal_structure__c wired: ' + planOfOpsRcId);
-}
+// ── 9c. RegulatoryCode records are standalone Entity 9 — no FK wiring needed ──
+// RegulatoryCode is related to the NEPA process by domain context (BLM Plan of
+// Operations reviews are governed by the 7 citations above). No lookup field on
+// IndividualApplication — query RegulatoryCode directly by citation or authority.
+System.debug('RegulatoryCode records created: ' + rcsToInsert.size() + ' (standalone Entity 9 — no IA FK).');
 
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -433,4 +428,4 @@ if (!gisToInsert.isEmpty()) {
     System.debug('nepa_gis_data_element__c inserted: ' + gisToInsert.size());
 }
 
-System.debug('Step 20 complete: Entity 9 (RegulatoryCode), Entity 8 (Team Members), Entity 7 (GIS) loaded for Carrie Placer Mine IDI-38709.');
+System.debug('Step 20 complete: Entity 9 (RegulatoryCode × 7 standalone), Entity 8 (Team Members), Entity 7 (GIS) loaded for Carrie Placer Mine IDI-38709.');

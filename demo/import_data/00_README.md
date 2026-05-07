@@ -46,7 +46,9 @@ Load files strictly in number order. Each file's parent records must exist befor
 | 17 | `17_nepa_litigation__c.csv` | nepa_litigation__c | 2 | insert (no ext ID) | Program (08) |
 | 18 | `18_postload_polymorphic.apex` | **Apex script** | — | — | Run after all CSVs; wires polymorphic lookups |
 | 19 | `19_Task.csv` | Task | 8 | `External_ID__c` | Loaded before or after Apex; WhatId/WhoId wired by step 18 |
-| 20 | `20_entities789_demo_data.apex` | **Apex script** | — | — | Run after step 18; creates RegulatoryAuthority (4), RegulatoryCode (7), nepa_process_team_member__c (7), Polygon (1), nepa_gis_data_element__c (5); wires Program lat/lon/polygon and IndividualApplication.nepa_legal_structure__c |
+| 20 | `20_entities789_demo_data.apex` | **Apex script** | — | — | Run after step 18; creates RegulatoryAuthority (4), RegulatoryCode (7 standalone Entity 9), nepa_process_team_member__c (7), Polygon (1), nepa_gis_data_element__c (5); wires Program lat/lon/polygon |
+| 21 | `21_postload_discipline.apex` | **Apex script** | — | — | Run after step 18; sets ServiceResource.nepa_discipline__c = 'NEPA Specialist' on DEMO_SR_001 (demo constraint: all 7 specialists share one SR) |
+| 22 | `22_postload_gis_team_assembly.apex` | **Apex script** | — | — | Run after steps 20–21; pre-seeds GIS proximity results (nepa_detected_protection_layer__c × 4), auto-assembled team members (× 3, GIS_Auto_Assembly), and auto-generated WorkOrders (× 3, nepa_auto_generated__c = true) for the Carrie Placer Mine; sets Program nepa_extraordinary_circumstances__c = true and nepa_gis_proximity_complete__c = true |
 
 ---
 
@@ -122,13 +124,31 @@ IndividualApplication (09)  [nepa_federal_unique_id__c = IDI-38709]
   ├── PublicComplaint.nepa_related_process__c (16)
   ├── Task.WhatId (19) — wired by Apex
   ├── nepa_process_team_member__c.nepa_process__c (20) — 7 ID team members
-  └── nepa_legal_structure__c → RegulatoryCode '43 CFR § 3809.11' (20)
+  (RegulatoryCode × 7 are standalone Entity 9 records — no FK on IndividualApplication)
 
 Program (08)  [also]
   ├── nepa_location_lat__c = 42.8701 (20)
   ├── nepa_location_lon__c = -116.9227 (20)
-  └── nepa_polygon__c → Polygon (20)
-        └── nepa_gis_data_element__c.nepa_polygon__c (20) — 5 GIS layers
+  ├── nepa_extraordinary_circumstances__c = true (22)
+  ├── nepa_gis_proximity_complete__c = true (22)
+  ├── nepa_protection_areas__c = "NWI Wetlands: … / FWS Critical Habitat: … / …" (22)
+  ├── nepa_polygon__c → Polygon (20)
+  │     └── nepa_gis_data_element__c.nepa_polygon__c (20) — 5 GIS layers
+  └── nepa_detected_protection_layer__c.nepa_program__c (22) — 4 records (1 per active layer)
+        ├── NWI_Wetlands       [is_hit=true,  EC=true]  — Freshwater Emergent Wetland × 3
+        ├── FWS_Critical_Habitat [is_hit=true, EC=true] — Greater Sage-Grouse Designated PHMA
+        ├── EPA_Superfund_NPL  [is_hit=false, EC=false] — 0 features (rural Owyhee County)
+        └── EJScreen_EJ_Index  [is_hit=true,  EC=false] — EJ Index = 18.3 (informational)
+
+IndividualApplication (09)  [also — GIS auto-assembly from step 22]
+  ├── nepa_process_team_member__c (nepa_assembly_source__c = 'GIS_Auto_Assembly') × 3
+  │     ├── Hydrologist            ← triggered by NWI_Wetlands layer
+  │     ├── Wildlife Biologist (Sage-Grouse) ← triggered by FWS_Critical_Habitat layer
+  │     └── NEPA Specialist        ← triggered by EJScreen_EJ_Index layer
+  └── WorkOrder (nepa_auto_generated__c = true) × 3
+        ├── Hydrology and Water Quality Assessment       (High,   480 min, DEMO_WT_001)
+        ├── Critical Habitat and Species Survey         (High,   480 min, DEMO_WT_002)
+        └── Environmental Justice Analysis              (Normal, 240 min, DEMO_WT_001)
 
 WorkOrder (13)
   └── ServiceAppointment.ParentRecordId (14)
@@ -161,6 +181,8 @@ ServiceAppointment (14)
 | Gate access non-overlap (shared resource constraint enforced) | `DEMO_SA_001–008` — no overlapping gate dates |
 | Hydrologist closes WO → IDWR permit task auto-fires | `DEMO_WO_002`; `DEMO_TASK_001` |
 | Geologist closes WO → EPA NPDES NOI task auto-fires | `DEMO_WO_003`; `DEMO_TASK_002` |
+| GIS check fires on lat/lon save; detects NWI Wetlands + FWS Critical Habitat → EC flag set | `nepa_detected_protection_layer__c` × 4; `Program.nepa_extraordinary_circumstances__c = true` |
+| System auto-assembles ID Team from GIS results; creates 3 scoping WOs | GIS_Auto_Assembly `nepa_process_team_member__c` × 3; `nepa_auto_generated__c` WorkOrder × 3 |
 | Plaintiff Intelligence flags ICL; routes as work order | `DEMO_PC_001`; `DEMO_WO_009`; `DEMO_TASK_004` |
 | OSC comment routed as work order | `DEMO_PC_002`; `DEMO_WO_010`; `DEMO_TASK_005` |
 | Required Document Registry all five green | Documents in ContentVersion load; `DEMO_TASK_007` |
@@ -187,6 +209,15 @@ sf data query --target-org $TARGET \
 
 sf data query --target-org $TARGET \
   --query "SELECT COUNT() FROM PublicComplaint WHERE nepa_related_process__r.nepa_federal_unique_id__c = 'IDI-38709'"
+
+sf data query --target-org $TARGET \
+  --query "SELECT nepa_layer_developer_name__c, nepa_is_hit__c, nepa_extraordinary_circumstances_triggered__c, nepa_feature_name__c FROM nepa_detected_protection_layer__c WHERE nepa_program__r.nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA' ORDER BY nepa_layer_developer_name__c"
+
+sf data query --target-org $TARGET \
+  --query "SELECT nepa_discipline__c, nepa_assembly_source__c, nepa_active__c FROM nepa_process_team_member__c WHERE nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709' AND nepa_assembly_source__c = 'GIS_Auto_Assembly'"
+
+sf data query --target-org $TARGET \
+  --query "SELECT Subject, nepa_discipline__c, Priority, Status FROM WorkOrder WHERE nepa_auto_generated__c = true AND nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'"
 ```
 
 ---
@@ -214,6 +245,11 @@ sf data delete bulk --sobject ServiceTerritory        --where "External_ID__c LI
 sf data delete bulk --sobject Contact                 --where "External_ID__c LIKE 'DEMO_CON_%'"   --target-org $TARGET --async
 sf data delete bulk --sobject Account                 --where "External_ID__c LIKE 'DEMO_ACCT_%'"  --target-org $TARGET --async
 sf data delete bulk --sobject OperatingHours          --where "External_ID__c LIKE 'DEMO_OH_%'"    --target-org $TARGET --async
+
+# Step 22 cleanup (run before WorkOrder and IndividualApplication deletes above)
+sf data delete bulk --sobject WorkOrder --where "nepa_auto_generated__c = true AND nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
+sf data delete bulk --sobject nepa_process_team_member__c --where "nepa_assembly_source__c = 'GIS_Auto_Assembly' AND nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
+sf data delete bulk --sobject nepa_detected_protection_layer__c --where "nepa_program__r.nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'" --target-org $TARGET --async
 
 # Step 20 cleanup (run before Program/IndividualApplication deletes above)
 sf data delete bulk --sobject nepa_gis_data_element__c --where "nepa_data_source_system__c IN ('BLM GeoBOE','NHD+ High Resolution','ArcGIS Online — SGMA PHMA','USFWS ArcGIS Online — ESA Critical Habitat','National Wetlands Inventory')" --target-org $TARGET --async

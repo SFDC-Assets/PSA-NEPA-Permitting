@@ -256,19 +256,6 @@
         <trackHistory>false</trackHistory>
         <type>Lookup</type>
     </fields>
-    <fields>
-        <fullName>nepa_legal_structure__c</fullName>
-        <deleteConstraint>SetNull</deleteConstraint>
-        <description>Primary legal authority governing this NEPA process (e.g., 40 CFR 1501.3 for CE determination). Links to the PSS RegulatoryCode record for compliance traceability per CEQ Standard Section 3.3.</description>
-        <inlineHelpText>Primary legal authority for this process. Links to a Regulatory Code record.</inlineHelpText>
-        <label>Primary Legal Authority</label>
-        <referenceTo>RegulatoryCode</referenceTo>
-        <relationshipLabel>NEPA Processes</relationshipLabel>
-        <relationshipName>NEPA_Processes</relationshipName>
-        <required>false</required>
-        <trackHistory>false</trackHistory>
-        <type>Lookup</type>
-    </fields>
     <!-- Phase 1 Risk Intelligence fields -->
     <fields>
         <fullName>nepa_risk_score__c</fullName>

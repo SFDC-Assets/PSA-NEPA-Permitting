@@ -458,7 +458,7 @@ The `DR_Extract_NEPA_TeamMember` DataRaptor Extract queries `nepa_process_team_m
 
 **LS-001 — Regulatory citation linkage per process** | **(B) Configuration**
 
-The Salesforce PSS `RegulatoryCode` object serves as CEQ Entity 9 (Legal Structure). `IndividualApplication` carries a `nepa_legal_structure__c` lookup field pointing to the primary `RegulatoryCode` for the process. The `RegulatoryCode` object stores:
+The Salesforce PSS `RegulatoryCode` object serves as CEQ Entity 9 (Legal Structure). `RegulatoryCode` records are standalone — no FK on `IndividualApplication`; they are queried directly by citation (`Name`) or authority. The `RegulatoryCode` object stores:
 
 | CEQ Property | Salesforce Field |
 |---|---|
@@ -795,7 +795,7 @@ Agency points of contact for each reference are provided under separate cover pe
 | UR-001 | Structured team role assignments | (B) | ✅ | nepa_process_team_member__c |
 | UR-002 | Active/inactive assignment flag | (B) | ✅ | nepa_active__c + field history |
 | UR-003 | Team members exportable in CEQ | (B) | ✅ | DR_Extract_NEPA_TeamMember |
-| LS-001 | Regulatory citation linkage | (B) | ✅ | RegulatoryCode + nepa_legal_structure__c |
+| LS-001 | Regulatory citation linkage | (B) | ✅ | RegulatoryCode (standalone Entity 9) |
 | LS-002 | Citations linked to decision elements | (B) | ✅ | nepa_decision_element__c + RegulatoryCode lookup |
 | LS-003 | Configurable citation registry | (A/B) | ✅ | RegulatoryCode EffectiveTo native |
 | AP-001 | Authenticated applicant portal | (A/B) | ✅ | Experience Cloud |

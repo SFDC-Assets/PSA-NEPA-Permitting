@@ -436,11 +436,7 @@ RegulatoryCode esa_7 = new RegulatoryCode(
 
 insert new List<RegulatoryCode>{ ceq_nepa, ceq_ce, ceq_eis, esa_7 };
 
-// Wire the CE process to the CE determination citation
-ceProcess.nepa_legal_structure__c = ceq_ce.Id;
-eisProcess.nepa_legal_structure__c = ceq_eis.Id;
-eaProcess.nepa_legal_structure__c = ceq_eis.Id;
-update new List<IndividualApplication>{ eisProcess, eaProcess, ceProcess };
+// RegulatoryCode is standalone Entity 9 — no FK wiring to IndividualApplication needed.
 
 System.debug('=== Seed complete ===');
 System.debug('EIS: ' + eisProcess.Id + ' | EA: ' + eaProcess.Id + ' | CE: ' + ceProcess.Id);

@@ -51,7 +51,7 @@ private class NepaRfpRequirementsTest {
                    nepa_clock_paused__c, nepa_clock_pause_start__c, nepa_clock_pause_end__c,
                    nepa_clock_pause_days__c, nepa_sla_due_date__c,
                    nepa_sla_warning_sent__c, nepa_sla_overdue__c,
-                   nepa_legal_structure__c, nepa_related_project__c
+                   nepa_related_project__c
             FROM IndividualApplication LIMIT 1
         ];
     }

@@ -2,9 +2,9 @@
   "Name": "DR_Extract_NEPA_LegalStructure",
   "Type": "Extract",
   "IsActive__c": false,
-  "Description": "CEQ Entity 9 (Legal Structure): extracts a single RegulatoryCode record by Id for a Process. Input: legalStructureId (IndividualApplication.nepa_legal_structure__c). Output path: legal_structure. Returns empty when no legal structure is linked.",
+  "Description": "CEQ Entity 9 (Legal Structure): extracts RegulatoryCode records by RegulatoryAuthorityId. RegulatoryCode is standalone — no FK on IndividualApplication. Input: regulatoryAuthorityId. Output path: legal_structure.",
   "SObjectType": "RegulatoryCode",
-  "WhereClause": "Id = :legalStructureId",
+  "WhereClause": "RegulatoryAuthorityId = :regulatoryAuthorityId",
   "OutputPath": "legal_structure",
   "Mappings": [
     {"SObjectField": "Id", "OutputKey": "id", "DataType": "STRING"},

@@ -8,12 +8,18 @@ The GIS proximity feature automatically queries federal geospatial services when
 
 When `nepa_location_lat__c` or `nepa_location_lon__c` changes on a Program record and both fields are populated:
 
-1. `NEPA_GIS_Proximity_Check` (after-save Flow) fires and calls `NEPA_GIS_Proximity_IP`
-2. The IP reads all active `NEPA_GIS_Layer__mdt` records ordered by Priority
-3. For each layer it builds a spatial query URL and fires an HTTP callout
-4. Matching features are appended to a running summary
-5. If any match contains a keyword listed in `Extraordinary_Circumstances_Keyword__c`, the extraordinary circumstances flag is set to true
-6. When all layers finish, the summary, timestamp, and flag are written back to the Program record
+1. `NEPA_GIS_Proximity_Check` (after-save Flow, AsyncAfterCommit) calls `NepaGISProximityIPInvoker` via an Apex `@InvocableMethod` action
+2. The Apex bridge calls `NEPA_GISProximityIP` (OmniIntegrationProcedure) via `omnistudio.IntegrationProcedureService.invokeMethod()`
+3. The IP reads all active `NEPA_GIS_Layer__mdt` records ordered by Priority
+4. For each layer it builds a spatial query URL and fires an HTTP callout
+5. Matching features are appended to a running summary, and one `nepa_detected_protection_layer__c` record per layer is accumulated
+6. If any match contains a keyword listed in `Extraordinary_Circumstances_Keyword__c`, the extraordinary circumstances flag is set to true
+7. `DRUpsertDetectedLayer` upserts the per-layer records to `nepa_detected_protection_layer__c` using `nepa_upsert_key__c` (idempotent — re-runs update existing records)
+8. The summary, timestamp, and flag are written back to the Program record via `DRLoadGISResults`
+9. The flow stamps `nepa_gis_proximity_complete__c = true`, which triggers `NEPA_Team_Assembly_Orchestrator`
+
+**Why an Apex bridge instead of a Flow subflow:**
+OmniIntegrationProcedures are stored as `OmniProcess` sObject records, not Flow records. A Flow `<subflows>` element resolves only actual Flow records by developer name. Attempting to reference an IP name directly in `<subflows>` causes an HTTP-level `UNKNOWN_EXCEPTION` at Flow activation time with no structured error message. The `NepaGISProximityIPInvoker` Apex invocable is the correct bridge pattern for calling any OmniStudio IP from a Flow.
 
 The result looks like this on the record:
 
@@ -39,23 +45,18 @@ Before deploying, confirm:
 
 ### 1. Deploy metadata
 
-Deploy in this order to avoid dependency failures:
+The standard deploy script (`scripts/deploy.sh`) handles the full GIS chain in dependency order. For a targeted manual deploy:
 
 ```bash
-# Phase 1: Object + CMT type
+# Step 1: Schema — detected layer object + Program GIS fields
 sf project deploy start \
   --metadata CustomObject:NEPA_GIS_Layer__mdt \
-  --target-org <alias> --wait 10
+  --metadata CustomObject:NEPA_Layer_Discipline__mdt \
+  --metadata CustomObject:nepa_detected_protection_layer__c \
+  --metadata CustomObject:Program \
+  --target-org <alias> --wait 30
 
-# Phase 2: New Program fields + permission set
-sf project deploy start \
-  --metadata CustomField:Program.nepa_protection_areas__c \
-  --metadata CustomField:Program.nepa_gis_last_checked__c \
-  --metadata CustomField:Program.nepa_extraordinary_circumstances__c \
-  --metadata PermissionSet:NEPA_Permitting \
-  --target-org <alias> --wait 10
-
-# Phase 3: Remote Site Settings + Named Credentials
+# Step 2: Remote Site Settings + Named Credentials
 sf project deploy start \
   --metadata RemoteSiteSetting:NEPA_GIS_NWI \
   --metadata RemoteSiteSetting:NEPA_GIS_EPA \
@@ -67,7 +68,7 @@ sf project deploy start \
   --metadata NamedCredential:NEPA_GIS_EJScreen \
   --target-org <alias> --wait 10
 
-# Phase 4: CMT seed records
+# Step 3: CMT seed records
 sf project deploy start \
   --metadata CustomMetadata:NEPA_GIS_Layer.NWI_Wetlands \
   --metadata CustomMetadata:NEPA_GIS_Layer.EPA_Superfund_NPL \
@@ -75,38 +76,43 @@ sf project deploy start \
   --metadata CustomMetadata:NEPA_GIS_Layer.EJScreen_EJ_Index \
   --target-org <alias> --wait 10
 
-# Phase 5: DataRaptors
+# Step 4: Apex bridge (must exist before the flow references it)
 sf project deploy start \
-  --metadata OmniDataTransform:DR_Extract_GIS_Layers \
-  --metadata OmniDataTransform:DR_Load_GIS_Results \
+  --metadata ApexClass:NepaGISProximityIPInvoker \
+  --metadata ApexClass:NepaGISProximityIPInvokerTest \
+  --target-org <alias> --wait 30
+
+# Step 5a: DRUpsertDetectedLayer — two-step required on net-new orgs
+#   (globalKeys embed the org's record ID; see deploy.sh idiosyncrasy note 7)
+#   If the DR header already exists in the org, Step 5a is a no-op.
+#   Use deploy.sh deploy_omnidatatransform() to handle this automatically.
+#
+# Step 5b: Other DataRaptors
+sf project deploy start \
+  --metadata OmniDataTransform:DRExtractGISLayers_1 \
+  --metadata OmniDataTransform:DRLoadGISResults_1 \
   --target-org <alias> --wait 10
 
-# Phase 6: Integration Procedure + Flow
+# Step 6: Integration Procedure
+#   uniqueName: NEPA_GISProximityIP_Procedure_1
+#   Also requires a two-step on net-new orgs (header first, then with elements)
 sf project deploy start \
-  --metadata OmniProcess:NEPA_GIS_Proximity_IP \
+  --metadata OmniIntegrationProcedure:NEPA_GISProximityIP_Procedure_1 \
+  --target-org <alias> --wait 10
+
+# Step 7: Flow (deploy after Apex and IP are in the org)
+sf project deploy start \
   --metadata Flow:NEPA_GIS_Proximity_Check \
-  --target-org <alias> --wait 10
+  --target-org <alias> --wait 30
 ```
 
-Or deploy everything at once from source:
+### 2. Verify OmniStudio activation
 
-```bash
-sf project deploy start --source-dir force-app --target-org <alias> \
-  --test-level RunLocalTests --wait 30
-```
+OmniIntegrationProcedures deployed via Metadata API are created in active state (`isActive=true`). If a component shows inactive in the OmniStudio designer after deploy, open it in **OmniStudio > Integration Procedures**, make no changes, and click **Activate**.
 
-### 2. Activate the OmniStudio components
+### 3. Verify the Flow is active
 
-In the target org, open **OmniStudio > DataRaptors** and activate:
-- `DR_Extract_GIS_Layers`
-- `DR_Load_GIS_Results`
-
-Open **OmniStudio > Integration Procedures** and activate:
-- `NEPA_GIS_Proximity_IP`
-
-### 3. Activate the Flow
-
-Go to **Setup > Flows**, find `NEPA GIS Proximity Check`, and activate it.
+`NEPA_GIS_Proximity_Check` deploys as Active (the XML contains `<status>Active</status>`). Confirm in **Setup > Flows** that the flow shows Active status.
 
 ### 4. Verify the FWS Named Credential (if needed)
 
@@ -137,21 +143,19 @@ Test coordinates that reliably hit known data:
 
 ### Test via IP directly
 
-Use the OmniStudio IP debug console or invoke via Apex:
+Use the OmniStudio IP debug console or invoke via Apex anonymous execution:
 
 ```apex
-Map<String,Object> input = new Map<String,Object>{
-    'projectId' => '<your Program record Id>'
-};
-Map<String,Object> output = new Map<String,Object>();
-omnistudio.IntegrationProcedureService.IntegrationProcedureRunner runner =
-    new omnistudio.IntegrationProcedureService.IntegrationProcedureRunner();
-runner.setIPName('NEPA/GIS_Proximity_IP');
-runner.setInput(input);
-runner.setOutput(output);
-runner.run();
-System.debug(output);
+Map<String,Object> input   = new Map<String,Object>{ 'projectId' => '<your Program record Id>' };
+Map<String,Object> output  = new Map<String,Object>();
+Map<String,Object> options = new Map<String,Object>();
+omnistudio.IntegrationProcedureService svc = new omnistudio.IntegrationProcedureService();
+Object result = svc.invokeMethod('runIntegrationService', input, output, options);
+System.debug('result: ' + result);
+System.debug('output: ' + output);
 ```
+
+The IP key is `NEPA_GISProximityIP` (type `NEPA`, subType `GISProximityIP`). The `invokeMethod` call is the correct API — the static `runIntegrationService()` method and the `IntegrationProcedureRunner` inner class do not exist in this version of the OmniStudio package.
 
 ### Verify extraordinary circumstances flag
 

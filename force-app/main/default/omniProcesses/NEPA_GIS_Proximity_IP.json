@@ -6,7 +6,7 @@
   "VersionNumber": 1,
   "IsActive": true,
   "IsIntegrationProcedure": true,
-  "Description": "GIS proximity Integration Procedure. Accepts a NEPA Project ID, loads the project centroid coordinates, queries all active NEPA_GIS_Layer__mdt-registered federal FeatureServer endpoints within the configured buffer distance, aggregates findings into a human-readable protection areas summary, writes individual nepa_detected_protection_layer__c records (upserted on nepa_upsert_key__c for idempotency), and writes results back to the Program record. Adding a new federal layer requires only a new CMT record — no IP changes. Called by the NEPA_GIS_Proximity after-save Flow and optionally invoked directly from the NEPA Project record page.",
+  "Description": "GIS proximity Integration Procedure. Accepts a NEPA Project ID, loads the project centroid coordinates, queries all active NEPA_GIS_Layer__mdt-registered federal FeatureServer endpoints within the configured buffer distance, aggregates findings into a human-readable protection areas summary, writes individual nepa_detected_protection_layer__c records (upserted on nepa_upsert_key__c for idempotency), and writes results back to the Program record. Adding a new federal layer requires only a new CMT record \u2014 no IP changes. Called by the NEPA_GIS_Proximity after-save Flow and optionally invoked directly from the NEPA Project record page.",
   "PropertySetConfig": {
     "persistentComponent": true,
     "trackingCustomData": {},
@@ -21,7 +21,7 @@
       "Level": 0,
       "IsActive": true,
       "PropertySetConfig": {
-        "bundleName": "DR_Extract_NEPA_Project",
+        "bundleName": "DRExtractNEPAProject",
         "inputMap": [
           {
             "name": "projectId",
@@ -65,7 +65,7 @@
       "Level": 0,
       "IsActive": true,
       "PropertySetConfig": {
-        "bundleName": "DR_Extract_GIS_Layers",
+        "bundleName": "DRExtractGISLayers",
         "inputMap": [],
         "outputPath": "GISLayers"
       }
@@ -369,7 +369,7 @@
       "Level": 0,
       "IsActive": true,
       "PropertySetConfig": {
-        "bundleName": "DR_Upsert_Detected_Layer",
+        "bundleName": "DRUpsertDetectedLayer",
         "inputMap": [
           {
             "name": "DetectedLayerRecords",
@@ -387,7 +387,7 @@
       "Level": 0,
       "IsActive": true,
       "PropertySetConfig": {
-        "bundleName": "DR_Load_GIS_Results",
+        "bundleName": "DRLoadGISResults",
         "inputMap": [
           {
             "name": "projectId",

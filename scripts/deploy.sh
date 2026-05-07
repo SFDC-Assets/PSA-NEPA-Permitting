@@ -57,6 +57,39 @@
 #
 # 6. ApplicationTimeline does not have an IndividualApplicationId field; use
 #    nepa_related_process__c to link timeline events to a process record.
+#
+# 7. OmniDataTransform item globalKeys embed the parent record ID in the format
+#    {DRName}Custom{RecordId}Item{N}. Each org has a different record ID, so globalKeys
+#    in the source file are org-specific. On a net-new deploy (DR does not yet exist),
+#    deploying the file with items fails with:
+#      "Required fields are missing: [OmniDataTransformationId]"
+#    Workaround: two-step deploy via deploy_omnidatatransform() below:
+#      Step 1 — deploy the DR header-only to get the org's record ID
+#      Step 2 — patch globalKeys in the source file with the org ID, redeploy with items,
+#               then restore the original globalKeys (NEPADEV IDs) for source control
+#    Existing orgs where the DR header is already deployed are not affected.
+#    See deploy_omnidatatransform() and the DRUpsertDetectedLayer_1 call in Phase 8c.
+#
+# 8. OmniIntegrationProcedure metadata constraints:
+#    - The <name>, <subType>, and <omniProcessKey> fields must be alphanumeric with NO
+#      underscores or spaces. The platform rejects them with:
+#        "Field must be alphanumeric and contain no spaces or underscores"
+#    - The <uniqueName> is auto-built by the platform as {type}_{subType}_Procedure_{version}
+#      (underscores are allowed only in uniqueName).
+#    - OmniIntegrationProcedures are stored as OmniProcess sObject records, not Flow records.
+#      See note 9 below for the Flow invocation consequence.
+#
+# 9. Flow <subflows> cannot reference OmniIntegrationProcedures.
+#    OmniIntegrationProcedures are OmniProcess sObject records. A Flow's <subflows> element
+#    resolves only actual Flow records by developer name. Referencing an IP name in <subflows>
+#    causes an HTTP-level UNKNOWN_EXCEPTION at activation time (no structured error).
+#    Workaround: call IPs from Flow via an Apex @InvocableMethod bridge:
+#      - Class: NepaGISProximityIPInvoker
+#      - Invocation: new omnistudio.IntegrationProcedureService()
+#                       .invokeMethod('runIntegrationService', inputMap, outputMap, options)
+#      - Flow element: <actionCalls actionType=apex> referencing the class name
+#    The correct method is invokeMethod() on an instance — not the static
+#    runIntegrationService() call, which does not exist in this package version.
 
 set -euo pipefail
 
@@ -343,14 +376,116 @@ deploy "action plan templates" \
     --source-dir force-app/main/default/actionPlanTemplates \
     --target-org "$TARGET_ORG"
 
-# ── phase 8c: omniprocess + omnidatatransforms ────────────────────────────────
+# ── phase 8c: omnidatatransforms + omniintegrationprocedures ──────────────────
 # Deploy DataRaptors before the IP that calls them, then the IP.
+#
+# OmniDataTransform items embed the parent record ID in their globalKeys.
+# DRUpsertDetectedLayer requires a two-step deploy on net-new orgs:
+#   Step 1: header-only to create the record and capture its ID
+#   Step 2: full file with items using the real record ID in globalKeys
+#
+# The function below handles both cases (header missing vs. already present).
+# The repo source file uses NEPADEV globalKeys; this function patches them
+# in-place, deploys, and restores the originals so source control stays clean.
+#
+# NEPADEV DR record ID is 3ULao000000KUtBGAW — stored in globalKeys in the
+# repo file. If you create a new dev org, update NEPADEV_DR_RECORD_ID below
+# and rerun to re-seed the source IDs.
+NEPADEV_DR_RECORD_ID="3ULao000000KUtBGAW"
+DR_FILE="force-app/main/default/omniDataTransforms/DRUpsertDetectedLayer_1.rpt-meta.xml"
+
+deploy_omnidatatransform() {
+    local dr_name="$1"  # uniqueName, e.g. DRUpsertDetectedLayer_1
+    local dr_file="$2"  # path to the .rpt-meta.xml file
+    local source_id="$3"  # record ID embedded in globalKeys in the source file (NEPADEV ID)
+
+    # Check whether the DR already exists in the target org
+    local existing_id
+    existing_id=$(sf apex run \
+        --target-org "$TARGET_ORG" \
+        --file /dev/stdin 2>/dev/null <<APEX
+List<SObject> rs = Database.query('SELECT Id FROM OmniDataTransform WHERE UniqueName=\'${dr_name}\' LIMIT 1');
+System.debug(rs.isEmpty() ? 'NOT_FOUND' : (String)rs[0].get('Id'));
+APEX
+) || true
+    existing_id=$(echo "$existing_id" | grep -oE '[a-zA-Z0-9]{18}' | grep "^3UL" | head -1 || true)
+
+    if [[ -z "$existing_id" ]]; then
+        # Step 1: deploy header-only to create the record
+        echo "    [DR two-step] $dr_name: header not found, creating..."
+        local tmp_dir
+        tmp_dir=$(mktemp -d)
+        mkdir -p "$tmp_dir/omniDataTransforms"
+        python3 -c "
+import re, sys
+with open('$dr_file') as f:
+    content = f.read()
+# Strip all omniDataTransformItem blocks for header-only deploy
+content = re.sub(r'\s*<omniDataTransformItem>.*?</omniDataTransformItem>', '', content, flags=re.DOTALL)
+with open('$tmp_dir/omniDataTransforms/${dr_name}.rpt-meta.xml', 'w') as f:
+    f.write(content)
+"
+        local header_output
+        header_output=$(sf project deploy start \
+            --source-dir "$tmp_dir" \
+            --target-org "$TARGET_ORG" \
+            --wait 30 \
+            --json 2>&1) || true
+        rm -rf "$tmp_dir"
+
+        existing_id=$(echo "$header_output" | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+for s in data.get('result', {}).get('details', {}).get('componentSuccesses', []):
+    if s.get('id','').startswith('3UL'):
+        print(s['id'])
+        break
+" 2>/dev/null || true)
+
+        if [[ -z "$existing_id" ]]; then
+            echo "    [ERROR] Could not create DR header for $dr_name — aborting phase 8c" >&2
+            exit 1
+        fi
+        echo "    [DR two-step] $dr_name: created with ID $existing_id"
+    fi
+
+    # Step 2: patch globalKeys in source file, deploy with items, restore
+    if [[ "$existing_id" != "$source_id" ]]; then
+        sed -i '' "s/${source_id}/${existing_id}/g" "$dr_file"
+    fi
+
+    deploy "OmniDataTransform:${dr_name}" \
+        --metadata "OmniDataTransform:${dr_name}" \
+        --target-org "$TARGET_ORG"
+
+    # Restore source-control IDs
+    if [[ "$existing_id" != "$source_id" ]]; then
+        sed -i '' "s/${existing_id}/${source_id}/g" "$dr_file"
+    fi
+}
+
 phase_header "Phase 8c: OmniStudio DataRaptors and Integration Procedures"
-deploy "omnidatatransforms" \
-    --source-dir force-app/main/default/omniDataTransforms \
-    --target-org "$TARGET_ORG"
-deploy "omniprocesses" \
-    --source-dir force-app/main/default/omniProcesses \
+
+# All DRs other than DRUpsertDetectedLayer can be deployed from source directly
+# (they have no item-level globalKey constraints). Only DRUpsertDetectedLayer
+# requires the two-step because it has omniDataTransformItem elements.
+OTHER_DR_FILES=$(find force-app/main/default/omniDataTransforms -name "*.rpt-meta.xml" \
+    ! -name "DRUpsertDetectedLayer_1.rpt-meta.xml" 2>/dev/null | wc -l | tr -d ' ')
+if [[ "$OTHER_DR_FILES" -gt 0 ]]; then
+    for dr_file in force-app/main/default/omniDataTransforms/*.rpt-meta.xml; do
+        [[ "$dr_file" == *"DRUpsertDetectedLayer_1"* ]] && continue
+        deploy "$(basename "$dr_file" .rpt-meta.xml)" \
+            --metadata "OmniDataTransform:$(basename "$dr_file" .rpt-meta.xml)" \
+            --target-org "$TARGET_ORG"
+    done
+fi
+
+# DRUpsertDetectedLayer: two-step with globalKey patching
+deploy_omnidatatransform "DRUpsertDetectedLayer_1" "$DR_FILE" "$NEPADEV_DR_RECORD_ID"
+
+# Integration Procedures (stored as OmniIntegrationProcedure metadata type)
+deploy "OmniIntegrationProcedures" \
+    --source-dir force-app/main/default/omniIntegrationProcedures \
     --target-org "$TARGET_ORG"
 
 # ── phase 9: custom tabs ──────────────────────────────────────────────────────
@@ -478,7 +613,17 @@ else
     echo "    4b. Seed ServiceResource discipline values (GIS team assembly):"
     echo "       sf apex run --file demo/import_data/21_postload_discipline.apex --target-org $TARGET_ORG"
     echo ""
-    echo "    5. OmniStudio (if needed):"
-    echo "       sf project deploy start --source-dir force-app/main/default/omniDataTransforms --target-org $TARGET_ORG"
-    echo "       sf project deploy start --source-dir force-app/main/default/omniProcesses --target-org $TARGET_ORG"
+    echo "    5. OmniStudio — deployed automatically in Phase 8c above."
+    echo "       Phase 8c handles the DRUpsertDetectedLayer two-step (globalKey patching)"
+    echo "       and deploys OmniIntegrationProcedures via the omniIntegrationProcedures/ directory."
+    echo "       No manual OmniStudio deployment is needed."
+    echo ""
+    echo "    6. GIS proximity trigger chain verification:"
+    echo "       Set nepa_location_lat__c + nepa_location_lon__c on a Program record."
+    echo "       Wait ~10s, refresh — nepa_protection_areas__c should be populated."
+    echo "       Chain: NEPA_GIS_Proximity_Check flow"
+    echo "            → NepaGISProximityIPInvoker Apex (invokeMethod bridge)"
+    echo "            → NEPA_GISProximityIP OmniIntegrationProcedure"
+    echo "            → DRUpsertDetectedLayer DataRaptor (upserts nepa_detected_protection_layer__c)"
+    echo "            → sets nepa_gis_proximity_complete__c = true"
 fi

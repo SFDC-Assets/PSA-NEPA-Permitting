@@ -262,6 +262,18 @@ upsert_csv "Task" "Task" "19_Task.csv" "External_ID__c"
 # if Tasks were loaded before, but running it again is safe — it queries by
 # External_ID__c and updates in-place).
 
+# ── step 20: Entity 9/8/7 Apex (RegulatoryCode, team members, GIS polygon) ───
+step_header "Step 20: Entity 9/8/7 (RegulatoryCode, Team Members, GIS polygon + lat/lon)"
+run_apex "entity 9/8/7 demo data" "demo/import_data/20_entities789_demo_data.apex"
+
+# ── step 21: ServiceResource discipline ───────────────────────────────────────
+step_header "Step 21: ServiceResource nepa_discipline__c"
+run_apex "ServiceResource discipline" "demo/import_data/21_postload_discipline.apex"
+
+# ── step 22: GIS proximity results + auto-assembled team + auto-generated WOs ─
+step_header "Step 22: GIS proximity results, auto-assembled team, and auto-generated Work Orders"
+run_apex "GIS team assembly" "demo/import_data/22_postload_gis_team_assembly.apex"
+
 # ── post-load summary ─────────────────────────────────────────────────────────
 echo ""
 echo "==> Demo data load complete."
@@ -278,6 +290,9 @@ echo "    To clean up all demo records:"
 echo "      sf data delete bulk --sobject Task --where \"External_ID__c LIKE 'DEMO_TASK_%'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject AssignedResource --where \"External_ID__c LIKE 'DEMO_AR_%'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject ServiceAppointment --where \"External_ID__c LIKE 'DEMO_SA_%'\" --target-org $TARGET_ORG --async"
+echo "      sf data delete bulk --sobject WorkOrder --where \"nepa_auto_generated__c = true AND nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'\" --target-org $TARGET_ORG --async"
+echo "      sf data delete bulk --sobject nepa_process_team_member__c --where \"nepa_assembly_source__c = 'GIS_Auto_Assembly' AND nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'\" --target-org $TARGET_ORG --async"
+echo "      sf data delete bulk --sobject nepa_detected_protection_layer__c --where \"nepa_program__r.nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject WorkOrder --where \"External_ID__c LIKE 'DEMO_WO_%'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject PublicComplaint --where \"Subject LIKE 'DEMO_PC%' OR Subject LIKE 'ICL Comment%' OR Subject LIKE 'OSC Comment%'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject nepa_litigation__c --where \"nepa_citation__c LIKE '%9th Cir%'\" --target-org $TARGET_ORG --async"

@@ -60,7 +60,6 @@
         <members>IndividualApplication.nepa_classification_basis__c</members>
         <!-- Tier 3 CEQ wiring fields -->
         <members>IndividualApplication.nepa_polygon__c</members>
-        <members>IndividualApplication.nepa_legal_structure__c</members>
         <!-- Program (Entity 1: Project) -->
         <members>Program.nepa_circuit__c</members>
         <members>Program.nepa_adjacent_statutes__c</members>
