@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FlexiPage xmlns="http://soap.sforce.com/2006/04/metadata">
+
+    <!-- HEADER -->
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
@@ -31,21 +33,154 @@
         <name>header</name>
         <type>Region</type>
     </flexiPageRegions>
+
+    <!-- DETECTION — Column 1 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_program__c</fieldItem>
+                <identifier>dl_program</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_layer_label__c</fieldItem>
+                <identifier>dl_layer_label</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_layer_developer_name__c</fieldItem>
+                <identifier>dl_layer_dev_name</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_gis_run_timestamp__c</fieldItem>
+                <identifier>dl_gis_timestamp</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>dl-detection-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- DETECTION — Column 2 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_is_hit__c</fieldItem>
+                <identifier>dl_is_hit</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_ec_triggered__c</fieldItem>
+                <identifier>dl_ec_triggered</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_feature_count__c</fieldItem>
+                <identifier>dl_feature_count</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_feature_name__c</fieldItem>
+                <identifier>dl_feature_name</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>dl-detection-c2</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- DETECTION — Columns Wrapper -->
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
-                    <name>relatedListComponentOverride</name>
-                    <value>NONE</value>
+                    <name>body</name>
+                    <value>dl-detection-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>dl_detection_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>dl-detection-c2</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>dl_detection_col2</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>dl-detection-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- DETAIL TAB CONTENT -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>dl-detection-cols</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
-                    <name>rowsToDisplay</name>
-                    <value>10</value>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
-                    <name>showActionBar</name>
-                    <value>true</value>
+                    <name>label</name>
+                    <value>Detection Details</value>
                 </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>dl_section_detection</identifier>
+            </componentInstance>
+        </itemInstances>
+        <mode>Replace</mode>
+        <name>detailTabContent</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- RELATED TAB CONTENT -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
                 <componentName>force:relatedListContainer</componentName>
                 <identifier>force_relatedListContainer</identifier>
             </componentInstance>
@@ -54,69 +189,9 @@
         <name>relatedTabContent</name>
         <type>Facet</type>
     </flexiPageRegions>
+
+    <!-- MAIN TABS -->
     <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
-                <componentName>force:detailPanel</componentName>
-                <identifier>force_detailPanel</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>generativeAIDisclaimer</name>
-                    <value>This tool uses generative AI, which can produce inaccurate or harmful responses. Review the output for accuracy and safety before using.</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>generativeAIGenerateSummaryLabel</name>
-                    <value>Go</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>generativeAIHeaderLabel</name>
-                    <value>Get Einstein Insights</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>generativeAIPromptTemplateName</name>
-                    <valueList>
-                        <valueListItems>
-                            <value>pss_embd_ai__CompareApplicationVersions</value>
-                        </valueListItems>
-                        <valueListItems>
-                            <value>pss_embd_ai__ApplicationHistoryOverview</value>
-                        </valueListItems>
-                    </valueList>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>generativeAIPromptTemplateType</name>
-                    <valueList>
-                        <valueListItems>
-                            <value>einstein_gpt__fieldCompletion</value>
-                        </valueListItems>
-                    </valueList>
-                </componentInstanceProperties>
-                <componentName>industries_common:generateSummaryWrapper</componentName>
-                <identifier>industries_common_generateSummaryWrapper</identifier>
-            </componentInstance>
-        </itemInstances>
-        <mode>Replace</mode>
-        <name>detailTabContent</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>relatedTabContent</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>title</name>
-                    <value>Standard.Tab.relatedLists</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:tab</componentName>
-                <identifier>relatedListsTab</identifier>
-            </componentInstance>
-        </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
@@ -135,45 +210,31 @@
                 <identifier>detailTab</identifier>
             </componentInstance>
         </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>active</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>relatedTabContent</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>title</name>
+                    <value>Standard.Tab.related</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:tab</componentName>
+                <identifier>relatedTab</identifier>
+            </componentInstance>
+        </itemInstances>
         <mode>Replace</mode>
         <name>maintabs</name>
         <type>Facet</type>
     </flexiPageRegions>
+
+    <!-- MAIN REGION -->
     <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>direction</name>
-                    <value>ltr</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>display</name>
-                    <value>Display OmniScript on page</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>inlineVariant</name>
-                    <value>brand</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>language</name>
-                    <value>English</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>subType</name>
-                    <value>CaseworkerGuidedFlow</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>theme</name>
-                    <value>lightning</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>type</name>
-                    <value>BenefitManagement</value>
-                </componentInstanceProperties>
-                <componentName>runtime_omnistudio:omniscript</componentName>
-                <identifier>runtime_omnistudio_omniscript</identifier>
-            </componentInstance>
-        </itemInstances>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
@@ -188,6 +249,8 @@
         <name>main</name>
         <type>Region</type>
     </flexiPageRegions>
+
+    <!-- SIDEBAR -->
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
@@ -241,9 +304,10 @@
         <name>sidebar</name>
         <type>Region</type>
     </flexiPageRegions>
-    <masterLabel>Individual Application Record Page</masterLabel>
+
+    <masterLabel>NEPA Detected Protection Layer Record Page</masterLabel>
     <parentFlexiPage>flexipage__default_rec_L</parentFlexiPage>
-    <sobjectType>IndividualApplication</sobjectType>
+    <sobjectType>nepa_detected_protection_layer__c</sobjectType>
     <template>
         <name>flexipage:recordHomeTemplateDesktop</name>
     </template>
