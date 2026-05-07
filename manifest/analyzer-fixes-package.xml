@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>NepaAIGovernanceTest</members>
+        <members>NepaCeScreenerTest</members>
+        <members>NepaCeqExportService</members>
+        <members>NepaCommentEJDetector</members>
+        <members>NepaCommentEJDetectorTest</members>
+        <members>NepaCommentTriageParser</members>
+        <members>NepaCommentTriageParserTest</members>
+        <members>NepaRfpRequirementsTest</members>
+        <members>NepaSlaEscalationMonitorTest</members>
+        <members>NepaTestFactory</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>NEPA_AdminRecord_AutoCreate</members>
+        <members>NEPA_CE_Screener</members>
+        <members>NEPA_Comment_Period_Gate</members>
+        <members>NEPA_GIS_Proximity_Check</members>
+        <members>NEPA_Litigation_Risk_Scorer</members>
+        <members>NEPA_Permit_Coordinator</members>
+        <members>NEPA_Plaintiff_Intelligence</members>
+        <members>NEPA_Record_Completeness_Scorer</members>
+        <name>Flow</name>
+    </types>
+    <version>62.0</version>
+</Package>

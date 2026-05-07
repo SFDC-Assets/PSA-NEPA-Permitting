@@ -4,7 +4,7 @@
     <description>Priority 9: Recalculates IndividualApplication.nepa_record_completeness__c and nepa_missing_documents__c whenever a ContentVersion record with the nepa_permit_document record type is created or updated. Queries NEPA_Required_Document__mdt for the required document types for the process's review type. Fetches ALL approved/published documents for the process in a single pre-loop query, then checks presence in-memory (no DB-in-loop). Writes percentage and missing-document list back to the parent IndividualApplication. Fires after-save async on ContentVersion create/update.</description>
     <label>NEPA Administrative Record Checker</label>
     <processType>AutoLaunchedFlow</processType>
-    <status>Draft</status>
+    <status>Active</status>
 
     <assignments>
         <name>Assign_ProcessId</name>
@@ -15,7 +15,7 @@
         <assignmentItems>
             <assignToReference>var_ProcessId</assignToReference>
             <operator>Assign</operator>
-            <value><elementReference>rec_Timeline.IndividualApplicationId</elementReference></value>
+            <value><elementReference>rec_Timeline.nepa_related_process__c</elementReference></value>
         </assignmentItems>
         <connector>
             <targetReference>Get_Process</targetReference>
@@ -108,6 +108,9 @@
             <operator>Add</operator>
             <value><numberValue>1.0</numberValue></value>
         </assignmentItems>
+        <connector>
+            <targetReference>Loop_RequiredRules</targetReference>
+        </connector>
     </assignments>
 
     <assignments>
@@ -126,6 +129,9 @@
             <operator>Add</operator>
             <value><stringValue>; </stringValue></value>
         </assignmentItems>
+        <connector>
+            <targetReference>Loop_RequiredRules</targetReference>
+        </connector>
     </assignments>
 
     <!-- ============================================================
@@ -202,7 +208,7 @@
             <name>Timeline_Found</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>rec_Timeline.IndividualApplicationId</leftValueReference>
+                <leftValueReference>rec_Timeline.nepa_related_process__c</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue><booleanValue>false</booleanValue></rightValue>
             </conditions>
@@ -327,7 +333,7 @@
     <formulas>
         <name>formula_ErrorContext</name>
         <dataType>String</dataType>
-        <expression>"ReviewType:" &amp; {!$Record.nepa_review_type__c} &amp; "|ProcessId:" &amp; {!$Record.Id} &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
+        <expression>"ReviewType:" &amp; {!var_ReviewType} &amp; "|ProcessId:" &amp; {!var_ProcessId} &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
     </formulas>
 
     <!-- ============================================================
@@ -390,7 +396,7 @@
         <object>ApplicationTimeline</object>
         <outputReference>rec_Timeline</outputReference>
         <queriedFields>Id</queriedFields>
-        <queriedFields>IndividualApplicationId</queriedFields>
+        <queriedFields>nepa_related_process__c</queriedFields>
     </recordLookups>
 
     <recordLookups>
@@ -477,7 +483,7 @@
         </filters>
         <filters>
             <field>nepa_status__c</field>
-            <operator>In</operator>
+            <operator>EqualTo</operator>
             <value><stringValue>Approved</stringValue></value>
         </filters>
         <object>ContentVersion</object>
@@ -566,11 +572,6 @@
             <pathType>AsyncAfterCommit</pathType>
         </scheduledPaths>
         <filterLogic>and</filterLogic>
-        <filters>
-            <field>RecordTypeId</field>
-            <operator>EqualTo</operator>
-            <value><stringValue>nepa_permit_document</stringValue></value>
-        </filters>
         <filters>
             <field>nepa_status__c</field>
             <operator>IsChanged</operator>

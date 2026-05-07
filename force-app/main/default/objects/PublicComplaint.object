@@ -461,8 +461,9 @@
     <validationRules>
         <fullName>NEPA_Comment_Period_Closed</fullName>
         <active>true</active>
-        <description>Belt-and-suspenders deadline enforcement. Blocks API inserts where the before-save flow does not execute. Fires when nepa_related_process__c is set and end date has passed. Fail-open: missing lookup or end date allows insert.</description>
+        <description>Belt-and-suspenders deadline enforcement. Blocks new inserts where the before-save flow does not execute. ISNEW() guard ensures existing complaint records can be updated by flows after the comment period closes without being blocked. Fires only on new records when nepa_related_process__c is set and end date has passed. Fail-open: missing lookup or end date allows insert.</description>
         <errorConditionFormula>AND(
+  ISNEW(),
   NOT(ISBLANK(nepa_related_process__c)),
   NOT(ISBLANK(nepa_related_process__r.nepa_public_comment_period_end_date__c)),
   nepa_related_process__r.nepa_public_comment_period_end_date__c &lt; NOW()

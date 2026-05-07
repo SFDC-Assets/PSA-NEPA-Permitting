@@ -49,6 +49,7 @@ Load files strictly in number order. Each file's parent records must exist befor
 | 20 | `20_entities789_demo_data.apex` | **Apex script** | — | — | Run after step 18; creates RegulatoryAuthority (4), RegulatoryCode (7 standalone Entity 9), nepa_process_team_member__c (7), Polygon (1), nepa_gis_data_element__c (5); wires Program lat/lon/polygon |
 | 21 | `21_postload_discipline.apex` | **Apex script** | — | — | Run after step 18; sets ServiceResource.nepa_discipline__c = 'NEPA Specialist' on DEMO_SR_001 (demo constraint: all 7 specialists share one SR) |
 | 22 | `22_postload_gis_team_assembly.apex` | **Apex script** | — | — | Run after steps 20–21; pre-seeds GIS proximity results (nepa_detected_protection_layer__c × 4), auto-assembled team members (× 3, GIS_Auto_Assembly), and auto-generated WorkOrders (× 3, nepa_auto_generated__c = true) for the Carrie Placer Mine; sets Program nepa_extraordinary_circumstances__c = true and nepa_gis_proximity_complete__c = true |
+| 23 | `23_postload_flow_refresh.apex` | **Apex script** | — | — | Run last; re-fires all IsChanged-gated flows (Risk Scorer, CE Screener, SLA Setter, Timeline Risk, Defensibility Checker) by toggling then restoring nepa_review_type__c. Populates nepa_risk_score_factors__c, nepa_screening_confidence__c, nepa_sla_due_date__c, nepa_timeline_risk_tier__c, nepa_defensibility_gaps__c, nepa_missing_documents__c, and related computed fields. |
 
 ---
 

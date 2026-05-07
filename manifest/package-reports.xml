@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>NEPA_Process_Reports</members>
+        <members>NEPA_Comment_Reports</members>
+        <name>ReportType</name>
+    </types>
+    <types>
+        <members>NEPA_Permitting_Reports</members>
+        <name>ReportFolder</name>
+    </types>
+    <types>
+        <members>NEPA_Permitting_Reports/Active_Permits_by_Stage</members>
+        <members>NEPA_Permitting_Reports/SLA_Performance</members>
+        <members>NEPA_Permitting_Reports/Document_Completeness</members>
+        <members>NEPA_Permitting_Reports/Litigation_Risk_Distribution</members>
+        <members>NEPA_Permitting_Reports/Comment_Response_Queue</members>
+        <members>NEPA_Permitting_Reports/Time_to_Permit</members>
+        <members>NEPA_Permitting_Reports/High_Risk_Applications</members>
+        <name>Report</name>
+    </types>
+    <version>62.0</version>
+</Package>
