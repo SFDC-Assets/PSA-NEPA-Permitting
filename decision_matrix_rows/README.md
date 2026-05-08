@@ -1,16 +1,16 @@
-# NEPA CE Screener — Decision Matrix Row Data
+# NEPA BRE — Decision Matrix Row Data
 
-BRE Decision Matrix rows cannot be deployed via Metadata API or CLI. Use the Salesforce Setup UI to import these CSV files.
+BRE Decision Matrix rows cannot be deployed via Metadata API or CLI. Use the Salesforce Setup UI to import these CSV files into the corresponding Decision Matrix versions.
 
 ## Import Instructions
 
 For each CSV file:
 
 1. Go to **Setup → Business Rules Engine → Decision Matrices**
-2. Open the corresponding Decision Matrix (e.g., `NEPA CE Screener - Tier 1 Agency Sector Rules`)
+2. Open the corresponding Decision Matrix
 3. Click the active version (V1)
 4. Click **Import CSV**
-5. Upload the CSV from this directory
+5. Upload the CSV from this directory (`decision_matrix_rows/`)
 6. Map columns (they match by header name)
 7. Click **Import**
 
@@ -21,6 +21,10 @@ For each CSV file:
 | `NEPA_CE_Screener_NAICS.csv` | NEPA CE Screener - NAICS Routing | `NAICSCode` | 7 seed rows covering common NAICS codes |
 | `NEPA_CE_Screener_Tier1.csv` | NEPA CE Screener - Tier 1 Agency Sector Rules | `AgencyAbbr`, `SectorKey`, `TypeKey` | 17 rows covering BLM, USFS, DOE, USFWS, EPA |
 | `NEPA_CE_Screener_Tier2.csv` | NEPA CE Screener - Tier 2 Agency Action Type Rules | `AgencyAbbr`, `ActionType` | 16 rows covering Modify Existing, New Authorization, Permit Renewal |
+| `NEPA_Risk_ReviewType.csv` | NEPA Risk Scorer - Review Type Points | `ReviewType` | 4 rows: EIS=40, EA=20, CE=5, Other=3 |
+| `NEPA_Risk_Agency.csv` | NEPA Risk Scorer - Agency Risk Points | `AgencyName` | 6 rows sourced from NEPA_Agency_Risk_Rate__mdt; wildcard default row (Default, MatchScore=0) |
+| `NEPA_Risk_Circuit.csv` | NEPA Risk Scorer - Circuit Risk Points | `CircuitKey` | 13 rows sourced from NEPA_Circuit_Risk_Weight__mdt; wildcard default row (DEFAULT, MatchScore=0) |
+| `NEPA_Permit_Matrix_BRE.csv` | NEPA Permit Matrix | `Sector`, `ProjectType` | 9 rows mirroring NEPA_Permit_Matrix__mdt |
 
 ## Demo Record Routing
 
