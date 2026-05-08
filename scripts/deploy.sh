@@ -18,6 +18,8 @@
 #   3  Custom labels           — referenced by Apex and flows
 #   4  Permission set          — FLS grants require fields to exist first
 #   5  Custom metadata records — CMT records used by flow decision logic
+#   5b BRE Decision Matrices   — DecisionMatrixDefinition metadata (schema only; rows are UI-only)
+#   5c BRE Expression Sets     — ExpressionSetDefinition metadata (must follow DMs they reference)
 #   6  Remote sites + creds    — needed before any callout-capable flows compile
 #   7  Apex classes            — must precede flows that call @InvocableMethod actions
 #   8  Flows (one-at-a-time)   — Metadata API UNKNOWN_EXCEPTION on batch flow deployments;
@@ -30,6 +32,12 @@
 #  14  LWC                     — custom components referenced by FlexiPages
 #  15  FlexiPages              — depend on fields, layouts, LWC
 #  16  Lightning app           — depends on tabs
+#
+# NOTE: BRE Decision Matrix rows (decision_matrix_rows/*.csv) cannot be deployed
+# via Metadata API or CLI — this is a Salesforce platform limitation. After running
+# this script, import each CSV manually via Setup → Business Rules Engine →
+# Decision Matrices → open the matrix → V1 → Import CSV.
+# See decision_matrix_rows/README.md for the full import sequence.
 #
 # Known deployment idiosyncrasies
 # ──────────────────────────────
@@ -296,6 +304,21 @@ deploy "permission set" \
 phase_header "Phase 5: Custom metadata seed records"
 deploy "custom metadata" \
     --source-dir force-app/main/default/customMetadata \
+    --target-org "$TARGET_ORG"
+
+# ── phase 5b: bre decision matrices ──────────────────────────────────────────
+# Schema-only deploy — rows must be imported manually via Setup UI after this script
+# runs. See decision_matrix_rows/README.md for the import sequence.
+phase_header "Phase 5b: BRE Decision Matrix definitions"
+deploy "decision matrices" \
+    --source-dir force-app/main/default/decisionMatrixDefinition \
+    --target-org "$TARGET_ORG"
+
+# ── phase 5c: bre expression sets ────────────────────────────────────────────
+# Must follow Phase 5b — ES definitions reference DM names in their step elements.
+phase_header "Phase 5c: BRE Expression Set definitions"
+deploy "expression sets" \
+    --source-dir force-app/main/default/expressionSetDefinition \
     --target-org "$TARGET_ORG"
 
 # ── phase 6: remote sites + named credentials ─────────────────────────────────
@@ -604,21 +627,34 @@ else
     echo "       NEPA_Error_Event_Handler"
     echo "       NEPA_FlowError_CountIncrementer"
     echo ""
-    echo "    3. Verify Custom Metadata records loaded:"
+    echo "    3. Import BRE Decision Matrix rows (REQUIRED — cannot be deployed via CLI):"
+    echo "       Setup > Business Rules Engine > Decision Matrices"
+    echo "       For each matrix, open V1 and click Import CSV using files from decision_matrix_rows/:"
+    echo "         NEPA_CE_Screener_NAICS     → NEPA_CE_Screener_NAICS.csv"
+    echo "         NEPA_CE_Screener_Tier1     → NEPA_CE_Screener_Tier1.csv"
+    echo "         NEPA_CE_Screener_Tier2     → NEPA_CE_Screener_Tier2.csv"
+    echo "         NEPA_Risk_ReviewType       → NEPA_Risk_ReviewType.csv"
+    echo "         NEPA_Risk_Agency           → NEPA_Risk_Agency.csv"
+    echo "         NEPA_Risk_Circuit          → NEPA_Risk_Circuit.csv"
+    echo "         NEPA_Permit_Matrix         → NEPA_Permit_Matrix_BRE.csv"
+    echo "       Then deactivate Expression Set versions V1 and V2 for NEPA CE Screener"
+    echo "       (Setup > BRE > Expression Sets > NEPA CE Screener) — leave V3 active."
+    echo ""
+    echo "    4. Verify Custom Metadata records loaded:"
     echo "       Setup > Custom Metadata Types > each NEPA_* type > Manage Records"
     echo ""
-    echo "    4. Seed demo data (optional):"
+    echo "    5. Seed demo data (optional):"
     echo "       sf apex run --file scripts/seed-sample-data.apex --target-org $TARGET_ORG"
     echo ""
-    echo "    4b. Seed ServiceResource discipline values (GIS team assembly):"
+    echo "    5b. Seed ServiceResource discipline values (GIS team assembly):"
     echo "       sf apex run --file demo/import_data/21_postload_discipline.apex --target-org $TARGET_ORG"
     echo ""
-    echo "    5. OmniStudio — deployed automatically in Phase 8c above."
+    echo "    6. OmniStudio — deployed automatically in Phase 8c above."
     echo "       Phase 8c handles the DRUpsertDetectedLayer two-step (globalKey patching)"
     echo "       and deploys OmniIntegrationProcedures via the omniIntegrationProcedures/ directory."
     echo "       No manual OmniStudio deployment is needed."
     echo ""
-    echo "    6. GIS proximity trigger chain verification:"
+    echo "    7. GIS proximity trigger chain verification:"
     echo "       Set nepa_location_lat__c + nepa_location_lon__c on a Program record."
     echo "       Wait ~10s, refresh — nepa_protection_areas__c should be populated."
     echo "       Chain: NEPA_GIS_Proximity_Check flow"

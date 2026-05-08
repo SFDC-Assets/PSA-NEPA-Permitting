@@ -68,12 +68,17 @@ The script deploys in dependency order:
 | 2 | Custom fields on Program, IndividualApplication, ContentVersion, PublicComplaint, ApplicationTimeline |
 | 3 | Custom labels |
 | 4 | NEPA_Permitting permission set |
-| 5 | 174 custom metadata seed records (CE rules, risk weights, SLA configs, permit matrix, required docs) |
-| 6 | 27 Flows (deployed as Draft) |
-| 7 | Lightning Record Pages (FlexiPages) for all 6 objects |
-| 8 | Apex controllers and test classes |
+| 5 | Custom metadata seed records (CE rules, risk weights, SLA configs, permit matrix, required docs) |
+| 5b | BRE Decision Matrix definitions (schema only — rows imported manually after deploy) |
+| 5c | BRE Expression Set definitions |
+| 6 | Remote site settings and named credentials |
+| 7 | Apex classes (with RunLocalTests) |
+| 8 | Flows (deployed individually with retry) |
+| 8b | Action Plan Templates |
+| 8c | OmniStudio DataRaptors and Integration Procedures |
+| 9–16 | Tabs, report types, reports, dashboards, layouts, LWC, FlexiPages, Lightning app |
 
-Expected total time: 5–10 minutes.
+Expected total time: 10–15 minutes.
 
 ---
 
@@ -91,7 +96,27 @@ To assign to a specific user:
 sf org assign permset --name NEPA_Permitting --on-behalf-of user@example.com --target-org NEPADEV
 ```
 
-### 4b. Activate Flows
+### 4b. Import BRE Decision Matrix Rows
+
+BRE Decision Matrix rows **cannot be deployed via CLI or Metadata API** — this is a Salesforce platform limitation. After deploy, import each CSV from `decision_matrix_rows/` manually:
+
+1. Go to **Setup → Business Rules Engine → Decision Matrices**
+2. Open the matrix, click the **V1** version, then click **Import CSV**
+3. Upload the CSV — column headers match automatically
+
+| CSV file | Decision Matrix |
+|---|---|
+| `NEPA_CE_Screener_NAICS.csv` | NEPA CE Screener - NAICS Routing |
+| `NEPA_CE_Screener_Tier1.csv` | NEPA CE Screener - Tier 1 Agency Sector Rules |
+| `NEPA_CE_Screener_Tier2.csv` | NEPA CE Screener - Tier 2 Agency Action Type Rules |
+| `NEPA_Risk_ReviewType.csv` | NEPA Risk Scorer - Review Type Points |
+| `NEPA_Risk_Agency.csv` | NEPA Risk Scorer - Agency Risk Points |
+| `NEPA_Risk_Circuit.csv` | NEPA Risk Scorer - Circuit Risk Points |
+| `NEPA_Permit_Matrix_BRE.csv` | NEPA Permit Matrix |
+
+After importing, go to **Setup → BRE → Expression Sets → NEPA CE Screener** and deactivate versions V1 and V2 — leave V3 (rank 3) as the only active version.
+
+### 4c. Activate Flows
 
 Deploy sets all flows to **Draft**. You must activate them in order to avoid trigger dependency errors.
 
@@ -135,7 +160,7 @@ Go to **Setup → Flows** in your org and activate in this order:
 
 The remaining flows (`NEPA_Comment_Triage_Save`, `NEPA_EIS_Section_Assembler`) are Agentforce agent script targets; activate only if deploying the Comment Triage agent.
 
-### 4c. Assign Lightning Record Pages
+### 4d. Assign Lightning Record Pages
 
 The deployment includes custom Lightning Record Pages for all 6 CEQ entities. Assign them as org defaults:
 
@@ -492,11 +517,15 @@ This confirms the AI AUP guardrail is working: AI recommends, humans confirm.
 
 ### 7b. Verify Litigation Risk Scorer
 
+The Risk Scorer uses the **NEPA_Litigation_Risk_Scorer** BRE Expression Set, which looks up ReviewType, Agency, and Circuit points from Decision Matrices. Statute points (CWA, ESA, NHPA) are pre-computed in the flow before calling the ES.
+
+**Prerequisite:** The three Risk Scorer Decision Matrices must have rows loaded (Step 4b above) or the ES will return 0 for all DM lookups and the score will reflect only statute points.
+
 1. Open the **Wind River Pipeline EIS** process record.
 2. Change **NEPA Review Type** to `EIS` (or if already set, change it to `EA` and back to `EIS`).
 3. Save and wait 5–10 seconds, then refresh.
 4. Verify:
-   - `Risk Score` is populated (expect 75+ for EIS + BLM + 9th Circuit)
+   - `Risk Score` is populated (expect 75+ for EIS + BLM + 9th Circuit once DM rows are loaded)
    - `Risk Tier` shows `Very High`
    - `Risk Score Factors` contains the text `AI-GENERATED — PermitTEC v0.1`
 
@@ -580,7 +609,7 @@ Expected response shape:
 }
 ```
 
-### 7g. Verify Custom Metadata Loaded
+### 7g. Verify Custom Metadata and BRE Data Loaded
 
 Spot-check the CE screening rules and risk weight tables:
 
@@ -599,6 +628,20 @@ sf data query \
 ```
 
 Expected: 14 rows (13 circuits + Default).
+
+To confirm BRE Decision Matrix rows were imported correctly, check row counts in Setup → Business Rules Engine → Decision Matrices. Expected counts after importing all CSVs:
+
+| Decision Matrix | Expected rows |
+|---|---|
+| NEPA CE Screener - NAICS Routing | 7 |
+| NEPA CE Screener - Tier 1 Agency Sector Rules | 17 |
+| NEPA CE Screener - Tier 2 Agency Action Type Rules | 16 |
+| NEPA Risk Scorer - Review Type Points | 4 |
+| NEPA Risk Scorer - Agency Risk Points | 6 |
+| NEPA Risk Scorer - Circuit Risk Points | 13 |
+| NEPA Permit Matrix | 9 |
+
+Note: `NEPA_Permit_Matrix__mdt` CMT records remain in the repo as the authoritative source of truth for permit matrix data. The BRE Decision Matrix (`NEPA_Permit_Matrix_BRE`) mirrors these rows and is the runtime lookup used by the `NEPA_Permit_Coordinator` flow.
 
 ---
 
@@ -627,7 +670,7 @@ Verify the flow version that is Active is the correct one. Check Setup → Flows
 Activate subflows before parent flows. The order in Step 4b is designed to prevent this. If you see it, check which subflow the error names and activate that first.
 
 **Risk score is 0 after setting `nepa_review_type__c`**
-The `NEPA_Litigation_Risk_Scorer` fires async (`AsyncAfterCommit`). Wait 5–10 seconds and refresh. If still 0, check that the related project has `nepa_circuit__c` set — the scorer reads circuit from the parent Program record.
+The `NEPA_Litigation_Risk_Scorer` fires async (`AsyncAfterCommit`). Wait 5–10 seconds and refresh. If still 0, check two things: (1) the related project has `nepa_circuit__c` and `nepa_lead_agency__c` set — the scorer reads both from the parent Program; (2) the BRE Decision Matrices have rows loaded (Step 4b). Without rows, DM lookups return 0 for ReviewType, Agency, and Circuit — only statute points will appear.
 
 **CE Screener does not fire**
 The screener fires when `nepa_action_type__c`, `nepa_disturbance_acres__c`, or `nepa_applicant_naics__c` changes on an IndividualApplication that has a related Program. Ensure the process is linked to a project.
