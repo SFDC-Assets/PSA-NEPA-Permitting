@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
-    <apiVersion>62.0</apiVersion>
-    <description>Calculates composite litigation risk score on IndividualApplication via BRE Expression Set NEPA_Litigation_Risk_Scorer. Pre-computes statute risk points (CONTAINS matching not supported in BRE) before invoking the ES. Writes RiskScore, RiskTier, AIConfidence, and ExpeditedPenaltyApplied back to the IA. Fires async after-commit when key risk fields change.</description>
-    <label>NEPA Litigation Risk Scorer</label>
-    <processType>AutoLaunchedFlow</processType>
-    <status>Active</status>
-
-    <!-- ACTIONS -->
     <actionCalls>
         <name>Call_NEPA_Risk_Scorer</name>
         <label>Evaluate Litigation Risk Score</label>
@@ -30,7 +23,7 @@
         <inputParameters>
             <name>AgencyName</name>
             <value>
-                <elementReference>Get_RelatedProject.nepa_lead_agency__c</elementReference>
+                <elementReference>Get_RelatedProject.nepa_record_owner_agency__c</elementReference>
             </value>
         </inputParameters>
         <inputParameters>
@@ -60,8 +53,23 @@
         <nameSegment>NEPA_Litigation_Risk_Scorer</nameSegment>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </actionCalls>
-
-    <!-- ASSIGNMENTS -->
+    <apiVersion>62.0</apiVersion>
+    <assignments>
+        <name>Append_PenaltyNote</name>
+        <label>Append APA Penalty Note to Score Factors</label>
+        <locationX>352</locationX>
+        <locationY>863</locationY>
+        <assignmentItems>
+            <assignToReference>var_ScoreFactors</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula_ScoreFactorsWithPenalty</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_RiskFields</targetReference>
+        </connector>
+    </assignments>
     <assignments>
         <name>Assign_StatutePoints</name>
         <label>Add Statute Risk Points</label>
@@ -82,7 +90,7 @@
         <name>Build_Score_Factors</name>
         <label>Build Score Factors Summary</label>
         <locationX>176</locationX>
-        <locationY>647</locationY>
+        <locationY>755</locationY>
         <assignmentItems>
             <assignToReference>var_ScoreFactors</assignToReference>
             <operator>Assign</operator>
@@ -95,26 +103,10 @@
         </connector>
     </assignments>
     <assignments>
-        <name>Append_PenaltyNote</name>
-        <label>Append APA Penalty Note to Score Factors</label>
-        <locationX>352</locationX>
-        <locationY>755</locationY>
-        <assignmentItems>
-            <assignToReference>var_ScoreFactors</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>formula_ScoreFactorsWithPenalty</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Update_RiskFields</targetReference>
-        </connector>
-    </assignments>
-    <assignments>
         <name>Handle_Error</name>
         <label>Handle Error</label>
         <locationX>528</locationX>
-        <locationY>647</locationY>
+        <locationY>755</locationY>
         <assignmentItems>
             <assignToReference>var_ErrorMessage</assignToReference>
             <operator>Assign</operator>
@@ -126,17 +118,47 @@
             <targetReference>Call_ErrorLogger</targetReference>
         </connector>
     </assignments>
-
-    <!-- DECISIONS -->
+    <decisions>
+        <name>Decision_AppendPenaltyNote</name>
+        <label>Append APA Penalty Note?</label>
+        <locationX>176</locationX>
+        <locationY>863</locationY>
+        <defaultConnector>
+            <targetReference>Update_RiskFields</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Penalty — proceed to update</defaultConnectorLabel>
+        <rules>
+            <name>Penalty_Applied</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_IsExpedited</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.nepa_record_completeness__c</leftValueReference>
+                <operator>LessThan</operator>
+                <rightValue>
+                    <numberValue>100.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Append_PenaltyNote</targetReference>
+            </connector>
+            <label>Penalty Applied</label>
+        </rules>
+    </decisions>
     <decisions>
         <name>Decision_StatutePresent</name>
         <label>Project Contains This Statute?</label>
         <locationX>352</locationX>
         <locationY>431</locationY>
-        <defaultConnectorLabel>Statute Not Present</defaultConnectorLabel>
         <defaultConnector>
             <targetReference>Loop_StatuteWeights</targetReference>
         </defaultConnector>
+        <defaultConnectorLabel>Statute Not Present</defaultConnectorLabel>
         <rules>
             <name>Statute_Present</name>
             <conditionLogic>and</conditionLogic>
@@ -153,55 +175,28 @@
             <label>Statute Present</label>
         </rules>
     </decisions>
-    <decisions>
-        <name>Decision_AppendPenaltyNote</name>
-        <label>Append APA Penalty Note?</label>
-        <locationX>176</locationX>
-        <locationY>755</locationY>
-        <defaultConnectorLabel>No Penalty — proceed to update</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Update_RiskFields</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>Penalty_Applied</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>Call_NEPA_Risk_Scorer.ExpeditedPenaltyApplied</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Append_PenaltyNote</targetReference>
-            </connector>
-            <label>Penalty Applied</label>
-        </rules>
-    </decisions>
-
-    <!-- FORMULAS -->
+    <description>Calculates composite litigation risk score on IndividualApplication via BRE Expression Set NEPA_Litigation_Risk_Scorer. Pre-computes statute risk points (CONTAINS matching not supported in BRE) before invoking the ES. Writes RiskScore, RiskTier, AIConfidence, and ExpeditedPenaltyApplied back to the IA. Fires async after-commit when key risk fields change.</description>
+    <formulas>
+        <name>formula_ErrorContext</name>
+        <dataType>String</dataType>
+        <expression>&quot;Agency:&quot; &amp; {!Get_RelatedProject.nepa_record_owner_agency__c} &amp; &quot;|Circuit:&quot; &amp; {!Get_RelatedProject.nepa_circuit__c} &amp; &quot;|StatutePoints:&quot; &amp; TEXT({!var_StatutePoints})</expression>
+    </formulas>
     <formulas>
         <name>formula_IsExpedited</name>
         <dataType>Boolean</dataType>
-        <expression>ISPICKVAL({!$Record.nepa_review_timeline_type__c}, "Expedited/Emergency")</expression>
+        <expression>ISPICKVAL({!$Record.nepa_review_timeline_type__c}, &quot;Expedited/Emergency&quot;)</expression>
     </formulas>
     <formulas>
         <name>formula_ScoreFactorsSummary</name>
         <dataType>String</dataType>
-        <expression>"[AI-GENERATED — PermitTEC v0.1, PNNL 2025, 761 cases; circuit weights based on small sample, treat as directional] " &amp; "ReviewType+Agency+Circuit scored via BRE DM lookup; Statutes:" &amp; TEXT({!var_StatutePoints}) &amp; "pts; Total:" &amp; TEXT({!Call_NEPA_Risk_Scorer.RiskScore})</expression>
+        <expression>&quot;[AI-GENERATED — PermitTEC v0.1, PNNL 2025, 761 cases; circuit weights based on small sample, treat as directional] &quot; &amp; &quot;ReviewType+Agency+Circuit scored via BRE DM lookup; Statutes:&quot; &amp; TEXT({!var_StatutePoints}) &amp; &quot;pts&quot;</expression>
     </formulas>
     <formulas>
         <name>formula_ScoreFactorsWithPenalty</name>
         <dataType>String</dataType>
-        <expression>{!var_ScoreFactors} &amp; "; APA PENALTY: 1.5x multiplier applied — Expedited/Emergency procedure. Immediate record gap remediation required."</expression>
+        <expression>{!var_ScoreFactors} &amp; &quot;; APA PENALTY: 1.5x multiplier applied — Expedited/Emergency procedure. Immediate record gap remediation required.&quot;</expression>
     </formulas>
-    <formulas>
-        <name>formula_ErrorContext</name>
-        <dataType>String</dataType>
-        <expression>"Agency:" &amp; {!Get_RelatedProject.nepa_lead_agency__c} &amp; "|Circuit:" &amp; {!Get_RelatedProject.nepa_circuit__c} &amp; "|StatutePoints:" &amp; TEXT({!var_StatutePoints})</expression>
-    </formulas>
-
-    <!-- LOOPS -->
+    <label>NEPA Litigation Risk Scorer</label>
     <loops>
         <name>Loop_StatuteWeights</name>
         <label>Loop: Statute Risk Weights</label>
@@ -216,8 +211,7 @@
             <targetReference>Call_NEPA_Risk_Scorer</targetReference>
         </noMoreValuesConnector>
     </loops>
-
-    <!-- RECORD LOOKUPS -->
+    <processType>AutoLaunchedFlow</processType>
     <recordLookups>
         <name>Get_RelatedProject</name>
         <label>Get Related Program</label>
@@ -240,7 +234,7 @@
         <queriedFields>Id</queriedFields>
         <queriedFields>nepa_circuit__c</queriedFields>
         <queriedFields>nepa_adjacent_statutes__c</queriedFields>
-        <queriedFields>nepa_lead_agency__c</queriedFields>
+        <queriedFields>nepa_record_owner_agency__c</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
@@ -260,34 +254,32 @@
                 <booleanValue>true</booleanValue>
             </value>
         </filters>
-        <getFirstRecordOnly>false</getFirstRecordOnly>
         <object>NEPA_Statute_Risk_Weight__mdt</object>
         <outputReference>col_StatuteWeights</outputReference>
         <queriedFields>Id</queriedFields>
         <queriedFields>Statute_Key__c</queriedFields>
         <queriedFields>Risk_Points__c</queriedFields>
     </recordLookups>
-
-    <!-- RECORD UPDATES -->
-    <!-- code-analyzer-suppress flow:SameRecordUpdate — intentional async after-save write-back via AsyncAfterCommit scheduledPath; this is the recommended pattern for expensive same-record updates -->
     <recordUpdates>
         <name>Update_RiskFields</name>
         <label>Update Risk Fields</label>
         <locationX>176</locationX>
-        <locationY>863</locationY>
+        <locationY>971</locationY>
         <faultConnector>
             <targetReference>Handle_Error</targetReference>
         </faultConnector>
-        <inputAssignments>
-            <field>nepa_risk_score__c</field>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
             <value>
-                <elementReference>Call_NEPA_Risk_Scorer.RiskScore</elementReference>
+                <elementReference>$Record.Id</elementReference>
             </value>
-        </inputAssignments>
+        </filters>
         <inputAssignments>
-            <field>nepa_risk_tier__c</field>
+            <field>nepa_expedited_risk_penalty_applied__c</field>
             <value>
-                <elementReference>Call_NEPA_Risk_Scorer.RiskTier</elementReference>
+                <elementReference>formula_IsExpedited</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -302,34 +294,42 @@
                 <elementReference>$Flow.CurrentDateTime</elementReference>
             </value>
         </inputAssignments>
-        <inputAssignments>
-            <field>nepa_expedited_risk_penalty_applied__c</field>
-            <value>
-                <elementReference>Call_NEPA_Risk_Scorer.ExpeditedPenaltyApplied</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>nepa_litigation_ai_confidence__c</field>
-            <value>
-                <elementReference>Call_NEPA_Risk_Scorer.AIConfidence</elementReference>
-            </value>
-        </inputAssignments>
         <object>IndividualApplication</object>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <filterLogic>1 OR 2</filterLogic>
         <filters>
-            <field>Id</field>
-            <operator>EqualTo</operator>
+            <field>nepa_review_type__c</field>
+            <operator>IsChanged</operator>
             <value>
-                <elementReference>$Record.Id</elementReference>
+                <booleanValue>true</booleanValue>
             </value>
         </filters>
-    </recordUpdates>
-
-    <!-- SUBFLOWS -->
+        <filters>
+            <field>nepa_record_completeness__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>IndividualApplication</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <scheduledPaths>
+            <connector>
+                <targetReference>Get_RelatedProject</targetReference>
+            </connector>
+            <pathType>AsyncAfterCommit</pathType>
+        </scheduledPaths>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
     <subflows>
         <name>Call_ErrorLogger</name>
         <label>Log Flow Error</label>
         <locationX>528</locationX>
-        <locationY>755</locationY>
+        <locationY>863</locationY>
         <flowName>NEPA_Error_Logger</flowName>
         <inputAssignments>
             <name>inp_FlowName</name>
@@ -368,38 +368,57 @@
             </value>
         </inputAssignments>
     </subflows>
-
-    <!-- TRIGGER -->
-    <start>
-        <locationX>50</locationX>
-        <locationY>0</locationY>
-        <object>IndividualApplication</object>
-        <recordTriggerType>CreateAndUpdate</recordTriggerType>
-        <triggerType>RecordAfterSave</triggerType>
-        <scheduledPaths>
-            <connector>
-                <targetReference>Get_RelatedProject</targetReference>
-            </connector>
-            <pathType>AsyncAfterCommit</pathType>
-        </scheduledPaths>
-        <filterLogic>1 OR 2</filterLogic>
-        <filters>
-            <field>nepa_review_type__c</field>
-            <operator>IsChanged</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
-        <filters>
-            <field>nepa_record_completeness__c</field>
-            <operator>IsChanged</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
-    </start>
-
-    <!-- VARIABLES -->
+    <variables>
+        <name>col_StatuteWeights</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>NEPA_Statute_Risk_Weight__mdt</objectType>
+    </variables>
+    <variables>
+        <name>var_AIConfidence</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>1</scale>
+        <value>
+            <numberValue>50.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <name>var_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_RiskScore</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>1</scale>
+        <value>
+            <numberValue>0.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <name>var_RiskTier</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_ScoreFactors</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
     <variables>
         <name>var_StatutePoints</name>
         <dataType>Number</dataType>
@@ -411,27 +430,4 @@
             <numberValue>0.0</numberValue>
         </value>
     </variables>
-    <variables>
-        <name>var_ScoreFactors</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-    <variables>
-        <name>col_StatuteWeights</name>
-        <dataType>SObject</dataType>
-        <isCollection>true</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>NEPA_Statute_Risk_Weight__mdt</objectType>
-    </variables>
-    <variables>
-        <name>var_ErrorMessage</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-
 </Flow>

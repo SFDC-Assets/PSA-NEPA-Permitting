@@ -4,12 +4,12 @@
     <processType>Bre</processType>
     <template>false</template>
     <versions>
-        <fullName>NEPA_Litigation_Risk_Scorer_V1</fullName>
-        <description>Composite litigation risk scoring: ReviewType + Agency + Circuit DM lookups; statute points passed as pre-computed flow input; 1.5x expedited multiplier when record is incomplete; cap at 100; tier assignment.</description>
+        <fullName>NEPA_Litigation_Risk_Scorer_V2</fullName>
+        <description>Composite litigation risk scoring V2: DM output bindings changed to Text with VALUE() wrappers in expressions — required to avoid BRE rulesEngineInputInterview null init. ReviewType + Agency + Circuit DM lookups; statute points passed as pre-computed flow input; 1.5x expedited multiplier when record is incomplete; cap at 100; tier assignment.</description>
         <expressionSetDefinition>NEPA_Litigation_Risk_Scorer</expressionSetDefinition>
-        <label>NEPA Litigation Risk Scorer V1</label>
+        <label>NEPA Litigation Risk Scorer V2</label>
         <processType>Bre</processType>
-        <rank>1</rank>
+        <rank>2</rank>
         <shouldShowExplExternally>false</shouldShowExplExternally>
         <startDate>2026-05-08T00:00:00.000Z</startDate>
         <status>Active</status>
@@ -66,12 +66,13 @@
         </steps>
 
         <!-- Step 4: Sum all components. StatutePoints is pre-computed in the calling flow
-             (statute CONTAINS matching cannot be done in BRE). -->
+             (statute CONTAINS matching cannot be done in BRE).
+             VALUE() needed because DM output binding vars are Text (BRE only supports Text bindings). -->
         <steps>
             <actionType>AssignParameterValues</actionType>
             <assignment>
                 <assignedParameter>RawScore</assignedParameter>
-                <expression>NEPA_Risk_ReviewType__Points + NEPA_Risk_Agency__Points + NEPA_Risk_Circuit__Points + StatutePoints</expression>
+                <expression>VALUE(NEPA_Risk_ReviewType__Points) + VALUE(NEPA_Risk_Agency__Points) + VALUE(NEPA_Risk_Circuit__Points) + StatutePoints</expression>
             </assignment>
             <label>Sum Risk Components</label>
             <name>SumRiskComponents</name>
@@ -153,12 +154,13 @@
         </steps>
 
         <!-- Step 9: Compute AI confidence. 50 base (ReviewType+Statutes always scored) +
-             25 per DM hit (Agency MatchScore=1, Circuit MatchScore=1). Max 100. -->
+             25 per DM hit (Agency MatchScore=1, Circuit MatchScore=1). Max 100.
+             VALUE() needed because DM output binding vars are Text. -->
         <steps>
             <actionType>AssignParameterValues</actionType>
             <assignment>
                 <assignedParameter>AIConfidence</assignedParameter>
-                <expression>50 + ( IF( NEPA_Risk_Agency__MatchScore &gt;= 1, 25, 0 ) ) + ( IF( NEPA_Risk_Circuit__MatchScore &gt;= 1, 25, 0 ) )</expression>
+                <expression>50 + ( IF( VALUE(NEPA_Risk_Agency__MatchScore) &gt;= 1, 25, 0 ) ) + ( IF( VALUE(NEPA_Risk_Circuit__MatchScore) &gt;= 1, 25, 0 ) )</expression>
             </assignment>
             <label>Compute AI Confidence</label>
             <name>ComputeAIConfidence</name>
@@ -314,11 +316,12 @@
             <value>0</value>
         </variables>
 
-        <!-- DM output bindings: ReviewType DM -->
+        <!-- DM output bindings: ReviewType DM
+             dataType=Text is required — BRE only supports Text DM output bindings. VALUE() wraps in expressions. -->
         <variables>
             <collection>false</collection>
-            <dataType>Numeric</dataType>
-            <decimalPlaces>1</decimalPlaces>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
             <input>false</input>
             <lookupName>NEPA_Risk_ReviewType</lookupName>
             <lookupType>DecisionMatrix</lookupType>
@@ -330,8 +333,8 @@
         <!-- DM output bindings: Agency DM -->
         <variables>
             <collection>false</collection>
-            <dataType>Numeric</dataType>
-            <decimalPlaces>1</decimalPlaces>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
             <input>false</input>
             <lookupName>NEPA_Risk_Agency</lookupName>
             <lookupType>DecisionMatrix</lookupType>
@@ -341,8 +344,8 @@
         </variables>
         <variables>
             <collection>false</collection>
-            <dataType>Numeric</dataType>
-            <decimalPlaces>1</decimalPlaces>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
             <input>false</input>
             <lookupName>NEPA_Risk_Agency</lookupName>
             <lookupType>DecisionMatrix</lookupType>
@@ -354,8 +357,8 @@
         <!-- DM output bindings: Circuit DM -->
         <variables>
             <collection>false</collection>
-            <dataType>Numeric</dataType>
-            <decimalPlaces>1</decimalPlaces>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
             <input>false</input>
             <lookupName>NEPA_Risk_Circuit</lookupName>
             <lookupType>DecisionMatrix</lookupType>
@@ -365,8 +368,8 @@
         </variables>
         <variables>
             <collection>false</collection>
-            <dataType>Numeric</dataType>
-            <decimalPlaces>1</decimalPlaces>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
             <input>false</input>
             <lookupName>NEPA_Risk_Circuit</lookupName>
             <lookupType>DecisionMatrix</lookupType>
@@ -375,6 +378,6 @@
             <type>Variable</type>
         </variables>
 
-        <versionNumber>1</versionNumber>
+        <versionNumber>2</versionNumber>
     </versions>
 </ExpressionSetDefinition>

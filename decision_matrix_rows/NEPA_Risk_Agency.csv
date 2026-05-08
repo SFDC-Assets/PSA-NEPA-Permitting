@@ -1,7 +1,7 @@
 AgencyName,Points,MatchScore
-United States Forest Service,25,1
-Bureau of Land Management,23,1
-Federal Energy Regulatory Commission,15,1
-United States Army Corps of Engineers,12,1
-United States Fish and Wildlife Service,10,1
+USFS,25,1
+BLM,23,1
+FERC,15,1
+USACE,12,1
+USFWS,10,1
 Default,5,0
