@@ -187,6 +187,11 @@
         <expression>ISPICKVAL({!$Record.nepa_review_timeline_type__c}, &quot;Expedited/Emergency&quot;)</expression>
     </formulas>
     <formulas>
+        <name>formula_RiskTier</name>
+        <dataType>String</dataType>
+        <expression>IF( {!Call_NEPA_Risk_Scorer.RiskScore} &gt;= 75, &quot;Very High&quot;, IF( {!Call_NEPA_Risk_Scorer.RiskScore} &gt;= 50, &quot;High&quot;, IF( {!Call_NEPA_Risk_Scorer.RiskScore} &gt;= 25, &quot;Moderate&quot;, &quot;Low&quot; ) ) )</expression>
+    </formulas>
+    <formulas>
         <name>formula_ScoreFactorsSummary</name>
         <dataType>String</dataType>
         <expression>&quot;[AI-GENERATED — PermitTEC v0.1, PNNL 2025, 761 cases; circuit weights based on small sample, treat as directional] &quot; &amp; &quot;ReviewType+Agency+Circuit scored via BRE DM lookup; Statutes:&quot; &amp; TEXT({!var_StatutePoints}) &amp; &quot;pts&quot;</expression>
@@ -283,6 +288,12 @@
             </value>
         </inputAssignments>
         <inputAssignments>
+            <field>nepa_risk_score__c</field>
+            <value>
+                <elementReference>Call_NEPA_Risk_Scorer.RiskScore</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
             <field>nepa_risk_score_factors__c</field>
             <value>
                 <elementReference>var_ScoreFactors</elementReference>
@@ -292,6 +303,12 @@
             <field>nepa_risk_score_updated__c</field>
             <value>
                 <elementReference>$Flow.CurrentDateTime</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_risk_tier__c</field>
+            <value>
+                <elementReference>formula_RiskTier</elementReference>
             </value>
         </inputAssignments>
         <object>IndividualApplication</object>
