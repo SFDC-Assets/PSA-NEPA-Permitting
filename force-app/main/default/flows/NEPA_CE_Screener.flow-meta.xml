@@ -389,6 +389,36 @@
         </connector>
     </assignments>
 
+    <assignments>
+        <name>Assign_T1_ALL_Tried</name>
+        <label>Mark Tier 1 ALL Fallback Attempted</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_T1_ALL_tried</assignToReference>
+            <operator>Assign</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_Tier1Rule_ALL</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_T2_ALL_Tried</name>
+        <label>Mark Tier 2 ALL Fallback Attempted</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_T2_ALL_tried</assignToReference>
+            <operator>Assign</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_Tier2Rule_ALL</targetReference>
+        </connector>
+    </assignments>
+
     <!-- ============================================================
          STAGE ENTRY: Default inp_EvaluationDate to nepa_start_date__c when
          not explicitly set by a caller. Prevents all CMT temporal filters
@@ -563,29 +593,29 @@
         </rules>
     </decisions>
 
-    <!-- Guard: only run the ALL fallback once — skip it when var_AgencyAbbr is already ALL -->
+    <!-- Guard: only run the ALL fallback once — skip it when we have already tried the ALL query -->
     <decisions>
         <name>Decision_AlreadyTriedALL_T1</name>
-        <label>Tier 1: Agency Is Already ALL?</label>
-        <description>Prevents a second ALL lookup when the lead agency IS ALL (would duplicate Get_Tier1Rule).</description>
+        <label>Tier 1: Already Tried ALL?</label>
+        <description>Prevents an infinite loop by tracking whether the ALL-agency Tier 1 fallback has already been attempted.</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <defaultConnectorLabel>Agency-specific — try ALL fallback</defaultConnectorLabel>
+        <defaultConnectorLabel>Not yet tried — set flag and run ALL fallback</defaultConnectorLabel>
         <defaultConnector>
-            <targetReference>Get_Tier1Rule_ALL</targetReference>
+            <targetReference>Assign_T1_ALL_Tried</targetReference>
         </defaultConnector>
         <rules>
-            <name>T1_Agency_Is_ALL</name>
+            <name>T1_ALL_Already_Tried</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>var_AgencyAbbr</leftValueReference>
+                <leftValueReference>var_T1_ALL_tried</leftValueReference>
                 <operator>EqualTo</operator>
-                <rightValue><stringValue>ALL</stringValue></rightValue>
+                <rightValue><booleanValue>true</booleanValue></rightValue>
             </conditions>
             <connector>
                 <targetReference>Get_Tier2Rule</targetReference>
             </connector>
-            <label>Agency Is ALL — skip duplicate lookup</label>
+            <label>ALL fallback already tried — advance to Tier 2</label>
         </rules>
     </decisions>
 
@@ -704,26 +734,26 @@
 
     <decisions>
         <name>Decision_AlreadyTriedALL_T2</name>
-        <label>Tier 2: Agency Is Already ALL?</label>
-        <description>Prevents a second ALL lookup when the lead agency IS ALL.</description>
+        <label>Tier 2: Already Tried ALL?</label>
+        <description>Prevents an infinite loop by tracking whether the ALL-agency Tier 2 fallback has already been attempted.</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <defaultConnectorLabel>Agency-specific — try ALL fallback</defaultConnectorLabel>
+        <defaultConnectorLabel>Not yet tried — set flag and run ALL fallback</defaultConnectorLabel>
         <defaultConnector>
-            <targetReference>Get_Tier2Rule_ALL</targetReference>
+            <targetReference>Assign_T2_ALL_Tried</targetReference>
         </defaultConnector>
         <rules>
-            <name>T2_Agency_Is_ALL</name>
+            <name>T2_ALL_Already_Tried</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>var_AgencyAbbr</leftValueReference>
+                <leftValueReference>var_T2_ALL_tried</leftValueReference>
                 <operator>EqualTo</operator>
-                <rightValue><stringValue>ALL</stringValue></rightValue>
+                <rightValue><booleanValue>true</booleanValue></rightValue>
             </conditions>
             <connector>
                 <targetReference>Assign_DefaultEA</targetReference>
             </connector>
-            <label>Agency Is ALL — skip duplicate lookup</label>
+            <label>ALL fallback already tried — default to EA</label>
         </rules>
     </decisions>
 
@@ -1464,5 +1494,25 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
         <objectType>NEPA_CE_Screening_Rule__mdt</objectType>
+    </variables>
+
+    <variables>
+        <name>var_T1_ALL_tried</name>
+        <description>Flag set to true once the Tier 1 ALL-agency fallback query has been attempted. Prevents the Decision_AlreadyTriedALL_T1 guard from looping back into Get_Tier1Rule_ALL indefinitely when no match exists.</description>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value><booleanValue>false</booleanValue></value>
+    </variables>
+
+    <variables>
+        <name>var_T2_ALL_tried</name>
+        <description>Flag set to true once the Tier 2 ALL-agency fallback query has been attempted. Prevents the Decision_AlreadyTriedALL_T2 guard from looping back into Get_Tier2Rule_ALL indefinitely when no match exists.</description>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value><booleanValue>false</booleanValue></value>
     </variables>
 </Flow>
