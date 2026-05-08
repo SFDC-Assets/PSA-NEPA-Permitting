@@ -1,941 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>Three-tier CE screening for IndividualApplication. Stage 0: NAICS routing (sets agency namespace + confidence modifier). Stage 1: Tier 1 high-confidence sector+type rules. Stage 2: Tier 2 action-type discriminators. Post-match: acreage threshold and GIS extraordinary circumstances checks. Writes nepa_review_type__c, nepa_process_code__c, nepa_screening_confidence__c, nepa_classification_basis__c back to IndividualApplication. Fires after-save on create/update when screening input fields change.</description>
+    <description>CE screening orchestrator for IndividualApplication. Invokes NEPA_CE_Screener BRE Expression Set which routes through three Decision Matrices (NAICS, Tier1 Agency+Sector, Tier2 Agency+ActionType) with acreage override and no-match fallback. Writes recommendation to nepa_ce_pathway_recommendation__c per Salesforce AI AUP / OMB M-24-10 (AI recommends, human decides). Fires async after-commit when screening input fields change.</description>
     <label>NEPA CE Screener</label>
     <processType>AutoLaunchedFlow</processType>
     <status>Active</status>
 
-    <!-- Extract agency abbreviation from Account name (first word) -->
-    <assignments>
-        <name>Assign_AgencyFromProject</name>
-        <label>Set Agency Abbreviation</label>
-        <description>Set Agency Abbreviation</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_AgencyAbbr</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>rec_RelatedProject.nepa_record_owner_agency__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_SectorKey</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>rec_RelatedProject.nepa_project_sector__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_TypeKey</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>rec_RelatedProject.nepa_project_type__c</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Decision_HasNAICS</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Assign_NAICSModifier</name>
-        <label>Store NAICS Confidence Modifier</label>
-        <description>Store NAICS Confidence Modifier</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_NAICSConfidenceModifier</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>rec_NAICSRule.Confidence_Modifier__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_ClassificationBasis</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>rec_NAICSRule.Classification_Basis__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CurrentStep</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>NAICS_Routed</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Get_Tier1Rule</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Assign_Tier1Result</name>
-        <label>Apply Tier 1 Rule Results</label>
-        <description>Apply Tier 1 Rule Results</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_ReviewType</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>rec_Tier1Rule.Review_Type__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CECode</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>rec_Tier1Rule.CE_Code__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_Confidence</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>rec_Tier1Rule.Confidence__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_ClassificationBasis</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>rec_Tier1Rule.Classification_Basis__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CurrentStep</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>Tier1_Matched</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Decision_Tier1RequiresAcreage</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Assign_AcreageDowngrade</name>
-        <label>Downgrade to EA: Acreage Exceeded</label>
-        <description>Downgrade to EA: Acreage Exceeded</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_ReviewType</assignToReference>
-            <operator>Assign</operator>
-            <value><stringValue>EA</stringValue></value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CECode</assignToReference>
-            <operator>Assign</operator>
-            <value><stringValue></stringValue></value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_Confidence</assignToReference>
-            <operator>Assign</operator>
-            <value><stringValue>Medium</stringValue></value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_ClassificationBasis</assignToReference>
-            <operator>Add</operator>
-            <value><stringValue> | Downgraded to EA: disturbance acres exceeds CE threshold.</stringValue></value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Decision_GISProximityReady</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Assign_Tier2Result</name>
-        <label>Apply Tier 2 Rule Results</label>
-        <description>Apply Tier 2 Rule Results</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_ReviewType</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>rec_Tier2Rule.Review_Type__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CECode</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>rec_Tier2Rule.CE_Code__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_Confidence</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>rec_Tier2Rule.Confidence__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_ClassificationBasis</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>rec_Tier2Rule.Classification_Basis__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CurrentStep</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>Tier2_Matched</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Decision_Tier2RequiresAcreage</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Assign_Tier2AcreageDowngrade</name>
-        <label>Tier 2: Downgrade to EA — Acreage Exceeded</label>
-        <description>Tier 2: Downgrade to EA — Acreage Exceeded</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_ReviewType</assignToReference>
-            <operator>Assign</operator>
-            <value><stringValue>EA</stringValue></value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CECode</assignToReference>
-            <operator>Assign</operator>
-            <value><stringValue></stringValue></value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_Confidence</assignToReference>
-            <operator>Assign</operator>
-            <value><stringValue>Medium</stringValue></value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_ClassificationBasis</assignToReference>
-            <operator>Add</operator>
-            <value><stringValue> | Downgraded to EA: disturbance acres exceeds CE threshold.</stringValue></value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Decision_GISProximityReady</targetReference>
-        </connector>
-    </assignments>
-
-    <!-- Default when no rule matches at any tier -->
-    <assignments>
-        <name>Assign_DefaultEA</name>
-        <label>Default: EA / Low Confidence</label>
-        <description>Default: EA / Low Confidence</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_ReviewType</assignToReference>
-            <operator>Assign</operator>
-            <value><stringValue>EA</stringValue></value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CECode</assignToReference>
-            <operator>Assign</operator>
-            <value><stringValue></stringValue></value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_Confidence</assignToReference>
-            <operator>Assign</operator>
-            <value><stringValue>Low</stringValue></value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_ClassificationBasis</assignToReference>
-            <operator>Assign</operator>
-            <value><stringValue>No CE screening rule matched sector/type/action-type combination. Defaulting to EA. SME review required.</stringValue></value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Decision_GISProximityReady</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Assign_GISDowngrade</name>
-        <label>GIS Disqualify: Override to EA</label>
-        <description>GIS Disqualify: Override to EA</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_ReviewType</assignToReference>
-            <operator>Assign</operator>
-            <value><stringValue>EA</stringValue></value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CECode</assignToReference>
-            <operator>Assign</operator>
-            <value><stringValue></stringValue></value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_Confidence</assignToReference>
-            <operator>Assign</operator>
-            <value><stringValue>Low</stringValue></value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_ClassificationBasis</assignToReference>
-            <operator>Add</operator>
-            <value><stringValue> | OVERRIDDEN to EA: extraordinary circumstances flagged ({!$Record.nepa_extraordinary_circumstances__c}). CE disqualified per CEQ regulations.</stringValue></value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CurrentStep</assignToReference>
-            <operator>Assign</operator>
-            <value><stringValue>GIS_Downgrade</stringValue></value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Decision_ApplyNAICSModifier</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Assign_DowngradeConfidenceLow</name>
-        <label>Downgrade Confidence to Low (NAICS)</label>
-        <description>Downgrade Confidence to Low (NAICS)</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_Confidence</assignToReference>
-            <operator>Assign</operator>
-            <value><stringValue>Low</stringValue></value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_ClassificationBasis</assignToReference>
-            <operator>Add</operator>
-            <value><stringValue> | Confidence downgraded to Low: NAICS code indicates high-risk industry (extraction/production). SME review required.</stringValue></value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Build_ClassificationBasis</targetReference>
-        </connector>
-    </assignments>
-
     <!-- ============================================================
-         STAGE 5: Finalize classification basis text and write back
-    ============================================================ -->
-    <assignments>
-        <name>Build_ClassificationBasis</name>
-        <label>Finalize Classification Basis</label>
-        <description>Finalize Classification Basis</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_ClassificationBasis</assignToReference>
-            <operator>Add</operator>
-            <value><stringValue> | Screened: {!$Flow.CurrentDateTime} | Review Type: {!var_ReviewType} | CE Code: {!var_CECode} | Confidence: {!var_Confidence}</stringValue></value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_ScreenerRunTimestamp</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>$Flow.CurrentDateTime</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CurrentStep</assignToReference>
-            <operator>Assign</operator>
-            <value><stringValue>Update_ScreeningFields</stringValue></value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Update_ScreeningFields</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Handle_Error</name>
-        <label>Handle Error</label>
-        <description>Handle Error</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_ErrorMessage</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>$Flow.FaultMessage</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Call_ErrorLogger</targetReference>
-        </connector>
-    </assignments>
-
-    <!-- GIS not yet complete: stamp nepa_processing_status__c = Pending GIS and exit.
-         The screener will re-run when nepa_extraordinary_circumstances__c is set by the GIS IP. -->
-    <assignments>
-        <name>Assign_DeferGISReview</name>
-        <label>Defer — GIS Proximity Pending</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_ClassificationBasis</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>CE screening deferred: GIS proximity check has not yet completed. Screener will re-run automatically when GIS data is available.</stringValue>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_ReviewType</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>Pending GIS</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Build_ClassificationBasis</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Assign_T1_ALL_Tried</name>
-        <label>Mark Tier 1 ALL Fallback Attempted</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_T1_ALL_tried</assignToReference>
-            <operator>Assign</operator>
-            <value><booleanValue>true</booleanValue></value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Get_Tier1Rule_ALL</targetReference>
-        </connector>
-    </assignments>
-
-    <assignments>
-        <name>Assign_T2_ALL_Tried</name>
-        <label>Mark Tier 2 ALL Fallback Attempted</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_T2_ALL_tried</assignToReference>
-            <operator>Assign</operator>
-            <value><booleanValue>true</booleanValue></value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Get_Tier2Rule_ALL</targetReference>
-        </connector>
-    </assignments>
-
-    <!-- ============================================================
-         STAGE ENTRY: Default inp_EvaluationDate to nepa_start_date__c when
-         not explicitly set by a caller. Prevents all CMT temporal filters
-         from producing empty results on record-triggered async invocation.
-    ============================================================ -->
-    <assignments>
-        <name>Init_EvaluationDate</name>
-        <label>Default Evaluation Date to Application Start Date</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>inp_EvaluationDate</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>$Record.nepa_start_date__c</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Decision_HasRelatedProject</targetReference>
-        </connector>
-    </assignments>
-
-    <!-- ============================================================
-         STAGE GIS GATE: Before evaluating extraordinary circumstances,
-         confirm the async GIS proximity check has completed on the parent
-         Program. If GIS is still pending, route to deferred state so the
-         screener does not incorrectly clear the GIS stage on stale null data.
-         CE Screener will re-fire when nepa_extraordinary_circumstances__c
-         is later set by the GIS IP (field-change trigger).
-    ============================================================ -->
-    <decisions>
-        <name>Decision_GISProximityReady</name>
-        <label>GIS Proximity Check Complete?</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>GIS Pending — defer to manual review</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Assign_DeferGISReview</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>GIS_Ready</name>
-            <conditionLogic>or</conditionLogic>
-            <conditions>
-                <leftValueReference>rec_RelatedProject.nepa_gis_proximity_complete__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <!-- No related project means no GIS flag to check — proceed directly -->
-                <leftValueReference>rec_RelatedProject</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>true</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Decision_GISCircumstances</targetReference>
-            </connector>
-            <label>GIS Complete or No Project</label>
-        </rules>
-    </decisions>
-
-    <!-- ============================================================
-         STAGE 0-A: Does the application have a related project?
-    ============================================================ -->
-    <decisions>
-        <name>Decision_HasRelatedProject</name>
-        <label>Has Related Project?</label>
-        <description>Has Related Project?</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>No Project — skip to GIS check</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Decision_GISProximityReady</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>Has_Related_Project</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.nepa_related_project__c</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue><booleanValue>false</booleanValue></rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Get_RelatedProject</targetReference>
-            </connector>
-            <label>Has Project</label>
-            <description>Has Project</description>
-        </rules>
-    </decisions>
-
-    <!-- ============================================================
-         STAGE 0-C: NAICS routing (namespace + confidence modifier)
-    ============================================================ -->
-    <decisions>
-        <name>Decision_HasNAICS</name>
-        <label>Has Applicant NAICS Code?</label>
-        <description>Has Applicant NAICS Code?</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>No NAICS — skip routing</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Get_Tier1Rule</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>Has_NAICS</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>rec_RelatedProject.nepa_applicant_naics__c</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue><booleanValue>false</booleanValue></rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Get_NAICSRule</targetReference>
-            </connector>
-            <label>Has NAICS</label>
-            <description>Has NAICS</description>
-        </rules>
-    </decisions>
-
-    <decisions>
-        <name>Decision_NAICSFound</name>
-        <label>NAICS Rule Found?</label>
-        <description>NAICS Rule Found?</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>Not Found</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Get_Tier1Rule</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>NAICS_Found</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>rec_NAICSRule</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue><booleanValue>false</booleanValue></rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Assign_NAICSModifier</targetReference>
-            </connector>
-            <label>NAICS Rule Found</label>
-            <description>NAICS Rule Found</description>
-        </rules>
-    </decisions>
-
-    <decisions>
-        <name>Decision_Tier1Found</name>
-        <label>Tier 1 Rule Matched?</label>
-        <description>Tier 1 Rule Matched? If agency-specific query returned nothing, try ALL-agency rules before proceeding to Tier 2.</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>No Match — try ALL-agency rules</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Decision_AlreadyTriedALL_T1</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>Tier1_Matched</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>rec_Tier1Rule</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue><booleanValue>false</booleanValue></rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Assign_Tier1Result</targetReference>
-            </connector>
-            <label>Tier 1 Matched</label>
-            <description>Tier 1 Matched</description>
-        </rules>
-    </decisions>
-
-    <!-- Guard: only run the ALL fallback once — skip it when we have already tried the ALL query -->
-    <decisions>
-        <name>Decision_AlreadyTriedALL_T1</name>
-        <label>Tier 1: Already Tried ALL?</label>
-        <description>Prevents an infinite loop by tracking whether the ALL-agency Tier 1 fallback has already been attempted.</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>Not yet tried — set flag and run ALL fallback</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Assign_T1_ALL_Tried</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>T1_ALL_Already_Tried</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>var_T1_ALL_tried</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue><booleanValue>true</booleanValue></rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Get_Tier2Rule</targetReference>
-            </connector>
-            <label>ALL fallback already tried — advance to Tier 2</label>
-        </rules>
-    </decisions>
-
-    <!-- Tier 1 acreage branch -->
-    <decisions>
-        <name>Decision_Tier1RequiresAcreage</name>
-        <label>Tier 1: Requires Acreage Check?</label>
-        <description>Tier 1: Requires Acreage Check?</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>No Acreage Check</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Decision_Tier1RequiresGIS</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>Tier1_NeedsAcreage</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>rec_Tier1Rule.Requires_Acreage_Check__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue><booleanValue>true</booleanValue></rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.nepa_disturbance_acres__c</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue><booleanValue>false</booleanValue></rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Decision_Tier1AcreageExceeded</targetReference>
-            </connector>
-            <label>Needs Acreage Check and Acres Provided</label>
-            <description>Needs Acreage Check and Acres Provided</description>
-        </rules>
-    </decisions>
-
-    <decisions>
-        <name>Decision_Tier1AcreageExceeded</name>
-        <label>Tier 1: Acreage Threshold Exceeded?</label>
-        <description>Tier 1: Acreage Threshold Exceeded?</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>Within Threshold</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Decision_Tier1RequiresGIS</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>Tier1_AcreageOver</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.nepa_disturbance_acres__c</leftValueReference>
-                <operator>GreaterThan</operator>
-                <rightValue>
-                    <elementReference>rec_Tier1Rule.Acreage_Threshold__c</elementReference>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Assign_AcreageDowngrade</targetReference>
-            </connector>
-            <label>Acreage Exceeded</label>
-            <description>Acreage Exceeded</description>
-        </rules>
-    </decisions>
-
-    <!-- Tier 1 GIS branch -->
-    <decisions>
-        <name>Decision_Tier1RequiresGIS</name>
-        <label>Tier 1: Requires GIS Check?</label>
-        <description>Tier 1: Requires GIS Check?</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>No GIS Check — apply NAICS modifier then write</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Decision_ApplyNAICSModifier</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>Tier1_NeedsGIS</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>rec_Tier1Rule.Requires_GIS_Check__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue><booleanValue>true</booleanValue></rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Decision_GISProximityReady</targetReference>
-            </connector>
-            <label>Needs GIS Check</label>
-            <description>Needs GIS Check</description>
-        </rules>
-    </decisions>
-
-    <decisions>
-        <name>Decision_Tier2Found</name>
-        <label>Tier 2 Rule Matched?</label>
-        <description>Tier 2 Rule Matched? If agency-specific query returned nothing, try ALL-agency rules before defaulting to EA.</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>No Match — try ALL-agency rules</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Decision_AlreadyTriedALL_T2</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>Tier2_Matched</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>rec_Tier2Rule</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue><booleanValue>false</booleanValue></rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Assign_Tier2Result</targetReference>
-            </connector>
-            <label>Tier 2 Matched</label>
-            <description>Tier 2 Matched</description>
-        </rules>
-    </decisions>
-
-    <decisions>
-        <name>Decision_AlreadyTriedALL_T2</name>
-        <label>Tier 2: Already Tried ALL?</label>
-        <description>Prevents an infinite loop by tracking whether the ALL-agency Tier 2 fallback has already been attempted.</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>Not yet tried — set flag and run ALL fallback</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Assign_T2_ALL_Tried</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>T2_ALL_Already_Tried</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>var_T2_ALL_tried</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue><booleanValue>true</booleanValue></rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Assign_DefaultEA</targetReference>
-            </connector>
-            <label>ALL fallback already tried — default to EA</label>
-        </rules>
-    </decisions>
-
-    <!-- Tier 2 acreage branch -->
-    <decisions>
-        <name>Decision_Tier2RequiresAcreage</name>
-        <label>Tier 2: Requires Acreage Check?</label>
-        <description>Tier 2: Requires Acreage Check?</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>No Acreage Check</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Decision_Tier2RequiresGIS</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>Tier2_NeedsAcreage</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>rec_Tier2Rule.Requires_Acreage_Check__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue><booleanValue>true</booleanValue></rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>$Record.nepa_disturbance_acres__c</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue><booleanValue>false</booleanValue></rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Decision_Tier2AcreageExceeded</targetReference>
-            </connector>
-            <label>Needs Acreage Check and Acres Provided</label>
-            <description>Needs Acreage Check and Acres Provided</description>
-        </rules>
-    </decisions>
-
-    <decisions>
-        <name>Decision_Tier2AcreageExceeded</name>
-        <label>Tier 2: Acreage Threshold Exceeded?</label>
-        <description>Tier 2: Acreage Threshold Exceeded?</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>Within Threshold</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Decision_Tier2RequiresGIS</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>Tier2_AcreageOver</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.nepa_disturbance_acres__c</leftValueReference>
-                <operator>GreaterThan</operator>
-                <rightValue>
-                    <elementReference>rec_Tier2Rule.Acreage_Threshold__c</elementReference>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Assign_Tier2AcreageDowngrade</targetReference>
-            </connector>
-            <label>Acreage Exceeded</label>
-            <description>Acreage Exceeded</description>
-        </rules>
-    </decisions>
-
-    <decisions>
-        <name>Decision_Tier2RequiresGIS</name>
-        <label>Tier 2: Requires GIS Check?</label>
-        <description>Tier 2: Requires GIS Check?</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>No GIS Check</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Decision_ApplyNAICSModifier</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>Tier2_NeedsGIS</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>rec_Tier2Rule.Requires_GIS_Check__c</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue><booleanValue>true</booleanValue></rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Decision_GISProximityReady</targetReference>
-            </connector>
-            <label>Needs GIS Check</label>
-            <description>Needs GIS Check</description>
-        </rules>
-    </decisions>
-
-    <!-- ============================================================
-         STAGE 3: GIS Extraordinary Circumstances Check
-         Any value in nepa_extraordinary_circumstances__c forces EA
-         regardless of what Tier 1/2 recommended.
-    ============================================================ -->
-    <decisions>
-        <name>Decision_GISCircumstances</name>
-        <label>Extraordinary Circumstances Present?</label>
-        <description>Extraordinary Circumstances Present?</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>No Extraordinary Circumstances</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Decision_ApplyNAICSModifier</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>GIS_Circumstances_Present</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>$Record.nepa_extraordinary_circumstances__c</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue><booleanValue>false</booleanValue></rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Assign_GISDowngrade</targetReference>
-            </connector>
-            <label>Extraordinary Circumstances Present</label>
-            <description>Extraordinary Circumstances Present</description>
-        </rules>
-    </decisions>
-
-    <!-- ============================================================
-         STAGE 4: Apply NAICS confidence modifier if Low
-    ============================================================ -->
-    <decisions>
-        <name>Decision_ApplyNAICSModifier</name>
-        <label>Apply NAICS Confidence Modifier?</label>
-        <description>Apply NAICS Confidence Modifier?</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>No Modifier</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Build_ClassificationBasis</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>NAICS_Modifier_IsLow</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>var_NAICSConfidenceModifier</leftValueReference>
-                <operator>EqualTo</operator>
-                <rightValue><stringValue>Low</stringValue></rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>var_Confidence</leftValueReference>
-                <operator>NotEqualTo</operator>
-                <rightValue><stringValue>Low</stringValue></rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Assign_DowngradeConfidenceLow</targetReference>
-            </connector>
-            <label>NAICS Modifier = Low and Current Confidence Is Not Low</label>
-            <description>NAICS Modifier = Low and Current Confidence Is Not Low</description>
-        </rules>
-    </decisions>
-
-    <formulas>
-        <name>formula_ErrorContext</name>
-        <dataType>String</dataType>
-        <expression>"Agency:" &amp; {!var_AgencyAbbr} &amp; "|ReviewType:" &amp; {!var_ReviewType} &amp; "|CECode:" &amp; {!var_CECode} &amp; "|Confidence:" &amp; {!var_Confidence} &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
-    </formulas>
-
-    <!-- AI AUP: maps internal var_ReviewType + confidence to the human-facing recommendation picklist value -->
-    <formulas>
-        <name>formula_PathwayRecommendation</name>
-        <dataType>String</dataType>
-        <expression>IF({!var_Confidence} = "Low", "Escalated-Senior-Review",
-  IF({!var_ReviewType} = "CE", "CE-Recommended",
-    IF({!var_ReviewType} = "EIS", "EIS-Required",
-      IF({!var_ReviewType} = "EA", "EA-Required", "Pending"))))</expression>
-    </formulas>
-
-    <!-- ============================================================
-         STAGE 0-B: Get related Program (for agency + NAICS)
+         ELEMENT 1: GET RELATED PROJECT
+         Single SOQL to fetch agency, sector, type key, and NAICS
+         from the linked Program record.
     ============================================================ -->
     <recordLookups>
         <name>Get_RelatedProject</name>
-        <label>Get Related Project</label>
-        <description>Get Related Project</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
+        <label>Get Related Program</label>
+        <locationX>176</locationX>
+        <locationY>215</locationY>
         <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Assign_AgencyFromProject</targetReference>
+            <targetReference>Call_NEPA_Evaluate_CE</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -945,312 +28,120 @@
                 <elementReference>$Record.nepa_related_project__c</elementReference>
             </value>
         </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>Program</object>
-        <outputReference>rec_RelatedProject</outputReference>
         <queriedFields>Id</queriedFields>
         <queriedFields>nepa_record_owner_agency__c</queriedFields>
         <queriedFields>nepa_project_sector__c</queriedFields>
         <queriedFields>nepa_project_type__c</queriedFields>
         <queriedFields>nepa_applicant_naics__c</queriedFields>
-        <queriedFields>nepa_gis_proximity_complete__c</queriedFields>
-    </recordLookups>
-
-    <recordLookups>
-        <name>Get_NAICSRule</name>
-        <label>Get NAICS Routing Rule</label>
-        <description>Get NAICS Routing Rule</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Decision_NAICSFound</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Tier__c</field>
-            <operator>EqualTo</operator>
-            <value><stringValue>NAICS</stringValue></value>
-        </filters>
-        <filters>
-            <field>NAICS_Code__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>rec_RelatedProject.nepa_applicant_naics__c</elementReference>
-            </value>
-        </filters>
-        <filters>
-            <field>Active__c</field>
-            <operator>EqualTo</operator>
-            <value><booleanValue>true</booleanValue></value>
-        </filters>
-        <object>NEPA_CE_Screening_Rule__mdt</object>
-        <outputReference>rec_NAICSRule</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>CE_Namespace__c</queriedFields>
-        <queriedFields>Confidence_Modifier__c</queriedFields>
-        <queriedFields>Classification_Basis__c</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
 
     <!-- ============================================================
-         STAGE 1: Tier 1 — high-confidence sector+type lookup
-         Uses EqualTo on Agency__c (picklist). To cover ALL-agency rules
-         the query runs twice: once for the specific agency, once for ALL.
-         The specific-agency query fires first; if it matches, ALL-rules
-         are skipped, giving agency-specific rules precedence.
+         ELEMENT 2: INVOKE BRE EXPRESSION SET
+         Passes all inputs to NEPA_CE_Screener; BRE handles
+         the three-tier lookup, acreage override, and fallback
+         internally — no SOQL queries, no loop risk.
     ============================================================ -->
-    <!-- code-analyzer-suppress flow:PreventPassingUserDataIntoElementWithoutSharing — queries NEPA_CE_Screening_Rule__mdt (custom metadata); CMT records are agency-controlled configuration, not user-mutable data; no privilege escalation path exists -->
-    <recordLookups>
-        <name>Get_Tier1Rule</name>
-        <label>Get Tier 1 Screening Rule (Agency-specific)</label>
-        <description>Get Tier 1 Screening Rule (Agency-specific)</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+    <actionCalls>
+        <name>Call_NEPA_Evaluate_CE</name>
+        <label>Evaluate CE Screening</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <actionName>NEPA_CE_Screener</actionName>
+        <actionType>runExpressionSet</actionType>
         <connector>
-            <targetReference>Decision_Tier1Found</targetReference>
+            <targetReference>Update_ScreeningFields</targetReference>
         </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Tier__c</field>
-            <operator>EqualTo</operator>
-            <value><stringValue>1</stringValue></value>
-        </filters>
-        <filters>
-            <field>Agency__c</field>
-            <operator>EqualTo</operator>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>AgencyAbbr</name>
             <value>
-                <elementReference>var_AgencyAbbr</elementReference>
+                <elementReference>Get_RelatedProject.nepa_record_owner_agency__c</elementReference>
             </value>
-        </filters>
-        <filters>
-            <field>Sector_Key__c</field>
-            <operator>Contains</operator>
+        </inputParameters>
+        <inputParameters>
+            <name>NAICSCode</name>
             <value>
-                <elementReference>var_SectorKey</elementReference>
+                <elementReference>Get_RelatedProject.nepa_applicant_naics__c</elementReference>
             </value>
-        </filters>
-        <filters>
-            <field>Active__c</field>
-            <operator>EqualTo</operator>
-            <value><booleanValue>true</booleanValue></value>
-        </filters>
-        <object>NEPA_CE_Screening_Rule__mdt</object>
-        <outputReference>rec_Tier1Rule</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>CE_Code__c</queriedFields>
-        <queriedFields>Review_Type__c</queriedFields>
-        <queriedFields>Confidence__c</queriedFields>
-        <queriedFields>Requires_Acreage_Check__c</queriedFields>
-        <queriedFields>Acreage_Threshold__c</queriedFields>
-        <queriedFields>Requires_GIS_Check__c</queriedFields>
-        <queriedFields>Classification_Basis__c</queriedFields>
-        <queriedFields>Rule_Label__c</queriedFields>
-        <sortField>Priority__c</sortField>
-        <sortOrder>Asc</sortOrder>
-    </recordLookups>
-
-    <!-- Tier 1 ALL-agency fallback: only reached when the agency-specific query returned nothing -->
-    <!-- code-analyzer-suppress flow:PreventPassingUserDataIntoElementWithoutSharing — queries NEPA_CE_Screening_Rule__mdt (custom metadata); CMT records are agency-controlled configuration, not user-mutable data; no privilege escalation path exists -->
-    <recordLookups>
-        <name>Get_Tier1Rule_ALL</name>
-        <label>Get Tier 1 Screening Rule (ALL agencies)</label>
-        <description>Get Tier 1 Screening Rule (ALL agencies)</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Decision_Tier1Found</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Tier__c</field>
-            <operator>EqualTo</operator>
-            <value><stringValue>1</stringValue></value>
-        </filters>
-        <filters>
-            <field>Agency__c</field>
-            <operator>EqualTo</operator>
-            <value><stringValue>ALL</stringValue></value>
-        </filters>
-        <filters>
-            <field>Sector_Key__c</field>
-            <operator>Contains</operator>
+        </inputParameters>
+        <inputParameters>
+            <name>SectorKey</name>
             <value>
-                <elementReference>var_SectorKey</elementReference>
+                <elementReference>Get_RelatedProject.nepa_project_sector__c</elementReference>
             </value>
-        </filters>
-        <filters>
-            <field>Active__c</field>
-            <operator>EqualTo</operator>
-            <value><booleanValue>true</booleanValue></value>
-        </filters>
-        <object>NEPA_CE_Screening_Rule__mdt</object>
-        <outputReference>rec_Tier1Rule</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>CE_Code__c</queriedFields>
-        <queriedFields>Review_Type__c</queriedFields>
-        <queriedFields>Confidence__c</queriedFields>
-        <queriedFields>Requires_Acreage_Check__c</queriedFields>
-        <queriedFields>Acreage_Threshold__c</queriedFields>
-        <queriedFields>Requires_GIS_Check__c</queriedFields>
-        <queriedFields>Classification_Basis__c</queriedFields>
-        <queriedFields>Rule_Label__c</queriedFields>
-        <sortField>Priority__c</sortField>
-        <sortOrder>Asc</sortOrder>
-    </recordLookups>
-
-    <!-- ============================================================
-         STAGE 2: Tier 2 — action-type discriminator
-         Only reached when Tier 1 had no match.
-         Same agency-specific → ALL fallback pattern as Tier 1.
-    ============================================================ -->
-    <!-- code-analyzer-suppress flow:PreventPassingUserDataIntoElementWithoutSharing — queries NEPA_CE_Screening_Rule__mdt (custom metadata); CMT records are agency-controlled configuration, not user-mutable data; no privilege escalation path exists -->
-    <recordLookups>
-        <name>Get_Tier2Rule</name>
-        <label>Get Tier 2 Screening Rule (Agency-specific)</label>
-        <description>Get Tier 2 Screening Rule (Agency-specific)</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Decision_Tier2Found</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Tier__c</field>
-            <operator>EqualTo</operator>
-            <value><stringValue>2</stringValue></value>
-        </filters>
-        <filters>
-            <field>Agency__c</field>
-            <operator>EqualTo</operator>
+        </inputParameters>
+        <inputParameters>
+            <name>TypeKey</name>
             <value>
-                <elementReference>var_AgencyAbbr</elementReference>
+                <elementReference>Get_RelatedProject.nepa_project_type__c</elementReference>
             </value>
-        </filters>
-        <filters>
-            <field>Action_Types__c</field>
-            <operator>Contains</operator>
+        </inputParameters>
+        <inputParameters>
+            <name>ActionType</name>
             <value>
                 <elementReference>$Record.nepa_action_type__c</elementReference>
             </value>
-        </filters>
-        <filters>
-            <field>Active__c</field>
-            <operator>EqualTo</operator>
-            <value><booleanValue>true</booleanValue></value>
-        </filters>
-        <object>NEPA_CE_Screening_Rule__mdt</object>
-        <outputReference>rec_Tier2Rule</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>CE_Code__c</queriedFields>
-        <queriedFields>Review_Type__c</queriedFields>
-        <queriedFields>Confidence__c</queriedFields>
-        <queriedFields>Requires_Acreage_Check__c</queriedFields>
-        <queriedFields>Acreage_Threshold__c</queriedFields>
-        <queriedFields>Requires_GIS_Check__c</queriedFields>
-        <queriedFields>Classification_Basis__c</queriedFields>
-        <queriedFields>Rule_Label__c</queriedFields>
-        <sortField>Priority__c</sortField>
-        <sortOrder>Asc</sortOrder>
-    </recordLookups>
-
-    <!-- code-analyzer-suppress flow:PreventPassingUserDataIntoElementWithoutSharing — queries NEPA_CE_Screening_Rule__mdt (custom metadata); CMT records are agency-controlled configuration, not user-mutable data; no privilege escalation path exists -->
-    <recordLookups>
-        <name>Get_Tier2Rule_ALL</name>
-        <label>Get Tier 2 Screening Rule (ALL agencies)</label>
-        <description>Get Tier 2 Screening Rule (ALL agencies)</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Decision_Tier2Found</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Tier__c</field>
-            <operator>EqualTo</operator>
-            <value><stringValue>2</stringValue></value>
-        </filters>
-        <filters>
-            <field>Agency__c</field>
-            <operator>EqualTo</operator>
-            <value><stringValue>ALL</stringValue></value>
-        </filters>
-        <filters>
-            <field>Action_Types__c</field>
-            <operator>Contains</operator>
+        </inputParameters>
+        <inputParameters>
+            <name>DisturbanceAcres</name>
             <value>
-                <elementReference>$Record.nepa_action_type__c</elementReference>
+                <elementReference>$Record.nepa_disturbance_acres__c</elementReference>
             </value>
-        </filters>
-        <filters>
-            <field>Active__c</field>
-            <operator>EqualTo</operator>
-            <value><booleanValue>true</booleanValue></value>
-        </filters>
-        <object>NEPA_CE_Screening_Rule__mdt</object>
-        <outputReference>rec_Tier2Rule</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>CE_Code__c</queriedFields>
-        <queriedFields>Review_Type__c</queriedFields>
-        <queriedFields>Confidence__c</queriedFields>
-        <queriedFields>Requires_Acreage_Check__c</queriedFields>
-        <queriedFields>Acreage_Threshold__c</queriedFields>
-        <queriedFields>Requires_GIS_Check__c</queriedFields>
-        <queriedFields>Classification_Basis__c</queriedFields>
-        <queriedFields>Rule_Label__c</queriedFields>
-        <sortField>Priority__c</sortField>
-        <sortOrder>Asc</sortOrder>
-    </recordLookups>
+        </inputParameters>
+        <nameSegment>NEPA_CE_Screener</nameSegment>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
 
     <!-- ============================================================
-         WRITE BACK to IndividualApplication
-         AI AUP compliance: flow writes nepa_ce_pathway_recommendation__c
+         ELEMENT 3: WRITE BACK
+         AI AUP compliance: writes nepa_ce_pathway_recommendation__c
          (the AI recommendation), NOT nepa_review_type__c (the official
          determination). A NEPA Coordinator must review the recommendation
-         and manually set nepa_review_type__c to make the pathway official.
-         This satisfies Salesforce AI AUP and OMB M-24-10 human-in-the-loop
-         requirement: AI recommends, human decides.
+         and manually confirm nepa_review_type__c per OMB M-24-10.
     ============================================================ -->
     <!-- code-analyzer-suppress flow:SameRecordUpdate — intentional async after-save write-back via AsyncAfterCommit scheduledPath; this is the recommended pattern for expensive same-record updates -->
     <recordUpdates>
         <name>Update_ScreeningFields</name>
         <label>Update CE Screening Fields</label>
-        <description>Writes AI recommendation to nepa_ce_pathway_recommendation__c. Does NOT set nepa_review_type__c — coordinator confirmation required per Salesforce AI AUP.</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
+        <locationX>176</locationX>
+        <locationY>431</locationY>
         <faultConnector>
             <targetReference>Handle_Error</targetReference>
         </faultConnector>
         <inputAssignments>
             <field>nepa_ce_pathway_recommendation__c</field>
             <value>
-                <elementReference>formula_PathwayRecommendation</elementReference>
+                <elementReference>Call_NEPA_Evaluate_CE.ReviewType</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
             <field>nepa_process_code__c</field>
             <value>
-                <elementReference>var_CECode</elementReference>
+                <elementReference>Call_NEPA_Evaluate_CE.CECode</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
             <field>nepa_screening_confidence__c</field>
             <value>
-                <elementReference>var_Confidence</elementReference>
+                <elementReference>Call_NEPA_Evaluate_CE.Confidence</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
             <field>nepa_classification_basis__c</field>
             <value>
-                <elementReference>var_ClassificationBasis</elementReference>
+                <elementReference>Call_NEPA_Evaluate_CE.ClassificationBasis</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
             <field>nepa_screener_last_run__c</field>
             <value>
-                <elementReference>var_ScreenerRunTimestamp</elementReference>
+                <elementReference>$Flow.CurrentDateTime</elementReference>
             </value>
         </inputAssignments>
         <object>IndividualApplication</object>
@@ -1263,12 +154,35 @@
         </filters>
     </recordUpdates>
 
+    <!-- ============================================================
+         ELEMENT 4: ERROR HANDLER
+         Captures fault message and routes to error logger subflow.
+    ============================================================ -->
+    <assignments>
+        <name>Handle_Error</name>
+        <label>Capture Error</label>
+        <locationX>352</locationX>
+        <locationY>431</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- ============================================================
+         ELEMENT 5: ERROR LOGGER SUBFLOW
+    ============================================================ -->
     <subflows>
         <name>Call_ErrorLogger</name>
         <label>Log Flow Error</label>
-        <description>Log Flow Error</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
+        <locationX>352</locationX>
+        <locationY>539</locationY>
         <flowName>NEPA_Error_Logger</flowName>
         <inputAssignments>
             <name>inp_FlowName</name>
@@ -1288,27 +202,24 @@
         </inputAssignments>
         <inputAssignments>
             <name>inp_FailedStep</name>
-            <value><elementReference>var_CurrentStep</elementReference></value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_ErrorContext</name>
-            <value><elementReference>formula_ErrorContext</elementReference></value>
+            <value><stringValue>BRE_Evaluation</stringValue></value>
         </inputAssignments>
     </subflows>
 
     <!-- ============================================================
          TRIGGER / START
          Fires async after-commit when any CE screening input changes.
+         Excludes records already confirmed as EIS or EA (human decided).
     ============================================================ -->
     <start>
-        <locationX>0</locationX>
+        <locationX>50</locationX>
         <locationY>0</locationY>
         <object>IndividualApplication</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
         <scheduledPaths>
             <connector>
-                <targetReference>Init_EvaluationDate</targetReference>
+                <targetReference>Get_RelatedProject</targetReference>
             </connector>
             <pathType>AsyncAfterCommit</pathType>
         </scheduledPaths>
@@ -1353,166 +264,11 @@
          VARIABLES
     ============================================================ -->
     <variables>
-        <name>inp_EvaluationDate</name>
-        <description>Date against which CMT temporal validity is evaluated. Set to nepa_start_date__c of the IndividualApplication by NEPA_CE_Screening_IP. When null, only the Active__c filter applies (backward compatible). Used in filterLogic OR branches: Effective_Start_Date__c IS NULL OR &lt;= date; Sunset_Date__c IS NULL OR &gt;= date.</description>
-        <dataType>Date</dataType>
-        <isCollection>false</isCollection>
-        <isInput>true</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-
-    <!-- Working variables -->
-    <variables>
-        <name>var_AgencyAbbr</name>
-        <description>Lead agency abbreviation used to match CE screening rules.</description>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-    <variables>
-        <name>var_SectorKey</name>
-        <description>Project sector key from the related Program record.</description>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-    <variables>
-        <name>var_TypeKey</name>
-        <description>Project type key from the related Program record.</description>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-    <variables>
-        <name>var_ReviewType</name>
-        <description>Screening result review type (CE/EA/EIS) being assembled.</description>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <value><stringValue>EA</stringValue></value>
-    </variables>
-    <variables>
-        <name>var_CECode</name>
-        <description>CE authority code selected by the matching screening rule.</description>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-    <variables>
-        <name>var_Confidence</name>
-        <description>Screening confidence level (High/Medium/Low).</description>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <value><stringValue>Low</stringValue></value>
-    </variables>
-    <variables>
-        <name>var_ClassificationBasis</name>
-        <description>Audit trail string explaining the classification decision.</description>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-    <variables>
-        <name>var_NAICSConfidenceModifier</name>
-        <description>NAICS-based confidence modifier (Low/Medium/High) from Stage 0.</description>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-
-    <variables>
-        <name>var_ScreenerRunTimestamp</name>
-        <description>Timestamp captured just before the write-back update. Written to nepa_screener_last_run__c so NEPA_Litigation_Risk_Scorer can detect that nepa_review_type__c was changed by this flow rather than by a human, and skip its re-fire.</description>
-        <dataType>DateTime</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-
-    <variables>
         <name>var_ErrorMessage</name>
-        <description>Captures $Flow.FaultMessage from a faulted element for error logging.</description>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
-    <variables>
-        <name>var_CurrentStep</name>
-        <description>Tracks the last-reached major step. Passed to NEPA_Error_Logger as inp_FailedStep on fault.</description>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <value>
-            <stringValue>Start</stringValue>
-        </value>
-    </variables>
 
-    <!-- SObject record variables -->
-    <variables>
-        <name>rec_RelatedProject</name>
-        <description>Related Program record fetched to obtain agency, sector, type, and NAICS.</description>
-        <dataType>SObject</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>Program</objectType>
-    </variables>
-    <variables>
-        <name>rec_NAICSRule</name>
-        <description>NAICS-tier NEPA_CE_Screening_Rule__mdt record providing namespace/confidence modifier.</description>
-        <dataType>SObject</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>NEPA_CE_Screening_Rule__mdt</objectType>
-    </variables>
-    <variables>
-        <name>rec_Tier1Rule</name>
-        <description>Best-matching Tier 1 NEPA_CE_Screening_Rule__mdt record.</description>
-        <dataType>SObject</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>NEPA_CE_Screening_Rule__mdt</objectType>
-    </variables>
-    <variables>
-        <name>rec_Tier2Rule</name>
-        <description>Best-matching Tier 2 NEPA_CE_Screening_Rule__mdt record.</description>
-        <dataType>SObject</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>NEPA_CE_Screening_Rule__mdt</objectType>
-    </variables>
-
-    <variables>
-        <name>var_T1_ALL_tried</name>
-        <description>Flag set to true once the Tier 1 ALL-agency fallback query has been attempted. Prevents the Decision_AlreadyTriedALL_T1 guard from looping back into Get_Tier1Rule_ALL indefinitely when no match exists.</description>
-        <dataType>Boolean</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <value><booleanValue>false</booleanValue></value>
-    </variables>
-
-    <variables>
-        <name>var_T2_ALL_tried</name>
-        <description>Flag set to true once the Tier 2 ALL-agency fallback query has been attempted. Prevents the Decision_AlreadyTriedALL_T2 guard from looping back into Get_Tier2Rule_ALL indefinitely when no match exists.</description>
-        <dataType>Boolean</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <value><booleanValue>false</booleanValue></value>
-    </variables>
 </Flow>
