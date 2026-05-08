@@ -1,0 +1,8 @@
+NAICSCode,ReviewType,CECode,Confidence,ClassificationBasis
+212111,CE,43 CFR 3809.10(e),High,NAICS 212111 (gold/silver ore mining) - BLM placer mining operations on managed lands qualify as CX under 43 CFR 3809.10(e)
+212112,CE,43 CFR 3809.10(e),High,NAICS 212112 (bituminous coal/lignite mining) - small-scale surface mining on BLM lands may qualify as CX under 43 CFR 3809.10(e) subject to disturbance limits
+212113,CE,43 CFR 3809.10(e),Medium,NAICS 212113 (anthracite coal mining) - CX eligibility requires site-specific review for extraordinary circumstances
+211120,CE,43 CFR 3809.10(d),High,NAICS 211120 (crude petroleum extraction) - minor oil/gas operations on BLM lands CX under 43 CFR 3809.10(d) for existing wells
+237110,EA,,,NAICS 237110 (water/sewer line construction) - EA required; potential wetlands and stream crossing impacts
+237130,EA,,,NAICS 237130 (power/communication line construction) - EA required; right-of-way crossing federal lands
+541620,CE,516 DM 11.9,Medium,NAICS 541620 (environmental consulting services) - NEPA compliance services; CX for planning and analysis with no ground disturbance

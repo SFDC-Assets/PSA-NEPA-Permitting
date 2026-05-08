@@ -1,66 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>After-save async flow on IndividualApplication. Fires when NEPA_Pathway__c is set or changes. Queries NEPA_Permit_Matrix__mdt by matching the parent Program's primary sector, project type, and lead agency key. Writes Required_Permits__c and Cooperating_Agencies__c to the IA. Creates a permit coordination task when required permits are non-empty. Satisfies P5 plan item from data insights/3_permit_matrix.json.</description>
+    <description>After-save async flow on IndividualApplication. Fires when nepa_review_type__c is set or changes. Fetches parent Program sector and project type, invokes NEPA_Permit_Coordinator BRE Expression Set to look up required permits and cooperating agencies, writes results to the IA, and creates a permit coordination task when required permits are non-empty.</description>
     <label>NEPA Permit Coordinator</label>
     <processType>AutoLaunchedFlow</processType>
     <status>Active</status>
 
-    <assignments>
-        <name>Assign_PermitFields</name>
-        <label>Write Permit Fields to IA</label>
-        <description>Copy matched matrix row values to IA permit coordination fields.</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_RequiredPermits</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Get_PermitMatrix.Required_Permits__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_CooperatingAgencies</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Get_PermitMatrix.Cooperating_Agencies__c</elementReference>
-            </value>
-        </assignmentItems>
+    <!-- ACTIONS -->
+    <actionCalls>
+        <name>Call_NEPA_Permit_Lookup</name>
+        <label>Lookup Permit Matrix</label>
+        <locationX>176</locationX>
+        <locationY>431</locationY>
+        <actionName>NEPA_Permit_Coordinator</actionName>
+        <actionType>runExpressionSet</actionType>
         <connector>
-            <targetReference>Update_IA_PermitFields</targetReference>
+            <targetReference>Decision_PermitsFound</targetReference>
         </connector>
-    </assignments>
-
-    <assignments>
-        <name>Assign_ParentProgram</name>
-        <label>Capture Parent Program Fields</label>
-        <description>Store sector and project type from the parent Program for matrix lookup.</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_Sector</assignToReference>
-            <operator>Assign</operator>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>Sector</name>
             <value>
                 <elementReference>Get_ParentProgram.nepa_primary_sector__c</elementReference>
             </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_ProjectType</assignToReference>
-            <operator>Assign</operator>
+        </inputParameters>
+        <inputParameters>
+            <name>ProjectType</name>
             <value>
                 <elementReference>Get_ParentProgram.nepa_project_type__c</elementReference>
             </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Get_PermitMatrix</targetReference>
-        </connector>
-    </assignments>
+        </inputParameters>
+        <nameSegment>NEPA_Permit_Coordinator</nameSegment>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
 
+    <!-- ASSIGNMENTS -->
     <assignments>
         <name>Handle_Error</name>
         <label>Handle Error</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
+        <locationX>352</locationX>
+        <locationY>431</locationY>
         <assignmentItems>
             <assignToReference>var_ErrorMessage</assignToReference>
             <operator>Assign</operator>
@@ -73,34 +55,12 @@
         </connector>
     </assignments>
 
-    <decisions>
-        <name>Decision_MatrixRowFound</name>
-        <label>Matrix Row Found?</label>
-        <description>Routes to permit field assignment when a matching NEPA_Permit_Matrix__mdt row was found.</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>No Matrix Match — Skip</defaultConnectorLabel>
-        <rules>
-            <name>MatrixRow_Found</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>Get_PermitMatrix</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue><booleanValue>false</booleanValue></rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Assign_PermitFields</targetReference>
-            </connector>
-            <label>Match Found</label>
-        </rules>
-    </decisions>
-
+    <!-- DECISIONS -->
     <decisions>
         <name>Decision_ParentProgramFound</name>
         <label>Parent Program Found?</label>
-        <description>Skips the flow if the IA has no parent Program.</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
         <defaultConnectorLabel>No Parent Program — Skip</defaultConnectorLabel>
         <rules>
             <name>ParentProgram_Found</name>
@@ -108,29 +68,53 @@
             <conditions>
                 <leftValueReference>Get_ParentProgram</leftValueReference>
                 <operator>IsNull</operator>
-                <rightValue><booleanValue>false</booleanValue></rightValue>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
             </conditions>
             <connector>
-                <targetReference>Assign_ParentProgram</targetReference>
+                <targetReference>Call_NEPA_Permit_Lookup</targetReference>
             </connector>
             <label>Parent Program Found</label>
         </rules>
     </decisions>
-
+    <decisions>
+        <name>Decision_PermitsFound</name>
+        <label>Permits Found?</label>
+        <locationX>176</locationX>
+        <locationY>539</locationY>
+        <defaultConnectorLabel>No Matrix Match — Skip</defaultConnectorLabel>
+        <rules>
+            <name>Permits_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Call_NEPA_Permit_Lookup.RequiredPermits</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_IA_PermitFields</targetReference>
+            </connector>
+            <label>Permits Found</label>
+        </rules>
+    </decisions>
     <decisions>
         <name>Decision_PermitsNonEmpty</name>
         <label>Required Permits Non-Empty?</label>
-        <description>Only creates a task when the matrix row specifies required permits.</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
+        <locationX>176</locationX>
+        <locationY>755</locationY>
         <defaultConnectorLabel>No Permits — Skip Task</defaultConnectorLabel>
         <rules>
             <name>Permits_NonEmpty</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>var_RequiredPermits</leftValueReference>
+                <leftValueReference>Call_NEPA_Permit_Lookup.RequiredPermits</leftValueReference>
                 <operator>IsNull</operator>
-                <rightValue><booleanValue>false</booleanValue></rightValue>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
             </conditions>
             <connector>
                 <targetReference>Create_PermitCoordTask</targetReference>
@@ -139,33 +123,32 @@
         </rules>
     </decisions>
 
-    <formulas>
-        <name>formula_ErrorContext</name>
-        <dataType>String</dataType>
-        <expression>"Sector:" &amp; {!var_Sector} &amp; "|ProjectType:" &amp; {!var_ProjectType}</expression>
-    </formulas>
-
+    <!-- FORMULAS -->
     <formulas>
         <name>formula_TaskSubject</name>
         <dataType>String</dataType>
-        <expression>"Permit Coordination Required — " &amp; {!var_Sector}</expression>
+        <expression>"Permit Coordination Required — " &amp; TEXT({!Get_ParentProgram.nepa_primary_sector__c})</expression>
     </formulas>
-
     <formulas>
         <name>formula_TaskDescription</name>
         <dataType>String</dataType>
         <expression>"Required permits identified from NEPA Permit Matrix. " &amp;
-"Permits: " &amp; {!var_RequiredPermits} &amp; ". " &amp;
-"Cooperating agencies: " &amp; {!var_CooperatingAgencies} &amp; ". " &amp;
+"Permits: " &amp; {!Call_NEPA_Permit_Lookup.RequiredPermits} &amp; ". " &amp;
+"Cooperating agencies: " &amp; {!Call_NEPA_Permit_Lookup.CooperatingAgencies} &amp; ". " &amp;
 "Initiate coordination and document outcomes in the administrative record."</expression>
     </formulas>
+    <formulas>
+        <name>formula_ErrorContext</name>
+        <dataType>String</dataType>
+        <expression>"Sector:" &amp; TEXT({!Get_ParentProgram.nepa_primary_sector__c}) &amp; "|ProjectType:" &amp; {!Get_ParentProgram.nepa_project_type__c}</expression>
+    </formulas>
 
+    <!-- RECORD CREATES -->
     <recordCreates>
         <name>Create_PermitCoordTask</name>
         <label>Create Permit Coordination Task</label>
-        <description>Creates a Normal-priority task assigned to the IA owner listing required permits.</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
+        <locationX>176</locationX>
+        <locationY>863</locationY>
         <faultConnector>
             <targetReference>Handle_Error</targetReference>
         </faultConnector>
@@ -189,11 +172,15 @@
         </inputAssignments>
         <inputAssignments>
             <field>Priority</field>
-            <value><stringValue>Normal</stringValue></value>
+            <value>
+                <stringValue>Normal</stringValue>
+            </value>
         </inputAssignments>
         <inputAssignments>
             <field>Status</field>
-            <value><stringValue>Not Started</stringValue></value>
+            <value>
+                <stringValue>Not Started</stringValue>
+            </value>
         </inputAssignments>
         <inputAssignments>
             <field>OwnerId</field>
@@ -204,12 +191,12 @@
         <object>Task</object>
     </recordCreates>
 
+    <!-- RECORD LOOKUPS -->
     <recordLookups>
         <name>Get_ParentProgram</name>
         <label>Get Parent Program</label>
-        <description>Load the parent Program to retrieve primary sector, project type, and lead agency abbreviation for matrix lookup.</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
+        <locationX>176</locationX>
+        <locationY>215</locationY>
         <connector>
             <targetReference>Decision_ParentProgramFound</targetReference>
         </connector>
@@ -229,41 +216,13 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
 
-    <recordLookups>
-        <name>Get_PermitMatrix</name>
-        <label>Get Permit Matrix Row</label>
-        <description>Query NEPA_Permit_Matrix__mdt for the best matching row by sector.</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Decision_MatrixRowFound</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Sector__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>var_Sector</elementReference>
-            </value>
-        </filters>
-        <filters>
-            <field>Active__c</field>
-            <operator>EqualTo</operator>
-            <value><booleanValue>true</booleanValue></value>
-        </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
-        <object>NEPA_Permit_Matrix__mdt</object>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </recordLookups>
-
+    <!-- RECORD UPDATES -->
     <!-- code-analyzer-suppress flow:SameRecordUpdate — intentional async after-save write-back via AsyncAfterCommit scheduledPath; this is the recommended pattern for expensive same-record updates -->
     <recordUpdates>
         <name>Update_IA_PermitFields</name>
         <label>Write Permit Data to IndividualApplication</label>
-        <description>Writes required permits and cooperating agencies from the matrix row to the IA.</description>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
+        <locationX>176</locationX>
+        <locationY>647</locationY>
         <connector>
             <targetReference>Decision_PermitsNonEmpty</targetReference>
         </connector>
@@ -281,20 +240,60 @@
         <inputAssignments>
             <field>nepa_co_permits_required__c</field>
             <value>
-                <elementReference>var_RequiredPermits</elementReference>
+                <elementReference>Call_NEPA_Permit_Lookup.RequiredPermits</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
             <field>nepa_cooperating_agencies__c</field>
             <value>
-                <elementReference>var_CooperatingAgencies</elementReference>
+                <elementReference>Call_NEPA_Permit_Lookup.CooperatingAgencies</elementReference>
             </value>
         </inputAssignments>
         <object>IndividualApplication</object>
     </recordUpdates>
 
+    <!-- SUBFLOWS -->
+    <subflows>
+        <name>Call_ErrorLogger</name>
+        <label>Log Flow Error</label>
+        <locationX>352</locationX>
+        <locationY>539</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value>
+                <stringValue>NEPA_Permit_Coordinator</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value>
+                <elementReference>var_ErrorMessage</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RunningUserId</name>
+            <value>
+                <elementReference>$User.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorContext</name>
+            <value>
+                <elementReference>formula_ErrorContext</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+
+    <!-- TRIGGER -->
     <start>
-        <locationX>0</locationX>
+        <locationX>50</locationX>
         <locationY>0</locationY>
         <object>IndividualApplication</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
@@ -309,87 +308,36 @@
         <filters>
             <field>nepa_review_type__c</field>
             <operator>IsChanged</operator>
-            <value><booleanValue>true</booleanValue></value>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
         </filters>
         <filters>
             <field>nepa_review_type__c</field>
             <operator>IsNull</operator>
-            <value><booleanValue>false</booleanValue></value>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
         </filters>
         <filters>
             <field>nepa_related_project__c</field>
             <operator>IsNull</operator>
-            <value><booleanValue>false</booleanValue></value>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
         </filters>
     </start>
 
-    <subflows>
-        <name>Call_ErrorLogger</name>
-        <label>Log Flow Error</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <flowName>NEPA_Error_Logger</flowName>
-        <inputAssignments>
-            <name>inp_FlowName</name>
-            <value><stringValue>NEPA_Permit_Coordinator</stringValue></value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_ErrorMessage</name>
-            <value><elementReference>var_ErrorMessage</elementReference></value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_RecordId</name>
-            <value><elementReference>$Record.Id</elementReference></value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_RunningUserId</name>
-            <value><elementReference>$User.Id</elementReference></value>
-        </inputAssignments>
-        <inputAssignments>
-            <name>inp_ErrorContext</name>
-            <value><elementReference>formula_ErrorContext</elementReference></value>
-        </inputAssignments>
-    </subflows>
-
-    <variables>
-        <name>var_CooperatingAgencies</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <value><stringValue></stringValue></value>
-    </variables>
+    <!-- VARIABLES -->
     <variables>
         <name>var_ErrorMessage</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
-        <value><stringValue></stringValue></value>
-    </variables>
-    <variables>
-        <name>var_ProjectType</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <value><stringValue></stringValue></value>
-    </variables>
-    <variables>
-        <name>var_RequiredPermits</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <value><stringValue></stringValue></value>
-    </variables>
-    <variables>
-        <name>var_Sector</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <value><stringValue></stringValue></value>
+        <value>
+            <stringValue></stringValue>
+        </value>
     </variables>
 
 </Flow>

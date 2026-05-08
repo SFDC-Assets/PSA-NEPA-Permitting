@@ -1,0 +1,17 @@
+AgencyAbbr,ActionType,ReviewType,CECode,Confidence,ClassificationBasis
+BLM,Modify Existing,CE,43 CFR 3809.10(d),Medium-High,BLM modification of existing authorized operations - CX under 43 CFR 3809.10(d) when no new significant disturbance
+BLM,New Authorization,EA,,,BLM new authorization on federal lands - EA required to assess alternatives and impacts
+BLM,Permit Renewal,CE,516 DM 11.9(A),High,BLM administrative permit renewal with no change in scope or terms - CX under 516 DM 11.9(A)
+BLM,Minor Amendment,CE,516 DM 11.9(D),High,BLM minor administrative amendment to existing authorization - CX under 516 DM 11.9(D)
+BLM,Emergency Action,CE,516 DM 11.9(B),Medium,BLM emergency stabilization/rehabilitation action - CX under 516 DM 11.9(B) for immediate threat response
+BLM,Termination,CE,516 DM 11.5,High,BLM termination/cancellation of existing authorization - administrative action; CX under 516 DM 11.5
+USFS,Modify Existing,CE,36 CFR 220.6(d)(2),Medium-High,USFS modification of existing permitted use - CX under 36 CFR 220.6(d)(2) for administrative actions
+USFS,New Authorization,EA,,,USFS new authorization - EA required unless project-level CE applies
+USFS,Permit Renewal,CE,36 CFR 220.6(d)(1),High,USFS administrative permit renewal with no change in use - CX under 36 CFR 220.6(d)(1)
+DOE,Modify Existing,CE,10 CFR 1021 Subpart D B1.31,Medium,DOE modification of existing facility operations within approved parameters - CX under 10 CFR 1021 Subpart D B1.31
+DOE,New Authorization,EA,,,DOE new facility authorization - EA required
+USFWS,Modify Existing,CE,516 DM 8.5(C)(5),Medium,USFWS modification of existing management plan with no significant change - CX under 516 DM 8.5(C)(5)
+USFWS,Permit Renewal,CE,516 DM 8.5(C)(1),High,USFWS administrative permit renewal - CX under 516 DM 8.5(C)(1) for unchanged operations
+EPA,Modify Existing,CE,40 CFR 6 Appendix A,Medium,EPA modification of existing approved action within original scope - CX under 40 CFR 6 Appendix A
+USACE,Modify Existing,CE,33 CFR 230 Appendix B,Medium,USACE modification of existing permit within original footprint - CX under 33 CFR 230 Appendix B
+USACE,New Authorization,EA,,,USACE new Section 404/10 authorization - EA required

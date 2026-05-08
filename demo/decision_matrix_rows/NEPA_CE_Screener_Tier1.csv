@@ -1,0 +1,18 @@
+AgencyAbbr,SectorKey,TypeKey,ReviewType,CECode,Confidence,ClassificationBasis
+BLM,Agriculture and Natural Resource Management,Mineral Extraction - Placer Mining,CE,43 CFR 3809.10(e),High,BLM §3809 placer mining on BLM-managed lands - CX under 43 CFR 3809.10(e) for operations under 5 acres disturbance
+BLM,Agriculture and Natural Resource Management,Mineral Extraction - Hard Rock,CE,43 CFR 3809.10(d),Medium-High,BLM hard rock mining - CX under 43 CFR 3809.10(d) for operations modifying existing Plans of Operations with no significant new disturbance
+BLM,Agriculture and Natural Resource Management,Grazing Permit Renewal,CE,516 DM 11.9(A),High,BLM grazing permit renewal with no change in AUMs or grazing season - administrative CX under 516 DM 11.9(A)
+BLM,Energy - Oil and Gas,Oil and Gas Permit - APD,EA,,,BLM oil and gas Application for Permit to Drill - EA required unless project-level CE documented in RMP
+BLM,Energy - Oil and Gas,Oil and Gas Permit - Minor Mod,CE,516 DM 11.9(D),High,BLM minor modification to existing approved APD - CX under 516 DM 11.9(D) for operational changes not affecting surface location
+BLM,Energy - Renewable,Solar Energy - Large Scale,EIS,,,BLM utility-scale solar on public lands - EIS required per Solar PEIS ROD
+BLM,Energy - Renewable,Wind Energy - Small Scale,CE,516 DM 11.9(E),Medium,BLM small wind energy right-of-way (under 5MW) - CX under 516 DM 11.9(E) on previously disturbed lands
+BLM,Lands and Realty,Right-of-Way Grant,CE,516 DM 11.9(C),Medium,BLM ROW grant on existing disturbed corridor - CX under 516 DM 11.9(C)
+BLM,Lands and Realty,Land Exchange,EA,,,BLM land exchange - EA required to assess equivalency and public interest
+USFS,Agriculture and Natural Resource Management,Timber Sale - Small,CE,36 CFR 220.6(e)(14),High,USFS small timber sale (under 250 acres) - CX under 36 CFR 220.6(e)(14)
+USFS,Agriculture and Natural Resource Management,Timber Sale - Large,EA,,,USFS timber sale exceeding CX thresholds - EA required
+USFS,Recreation,Trail Construction - Minor,CE,36 CFR 220.6(d)(4),High,USFS minor trail reconstruction/realignment - CX under 36 CFR 220.6(d)(4)
+DOE,Energy - Renewable,Solar Energy - Research,CE,10 CFR 1021 Subpart D B1.3,Medium,DOE solar energy research and small-scale demonstration - CX under 10 CFR 1021 Subpart D B1.3
+DOE,Energy - Renewable,Wind Energy - Research,CE,10 CFR 1021 Subpart D B1.3,Medium,DOE wind energy research and small-scale demonstration - CX under 10 CFR 1021 Subpart D B1.3
+USFWS,Wildlife and Habitat,Species Survey,CE,516 DM 8.5(C)(1),High,USFWS biological survey/inventory with no ground disturbance - CX under 516 DM 8.5(C)(1)
+USFWS,Wildlife and Habitat,Habitat Restoration,CE,516 DM 8.5(C)(3),High,USFWS small-scale habitat restoration on refuge lands - CX under 516 DM 8.5(C)(3)
+EPA,Water Resources,Water Quality Monitoring,CE,40 CFR 6 Appendix A,High,EPA water quality monitoring and sampling - CX under 40 CFR 6 Appendix A for non-construction activities

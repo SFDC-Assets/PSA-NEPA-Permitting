@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DecisionMatrixDefinition xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>NEPA Risk Scorer - Circuit Risk Points</label>
+    <processType>Bre</processType>
+    <type>Standard</type>
+    <versions>
+        <fullName>NEPA_Risk_Circuit_V1</fullName>
+        <columns>
+            <columnType>Input</columnType>
+            <dataType>Text</dataType>
+            <displaySequence>1</displaySequence>
+            <isWildcardColumn>true</isWildcardColumn>
+            <name>CircuitKey</name>
+            <wildcardValue>*</wildcardValue>
+        </columns>
+        <columns>
+            <columnType>Output</columnType>
+            <dataType>Number</dataType>
+            <displaySequence>2</displaySequence>
+            <isWildcardColumn>false</isWildcardColumn>
+            <name>Points</name>
+        </columns>
+        <columns>
+            <columnType>Output</columnType>
+            <dataType>Number</dataType>
+            <displaySequence>3</displaySequence>
+            <isWildcardColumn>false</isWildcardColumn>
+            <name>MatchScore</name>
+        </columns>
+        <decisionMatrixDefinition>NEPA_Risk_Circuit</decisionMatrixDefinition>
+        <label>NEPA Risk Scorer - Circuit Risk Points V1</label>
+        <rank>1</rank>
+        <startDate>2026-05-08T00:00:00.000Z</startDate>
+        <status>Active</status>
+        <versionNumber>1</versionNumber>
+    </versions>
+</DecisionMatrixDefinition>

@@ -99,7 +99,21 @@
     </actionCalls>
 
     <!-- ============================================================
-         ELEMENT 3: WRITE BACK
+         ELEMENT 3: MAP REVIEW TYPE TO PICKLIST VALUE
+         nepa_ce_pathway_recommendation__c is a restricted picklist with
+         values CE-Recommended / EA-Required / EIS-Required. The BRE
+         outputs CE / EA / EIS. Map here before write-back.
+    ============================================================ -->
+    <formulas>
+        <name>var_RecommendationPicklist</name>
+        <dataType>String</dataType>
+        <expression>IF({!Call_NEPA_Evaluate_CE.ReviewType} = "CE", "CE-Recommended",
+  IF({!Call_NEPA_Evaluate_CE.ReviewType} = "EIS", "EIS-Required",
+  "EA-Required"))</expression>
+    </formulas>
+
+    <!-- ============================================================
+         ELEMENT 4: WRITE BACK
          AI AUP compliance: writes nepa_ce_pathway_recommendation__c
          (the AI recommendation), NOT nepa_review_type__c (the official
          determination). A NEPA Coordinator must review the recommendation
@@ -117,7 +131,7 @@
         <inputAssignments>
             <field>nepa_ce_pathway_recommendation__c</field>
             <value>
-                <elementReference>Call_NEPA_Evaluate_CE.ReviewType</elementReference>
+                <elementReference>var_RecommendationPicklist</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>

@@ -4,12 +4,12 @@
     <processType>Bre</processType>
     <template>false</template>
     <versions>
-        <fullName>NEPA_CE_Screener_V1</fullName>
-        <description>CE screening BRE: routes a NEPA project to the correct review type (CE/EA/EIS) based on NAICS code, agency, sector, type key, and action type using a three-tier Decision Matrix lookup. Outputs ReviewType, CECode, Confidence, and ClassificationBasis.</description>
+        <fullName>NEPA_CE_Screener_V3</fullName>
+        <description>CE screening BRE V3: uses LEN()&gt;0 guards instead of !=null to correctly handle empty-string DM lookup results. Routes to CE/EA/EIS via three-tier DM lookup with acreage override and no-match EA fallback.</description>
         <expressionSetDefinition>NEPA_CE_Screener</expressionSetDefinition>
-        <label>NEPA CE Screener V1</label>
+        <label>NEPA CE Screener V3</label>
         <processType>Bre</processType>
-        <rank>1</rank>
+        <rank>3</rank>
         <shouldShowExplExternally>false</shouldShowExplExternally>
         <startDate>2026-05-08T00:00:00.000Z</startDate>
         <status>Active</status>
@@ -65,13 +65,13 @@
             <stepType>BusinessKnowledgeModel</stepType>
         </steps>
 
-        <!-- Step 4: Consolidate — pick first non-blank result across all three tiers,
-             apply acreage override, and set EA fallback when nothing matched. -->
+        <!-- Step 4: Consolidate — pick first non-empty result across all three tiers.
+             LEN()>0 catches both null and empty-string from unmatched DM lookups. -->
         <steps>
             <actionType>AssignParameterValues</actionType>
             <assignment>
                 <assignedParameter>ReviewType</assignedParameter>
-                <expression>IF( NOT(ISBLANK(NEPA_CE_Screener_NAICS__ReviewType)), NEPA_CE_Screener_NAICS__ReviewType, IF( NOT(ISBLANK(NEPA_CE_Screener_Tier1__ReviewType)), NEPA_CE_Screener_Tier1__ReviewType, IF( NOT(ISBLANK(NEPA_CE_Screener_Tier2__ReviewType)), NEPA_CE_Screener_Tier2__ReviewType, &apos;EA&apos; ) ) )</expression>
+                <expression>IF( LEN(NEPA_CE_Screener_NAICS__ReviewType) &gt; 0, NEPA_CE_Screener_NAICS__ReviewType, IF( LEN(NEPA_CE_Screener_Tier1__ReviewType) &gt; 0, NEPA_CE_Screener_Tier1__ReviewType, IF( LEN(NEPA_CE_Screener_Tier2__ReviewType) &gt; 0, NEPA_CE_Screener_Tier2__ReviewType, &apos;EA&apos; ) ) )</expression>
             </assignment>
             <label>Consolidate Review Type</label>
             <name>ConsolidateReviewType</name>
@@ -86,7 +86,7 @@
             <actionType>AssignParameterValues</actionType>
             <assignment>
                 <assignedParameter>CECode</assignedParameter>
-                <expression>IF( NOT(ISBLANK(NEPA_CE_Screener_NAICS__CECode)), NEPA_CE_Screener_NAICS__CECode, IF( NOT(ISBLANK(NEPA_CE_Screener_Tier1__CECode)), NEPA_CE_Screener_Tier1__CECode, IF( NOT(ISBLANK(NEPA_CE_Screener_Tier2__CECode)), NEPA_CE_Screener_Tier2__CECode, &apos;&apos; ) ) )</expression>
+                <expression>IF( LEN(NEPA_CE_Screener_NAICS__CECode) &gt; 0, NEPA_CE_Screener_NAICS__CECode, IF( LEN(NEPA_CE_Screener_Tier1__CECode) &gt; 0, NEPA_CE_Screener_Tier1__CECode, IF( LEN(NEPA_CE_Screener_Tier2__CECode) &gt; 0, NEPA_CE_Screener_Tier2__CECode, &apos;&apos; ) ) )</expression>
             </assignment>
             <label>Consolidate CE Code</label>
             <name>ConsolidateCECode</name>
@@ -101,7 +101,7 @@
             <actionType>AssignParameterValues</actionType>
             <assignment>
                 <assignedParameter>Confidence</assignedParameter>
-                <expression>IF( NOT(ISBLANK(NEPA_CE_Screener_NAICS__Confidence)), NEPA_CE_Screener_NAICS__Confidence, IF( NOT(ISBLANK(NEPA_CE_Screener_Tier1__Confidence)), NEPA_CE_Screener_Tier1__Confidence, IF( NOT(ISBLANK(NEPA_CE_Screener_Tier2__Confidence)), NEPA_CE_Screener_Tier2__Confidence, &apos;Low&apos; ) ) )</expression>
+                <expression>IF( LEN(NEPA_CE_Screener_NAICS__Confidence) &gt; 0, NEPA_CE_Screener_NAICS__Confidence, IF( LEN(NEPA_CE_Screener_Tier1__Confidence) &gt; 0, NEPA_CE_Screener_Tier1__Confidence, IF( LEN(NEPA_CE_Screener_Tier2__Confidence) &gt; 0, NEPA_CE_Screener_Tier2__Confidence, &apos;Low&apos; ) ) )</expression>
             </assignment>
             <label>Consolidate Confidence</label>
             <name>ConsolidateConfidence</name>
@@ -116,7 +116,7 @@
             <actionType>AssignParameterValues</actionType>
             <assignment>
                 <assignedParameter>ClassificationBasis</assignedParameter>
-                <expression>IF( NOT(ISBLANK(NEPA_CE_Screener_NAICS__ClassificationBasis)), NEPA_CE_Screener_NAICS__ClassificationBasis, IF( NOT(ISBLANK(NEPA_CE_Screener_Tier1__ClassificationBasis)), NEPA_CE_Screener_Tier1__ClassificationBasis, IF( NOT(ISBLANK(NEPA_CE_Screener_Tier2__ClassificationBasis)), NEPA_CE_Screener_Tier2__ClassificationBasis, &apos;No screening rule matched; defaulted to EA for manual review&apos; ) ) )</expression>
+                <expression>IF( LEN(NEPA_CE_Screener_NAICS__ClassificationBasis) &gt; 0, NEPA_CE_Screener_NAICS__ClassificationBasis, IF( LEN(NEPA_CE_Screener_Tier1__ClassificationBasis) &gt; 0, NEPA_CE_Screener_Tier1__ClassificationBasis, IF( LEN(NEPA_CE_Screener_Tier2__ClassificationBasis) &gt; 0, NEPA_CE_Screener_Tier2__ClassificationBasis, &apos;No screening rule matched; defaulted to EA for manual review&apos; ) ) )</expression>
             </assignment>
             <label>Consolidate Classification Basis</label>
             <name>ConsolidateClassificationBasis</name>
@@ -133,7 +133,7 @@
             <actionType>AssignParameterValues</actionType>
             <assignment>
                 <assignedParameter>ReviewType</assignedParameter>
-                <expression>IF( ReviewType == &apos;CE&apos; &amp;&amp; DisturbanceAcres &gt; CONST_AcreageThreshold, &apos;EA&apos;, ReviewType )</expression>
+                <expression>IF( ReviewType == &apos;CE&apos; &amp;&amp; DisturbanceAcres &gt; CONST_AcreageThreshold, &apos;EA&apos;, IF( LEN(ReviewType) &gt; 0, ReviewType, &apos;EA&apos; ) )</expression>
             </assignment>
             <label>Apply Acreage Override</label>
             <name>ApplyAcreageOverride</name>
@@ -430,6 +430,6 @@
             <output>false</output>
             <type>Variable</type>
         </variables>
-        <versionNumber>1</versionNumber>
+        <versionNumber>3</versionNumber>
     </versions>
 </ExpressionSetDefinition>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DecisionMatrixDefinition xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>NEPA Permit Matrix</label>
+    <processType>Bre</processType>
+    <type>Standard</type>
+    <versions>
+        <fullName>NEPA_Permit_Matrix_BRE_V1</fullName>
+        <columns>
+            <columnType>Input</columnType>
+            <dataType>Text</dataType>
+            <displaySequence>1</displaySequence>
+            <isWildcardColumn>false</isWildcardColumn>
+            <name>Sector</name>
+        </columns>
+        <columns>
+            <columnType>Input</columnType>
+            <dataType>Text</dataType>
+            <displaySequence>2</displaySequence>
+            <isWildcardColumn>false</isWildcardColumn>
+            <name>ProjectType</name>
+        </columns>
+        <columns>
+            <columnType>Output</columnType>
+            <dataType>Text</dataType>
+            <displaySequence>3</displaySequence>
+            <isWildcardColumn>false</isWildcardColumn>
+            <name>RequiredPermits</name>
+        </columns>
+        <columns>
+            <columnType>Output</columnType>
+            <dataType>Text</dataType>
+            <displaySequence>4</displaySequence>
+            <isWildcardColumn>false</isWildcardColumn>
+            <name>CooperatingAgencies</name>
+        </columns>
+        <decisionMatrixDefinition>NEPA_Permit_Matrix_BRE</decisionMatrixDefinition>
+        <label>NEPA Permit Matrix V1</label>
+        <rank>1</rank>
+        <startDate>2026-05-08T00:00:00.000Z</startDate>
+        <status>Active</status>
+        <versionNumber>1</versionNumber>
+    </versions>
+</DecisionMatrixDefinition>
