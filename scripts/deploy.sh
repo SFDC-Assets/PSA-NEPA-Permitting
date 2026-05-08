@@ -307,8 +307,16 @@ deploy "custom metadata" \
     --target-org "$TARGET_ORG"
 
 # ── phase 5b: bre decision matrices ──────────────────────────────────────────
-# Schema-only deploy — rows must be imported manually via Setup UI after this script
-# runs. See decision_matrix_rows/README.md for the import sequence.
+# Schema-only deploy — rows and UI activation must follow via Setup UI.
+#
+# CRITICAL: After this script runs, each DM must be Activated via Setup UI
+# (Setup → BRE → Decision Matrices → open DM → Activate). Metadata API deploy
+# alone does NOT create the LatestVersionSnapshotId that the BRE runtime requires.
+# Without UI activation, the BRE runtime fails with:
+#   "Cannot invoke RulesEngineInputInterview.getDecisionInterviewMap() because
+#    rulesEngineInputInterview is null"
+# This is a Salesforce platform limitation — there is no CLI workaround.
+# See decision_matrix_rows/README.md for the full activation + import sequence.
 phase_header "Phase 5b: BRE Decision Matrix definitions"
 deploy "decision matrices" \
     --source-dir force-app/main/default/decisionMatrixDefinition \
@@ -316,6 +324,10 @@ deploy "decision matrices" \
 
 # ── phase 5c: bre expression sets ────────────────────────────────────────────
 # Must follow Phase 5b — ES definitions reference DM names in their step elements.
+#
+# CRITICAL: Same activation requirement as Phase 5b. After deploy, go to
+# Setup → BRE → Expression Sets → open each ES → Activate. Without this,
+# the ES version has no LatestVersionSnapshotId and the BRE runtime NPEs.
 phase_header "Phase 5c: BRE Expression Set definitions"
 deploy "expression sets" \
     --source-dir force-app/main/default/expressionSetDefinition \
@@ -627,18 +639,28 @@ else
     echo "       NEPA_Error_Event_Handler"
     echo "       NEPA_FlowError_CountIncrementer"
     echo ""
-    echo "    3. Import BRE Decision Matrix rows (REQUIRED — cannot be deployed via CLI):"
-    echo "       Setup > Business Rules Engine > Decision Matrices"
-    echo "       For each matrix, open V1 and click Import CSV using files from decision_matrix_rows/:"
+    echo "    3. Activate BRE Decision Matrices and Expression Sets (REQUIRED — cannot be done via CLI):"
+    echo "       CRITICAL: Metadata API deploy alone does NOT create the LatestVersionSnapshotId"
+    echo "       the BRE runtime requires. Without UI activation the BRE fails with:"
+    echo "         'Cannot invoke RulesEngineInputInterview.getDecisionInterviewMap()'"
+    echo "       a) Setup > Business Rules Engine > Decision Matrices"
+    echo "          Open each DM below, click the active version, click Activate (if not already active):"
+    echo "            NEPA_Risk_ReviewType, NEPA_Risk_Agency, NEPA_Risk_Circuit"
+    echo "            NEPA_CE_Screener_NAICS, NEPA_CE_Screener_Tier1, NEPA_CE_Screener_Tier2"
+    echo "            NEPA_Permit_Matrix_BRE"
+    echo "       b) Import rows for each Risk Scorer DM (CSV in decision_matrix_rows/):"
+    echo "         NEPA_Risk_ReviewType       → NEPA_Risk_ReviewType.csv"
+    echo "         NEPA_Risk_Agency           → NEPA_Risk_Agency.csv  (uses abbreviations: USFS/BLM/FERC/USACE/USFWS)"
+    echo "         NEPA_Risk_Circuit          → NEPA_Risk_Circuit.csv"
+    echo "       c) Also import rows for CE Screener and Permit Matrix DMs:"
     echo "         NEPA_CE_Screener_NAICS     → NEPA_CE_Screener_NAICS.csv"
     echo "         NEPA_CE_Screener_Tier1     → NEPA_CE_Screener_Tier1.csv"
     echo "         NEPA_CE_Screener_Tier2     → NEPA_CE_Screener_Tier2.csv"
-    echo "         NEPA_Risk_ReviewType       → NEPA_Risk_ReviewType.csv"
-    echo "         NEPA_Risk_Agency           → NEPA_Risk_Agency.csv"
-    echo "         NEPA_Risk_Circuit          → NEPA_Risk_Circuit.csv"
     echo "         NEPA_Permit_Matrix         → NEPA_Permit_Matrix_BRE.csv"
-    echo "       Then deactivate Expression Set versions V1 and V2 for NEPA CE Screener"
-    echo "       (Setup > BRE > Expression Sets > NEPA CE Screener) — leave V3 active."
+    echo "       d) Setup > BRE > Expression Sets — Activate each ES:"
+    echo "            NEPA_Litigation_Risk_Scorer (V1), NEPA_CE_Screener (V3)"
+    echo "       e) Deactivate NEPA CE Screener V1 and V2 (leave V3 active only)."
+    echo "       See decision_matrix_rows/README.md for full activation + import sequence."
     echo ""
     echo "    4. Verify Custom Metadata records loaded:"
     echo "       Setup > Custom Metadata Types > each NEPA_* type > Manage Records"

@@ -2,6 +2,26 @@
 
 BRE Decision Matrix rows cannot be deployed via Metadata API or CLI. Use the Salesforce Setup UI to import these CSV files into the corresponding Decision Matrix versions.
 
+## Activation Requirement (CRITICAL)
+
+Deploying DM or Expression Set metadata via Metadata API does **not** create the `LatestVersionSnapshotId` that the BRE runtime requires. Without this snapshot the BRE engine fails at runtime with:
+
+```
+Cannot invoke "RulesEngineInputInterview.getDecisionInterviewMap()" because
+"rulesEngineInputInterview" is null
+```
+
+This is a Salesforce platform limitation — there is no CLI workaround.
+
+**After every Metadata API deploy of BRE assets, you must:**
+
+1. Go to **Setup → Business Rules Engine → Decision Matrices**
+2. Open each DM, click the deployed version, and click **Activate**
+3. Go to **Setup → Business Rules Engine → Expression Sets**
+4. Open each ES, click the deployed version, and click **Activate**
+
+Only after UI activation will the BRE runtime initialize correctly.
+
 ## Import Instructions
 
 For each CSV file:
@@ -22,7 +42,7 @@ For each CSV file:
 | `NEPA_CE_Screener_Tier1.csv` | NEPA CE Screener - Tier 1 Agency Sector Rules | `AgencyAbbr`, `SectorKey`, `TypeKey` | 17 rows covering BLM, USFS, DOE, USFWS, EPA |
 | `NEPA_CE_Screener_Tier2.csv` | NEPA CE Screener - Tier 2 Agency Action Type Rules | `AgencyAbbr`, `ActionType` | 16 rows covering Modify Existing, New Authorization, Permit Renewal |
 | `NEPA_Risk_ReviewType.csv` | NEPA Risk Scorer - Review Type Points | `ReviewType` | 4 rows: EIS=40, EA=20, CE=5, Other=3 |
-| `NEPA_Risk_Agency.csv` | NEPA Risk Scorer - Agency Risk Points | `AgencyName` | 6 rows sourced from NEPA_Agency_Risk_Rate__mdt; wildcard default row (Default, MatchScore=0) |
+| `NEPA_Risk_Agency.csv` | NEPA Risk Scorer - Agency Risk Points | `AgencyName` | 6 rows using picklist abbreviations (USFS=25, BLM=23, FERC=15, USACE=12, USFWS=10, Default=5); values must match `Program.nepa_record_owner_agency__c` picklist |
 | `NEPA_Risk_Circuit.csv` | NEPA Risk Scorer - Circuit Risk Points | `CircuitKey` | 13 rows sourced from NEPA_Circuit_Risk_Weight__mdt; wildcard default row (DEFAULT, MatchScore=0) |
 | `NEPA_Permit_Matrix_BRE.csv` | NEPA Permit Matrix | `Sector`, `ProjectType` | 9 rows mirroring NEPA_Permit_Matrix__mdt |
 
