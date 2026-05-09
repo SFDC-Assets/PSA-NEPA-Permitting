@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ReportType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <baseObject>PublicComplaint</baseObject>
+    <category>other</category>
+    <deployed>true</deployed>
+    <description>NEPA Permitting — PublicComplaint (Comment) reports including substantive status, response queue, and litigation threat fields.</description>
+    <label>NEPA Comment Reports</label>
+    <sections>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>Id</field>
+            <table>PublicComplaint</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>Subject</field>
+            <table>PublicComplaint</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>Status</field>
+            <table>PublicComplaint</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>nepa_is_substantive__c</field>
+            <table>PublicComplaint</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>nepa_response_status__c</field>
+            <table>PublicComplaint</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>nepa_litigation_threat_flag__c</field>
+            <table>PublicComplaint</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>nepa_ai_confidence_score__c</field>
+            <table>PublicComplaint</table>
+        </columns>
+        <columns>
+            <checkedByDefault>true</checkedByDefault>
+            <field>CreatedDate</field>
+            <table>PublicComplaint</table>
+        </columns>
+        <masterLabel>NEPA Comment Information</masterLabel>
+    </sections>
+</ReportType>

@@ -1,4 +1,17 @@
 @SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage,PMD.MethodNamingConventions,PMD.ApexUnitTestClassShouldHaveRunAs')
+/**
+ * Integration smoke tests for the NEPA_Defensibility_Gap_Checker subflow.
+ *
+ * These are async flow integration tests, not Apex unit tests. The scoring
+ * logic lives entirely in NEPA_Defensibility_Gap_Checker.flow-meta.xml;
+ * assertions here verify that the trigger wrappers (NEPA_Defensibility_Trigger_ContentVersion
+ * and NEPA_Defensibility_Trigger_Engagement) fire correctly and that the
+ * result fields exist and fall within valid ranges after Test.stopTest().
+ *
+ * Assertions on nepa_defensibility_score__c and nepa_defensibility_updated__c
+ * are guarded with null checks because async flow execution in test context
+ * is not guaranteed to complete before the SOQL query.
+ */
 @IsTest
 private class NepaDefensibilityGapCheckerTest {
 
