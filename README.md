@@ -106,6 +106,14 @@ This Accelerator includes the following assets:
       <li>This readme file</li>
       <li><a href="docs/QUICKSTART.md">Quick Start Guide</a> — step-by-step deployment and configuration walkthrough</li>
       <li><a href="docs/ARCHITECTURE_DECISIONS.md">Architecture Decision Records</a> — object mapping rationale, flow design, and extension guidance</li>
+      <li><a href="docs/FLOW-ARCHITECTURE.md">Flow Architecture</a> — explains the 30-flow design: error chain, stage gate split, defensibility wrapper</li>
+      <li><a href="docs/AI-Use-Policy.md">AI Use Policy</a> — OMB M-24-10 compliant disclosure for CE Screening, Litigation Risk Scoring, and Comment Triage</li>
+      <li><a href="docs/NEPA-Public-Comment-Processing.md">Public Comment Processing</a> — Comment Triage agent architecture, EJ/tribal gates, and audit trail design</li>
+      <li><a href="docs/GIS-Proximity-Guide.md">GIS Proximity Guide</a> — deployment and extension guide for Entity 7 (GIS Data) proximity checks</li>
+      <li><a href="docs/NEPA-Compliance-Improvement-Plan.md">CEQ Compliance Improvement Plan</a> — tier-based roadmap for full CEQ standard v1.2 coverage</li>
+      <li><a href="docs/NEPA-Permitting-Acceleration-Plan.md">Permitting Acceleration Plan</a> — 10 ranked priorities with time-to-permit impact analysis grounded in NEPATEC2.0 data</li>
+      <li><a href="docs/NEPA-Risk-Intelligence-Plan.md">Risk Intelligence Plan</a> — litigation risk scoring, challenge prediction, and defensibility gap features</li>
+      <li><a href="docs/GLOSSARY.md">Glossary</a> — NEPA, regulatory, and PSS terms used throughout this project</li>
     </ul>
   </li>
 </ol>

@@ -23,7 +23,7 @@ Use the Issues tab to submit issues, enhancement requests, and discuss ideas.
 -  Include tests that isolate the bug and verifies that it was fixed.
 
 ### New Features
--  If you'd like to add new functionality to this project, describe the problem you want to solve in a [new Issue](https://github.com/{project_slug}/issues/new).
+-  If you'd like to add new functionality to this project, describe the problem you want to solve in a [new Issue](https://github.com/SFDC-Assets-emu/PSA-NEPA-Permitting/issues/new).
 -  We can't guarantee that each feature requests will be implemented, but we love a good idea, and we do promise to review and respond.
 
 # Code of Conduct

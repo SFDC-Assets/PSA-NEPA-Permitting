@@ -1,3 +1,5 @@
+> **TEMPLATE — Sample vendor response to the companion RFP template ([RFP-NEPA-Permitting-Platform.md](RFP-NEPA-Permitting-Platform.md)). Fill in all `[bracketed]` fields with your organization's actual details before submitting.**
+
 # Proposal Response
 # NEPA Environmental Review Permitting Acceleration Platform
 

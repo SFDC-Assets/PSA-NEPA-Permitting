@@ -223,6 +223,36 @@ sf data query --target-org $TARGET \
 
 ---
 
+## Partial Import Recovery
+
+If the load script fails midway, use the cleanup commands below to return to a clean state before retrying. The safest recovery is always full cleanup → full reload.
+
+**Identify how far you got:**
+```bash
+TARGET=NEPADEMO
+
+# Check which anchor records exist
+sf data query --target-org $TARGET --query "SELECT Id FROM Program WHERE nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'"
+sf data query --target-org $TARGET --query "SELECT Id FROM IndividualApplication WHERE nepa_federal_unique_id__c = 'IDI-38709'"
+sf data query --target-org $TARGET --query "SELECT COUNT() FROM ApplicationTimeline WHERE nepa_related_process__r.nepa_federal_unique_id__c = 'IDI-38709'"
+```
+
+**If failure is in steps 01–17 (CSV phase):** Run the full cleanup below, then re-run `load-demo-data.sh`.
+
+**If failure is in steps 18–23 (Apex phase):** The CSV data is intact. Re-run the failing Apex script individually:
+```bash
+sf apex run --file demo/import_data/18_postload_polymorphic.apex --target-org $TARGET
+sf apex run --file demo/import_data/20_entities789_demo_data.apex --target-org $TARGET
+sf apex run --file demo/import_data/21_postload_discipline.apex   --target-org $TARGET
+sf apex run --file demo/import_data/22_postload_gis_team_assembly.apex --target-org $TARGET
+sf apex run --file demo/import_data/23_postload_flow_refresh.apex --target-org $TARGET
+```
+Apex scripts are idempotent for the step-20 entities (upsert-safe). Steps 18 and 22 may insert duplicates if retried after partial success — run full cleanup first if you see duplicate records.
+
+**If re-importing fails with `DUPLICATE_VALUE` errors:** The cleanup below was not run completely or a prior import left orphaned records. Query for and delete any records matching the demo external IDs before reloading.
+
+---
+
 ## Cleanup (reverse-dependency order)
 
 ```bash

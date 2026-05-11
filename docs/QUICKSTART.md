@@ -4,6 +4,19 @@ This guide walks you from a fresh Public Sector Solutions org to a fully operati
 
 ---
 
+## Known Manual Steps
+
+The deploy script automates nearly everything, but two steps **cannot** be scripted due to Salesforce platform limitations. Be ready for these before you start:
+
+| Step | What you'll do | When |
+|---|---|---|
+| **BRE Decision Matrix row import** | Upload 7 CSV files via Setup → Business Rules Engine → Decision Matrices | After Step 3 (deploy), before Step 5 (verification) |
+| **Scheduled flow configuration** | Open `NEPA_SLA_Escalation_Monitor` in Flow Builder, set schedule to Daily 7 AM, activate | After Step 4c (Flow activation) |
+
+The BRE import is the most common failure point. If you skip it, CE Screener and Risk Scorer will throw runtime errors. See [Step 4b](#4b-import-bre-decision-matrix-rows) for the full procedure.
+
+---
+
 ## Prerequisites
 
 | Requirement | Notes |

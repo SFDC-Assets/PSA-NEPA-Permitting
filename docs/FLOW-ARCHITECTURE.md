@@ -6,13 +6,13 @@
 
 ## 1. Error Chain
 
-```
-Any flow (fault path)
-  └─► NEPA_Error_Logger          (autolaunched subflow — called from fault connector)
-        └─► NEPA_Error_Event__e  (platform event — Create Records)
-              └─► NEPA_Error_Event_Handler    (platform-event-triggered flow)
-                    └─► NEPA_Flow_Error__c    (Create Records)
-                          └─► NEPA_FlowError_CountIncrementer  (before-save on NEPA_Flow_Error__c)
+```mermaid
+flowchart TD
+    A["Any flow (fault path)"] -->|fault connector| B["NEPA_Error_Logger\n(autolaunched subflow)"]
+    B -->|Create Records| C["NEPA_Error_Event__e\n(platform event)"]
+    C -->|triggers| D["NEPA_Error_Event_Handler\n(platform-event-triggered flow)"]
+    D -->|Create Records| E["NEPA_Flow_Error__c"]
+    E -->|before-save| F["NEPA_FlowError_CountIncrementer"]
 ```
 
 **Why platform events, not direct DML:** A fault path fires inside a transaction that has already rolled back. Any `Create Records` targeting a custom object in that same transaction would also roll back, losing the error record. A platform event is published outside the current transaction boundary, so the event and the resulting `NEPA_Flow_Error__c` record survive even when the originating flow transaction fails.
@@ -38,14 +38,13 @@ Two flows govern stage transitions on `IndividualApplication`, but they operate 
 
 ## 3. Defensibility Wrapper Pattern
 
-```
-Record-triggered (ContentVersion insert/update)
-  └─► NEPA_Defensibility_Trigger_ContentVersion
-        └─► NEPA_Defensibility_Gap_Checker  (subflow — scoring engine)
-
-Record-triggered (nepa_engagement__c insert)
-  └─► NEPA_Defensibility_Trigger_Engagement
-        └─► NEPA_Defensibility_Gap_Checker  (same subflow)
+```mermaid
+flowchart TD
+    A["ContentVersion insert/update\n(record-triggered)"] --> B["NEPA_Defensibility_Trigger_ContentVersion"]
+    C["nepa_engagement__c insert\n(record-triggered)"] --> D["NEPA_Defensibility_Trigger_Engagement"]
+    B -->|subflow call| E["NEPA_Defensibility_Gap_Checker\n(scoring engine)"]
+    D -->|subflow call| E
+    E -->|Update Records| F["IndividualApplication\nnepa_defensibility_score__c\nnepa_defensibility_gaps__c"]
 ```
 
 **Why two thin wrappers and one engine:** The scoring logic (document coverage, engagement coverage, gap detection) is identical regardless of what triggered the recalculation. Duplicating it in each trigger flow would mean maintaining two copies. The wrappers exist only to: (1) detect the triggering event type, (2) resolve the parent `IndividualApplication` ID from either a `ContentDocumentLink` or `nepa_process__c` lookup, and (3) call the shared subflow.

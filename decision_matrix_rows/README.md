@@ -62,3 +62,16 @@ For IDI-38709 (IA-0000000432):
 | `CECode` | `nepa_process_code__c` | Free text |
 | `Confidence` | `nepa_screening_confidence__c` | High / Medium-High / Medium / Low |
 | `ClassificationBasis` | `nepa_classification_basis__c` | Free text |
+
+---
+
+## Common Errors
+
+| Error | Cause | Fix |
+|---|---|---|
+| `Cannot invoke "RulesEngineInputInterview.getDecisionInterviewMap()" because "rulesEngineInputInterview" is null` | BRE runtime has no snapshot — DM/ES deployed via CLI but never activated via UI | Open each DM and ES in Setup → Business Rules Engine, open the deployed version, and click **Activate** |
+| `INVALID_FIELD: No such column 'NAICSCode'` during CSV import | Column header in CSV doesn't match the DM input column name exactly | Check that the CSV header row matches the column names in the table above — they are case-sensitive |
+| CSV import completes but zero rows appear | Wrong DM version selected — imported into an inactive version | Open the DM, confirm you clicked the correct active version (V1 after first UI activation), then re-import |
+| CE Screener returns no recommendation | Decision Matrix rows not imported yet, or Expression Set not activated | Confirm all 7 CSVs are imported and all Expression Sets are activated in Setup → BRE |
+| `NEPA_Risk_Agency.csv` rows have no effect | Agency value in `Program.nepa_record_owner_agency__c` doesn't match the picklist abbreviation in the CSV | Verify the agency abbreviation in the CSV matches the picklist value exactly: `USFS`, `BLM`, `FERC`, `USACE`, `USFWS`; unmatched rows fall through to the `Default=5` wildcard row |
+| Import button is greyed out | Decision Matrix version is already active with a snapshot | Deactivate the version, import the CSV, then reactivate |

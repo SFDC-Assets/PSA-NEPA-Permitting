@@ -1,3 +1,5 @@
+> **TEMPLATE — Fill in all `[bracketed]` fields before use.** See the substitution checklist at the bottom of this document.
+
 # Request for Proposal
 # NEPA Environmental Review Permitting Acceleration Platform
 
@@ -348,3 +350,25 @@ The Agency reserves the right to conduct oral presentations or demonstrations wi
 ---
 
 *This document is issued for proposal purposes only. The Agency reserves the right to amend, cancel, or withdraw this RFP at any time. Issuance of this RFP does not obligate the Agency to award a contract.*
+
+---
+
+## Template Substitution Checklist
+
+Before issuing this RFP, replace every `[bracketed]` field:
+
+| Placeholder | Where used | Notes |
+|---|---|---|
+| `[Agency Name]` | Header, Section 1.1, throughout | Full agency name (e.g., "U.S. Bureau of Land Management") |
+| `[AGENCY]` | RFP Number | Agency abbreviation (e.g., "BLM") |
+| `[YYYY]` | RFP Number | Four-digit fiscal year |
+| `[NNN]` | RFP Number | Sequential solicitation number |
+| `[Date]` | Issue Date, Proposal Due Date, Sections 11.1–11.2 | Fill in all date fields |
+| `[Time]` | Section 11.1 | Proposal submission deadline time |
+| `[Timezone]` | Section 11.1 | e.g., "ET", "MT", "PT" |
+| `[N]` | Sections 1.2, 11.3 | Annual review volume, oral presentation lead time |
+| `[Base Year + Option Years]` | Period of Performance | e.g., "1 Base Year + 4 Option Years" |
+| `[Agency Field Offices / Remote]` | Place of Performance | Specific office locations or remote |
+| `[NEPA Program / Environmental Planning Division]` | Program Office | Actual program office name |
+| `[Contracting Officer email]` | Section 11.1, 11.2 | Contracting officer contact email |
+| `[SAM.gov or agency portal]` | Section 11.2 | Specific portal URL for amendments |
