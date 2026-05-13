@@ -3,6 +3,7 @@
     <types>
         <members>NEPA_Administrative_Record_Checker</members>
         <members>NEPA_AdminRecord_AutoCreate</members>
+        <members>NEPA_Agency_Tier_Setter</members>
         <members>NEPA_CE_Determination_Router</members>
         <members>NEPA_CE_Intake</members>
         <members>NEPA_CE_Screener</members>
@@ -28,7 +29,9 @@
         <members>NEPA_Stage_Gate_Doc_Check</members>
         <members>NEPA_Stage_Gate_Orchestrator</members>
         <members>NEPA_Stage_Gate</members>
+        <members>NEPA_Team_Assembly_Orchestrator</members>
         <members>NEPA_Timeline_Risk_Assessor</members>
+        <members>NEPA_WO_Milestone_Setter</members>
         <name>Flow</name>
     </types>
     <version>62.0</version>
