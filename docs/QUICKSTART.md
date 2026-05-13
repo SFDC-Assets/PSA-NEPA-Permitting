@@ -4,6 +4,22 @@ This guide walks you from a fresh Agentforce for Public Sector org to a fully op
 
 ---
 
+## Step 0 — Get a Trial Org
+
+**If you don't already have an Agentforce for Public Sector org, start here.**
+
+Sign up for a free APS trial org using the Salesforce PSC Trial Org setup guide:
+
+**[https://help.salesforce.com/s/articleView?id=ind.psc_create_trial_org.htm&language=en_US&type=5](https://help.salesforce.com/s/articleView?id=ind.psc_create_trial_org.htm&language=en_US&type=5)**
+
+The trial org includes Agentforce for Public Sector (Foundations), OmniStudio, and the standard APS objects (`Program`, `IndividualApplication`, `ApplicationTimeline`) that this accelerator requires. Provisioning typically takes 5–10 minutes.
+
+Once your org is provisioned, note the **My Domain URL** from Setup → My Domain — you'll need it for the `sf org login` command in Step 1.
+
+> **Already have an APS org?** Skip to Step 1.
+
+---
+
 ## Known Manual Steps
 
 The deploy script automates nearly everything, but two steps **cannot** be scripted due to Salesforce platform limitations. Be ready for these before you start:
@@ -22,7 +38,7 @@ The BRE import is the most common failure point. If you skip it, CE Screener and
 
 | Requirement | Notes |
 |---|---|
-| Salesforce org with **Agentforce for Public Sector** | Use the [APS trial org signup](https://developer.salesforce.com/free-trials/comparison/public-sector) if you don't have one. Foundations or Advanced license required. |
+| Salesforce org with **Agentforce for Public Sector** | See Step 0 above. Use the [APS trial org setup guide](https://help.salesforce.com/s/articleView?id=ind.psc_create_trial_org.htm&language=en_US&type=5) if you don't have one. Foundations or Advanced license required. |
 | **Salesforce CLI v2** (`sf`) | Install from [developer.salesforce.com/tools/salesforcecli](https://developer.salesforce.com/tools/salesforcecli). Verify with `sf --version`. |
 | **jq** | JSON formatter used by `deploy.sh`. Install with `brew install jq` (Mac) or `apt install jq` (Linux). |
 | Git | To clone this repository. |
@@ -48,15 +64,15 @@ This Accelerator depends on three APS standard objects that are not available in
 
 The custom objects (`nepa_engagement__c`, `nepa_litigation__c`, `nepa_process_related_agencies__c`, `nepa_ce_library__c`, `nepa_gis_data__c`) and all custom metadata types are APS-independent and deploy without modification.
 
-A free APS developer org is available at the [APS trial org signup](https://developer.salesforce.com/free-trials/comparison/public-sector). This is the recommended path — substituting the APS objects removes access to PSS-native features such as Action Plans, OmniStudio, and the Application data model relationships the CEQ export relies on.
+A free APS trial org is available at the [APS trial org setup guide](https://help.salesforce.com/s/articleView?id=ind.psc_create_trial_org.htm&language=en_US&type=5). This is the recommended path — substituting the APS objects removes access to PSS-native features such as Action Plans, OmniStudio, and the Application data model relationships the CEQ export relies on.
 
 ---
 
 ## Step 1 — Clone the Repository and Authenticate
 
 ```bash
-git clone https://github.com/your-org/PSA-NEPA-Permitting-Data-Model.git
-cd PSA-NEPA-Permitting-Data-Model
+git clone https://github.com/SFDC-Assets-emu/PSA-NEPA-Permitting.git
+cd PSA-NEPA-Permitting
 ```
 
 Authenticate to your org. Replace `NEPADEV` with any alias you prefer:
@@ -140,21 +156,25 @@ BRE Decision Matrix rows **cannot be deployed via CLI or Metadata API** — this
 2. Open the matrix, click the **V1** version, then click **Import CSV**
 3. Upload the CSV — column headers match automatically
 
-| CSV file | Decision Matrix |
-|---|---|
-| `NEPA_CE_Screener_NAICS.csv` | NEPA CE Screener - NAICS Routing |
-| `NEPA_CE_Screener_Tier1.csv` | NEPA CE Screener - Tier 1 Agency Sector Rules |
-| `NEPA_CE_Screener_Tier2.csv` | NEPA CE Screener - Tier 2 Agency Action Type Rules |
-| `NEPA_Risk_ReviewType.csv` | NEPA Risk Scorer - Review Type Points |
-| `NEPA_Risk_Agency.csv` | NEPA Risk Scorer - Agency Risk Points |
-| `NEPA_Risk_Circuit.csv` | NEPA Risk Scorer - Circuit Risk Points |
-| `NEPA_Permit_Matrix_BRE.csv` | NEPA Permit Matrix |
+| CSV file | Decision Matrix | Notes |
+|---|---|---|
+| `NEPA_CE_Screener_NAICS.csv` | NEPA CE Screener - NAICS Routing | |
+| `NEPA_CE_Screener_Tier1.csv` | NEPA CE Screener - Tier 1 Agency Sector Rules | |
+| `NEPA_CE_Screener_Tier2.csv` | NEPA CE Screener - Tier 2 Agency Action Type Rules | |
+| `NEPA_Risk_ReviewType.csv` | NEPA Risk Scorer - Review Type Points | |
+| `NEPA_Risk_Agency.csv` | NEPA Risk Scorer - Agency Risk Points | Calibrated from PermitTEC loss rates |
+| `NEPA_Risk_Circuit.csv` | NEPA Risk Scorer - Circuit Risk Points | Calibrated from Stage 7 multipliers |
+| `NEPA_Permit_Matrix_BRE.csv` | NEPA Permit Matrix | |
+| `NEPA_Risk_SectorCircuit.csv` | NEPA Risk Scorer - Sector Circuit Risk Points | **Import only after activating the DM.** Required for BRE V3. See [decision_matrix_rows/README.md](../decision_matrix_rows/README.md). |
 
-After importing, go to **Setup → BRE → Expression Sets → NEPA CE Screener** and deactivate versions V1 and V2 — leave V3 (rank 3) as the only active version.
+After importing all CSV files, activate each Decision Matrix version in Setup → BRE → Decision Matrices. Then go to **Setup → BRE → Expression Sets** and activate each Expression Set version:
+- **NEPA CE Screener**: activate V2 (the current active version)
+- **NEPA Litigation Risk Scorer**: activate V2 (V3 remains Draft until `NEPA_Risk_SectorCircuit` DM rows are loaded and validated in sandbox)
+- **NEPA Permit Coordinator**: activate V2
 
 ### 4c. Activate Flows
 
-Deploy sets all **30 flows** to Draft. Activate the 26 listed below in order to avoid trigger dependency errors. The remaining 4 are conditional or deferred:
+Deploy sets all **31 flows** to Draft. Activate the flows listed below in order to avoid trigger dependency errors. The remaining flows are conditional or deferred:
 
 - `NEPA_Comment_Triage_Save` — activate only when deploying the Comment Triage Agentforce agent
 - `NEPA_EIS_Section_Assembler` — requires Einstein Generative AI; activate when enabling AI document drafting
@@ -193,11 +213,14 @@ Go to **Setup → Flows** in your org and activate in this order:
 23. `NEPA_AdminRecord_AutoCreate`
 24. `NEPA_EIS_Section_Draft_Trigger`
 
-**Activate fourth (platform event and autolaunched):**
-25. `NEPA_Error_Event_Handler`
+**Activate fourth (agency intelligence — async after-save):**
+25. `NEPA_Agency_Tier_Setter` — fires AsyncAfterCommit when `Program.nepa_record_owner_agency__c` changes; writes Agency Performance Tier from `NEPA_Agency_Scoping_Baseline__mdt`
+
+**Activate fifth (platform event and autolaunched):**
+26. `NEPA_Error_Event_Handler`
 
 **Configure the scheduled flow manually in Flow Builder:**
-26. `NEPA_SLA_Escalation_Monitor` — open in Flow Builder, click the Start element, set schedule to **Daily at 7:00 AM**, then activate.
+27. `NEPA_SLA_Escalation_Monitor` — open in Flow Builder, click the Start element, set schedule to **Daily at 7:00 AM**, then activate.
 
 **Notes on flows not included in the activation list above:**
 - `NEPA_Comment_Triage_Save` — Agentforce agent script target; activate only if deploying the Comment Triage agent.
@@ -562,7 +585,7 @@ sf apex run test \
 ```
 
 **Expected results:**
-- All 22 test classes pass
+- All 125 tests pass across 4 test classes (`NepaApiComplianceTest`, `NepaCeqExportServiceTest`, `NepaEntity789Test`, `NepaBREConfigTest`)
 - Overall Apex code coverage ≥ 75%
 - Zero failures
 
@@ -601,8 +624,8 @@ The Risk Scorer uses the **NEPA_Litigation_Risk_Scorer** BRE Expression Set, whi
 2. Change **NEPA Review Type** to `EIS` (or if already set, change it to `EA` and back to `EIS`).
 3. Save and wait 5–10 seconds, then refresh.
 4. Verify:
-   - `Risk Score` is populated (expect 75+ for EIS + BLM + 9th Circuit once DM rows are loaded)
-   - `Risk Tier` shows `Very High`
+   - `Risk Score` is populated (expect 75+ for EIS + BLM + 9th Circuit; BLM=39pts + 9th Circuit=36pts + EIS base=40pts = 115 before modifiers)
+   - `Risk Tier` shows `Very High` (threshold: ≥58)
    - `Risk Score Factors` contains the text `AI-GENERATED — PermitTEC v0.1`
 
 ### 7c. Verify EJ Detector on Public Comments
@@ -713,9 +736,10 @@ To confirm BRE Decision Matrix rows were imported correctly, check row counts in
 | NEPA CE Screener - Tier 1 Agency Sector Rules | 17 |
 | NEPA CE Screener - Tier 2 Agency Action Type Rules | 16 |
 | NEPA Risk Scorer - Review Type Points | 4 |
-| NEPA Risk Scorer - Agency Risk Points | 6 |
-| NEPA Risk Scorer - Circuit Risk Points | 13 |
+| NEPA Risk Scorer - Agency Risk Points | 7 (BLM, USFS, FERC, USACE, USFWS, FHWA, Default) |
+| NEPA Risk Scorer - Circuit Risk Points | 13 (12 circuits + DEFAULT wildcard) |
 | NEPA Permit Matrix | 9 |
+| NEPA Risk Scorer - Sector Circuit Risk Points | 17 (16 sector\|circuit cells + `*` wildcard) — V3 only; import after activating DM |
 
 Note: `NEPA_Permit_Matrix__mdt` CMT records remain in the repo as the authoritative source of truth for permit matrix data. The BRE Decision Matrix (`NEPA_Permit_Matrix_BRE`) mirrors these rows and is the runtime lookup used by the `NEPA_Permit_Coordinator` flow.
 
