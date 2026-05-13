@@ -282,6 +282,17 @@
         <members>NEPA_Statute_Risk_Weight__mdt.Case_Count__c</members>
         <members>NEPA_Statute_Risk_Weight__mdt.Risk_Points__c</members>
         <members>NEPA_Statute_Risk_Weight__mdt.Active__c</members>
+        <!-- NEPA_Process_Model__mdt fields -->
+        <members>NEPA_Process_Model__mdt.Review_Type__c</members>
+        <members>NEPA_Process_Model__mdt.Statutory_Authority__c</members>
+        <members>NEPA_Process_Model__mdt.Max_Timeline_Days__c</members>
+        <members>NEPA_Process_Model__mdt.Required_Decision_Payload_Type__c</members>
+        <members>NEPA_Process_Model__mdt.Requires_Scoping__c</members>
+        <members>NEPA_Process_Model__mdt.Requires_Public_Comment__c</members>
+        <members>NEPA_Process_Model__mdt.Min_Comment_Period_Days__c</members>
+        <members>NEPA_Process_Model__mdt.Required_Review_Stages__c</members>
+        <members>NEPA_Process_Model__mdt.CEQ_Data_Standard_Entity__c</members>
+        <members>NEPA_Process_Model__mdt.Active__c</members>
         <!-- NEPA_SLA_Config__mdt fields -->
         <members>NEPA_SLA_Config__mdt.Review_Type__c</members>
         <members>NEPA_SLA_Config__mdt.Total_Days__c</members>
@@ -324,6 +335,35 @@
         <members>RegulatoryCode.nepa_data_source_system__c</members>
         <members>RegulatoryCode.nepa_record_owner_agency__c</members>
         <members>RegulatoryCode.nepa_retrieved_timestamp__c</members>
+        <!-- nepa_ce_library__c (CE Explorer searchable reference library) -->
+        <members>nepa_ce_library__c.nepa_ce_explorer_id__c</members>
+        <members>nepa_ce_library__c.nepa_source_id__c</members>
+        <members>nepa_ce_library__c.nepa_agency_abbr__c</members>
+        <members>nepa_ce_library__c.nepa_agency_name__c</members>
+        <members>nepa_ce_library__c.nepa_origin__c</members>
+        <members>nepa_ce_library__c.nepa_source_url__c</members>
+        <members>nepa_ce_library__c.nepa_context__c</members>
+        <members>nepa_ce_library__c.nepa_exclusion_text__c</members>
+        <members>nepa_ce_library__c.nepa_extraordinary_circumstances__c</members>
+        <members>nepa_ce_library__c.nepa_dataset_version__c</members>
+        <members>nepa_ce_library__c.nepa_active__c</members>
+        <!-- nepa_decision_payload__c -->
+        <members>nepa_decision_payload__c.nepa_decision_type__c</members>
+        <members>nepa_decision_payload__c.nepa_decision_date__c</members>
+        <members>nepa_decision_payload__c.nepa_selected_alternative__c</members>
+        <members>nepa_decision_payload__c.nepa_alternatives_considered__c</members>
+        <members>nepa_decision_payload__c.nepa_mitigation_measures__c</members>
+        <members>nepa_decision_payload__c.nepa_rationale__c</members>
+        <members>nepa_decision_payload__c.nepa_significant_impacts__c</members>
+        <members>nepa_decision_payload__c.nepa_monitoring_requirements__c</members>
+        <members>nepa_decision_payload__c.nepa_document__c</members>
+        <members>nepa_decision_payload__c.nepa_responsible_official__c</members>
+        <members>nepa_decision_payload__c.nepa_is_supplemental__c</members>
+        <members>nepa_decision_payload__c.nepa_data_record_version__c</members>
+        <members>nepa_decision_payload__c.nepa_data_source_agency__c</members>
+        <members>nepa_decision_payload__c.nepa_data_source_system__c</members>
+        <members>nepa_decision_payload__c.nepa_record_owner_agency__c</members>
+        <members>nepa_decision_payload__c.nepa_retrieved_timestamp__c</members>
         <!-- nepa_decision_element__c -->
         <members>nepa_decision_element__c.nepa_legal_reference__c</members>
         <members>nepa_decision_element__c.nepa_category__c</members>
@@ -387,6 +427,8 @@
         <members>nepa_process_related_agencies__c</members>
         <members>nepa_project_agency_relationship__c</members>
         <members>nepa_decision_element__c</members>
+        <members>nepa_decision_payload__c</members>
+        <members>nepa_ce_library__c</members>
         <members>nepa_gis_data_element__c</members>
         <!-- __mdt custom metadata type schemas -->
         <members>NEPA_Agency_Risk_Rate__mdt</members>
@@ -397,6 +439,7 @@
         <members>NEPA_Required_Document__mdt</members>
         <members>NEPA_Statute_Risk_Weight__mdt</members>
         <members>NEPA_SLA_Config__mdt</members>
+        <members>NEPA_Process_Model__mdt</members>
         <!-- Platform events -->
         <members>NEPA_Error_Event__e</members>
         <name>CustomObject</name>
@@ -522,6 +565,11 @@
         <members>NEPA_CE_Code.CEC_Energy_Policy_Act_2005_Sec_390_b_4</members>
         <members>NEPA_CE_Code.CEC_Energy_Policy_Act_2005_Sec_390_Cat</members>
         <members>NEPA_CE_Code.CEC_FLPMA_402_h</members>
+        <!-- NEPA_Process_Model seed records -->
+        <members>NEPA_Process_Model.EIS</members>
+        <members>NEPA_Process_Model.EA</members>
+        <members>NEPA_Process_Model.CE</members>
+        <members>NEPA_Process_Model.Other_Authorization</members>
         <!-- NEPA_SLA_Config seed records -->
         <members>NEPA_SLA_Config.EIS</members>
         <members>NEPA_SLA_Config.EA</members>
@@ -594,7 +642,13 @@
         <members>IndividualApplication_Record_Page</members>
         <members>Program_Record_Page</members>
         <members>Public_Comment_Record_Page</members>
+        <members>NEPA_CE_Library_Record_Page</members>
+        <members>NEPA_Decision_Payload_Record_Page</members>
         <name>FlexiPage</name>
+    </types>
+    <types>
+        <members>nepa_ce_library__c</members>
+        <name>CustomTab</name>
     </types>
     <types>
         <members>ApplicationTimeline-NEPA Case Event Layout</members>
@@ -637,15 +691,20 @@
         <members>DR_Extract_NEPA_GISData</members>
         <members>DR_Extract_NEPA_TeamMember</members>
         <members>DR_Extract_NEPA_LegalStructure</members>
-        <!-- CE Intake: DataRaptor Load -->
+        <!-- CE Intake: DataRaptor Load and CE Library lookup -->
         <members>DR_Load_NEPA_Process</members>
+        <members>DR_Extract_CE_LibraryByAgency</members>
         <name>OmniDataTransform</name>
     </types>
     <types>
         <members>NEPA/CEQExport</members>
-        <members>NEPA/CE_Screening_IP</members>
-        <members>NEPA/CE_Save_IP</members>
+        <members>NEPA/CEScreeningIP</members>
+        <members>NEPA/CESaveIP</members>
         <name>OmniIntegrationProcedure</name>
+    </types>
+    <types>
+        <members>NEPA/CEIntake</members>
+        <name>OmniScript</name>
     </types>
     <types>
         <members>NEPA_CEQExport_API</members>

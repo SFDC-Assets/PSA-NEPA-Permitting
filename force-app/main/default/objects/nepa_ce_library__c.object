@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Searchable Categorical Exclusion (CATEX) reference library sourced from the CEQ CE Explorer v2.0 dataset (ce.permitting.innovation.gov, 2025-08-07). Stores one record per exclusion entry across all federal agencies (2,105 total; 314 priority-agency records loaded initially). Unlike NEPA_CE_Code__mdt (which holds screening-rule threshold flags for the CE Screener flow), this object is SOSL-indexed, Einstein Search-discoverable, Experience Cloud-accessible, and list-view filterable — enabling applicants and coordinators to search and browse the full federal CATEX catalog by keyword, agency, or context section.</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableLicensing>false</enableLicensing>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <externalSharingModel>Read</externalSharingModel>
+    <fields>
+        <fullName>nepa_ce_explorer_id__c</fullName>
+        <description>Structured composite identifier from the CEQ CE Explorer dataset. Format: {UNIT}--{section}-{group}-{seq} (e.g., BLM---5-42, DOE-1--1-1). Unique within a dataset version. Used as the external ID for upsert during data refresh cycles.</description>
+        <externalId>true</externalId>
+        <inlineHelpText>CEQ CE Explorer structured identifier (e.g., BLM---5-42). External ID for upsert.</inlineHelpText>
+        <label>CE Explorer ID</label>
+        <length>50</length>
+        <required>true</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>true</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_source_id__c</fullName>
+        <description>Numeric source record ID from the CEQ CE Explorer dataset. Preserved for traceability back to the authoritative catalog; not used as the primary key (nepa_ce_explorer_id__c is the external ID).</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Numeric ID from CEQ CE Explorer source dataset.</inlineHelpText>
+        <label>Source ID</label>
+        <precision>8</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_agency_abbr__c</fullName>
+        <description>Agency abbreviation from CE Explorer (e.g., DOI - BLM, DOE, FERC, DOD - USACE). Matches the unit field in the CE Explorer dataset. Used for list-view filtering and Experience Cloud faceted search.</description>
+        <inlineHelpText>Agency abbreviation (e.g., DOI - BLM, DOE, FERC).</inlineHelpText>
+        <label>Agency Abbreviation</label>
+        <length>30</length>
+        <required>true</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_agency_name__c</fullName>
+        <description>Full agency name from CE Explorer (e.g., Bureau of Land Management, Department of Energy). Used for display in Experience Cloud CE browser and list views.</description>
+        <inlineHelpText>Full agency name (e.g., Bureau of Land Management).</inlineHelpText>
+        <label>Agency Name</label>
+        <length>150</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_origin__c</fullName>
+        <description>Human-readable title of the source regulation or policy document (e.g., "Bureau of Land Management's Categorical Exclusions"). Used as the citation header in coordinator and applicant-facing displays.</description>
+        <inlineHelpText>Source regulation title (e.g., "Bureau of Land Management's Categorical Exclusions").</inlineHelpText>
+        <label>Origin / Source Title</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_source_url__c</fullName>
+        <description>URL to the authoritative source document (eCFR section or agency PDF) for this exclusion. Sourced from CE Explorer originUrl field. Displayed in Experience Cloud CE browser as "View Source" link.</description>
+        <inlineHelpText>Link to the authoritative eCFR or PDF source for this exclusion.</inlineHelpText>
+        <label>Source URL</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Url</type>
+    </fields>
+    <fields>
+        <fullName>nepa_context__c</fullName>
+        <description>Section heading or grouping label within the agency's CATEX list (e.g., "U.S. Army Corps of Engineers Regulatory (USACE)", "DOE General CATEXs"). Used for grouping records in the CE browser and filtering by program area.</description>
+        <inlineHelpText>Section or program area within the agency's CATEX list.</inlineHelpText>
+        <label>Context / Section</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_exclusion_text__c</fullName>
+        <description>Full regulatory text of this categorical exclusion as published in the CEQ CE Explorer v2.0 dataset (2025-08-07). This is the primary searchable content field — Einstein Search, SOSL, and Experience Cloud search index this text. Coordinators and applicants use this field to evaluate whether a proposed action qualifies for CE treatment under this exclusion.</description>
+        <inlineHelpText>Full text of the categorical exclusion. Searchable via Einstein Search and Experience Cloud.</inlineHelpText>
+        <label>Exclusion Text</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>8</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_extraordinary_circumstances__c</fullName>
+        <description>Agency-specific extraordinary circumstances text from CE Explorer. Present only when the agency has published specific circumstances that disqualify this CE (398 of 2,105 records in the full dataset). Empty string indicates "Not Catalogued" in the source — no agency-specific EC language was available. Coordinators must still apply the general extraordinary circumstances test at 40 CFR 1501.4(b) regardless of whether this field is populated.</description>
+        <inlineHelpText>Extraordinary circumstances that disqualify this CE, if published by the agency. Always apply 40 CFR 1501.4(b) even when empty.</inlineHelpText>
+        <label>Extraordinary Circumstances</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_dataset_version__c</fullName>
+        <description>CE Explorer dataset version that sourced this record (e.g., "2.0.0"). Used to identify stale records during incremental refresh. Records with an older version than the current load cycle can be deactivated or updated.</description>
+        <inlineHelpText>CE Explorer dataset version (e.g., 2.0.0). Used for refresh tracking.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Dataset Version</label>
+        <length>20</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_active__c</fullName>
+        <defaultValue>true</defaultValue>
+        <description>When false, this record is excluded from CE browser displays and Experience Cloud search results. Set to false during dataset refresh for records not present in the new CE Explorer version.</description>
+        <inlineHelpText>Uncheck to retire this record from CE browser and search results.</inlineHelpText>
+        <label>Active</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <label>NEPA CE Library</label>
+    <nameField>
+        <label>CE Library Entry Name</label>
+        <type>AutoNumber</type>
+        <displayFormat>CE-{0000000}</displayFormat>
+        <startingNumber>1</startingNumber>
+    </nameField>
+    <pluralLabel>NEPA CE Library</pluralLabel>
+    <searchLayouts>
+        <searchResultsAdditionalFields>nepa_agency_abbr__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>nepa_context__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>nepa_origin__c</searchResultsAdditionalFields>
+    </searchLayouts>
+    <sharingModel>Read</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

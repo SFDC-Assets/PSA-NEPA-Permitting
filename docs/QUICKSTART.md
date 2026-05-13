@@ -10,8 +10,9 @@ The deploy script automates nearly everything, but two steps **cannot** be scrip
 
 | Step | What you'll do | When |
 |---|---|---|
-| **BRE Decision Matrix row import** | Upload 7 CSV files via Setup → Business Rules Engine → Decision Matrices | After Step 3 (deploy), before Step 5 (verification) |
+| **BRE Decision Matrix row import** | Upload 7 CSV files via Setup → Business Rules Engine → Decision Matrices | After Step 3 (deploy), before Step 7 (verification) |
 | **Scheduled flow configuration** | Open `NEPA_SLA_Escalation_Monitor` in Flow Builder, set schedule to Daily 7 AM, activate | After Step 4c (Flow activation) |
+| **CE Library data load** | Run `python3 scripts/load_ce_library.py --org NEPADEV` to populate 314 CE reference records | After Step 3 (deploy), see Step 4e |
 
 The BRE import is the most common failure point. If you skip it, CE Screener and Risk Scorer will throw runtime errors. See [Step 4b](#4b-import-bre-decision-matrix-rows) for the full procedure.
 
@@ -77,11 +78,11 @@ The script deploys in dependency order:
 
 | Phase | Contents |
 |---|---|
-| 1 | Custom object schemas and custom metadata type schemas |
+| 1 | Custom object schemas and custom metadata type schemas (`nepa_ce_library__c`, `nepa_decision_payload__c`, `NEPA_Process_Model__mdt` included) |
 | 2 | Custom fields on Program, IndividualApplication, ContentVersion, PublicComplaint, ApplicationTimeline |
 | 3 | Custom labels |
 | 4 | NEPA_Permitting permission set |
-| 5 | Custom metadata seed records (CE rules, risk weights, SLA configs, permit matrix, required docs) |
+| 5 | Custom metadata seed records (CE rules, risk weights, SLA configs, permit matrix, required docs, `NEPA_Process_Model__mdt` process type definitions) |
 | 5b | BRE Decision Matrix definitions (schema only — rows imported manually after deploy) |
 | 5c | BRE Expression Set definitions |
 | 6 | Remote site settings and named credentials |
@@ -171,7 +172,10 @@ Go to **Setup → Flows** in your org and activate in this order:
 **Configure the scheduled flow manually in Flow Builder:**
 26. `NEPA_SLA_Escalation_Monitor` — open in Flow Builder, click the Start element, set schedule to **Daily at 7:00 AM**, then activate.
 
-The remaining flows (`NEPA_Comment_Triage_Save`, `NEPA_EIS_Section_Assembler`) are Agentforce agent script targets; activate only if deploying the Comment Triage agent.
+**Notes on flows not included in the activation list above:**
+- `NEPA_Comment_Triage_Save` — Agentforce agent script target; activate only if deploying the Comment Triage agent.
+- `NEPA_EIS_Section_Assembler` — requires **Einstein Generative AI** to be provisioned in the org (uses `generateText` action). Skipped by `deploy.sh` if Einstein AI is not available. Deploy manually once enabled: `sf project deploy start --metadata "Flow:NEPA_EIS_Section_Assembler" --target-org NEPADEV --test-level NoTestRun --wait 30`. Once deployed, `NEPA_EIS_Section_Draft_Trigger` can also be activated.
+- `NEPA_Work_Order_Generator` — stub; flow file not yet implemented.
 
 ### 4d. Assign Lightning Record Pages
 
@@ -184,6 +188,37 @@ The deployment includes custom Lightning Record Pages for all 6 CEQ entities. As
    - `Public Comment Record Page`
    - `NEPA Engagement Record Page`
    - `NEPA Litigation Record Page`
+   - `NEPA CE Library Record Page`
+   - `NEPA Decision Payload Record Page`
+
+### 4e. Load CE Library Reference Data
+
+Populate the `nepa_ce_library__c` searchable CE reference library with priority-agency records from the CEQ CE Explorer v2.0 dataset (314 records covering USACE, DOE, BLM, USFWS, FHWA, and FERC):
+
+```bash
+python3 scripts/load_ce_library.py --org NEPADEV
+```
+
+This uses `sf data upsert bulk` with `nepa_ce_explorer_id__c` as the external ID — safe to re-run after a dataset update.
+
+To load the full 2,105-record federal catalog instead (requires downloading `exclusions.json` first):
+
+```bash
+# Download full dataset
+curl -o exclusions.json https://ce.permitting.innovation.gov/data/exclusions.json
+
+# Load all records
+python3 scripts/load_ce_library.py --org NEPADEV --all
+```
+
+### 4f. Activate the CE Intake OmniScript (if auto-deploy failed)
+
+`deploy.sh` deploys the `NEPA_CEIntake` OmniScript automatically in Phase 8c. If that phase failed with "Couldn't find dependent components," the Metadata API index hadn't caught up with the newly-deployed Integration Procedures. Activate manually:
+
+1. Go to **OmniStudio → OmniScripts**
+2. Find `NEPA / CEIntake` and click **Activate**
+
+The Integration Procedures (`NEPA_CEScreeningIP`, `NEPA_CESaveIP`) were deployed successfully in Phase 8c and are already available.
 
 ---
 
@@ -656,6 +691,44 @@ To confirm BRE Decision Matrix rows were imported correctly, check row counts in
 
 Note: `NEPA_Permit_Matrix__mdt` CMT records remain in the repo as the authoritative source of truth for permit matrix data. The BRE Decision Matrix (`NEPA_Permit_Matrix_BRE`) mirrors these rows and is the runtime lookup used by the `NEPA_Permit_Coordinator` flow.
 
+### 7h. Verify CE Library
+
+Confirm records loaded and are SOSL-searchable:
+
+```bash
+# Count CE Library records
+sf data query \
+  --query "SELECT COUNT() FROM nepa_ce_library__c WHERE nepa_active__c = true" \
+  --target-org NEPADEV
+```
+
+Expected: 314 (priority-agency load) or 2105 (full load).
+
+Spot-check agency coverage:
+
+```bash
+sf data query \
+  --query "SELECT nepa_agency_abbr__c, COUNT(Id) cnt FROM nepa_ce_library__c GROUP BY nepa_agency_abbr__c ORDER BY cnt DESC" \
+  --target-org NEPADEV
+```
+
+Expected agencies: `DOI - BLM`, `DOI - USFWS`, `DOD - USACE`, `DOE`, `DOT - FHWA`, `FERC`.
+
+Test full-text search (SOSL):
+
+```bash
+sf apex run --target-org NEPADEV <<'EOF'
+List<List<SObject>> results = [FIND 'pipeline' IN ALL FIELDS
+    RETURNING nepa_ce_library__c(Id, nepa_agency_abbr__c, nepa_exclusion_text__c LIMIT 3)];
+System.debug('CE Library search hits: ' + results[0].size());
+for (SObject r : results[0]) {
+    System.debug(r.get('nepa_agency_abbr__c') + ': ' + String.valueOf(r.get('nepa_exclusion_text__c')).left(80));
+}
+EOF
+```
+
+Expected: 1 or more CE Library records matching the term "pipeline" across exclusion text.
+
 ---
 
 ## Quick Reference: Key Objects and Fields
@@ -671,6 +744,8 @@ Note: `NEPA_Permit_Matrix__mdt` CMT records remain in the repo as the authoritat
 | Engagement event | `nepa_engagement__c` | `nepa_engagement_type__c`, `nepa_start_datetime__c`, `nepa_public_access__c` |
 | Timeline milestone | `ApplicationTimeline` | `nepa_event_type__c`, `nepa_status__c`, `nepa_public_access__c` |
 | Litigation case | `nepa_litigation__c` | `nepa_case_name__c`, `nepa_circuit__c`, `nepa_outcome__c` |
+| CE reference library | `nepa_ce_library__c` | `nepa_agency_abbr__c`, `nepa_exclusion_text__c`, `nepa_active__c` — SOSL/Einstein Search-indexed |
+| Decision payload (ROD/FONSI/CE det.) | `nepa_decision_payload__c` | `nepa_decision_type__c`, `nepa_decision_date__c`, `nepa_rationale__c` |
 
 ---
 
@@ -696,3 +771,6 @@ Ensure the `NEPA_Permitting` permission set is assigned to your user. Run:
 ```bash
 sf data query --query "SELECT Id FROM PermissionSetAssignment WHERE Assignee.Username = 'your@user.com' AND PermissionSet.Name = 'NEPA_Permitting'" --target-org NEPADEV
 ```
+
+**`generate_ce_explorer_cmt.py` — this script is obsolete**
+The earlier approach stored CE Explorer data as Custom Metadata records in `NEPA_CE_Code__mdt`. This was replaced by the `nepa_ce_library__c` custom object approach (SOSL-searchable, Einstein Search-discoverable, Experience Cloud guest-accessible). Use `scripts/load_ce_library.py` instead. The `generate_ce_explorer_cmt.py` file is preserved in `scripts/` for reference only.

@@ -1,7 +1,7 @@
 # PSA-NEPA Permitting Accelerator — AI Use Policy
 
-**Version:** 1.0  
-**Date:** 2026-05-02  
+**Version:** 1.1  
+**Date:** 2026-05-12  
 **Status:** Active  
 **Scope:** All AI-assisted features in the PSA-NEPA-Permitting-Data-Model Salesforce package
 
@@ -11,7 +11,7 @@
 
 This document describes which features use AI, the training data they rely on, known statistical limitations, and the human confirmation requirements that must be satisfied before any AI output is treated as an official agency determination. It is required reading for NEPA Coordinators, Solicitor staff, and system administrators.
 
-Compliance baseline: Salesforce Acceptable Use Policy for Einstein and Generative AI features; OMB M-24-10 (Federal AI Governance); 40 CFR Part 1500 (NEPA regulations).
+Compliance baseline: Salesforce Acceptable Use Policy for Einstein and Generative AI features; OMB M-25-21 (Accelerating Federal Use of AI through Streamlined Governance, 2025); OMB M-24-10 (Federal AI Governance, superseded by M-25-21 for executive branch AI use); 40 CFR Part 1500 (NEPA regulations).
 
 ---
 
@@ -92,7 +92,7 @@ The `nepa_risk_score_factors__c` field always contains the disclaimer:
 
 ## 4. Prohibited Uses
 
-The following uses of AI features in this package are prohibited under Salesforce AUP and OMB M-24-10:
+The following uses of AI features in this package are prohibited under Salesforce AUP, OMB M-24-10, and OMB M-25-21:
 
 - Using `nepa_ce_pathway_recommendation__c` as the sole basis for issuing a CE determination memo without coordinator review
 - Treating `nepa_risk_score__c` as a legal risk opinion or using it in court filings without independent legal analysis
@@ -129,10 +129,28 @@ If an AI feature produces an output that materially affects a permitting decisio
 
 ---
 
-## 7. References
+## 7. OMB M-25-21 Compliance Notes
+
+OMB M-25-21 (Accelerating Federal Use of AI through Streamlined Governance, March 2025) supersedes M-24-10 for executive agency AI use. Key requirements applicable to this package:
+
+| M-25-21 Requirement | How This Package Addresses It |
+|---|---|
+| AI use cases must be tracked in agency AI inventory | Agencies deploying this package must register CE Screening (2.1), Litigation Risk Scoring (2.2), and Comment Triage (2.3) in their OMB AI use case inventory |
+| High-impact AI requires pre-deployment review | Litigation Risk Scoring and Comment Triage are advisory-only; neither blocks or approves agency actions without human review (see Sections 2.2, 2.3) |
+| AI outputs must disclose AI involvement | `nepa_risk_score_is_ai__c` (formula, always true) and `nepa_risk_score_factors__c` disclaimer satisfy disclosure for risk scoring; `nepa_ai_triage_rationale__c` for comment triage |
+| Human override must be available | `nepa_human_override__c` and coordinator-only `nepa_review_type__c` field satisfy this requirement |
+| Minimum AI rights: individuals affected by AI outputs must have recourse | The EJ/Tribal gate (Section 2.3, gate 1) and human override availability (Section 2.3, gate 4) ensure individuals can contest AI classifications |
+
+M-24-10 remains applicable to the extent it imposes requirements not superseded by M-25-21, particularly around AI risk tiers and agency-level governance documentation.
+
+---
+
+## 8. References
 
 - Salesforce Einstein Acceptable Use Policy — salesforce.com/company/legal/
-- OMB M-24-10, Advancing Governance, Innovation, and Risk Management for Agency Use of Artificial Intelligence
+- OMB M-25-21, Accelerating Federal Use of AI through Streamlined Governance (March 2025)
+- OMB M-24-10, Advancing Governance, Innovation, and Risk Management for Agency Use of Artificial Intelligence (superseded by M-25-21 for executive agency use)
 - 40 CFR Part 1500 (NEPA Regulations)
 - PermitTEC v0.1 dataset — PNNL, 2025
 - CEQ NEPA and Permitting Data and Technology Standard v1.2 (May 30 / August 18, 2025)
+- CEQ Permitting Technology Action Plan (2025)

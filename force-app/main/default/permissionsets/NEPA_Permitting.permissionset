@@ -1268,6 +1268,130 @@
         <field>nepa_decision_modification__c.nepa_recorded_by__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <!-- nepa_ce_library__c (CE Explorer searchable reference library) — read/write for coordinator, read for all -->
+    <!-- nepa_ce_explorer_id__c and nepa_agency_abbr__c omitted: required fields cannot have FLS grants -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_ce_library__c.nepa_source_id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_ce_library__c.nepa_agency_name__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_ce_library__c.nepa_origin__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_ce_library__c.nepa_source_url__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_ce_library__c.nepa_context__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_ce_library__c.nepa_exclusion_text__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_ce_library__c.nepa_extraordinary_circumstances__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_ce_library__c.nepa_dataset_version__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_ce_library__c.nepa_active__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <!-- nepa_decision_payload__c (CEQ Decision Payload Entity) fields -->
+    <!-- nepa_decision_type__c omitted: required picklist fields cannot have FLS grants -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_payload__c.nepa_decision_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_payload__c.nepa_selected_alternative__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_payload__c.nepa_alternatives_considered__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_payload__c.nepa_mitigation_measures__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_payload__c.nepa_rationale__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_payload__c.nepa_significant_impacts__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_payload__c.nepa_monitoring_requirements__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_payload__c.nepa_document__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_payload__c.nepa_responsible_official__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_payload__c.nepa_is_supplemental__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_payload__c.nepa_data_record_version__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_payload__c.nepa_data_source_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_payload__c.nepa_data_source_system__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_payload__c.nepa_record_owner_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_payload__c.nepa_retrieved_timestamp__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_detected_protection_layer__c.nepa_ec_triggered__c</field>
@@ -1784,6 +1908,26 @@
         <modifyAllRecords>false</modifyAllRecords>
         <object>nepa_decision_modification__c</object>
         <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <!-- nepa_decision_payload__c — CEQ Entity Decision Payload; MasterDetail child of IndividualApplication -->
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>nepa_decision_payload__c</object>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <!-- nepa_ce_library__c — Read (all), Create/Edit (admin data load); no delete to protect reference integrity -->
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>nepa_ce_library__c</object>
+        <viewAllRecords>true</viewAllRecords>
     </objectPermissions>
     <objectPermissions>
         <allowCreate>true</allowCreate>

@@ -132,8 +132,9 @@ deploy() {
     [[ "$DRY_RUN" == "true" ]] && flags="--dry-run $flags"
 
     local output
+    # Redirect stderr to /dev/null to suppress CLI update banners that pollute JSON stdout
     # shellcheck disable=SC2086
-    output=$(sf project deploy start "$@" $flags 2>&1) || true
+    output=$(sf project deploy start "$@" $flags 2>/dev/null) || true
 
     local result
     result=$(echo "$output" | python3 -c "
@@ -194,7 +195,7 @@ deploy_flow() {
             --target-org "$TARGET_ORG" \
             --test-level NoTestRun \
             --wait 30 \
-            --json 2>&1) || true
+            --json 2>/dev/null) || true
 
         local deploy_status
         deploy_status=$(echo "$output" | python3 -c "
@@ -275,6 +276,9 @@ deploy "object schemas" \
     --metadata "CustomObject:NEPA_Plaintiff_Profile__mdt" \
     --metadata "CustomObject:NEPA_Layer_Discipline__mdt" \
     --metadata "CustomObject:nepa_detected_protection_layer__c" \
+    --metadata "CustomObject:nepa_ce_library__c" \
+    --metadata "CustomObject:nepa_decision_payload__c" \
+    --metadata "CustomObject:NEPA_Process_Model__mdt" \
     --target-org "$TARGET_ORG"
 
 # ── phase 2: custom fields on all objects ─────────────────────────────────────
@@ -329,7 +333,10 @@ deploy "decision matrices" \
 # Setup → BRE → Expression Sets → open each ES → Activate. Without this,
 # the ES version has no LatestVersionSnapshotId and the BRE runtime NPEs.
 phase_header "Phase 5c: BRE Expression Set definitions"
-deploy "expression sets" \
+# allow-failure: already-active ES versions will be rejected by the platform.
+# If an ES is already active in the org, this phase is a no-op — skip the
+# active ones and activate manually only if a new version is needed.
+deploy "expression sets" allow-failure \
     --source-dir force-app/main/default/expressionSetDefinition \
     --target-org "$TARGET_ORG"
 
@@ -390,16 +397,20 @@ FLOWS=(
     NEPA_Plaintiff_Intelligence
     NEPA_Permit_Coordinator
     NEPA_FRA_Page_Limit_Setter
-    NEPA_EIS_Section_Assembler
     NEPA_EIS_Section_Draft_Trigger
     NEPA_AdminRecord_AutoCreate
     NEPA_Error_Logger
     NEPA_Error_Event_Handler
     NEPA_FlowError_CountIncrementer
-    NEPA_Work_Order_Generator
     NEPA_Team_Assembly_Orchestrator
     NEPA_WO_Milestone_Setter
 )
+
+# NEPA_EIS_Section_Assembler uses generateText (Einstein AI) — skipped unless
+# Einstein generative AI is provisioned in the target org.
+# NEPA_Work_Order_Generator — flow file not yet created (stub listed in docs only).
+# Deploy these manually if Einstein AI is available:
+#   sf project deploy start --metadata "Flow:NEPA_EIS_Section_Assembler" --target-org NEPADEMO --test-level NoTestRun --wait 30
 
 for flow in "${FLOWS[@]}"; do
     deploy_flow "$flow"
@@ -523,10 +534,32 @@ deploy "OmniIntegrationProcedures" \
     --source-dir force-app/main/default/omniIntegrationProcedures \
     --target-org "$TARGET_ORG"
 
+# OmniScripts — applicant-facing guided flows
+# NOTE: The Metadata API validates OmniScript IP dependencies at deploy time against
+# the org's component index. If the IPs were deployed in the same session, the index
+# may not yet reflect them, causing "Couldn't find dependent components" even when the
+# IPs exist. If this deploy fails, activate the OmniScript manually:
+#   OmniStudio Designer → OmniScripts → New → Import JSON from omniScripts/ directory
+# Or retry this script after ~30 minutes to allow the org index to update.
+if [[ -d force-app/main/default/omniScripts ]] && \
+   [[ -n "$(find force-app/main/default/omniScripts -name '*.xml' 2>/dev/null)" ]]; then
+    deploy "OmniScripts" allow-failure \
+        --source-dir force-app/main/default/omniScripts \
+        --target-org "$TARGET_ORG"
+else
+    echo "    (no OmniScripts to deploy)"
+fi
+
 # ── phase 9: custom tabs ──────────────────────────────────────────────────────
 phase_header "Phase 9: Custom tabs"
 deploy "tabs" \
-    --source-dir force-app/main/default/tabs \
+    --metadata "CustomTab:nepa_ar_export__c" \
+    --metadata "CustomTab:nepa_detected_protection_layer__c" \
+    --metadata "CustomTab:nepa_engagement__c" \
+    --metadata "CustomTab:nepa_gis_data_element__c" \
+    --metadata "CustomTab:nepa_litigation__c" \
+    --metadata "CustomTab:nepa_process_team_member__c" \
+    --metadata "CustomTab:nepa_ce_library__c" \
     --target-org "$TARGET_ORG"
 
 # ── phase 10: report types ────────────────────────────────────────────────────
@@ -583,6 +616,8 @@ deploy "flexipages" \
     --metadata "FlexiPage:NEPA_Process_Team_Member_Record_Page" \
     --metadata "FlexiPage:Program_Record_Page" \
     --metadata "FlexiPage:Public_Comment_Record_Page" \
+    --metadata "FlexiPage:NEPA_CE_Library_Record_Page" \
+    --metadata "FlexiPage:NEPA_Decision_Payload_Record_Page" \
     --target-org "$TARGET_ORG"
 
 # ── phase 16: lightning app ───────────────────────────────────────────────────
@@ -629,11 +664,10 @@ else
     echo "       NEPA_Permit_Coordinator"
     echo "       NEPA_FRA_Page_Limit_Setter"
     echo "       NEPA_GIS_Proximity_Check"
-    echo "       NEPA_Work_Order_Generator"
     echo "       NEPA_Team_Assembly_Orchestrator"
     echo "       NEPA_WO_Milestone_Setter"
-    echo "       NEPA_EIS_Section_Assembler"
     echo "       NEPA_EIS_Section_Draft_Trigger"
+    echo "       (NEPA_EIS_Section_Assembler requires Einstein AI — deploy separately if available)"
     echo "       NEPA_AdminRecord_AutoCreate"
     echo "       NEPA_Error_Logger"
     echo "       NEPA_Error_Event_Handler"
@@ -665,10 +699,16 @@ else
     echo "    4. Verify Custom Metadata records loaded:"
     echo "       Setup > Custom Metadata Types > each NEPA_* type > Manage Records"
     echo ""
-    echo "    5. Seed demo data (optional):"
+    echo "    5. Load CE Library reference data (314 priority-agency records from CEQ CE Explorer v2.0):"
+    echo "       python3 scripts/load_ce_library.py --org $TARGET_ORG"
+    echo "       This is idempotent — safe to re-run. Uses nepa_ce_explorer_id__c as external ID."
+    echo "       To load the full 2,105-record dataset (requires exclusions.json in repo root):"
+    echo "       python3 scripts/load_ce_library.py --org $TARGET_ORG --all"
+    echo ""
+    echo "    5b. Seed demo data (optional):"
     echo "       sf apex run --file scripts/seed-sample-data.apex --target-org $TARGET_ORG"
     echo ""
-    echo "    5b. Seed ServiceResource discipline values (GIS team assembly):"
+    echo "    5c. Seed ServiceResource discipline values (GIS team assembly):"
     echo "       sf apex run --file demo/import_data/21_postload_discipline.apex --target-org $TARGET_ORG"
     echo ""
     echo "    6. OmniStudio — deployed automatically in Phase 8c above."

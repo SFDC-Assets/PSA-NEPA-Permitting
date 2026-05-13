@@ -150,7 +150,6 @@ private class NepaAIGovernanceFlowTest {
         Program proj = NepaTestFactory.insertProgram('GOV-010', 'Governance Timeline Test', 'BLM');
         IndividualApplication ia = NepaTestFactory.insertOpenProcess(proj.Id, 'EA');
         ia.nepa_process_stage__c             = 'Scoping';
-        ia.nepa_days_in_current_stage__c     = null;
         ia.nepa_estimated_completion_date__c = null;
         ia.nepa_projected_completion_date__c = null;
         update ia;

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Other Authorization</label>
+    <protected>false</protected>
+    <values>
+        <field>Review_Type__c</field>
+        <value xsi:type="xsd:string">Other Authorization</value>
+    </values>
+    <values>
+        <field>Statutory_Authority__c</field>
+        <value xsi:type="xsd:string">42 U.S.C. 4321 et seq.; Agency-specific authorization authority; FAST-41 where applicable (42 U.S.C. 4370m et seq.)</value>
+    </values>
+    <values>
+        <field>Max_Timeline_Days__c</field>
+        <value xsi:type="xsd:decimal">180</value>
+    </values>
+    <values>
+        <field>Required_Decision_Payload_Type__c</field>
+        <value xsi:type="xsd:string">Other</value>
+    </values>
+    <values>
+        <field>Requires_Scoping__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>Requires_Public_Comment__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>Min_Comment_Period_Days__c</field>
+        <value xsi:type="xsd:decimal">0</value>
+    </values>
+    <values>
+        <field>Required_Review_Stages__c</field>
+        <value xsi:type="xsd:string">["Review_In_Progress","Decision_Pending","Decision_Issued","Completed"]</value>
+    </values>
+    <values>
+        <field>CEQ_Data_Standard_Entity__c</field>
+        <value xsi:type="xsd:string">Entity 9 — Process Model</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

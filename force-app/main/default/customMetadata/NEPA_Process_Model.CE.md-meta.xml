@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Categorical Exclusion</label>
+    <protected>false</protected>
+    <values>
+        <field>Review_Type__c</field>
+        <value xsi:type="xsd:string">CE</value>
+    </values>
+    <values>
+        <field>Statutory_Authority__c</field>
+        <value xsi:type="xsd:string">42 U.S.C. 4321 et seq.; 40 CFR 1501.4; Agency-specific CFR provisions (e.g., BLM 43 CFR 46.210, USFS 36 CFR 220.6, DOE 10 CFR 1021 App.B)</value>
+    </values>
+    <values>
+        <field>Max_Timeline_Days__c</field>
+        <value xsi:type="xsd:decimal">90</value>
+    </values>
+    <values>
+        <field>Required_Decision_Payload_Type__c</field>
+        <value xsi:type="xsd:string">CE_Determination</value>
+    </values>
+    <values>
+        <field>Requires_Scoping__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>Requires_Public_Comment__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>Min_Comment_Period_Days__c</field>
+        <value xsi:type="xsd:decimal">0</value>
+    </values>
+    <values>
+        <field>Required_Review_Stages__c</field>
+        <value xsi:type="xsd:string">["CE_Screening","Extraordinary_Circumstances_Review","CE_Determination_Pending","CE_Determination_Issued","Completed"]</value>
+    </values>
+    <values>
+        <field>CEQ_Data_Standard_Entity__c</field>
+        <value xsi:type="xsd:string">Entity 9 — Process Model</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OmniIntegrationProcedure xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customJavaScript>{}</customJavaScript>
+    <elementTypeComponentMapping>{&quot;ElementTypeToHTMLTemplateList&quot;:[]}</elementTypeComponentMapping>
+    <isActive>false</isActive>
+    <isIntegProcdSignatureAvl>false</isIntegProcdSignatureAvl>
+    <isIntegrationProcedure>true</isIntegrationProcedure>
+    <isManagedUsingStdDesigner>false</isManagedUsingStdDesigner>
+    <isMetadataCacheDisabled>false</isMetadataCacheDisabled>
+    <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+    <isTestProcedure>false</isTestProcedure>
+    <isWebCompEnabled>false</isWebCompEnabled>
+    <language>Procedure</language>
+    <name>CEScreeningIP</name>
+
+    <!-- Step 1: Fetch matching CE Library entries for the applicant's agency -->
+    <omniProcessElements>
+        <isActive>true</isActive>
+        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+        <level>0.0</level>
+        <name>GetCELibraryEntries</name>
+        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+        <propertySetConfig>{&quot;bundleName&quot;:&quot;DRExtractCELibraryByAgency&quot;,&quot;inputMap&quot;:[{&quot;name&quot;:&quot;AgencyAbbr&quot;,&quot;value&quot;:&quot;%AgencyAbbr%&quot;,&quot;valueType&quot;:&quot;reference&quot;}],&quot;outputPath&quot;:&quot;LibraryEntries&quot;,&quot;failOnStepError&quot;:false,&quot;useFormulas&quot;:true}</propertySetConfig>
+        <sequenceNumber>1.0</sequenceNumber>
+        <type>DataRaptor Extract Action</type>
+    </omniProcessElements>
+
+    <!-- Step 2: Evaluate acreage and extraordinary circumstances flags -->
+    <omniProcessElements>
+        <isActive>true</isActive>
+        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+        <level>0.0</level>
+        <name>EvaluateThresholds</name>
+        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+        <propertySetConfig>{&quot;assignmentRules&quot;:[{&quot;name&quot;:&quot;AcreageOver5&quot;,&quot;value&quot;:&quot;%DisturbanceAcres% &gt; 5&quot;,&quot;valueType&quot;:&quot;formula&quot;},{&quot;name&quot;:&quot;AcreageOver640&quot;,&quot;value&quot;:&quot;%DisturbanceAcres% &gt; 640&quot;,&quot;valueType&quot;:&quot;formula&quot;},{&quot;name&quot;:&quot;ECFlag&quot;,&quot;value&quot;:&quot;%ExtraordinaryCircumstances%&quot;,&quot;valueType&quot;:&quot;reference&quot;}],&quot;useFormulas&quot;:true}</propertySetConfig>
+        <sequenceNumber>2.0</sequenceNumber>
+        <type>Set Values</type>
+    </omniProcessElements>
+
+    <!-- Step 3: Determine preliminary recommendation from acreage/EC thresholds.
+         NOTE: This is a pre-screening heuristic only. The authoritative CE determination
+         is made by the NEPA_CE_Screener BRE Expression Set after the IA record is saved.
+         Per OMB M-25-21 / AI AUP: AI recommends, human NEPA coordinator decides. -->
+    <omniProcessElements>
+        <isActive>true</isActive>
+        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+        <level>0.0</level>
+        <name>DetermineRecommendation</name>
+        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+        <propertySetConfig>{&quot;assignmentRules&quot;:[{&quot;name&quot;:&quot;Recommendation&quot;,&quot;value&quot;:&quot;IF(%AcreageOver640% == true, &#x27;EIS-Required&#x27;, IF(%AcreageOver5% == true || %ECFlag% == true, &#x27;EA-Required&#x27;, &#x27;CE-Recommended&#x27;))&quot;,&quot;valueType&quot;:&quot;formula&quot;},{&quot;name&quot;:&quot;Confidence&quot;,&quot;value&quot;:&quot;IF(%AcreageOver640% == true || %AcreageOver5% == true, &#x27;High&#x27;, &#x27;Medium&#x27;)&quot;,&quot;valueType&quot;:&quot;formula&quot;},{&quot;name&quot;:&quot;ClassificationBasis&quot;,&quot;value&quot;:&quot;IF(%AcreageOver640% == true, &#x27;Surface disturbance exceeds 640 acres — EIS typically required at this scale.&#x27;, IF(%AcreageOver5% == true, &#x27;Surface disturbance exceeds 5-acre CE threshold — EA review likely required (40 CFR 1501.4).&#x27;, IF(%ECFlag% == true, &#x27;Extraordinary circumstances present — CE may not apply per 40 CFR 1501.4(b). EA review recommended.&#x27;, &#x27;Action type and acreage appear within CE thresholds. A NEPA coordinator will verify the applicable CE code against agency-specific regulations.&#x27;)))&quot;,&quot;valueType&quot;:&quot;formula&quot;}],&quot;useFormulas&quot;:true}</propertySetConfig>
+        <sequenceNumber>3.0</sequenceNumber>
+        <type>Set Values</type>
+    </omniProcessElements>
+
+    <!-- Step 4: Build response with recommendation and matching library entries -->
+    <omniProcessElements>
+        <isActive>true</isActive>
+        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+        <level>0.0</level>
+        <name>BuildResponse</name>
+        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+        <propertySetConfig>{&quot;assignmentRules&quot;:[{&quot;name&quot;:&quot;Recommendation&quot;,&quot;value&quot;:&quot;%Recommendation%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;Confidence&quot;,&quot;value&quot;:&quot;%Confidence%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;ClassificationBasis&quot;,&quot;value&quot;:&quot;%ClassificationBasis%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;LibraryEntries&quot;,&quot;value&quot;:&quot;%LibraryEntries%&quot;,&quot;valueType&quot;:&quot;reference&quot;}],&quot;useFormulas&quot;:true}</propertySetConfig>
+        <sequenceNumber>4.0</sequenceNumber>
+        <type>Set Values</type>
+    </omniProcessElements>
+
+    <omniProcessKey>NEPACEScreeningIP</omniProcessKey>
+    <omniProcessType>Integration Procedure</omniProcessType>
+    <propertySetConfig>{
+  &quot;linkToExternalObject&quot; : &quot;&quot;,
+  &quot;trackingCustomData&quot; : { },
+  &quot;includeAllActionsInResponse&quot; : false,
+  &quot;columnsPropertyMap&quot; : [ ],
+  &quot;relationshipFieldsMap&quot; : [ ],
+  &quot;labelSingular&quot; : &quot;&quot;,
+  &quot;labelPlural&quot; : &quot;&quot;,
+  &quot;description&quot; : &quot;Pre-screening heuristic for the CE Intake OmniScript. Returns preliminary recommendation (CE-Recommended/EA-Required/EIS-Required) based on acreage thresholds and extraordinary circumstances, plus matching CE Library entries for applicant review. Authoritative classification is determined by NEPA_CE_Screener BRE after IA record save.&quot;,
+  &quot;nameColumn&quot; : &quot;&quot;,
+  &quot;rollbackOnError&quot; : false,
+  &quot;chainableQueriesLimit&quot; : 50,
+  &quot;chainableDMLStatementsLimit&quot; : null,
+  &quot;chainableCpuLimit&quot; : 2000,
+  &quot;chainableHeapSizeLimit&quot; : null,
+  &quot;chainableDMLRowsLimit&quot; : null,
+  &quot;chainableQueryRowsLimit&quot; : null,
+  &quot;chainableSoslQueriesLimit&quot; : null,
+  &quot;chainableActualTimeLimit&quot; : null,
+  &quot;additionalChainableResponse&quot; : { },
+  &quot;queueableChainableQueriesLimit&quot; : 120,
+  &quot;queueableChainableCpuLimit&quot; : 40000,
+  &quot;queueableChainableHeapSizeLimit&quot; : 6,
+  &quot;ttlMinutes&quot; : 5,
+  &quot;mockResponseMap&quot; : { }
+}</propertySetConfig>
+    <subType>CEScreeningIP</subType>
+    <type>NEPA</type>
+    <uniqueName>NEPA_CEScreeningIP_Procedure_1</uniqueName>
+    <versionNumber>1.0</versionNumber>
+    <webComponentKey>b2c3d4e5-f6a7-8901-bcde-f01234567891</webComponentKey>
+</OmniIntegrationProcedure>

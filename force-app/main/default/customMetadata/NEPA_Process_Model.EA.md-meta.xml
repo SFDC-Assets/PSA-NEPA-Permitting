@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Environmental Assessment</label>
+    <protected>false</protected>
+    <values>
+        <field>Review_Type__c</field>
+        <value xsi:type="xsd:string">EA</value>
+    </values>
+    <values>
+        <field>Statutory_Authority__c</field>
+        <value xsi:type="xsd:string">42 U.S.C. 4321 et seq.; 40 CFR Part 1501; 42 U.S.C. 4370m et seq. (FAST-41)</value>
+    </values>
+    <values>
+        <field>Max_Timeline_Days__c</field>
+        <value xsi:type="xsd:decimal">180</value>
+    </values>
+    <values>
+        <field>Required_Decision_Payload_Type__c</field>
+        <value xsi:type="xsd:string">FONSI</value>
+    </values>
+    <values>
+        <field>Requires_Scoping__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>Requires_Public_Comment__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>Min_Comment_Period_Days__c</field>
+        <value xsi:type="xsd:decimal">30</value>
+    </values>
+    <values>
+        <field>Required_Review_Stages__c</field>
+        <value xsi:type="xsd:string">["EA_In_Progress","EA_Public_Comment","EA_Comment_Response","FONSI_Pending","FONSI_Issued","Completed"]</value>
+    </values>
+    <values>
+        <field>CEQ_Data_Standard_Entity__c</field>
+        <value xsi:type="xsd:string">Entity 9 — Process Model</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

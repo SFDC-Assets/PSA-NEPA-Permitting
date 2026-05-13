@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>CEQ Standard — Process Model Entity. Defines the workflow configuration for each NEPA review type (CE, EA, EIS): statutory authority, FAST-41 maximum timeline, required decision payload type, and the baseline stage duration profile. Ties together NEPA_Stage_Baseline_Duration__mdt and NEPA_SLA_Config__mdt by providing the authoritative process definition that both reference. Supports CEQ MFR #2 (Workflow Standards) and enables structured process model export per CEQ v1.2 Entity 9.</description>
+    <label>NEPA Process Model</label>
+    <pluralLabel>NEPA Process Models</pluralLabel>
+    <visibility>Public</visibility>
+    <fields>
+        <fullName>Review_Type__c</fullName>
+        <description>NEPA review type this process model governs. Must match nepa_review_type__c picklist values on IndividualApplication and NEPA_SLA_Config__mdt.Review_Type__c.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Review Type</label>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>EIS</fullName><default>false</default><label>EIS</label></value>
+                <value><fullName>EA</fullName><default>false</default><label>EA</label></value>
+                <value><fullName>CE</fullName><default>false</default><label>CE</label></value>
+                <value><fullName>Other Authorization</fullName><default>false</default><label>Other Authorization</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Statutory_Authority__c</fullName>
+        <description>Primary statutory and regulatory authority governing this review type. For EIS/EA: NEPA (42 U.S.C. 4321 et seq.) and 40 CFR Part 1502/1501. For CE: agency-specific CFR provisions. For FAST-41 covered actions, also cites 42 U.S.C. 4370m et seq.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Statutory Authority</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Max_Timeline_Days__c</fullName>
+        <description>Maximum calendar days for this review type from initiation to final decision. For FAST-41 covered EIS actions: 720 days (42 U.S.C. 4370m-2(c)(1)(A)). For EA: 180 days (42 U.S.C. 4370m-2(c)(1)(B)). For CE: no statutory maximum (agency discretion). These are FAST-41 defaults; individual project timetables may differ.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Max Timeline Days (FAST-41)</label>
+        <precision>6</precision>
+        <scale>0</scale>
+        <type>Number</type>
+    </fields>
+    <fields>
+        <fullName>Required_Decision_Payload_Type__c</fullName>
+        <description>The decision payload type that must be created to formally close this review type. EIS → ROD. EA → FONSI or Mitigated FONSI. CE → CE_Determination. Must match nepa_decision_type__c picklist values on nepa_decision_payload__c.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Required Decision Payload Type</label>
+        <length>50</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Requires_Scoping__c</fullName>
+        <description>True when this review type requires a formal scoping process per 40 CFR 1501.9. Required for EIS. Optional for EA when public scoping is elected. Not required for CE.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <defaultValue>false</defaultValue>
+        <label>Requires Scoping</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Requires_Public_Comment__c</fullName>
+        <description>True when this review type requires a public comment period. Required for EIS (Draft EIS comment period, 40 CFR 1502.19) and for some EAs. CE determinations generally do not require public comment unless agency policy dictates otherwise.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <defaultValue>false</defaultValue>
+        <label>Requires Public Comment</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Min_Comment_Period_Days__c</fullName>
+        <description>Minimum public comment period in calendar days. For EIS Draft: 45 days (40 CFR 1502.19(a)). For EA: no federal minimum; 30 days is common agency practice. For CE: 0 (not required).</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Min Comment Period Days</label>
+        <precision>4</precision>
+        <scale>0</scale>
+        <type>Number</type>
+    </fields>
+    <fields>
+        <fullName>Required_Review_Stages__c</fullName>
+        <description>JSON array of required stage names in order for this review type. Must match nepa_process_status__c picklist values on IndividualApplication. Used by NEPA_Stage_Gate to validate permissible transitions.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Required Review Stages (JSON)</label>
+        <length>32768</length>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>CEQ_Data_Standard_Entity__c</fullName>
+        <description>The CEQ NEPA and Permitting Data and Technology Standard v1.2 entity reference for this process model. Value: "Entity 9 — Process Model" for all records. Enables crosswalk validation to the CEQ standard schema.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>CEQ Data Standard Entity</label>
+        <length>100</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Active__c</fullName>
+        <description>Inactive records are excluded from CE Screener routing and Stage Gate validation. Allows new process models to be staged before cutover.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <defaultValue>true</defaultValue>
+        <label>Active</label>
+        <type>Checkbox</type>
+    </fields>
+</CustomObject>
