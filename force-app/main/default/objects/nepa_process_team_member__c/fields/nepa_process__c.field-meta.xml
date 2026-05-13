@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_process__c</fullName>
+    <description>The NEPA process this team member is assigned to. CEQ Entity 8 process reference.</description>
+    <inlineHelpText>The NEPA review process this person is assigned to.</inlineHelpText>
+    <label>Process</label>
+    <referenceTo>IndividualApplication</referenceTo>
+    <relationshipLabel>Process Team Members</relationshipLabel>
+    <relationshipName>Process_Team_Members</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

@@ -262,8 +262,8 @@ upsert_csv "Task" "Task" "19_Task.csv" "External_ID__c"
 # if Tasks were loaded before, but running it again is safe — it queries by
 # External_ID__c and updates in-place).
 
-# ── step 20: Entity 9/8/7 Apex (RegulatoryCode, team members, GIS polygon) ───
-step_header "Step 20: Entity 9/8/7 (RegulatoryCode, Team Members, GIS polygon + lat/lon)"
+# ── step 20: Entity 9/8/7 Apex (RegulatoryCode, team members, GIS container + polygon) ──
+step_header "Step 20: Entity 9/8/7 (RegulatoryCode, Team Members, nepa_gis_data__c + GIS polygon + lat/lon)"
 run_apex "entity 9/8/7 demo data" "demo/import_data/20_entities789_demo_data.apex"
 
 # ── step 21: ServiceResource discipline ───────────────────────────────────────

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>nepa_permitting</fullName>
-    <description>Open source package used with Public Sector Solutions for a NEPA compliant data model. Implements CEQ NEPA and Permitting Data and Technology Standard v1.2 (May 30, 2025, updated August 18, 2025).</description>
+    <description>Open source package used with Agentforce for Public Sector for a NEPA compliant data model. Implements CEQ NEPA and Permitting Data and Technology Standard v1.2 (May 30, 2025, updated August 18, 2025).</description>
     <types>
         <!-- IndividualApplication (Entity 2: Process) -->
         <members>IndividualApplication.nepa_risk_score__c</members>

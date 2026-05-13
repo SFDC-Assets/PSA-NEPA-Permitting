@@ -930,14 +930,16 @@ private class NepaApiComplianceTest {
 
     @IsTest
     static void gisData_parentDocumentId_textField_persists() {
-        // nepa_parent_document_id__c is Text(18) — ContentDocument FK limitation
+        // nepa_parent_document_id__c is Text(18) — ContentDocument cannot be a Lookup target.
+        // A synthetic 18-char ContentDocument-format ID is stored as plain text; no FK enforcement.
+        final String syntheticDocId = '069000000000001AAA'; //NOPMD — intentional synthetic ID for Text field round-trip test
         nepa_gis_data__c g = new nepa_gis_data__c();
         g.Name                          = 'Document GIS';
-        g.nepa_parent_document_id__c    = '069000000000001AAA';
+        g.nepa_parent_document_id__c    = syntheticDocId;
         insert g;
 
         nepa_gis_data__c result = [SELECT nepa_parent_document_id__c FROM nepa_gis_data__c WHERE Id = :g.Id];
-        System.assertEquals('069000000000001AAA', result.nepa_parent_document_id__c);
+        System.assertEquals(syntheticDocId, result.nepa_parent_document_id__c);
     }
 
     @IsTest

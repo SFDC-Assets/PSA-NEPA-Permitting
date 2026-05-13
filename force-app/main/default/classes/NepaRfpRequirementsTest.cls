@@ -59,7 +59,6 @@ private class NepaRfpRequirementsTest {
      */
     @IsTest
     static void aiAuditFieldsPresent() {
-        Program proj = [SELECT Id FROM Program LIMIT 1];
         IndividualApplication proc = [SELECT Id FROM IndividualApplication LIMIT 1];
 
         PublicComplaint pc = new PublicComplaint();

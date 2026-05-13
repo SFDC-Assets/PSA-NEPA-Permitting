@@ -8,7 +8,7 @@ private class NepaGISProximityIPInvokerTest {
      * the request/result objects correctly and handles a null IP result gracefully.
      */
     @IsTest
-    static void invoke_withValidProjectId_returnsResult() {
+    static void invokeWithValidProjectIdReturnsResult() {
         NepaGISProximityIPInvoker.InvokerRequest req = new NepaGISProximityIPInvoker.InvokerRequest();
         req.projectId = 'a0B000000000001AAA'; // synthetic Id — no real callout occurs in test
 
@@ -34,7 +34,7 @@ private class NepaGISProximityIPInvokerTest {
     }
 
     @IsTest
-    static void invoke_withEmptyList_returnsEmptyResults() {
+    static void invokeWithEmptyListReturnsEmptyResults() {
         Test.startTest();
         List<NepaGISProximityIPInvoker.InvokerResult> results =
             NepaGISProximityIPInvoker.invoke(
@@ -46,7 +46,7 @@ private class NepaGISProximityIPInvokerTest {
     }
 
     @IsTest
-    static void invoke_exceptionPath_setsErrorMessage() {
+    static void invokeExceptionPathSetsErrorMessage() {
         // Pass null projectId — service should throw or return a fault;
         // either way the catch block must populate errorMessage
         NepaGISProximityIPInvoker.InvokerRequest req = new NepaGISProximityIPInvoker.InvokerRequest();

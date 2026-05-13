@@ -1,6 +1,6 @@
 # Quick Start Guide — NEPA and Permitting Data Model
 
-This guide walks you from a fresh Public Sector Solutions org to a fully operational NEPA permitting system with sample data loaded and all risk intelligence flows verified. End-to-end time: approximately 60 minutes.
+This guide walks you from a fresh Agentforce for Public Sector org to a fully operational NEPA permitting system with sample data loaded and all risk intelligence flows verified. End-to-end time: approximately 60 minutes.
 
 ---
 
@@ -22,7 +22,7 @@ The BRE import is the most common failure point. If you skip it, CE Screener and
 
 | Requirement | Notes |
 |---|---|
-| Salesforce org with **Public Sector Solutions** | Use the [PSS trial org signup](https://developer.salesforce.com/free-trials/comparison/public-sector) if you don't have one. Foundations or Advanced license required. |
+| Salesforce org with **Agentforce for Public Sector** | Use the [APS trial org signup](https://developer.salesforce.com/free-trials/comparison/public-sector) if you don't have one. Foundations or Advanced license required. |
 | **Salesforce CLI v2** (`sf`) | Install from [developer.salesforce.com/tools/salesforcecli](https://developer.salesforce.com/tools/salesforcecli). Verify with `sf --version`. |
 | **jq** | JSON formatter used by `deploy.sh`. Install with `brew install jq` (Mac) or `apt install jq` (Linux). |
 | Git | To clone this repository. |
@@ -30,25 +30,25 @@ The BRE import is the most common failure point. If you skip it, CE Screener and
 
 ---
 
-## PSS Substitution
+## APS Substitution
 
-This Accelerator depends on three PSS standard objects that are not available in a standard Salesforce org:
+This Accelerator depends on three APS standard objects that are not available in a standard Salesforce org:
 
-| PSS Object | CEQ Entity | Dependency |
+| APS Object | CEQ Entity | Dependency |
 |---|---|---|
 | `IndividualApplication` | Entity 2: Process | All automation flows, permission set FLS, OmniStudio DataRaptors |
 | `Program` | Entity 1: Project | Litigation risk scoring, CE screener, DataRaptor extract |
 | `ApplicationTimeline` | Entity 6: Case Events | CE Determination Router, Timeline Risk Assessor, Admin Record Checker |
 
-**If your org does not have PSS installed**, substitute these objects before deploying:
+**If your org does not have APS installed**, substitute these objects before deploying:
 
 1. **`IndividualApplication`** — replace with a custom object (e.g., `NEPA_Process__c`) or `Case`. Update every flow's `Get_IndividualApplication` recordLookup, all `inputAssignments` writing to `IndividualApplicationId`, and all `fieldPermissions` referencing `IndividualApplication.*` in the permission set.
 2. **`Program`** — replace with a custom object or `Account`. Update the Litigation Risk Scorer's `Get_RelatedProject` lookup and the `nepa_related_project__c` lookup field on `IndividualApplication`.
 3. **`ApplicationTimeline`** — replace with a custom child object. Update the `IndividualApplicationId` master-detail field name and the `nepa_related_case_event__c` lookup on `ContentVersion`.
 
-The custom objects (`nepa_engagement__c`, `nepa_litigation__c`, `nepa_process_related_agencies__c`, `nepa_ce_library__c`, `nepa_gis_data__c`) and all custom metadata types are PSS-independent and deploy without modification.
+The custom objects (`nepa_engagement__c`, `nepa_litigation__c`, `nepa_process_related_agencies__c`, `nepa_ce_library__c`, `nepa_gis_data__c`) and all custom metadata types are APS-independent and deploy without modification.
 
-A free PSS developer org is available at the [PSS trial org signup](https://developer.salesforce.com/free-trials/comparison/public-sector). This is the recommended path — substituting the PSS objects removes access to PSS-native features such as Action Plans, OmniStudio, and the Application data model relationships the CEQ export relies on.
+A free APS developer org is available at the [APS trial org signup](https://developer.salesforce.com/free-trials/comparison/public-sector). This is the recommended path — substituting the APS objects removes access to PSS-native features such as Action Plans, OmniStudio, and the Application data model relationships the CEQ export relies on.
 
 ---
 

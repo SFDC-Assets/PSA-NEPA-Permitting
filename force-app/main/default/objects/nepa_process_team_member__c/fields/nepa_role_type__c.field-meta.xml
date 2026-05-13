@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_role_type__c</fullName>
+    <description>The functional role this person performs on the process. CEQ Entity 8 role_type property.</description>
+    <inlineHelpText>Select the functional role for this team member on this process.</inlineHelpText>
+    <label>Role Type</label>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value><fullName>Lead NEPA Coordinator</fullName><default>false</default><label>Lead NEPA Coordinator</label></value>
+            <value><fullName>Cooperating Agency Rep</fullName><default>false</default><label>Cooperating Agency Rep</label></value>
+            <value><fullName>Reviewer</fullName><default>false</default><label>Reviewer</label></value>
+            <value><fullName>Preparer</fullName><default>false</default><label>Preparer</label></value>
+            <value><fullName>Legal Reviewer</fullName><default>false</default><label>Legal Reviewer</label></value>
+            <value><fullName>Tribal Liaison</fullName><default>false</default><label>Tribal Liaison</label></value>
+            <value><fullName>GIS Specialist</fullName><default>false</default><label>GIS Specialist</label></value>
+            <value><fullName>Field Team Member</fullName><default>false</default><label>Field Team Member</label></value>
+            <value><fullName>Other</fullName><default>false</default><label>Other</label></value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

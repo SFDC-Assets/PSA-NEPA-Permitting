@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_end_date__c</fullName>
+    <description>Date this person's assignment on the process ended. Null indicates currently active. CEQ Entity 8 end_date property.</description>
+    <inlineHelpText>Date this assignment ended. Leave blank if currently active.</inlineHelpText>
+    <label>End Date</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Date</type>
+</CustomField>

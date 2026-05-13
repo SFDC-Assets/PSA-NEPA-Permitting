@@ -2,7 +2,7 @@
 
 # NEPA and Permitting Data Model
 
-Open-source NEPA permitting accelerator built on Salesforce Public Sector Solutions (PSS). Aligned to the CEQ NEPA and Permitting Data and Technology Standard v1.2 (May/August 2025). Deployable from the CLI in ~15 minutes. MIT license.
+Open-source NEPA permitting accelerator built on Salesforce Agentforce for Public Sector (APS). Aligned to the CEQ NEPA and Permitting Data and Technology Standard v1.2 (May/August 2025). Deployable from the CLI in ~15 minutes. MIT license.
 
 > **CEQ Permitting Innovators submission:** See [docs/SUBMISSION-NARRATIVE.md](docs/SUBMISSION-NARRATIVE.md) for the full solution narrative structured around the 5 evaluation criteria.
 
@@ -16,7 +16,7 @@ This accelerator gives federal agencies a production-ready NEPA permitting data 
 
 **Core capabilities:**
 
-- **CEQ standard compliance** — All 6 CEQ standard entities fully mapped to PSS native objects, including the 5 required provenance fields per entity and a CEQ-compliant JSON export endpoint (MFR #2)
+- **CEQ standard compliance** — All 6 CEQ standard entities fully mapped to APS native objects, including the 5 required provenance fields per entity and a CEQ-compliant JSON export endpoint (MFR #2)
 - **CE Library** — 2,105 categorical exclusions across 79 federal agencies from CEQ CE Explorer v2.0, Einstein Search-indexed and SOSL full-text searchable
 - **CE Screening** — 3-tier Business Rules Engine (NAICS routing → agency/sector → agency/action type) covering 6 agencies; OmniScript 7-step guided intake with real-time CE pre-screening
 - **30 declarative flows** — stage gate orchestration, SLA due-date setting, defensibility gap scoring, administrative record completeness checking, GIS proximity integration, and error handling
@@ -30,7 +30,7 @@ This accelerator gives federal agencies a production-ready NEPA permitting data 
 ## Who It Is For
 
 - Federal agencies subject to the CEQ Permitting Technology Action Plan (42 U.S.C. 4370m-1) that need to meet MFR implementation requirements
-- PSS-licensed agencies looking to accelerate NEPA process modernization without building a data model from scratch
+- APS-licensed agencies looking to accelerate NEPA process modernization without building a data model from scratch
 - Multi-agency programs where CE authorities, risk profiles, and SLA configurations differ by agency
 
 ---
@@ -44,7 +44,7 @@ sf org login web --alias nepadev
 sf project deploy start --source-dir force-app --target-org nepadev --wait 30
 ```
 
-**Minimum requirement:** Salesforce Public Sector Solutions — Foundations or Advanced.
+**Minimum requirement:** Salesforce Agentforce for Public Sector — Foundations or Advanced.
 
 ---
 
@@ -79,11 +79,11 @@ For more about the Accelerator program, visit: [https://gpsaccelerators.develope
 
 ## Description
 
-The NEPA and Permitting Data Model Accelerator helps U.S. federal and state agencies modernize their permitting systems in alignment with the [_**NEPA and Permitting Data and Technology Standard v1.2**_](https://permitting.innovation.gov/CEQ_NEPA_and_Permitting_Data_and_Technology_Standard.pdf) issued by the Council on Environmental Quality (CEQ) on May 30, 2025 (updated August 18, 2025). Built on the Salesforce Public Sector Solutions (PSS) data model, this Accelerator introduces custom objects and fields to support data interoperability, transparency, and improved decision-making across environmental permitting programs.
+The NEPA and Permitting Data Model Accelerator helps U.S. federal and state agencies modernize their permitting systems in alignment with the [_**NEPA and Permitting Data and Technology Standard v1.2**_](https://permitting.innovation.gov/CEQ_NEPA_and_Permitting_Data_and_Technology_Standard.pdf) issued by the Council on Environmental Quality (CEQ) on May 30, 2025 (updated August 18, 2025). Built on the Salesforce Agentforce for Public Sector (APS) data model, this Accelerator introduces custom objects and fields to support data interoperability, transparency, and improved decision-making across environmental permitting programs.
 
 This Accelerator is designed to help agencies meet the requirements of the CEQ [**Permitting Technology Action Plan**](https://permitting.innovation.gov) (May 30, 2025), which directs agencies listed under 42 U.S.C. 4370m-1(b)(2)(B)(i)-(xii) to adopt and begin implementing the data standard and Minimum Functional Requirements (MFRs). It supports MFRs #1 (Implement Data Standards), #5 (Automated Case Management Tools), and #7 (Improved Document Management) at foundational and emerging maturity levels.
 
-This Accelerator extends the PSS [**Application and Authorization Data Model**](https://developer.salesforce.com/docs/atlas.en-us.psc_api.meta/psc_api/psc_data_model_application_authorization.htm) by mapping CEQ's defined entities and properties to Salesforce data components. It provides agencies with a concrete starting point to comply with Title II of the Evidence Act and open data guidance outlined in OMB Memorandum [**M-25-05**](https://www.whitehouse.gov/wp-content/uploads/2025/01/M-25-05-Phase-2-Implementation-of-the-Foundations-for-Evidence-Based-Policymaking-Act-of-2018-Open-Government-Data-Access-and-Management-Guidance.pdf).
+This Accelerator extends the APS [**Application and Authorization Data Model**](https://developer.salesforce.com/docs/atlas.en-us.psc_api.meta/psc_api/psc_data_model_application_authorization.htm) by mapping CEQ's defined entities and properties to Salesforce data components. It provides agencies with a concrete starting point to comply with Title II of the Evidence Act and open data guidance outlined in OMB Memorandum [**M-25-05**](https://www.whitehouse.gov/wp-content/uploads/2025/01/M-25-05-Phase-2-Implementation-of-the-Foundations-for-Evidence-Based-Policymaking-Act-of-2018-Open-Government-Data-Access-and-Management-Guidance.pdf).
 
 ![NEPA to Application and Authorization Data Model Mapping](/docs/NEPA%20to%20Salesforce%20Mapping.jpeg)
 
@@ -91,7 +91,7 @@ This Accelerator extends the PSS [**Application and Authorization Data Model**](
 - **Compliance out of the box**: Implements 6 of the 9 CEQ standard entities using Salesforce-native components, including all 6 provenance fields required by v1.2.
 - **Faster implementation**: Accelerates modernization efforts with ready-made metadata aligned to federal guidance and the August 28, 2025 implementation deadline.
 - **Interoperability-first architecture**: Promotes structured, shareable data models that improve transparency and data exchange across agencies. External ID fields on Project and Process support UUID-based agency-to-agency data sharing.
-- **Milestone and engagement tracking**: Extends PSS `ApplicationTimeline` for FAST-41 schedule compliance and adds a dedicated Public Engagement Events object for legally required public involvement documentation.
+- **Milestone and engagement tracking**: Extends APS `ApplicationTimeline` for FAST-41 schedule compliance and adds a dedicated Public Engagement Events object for legally required public involvement documentation.
 - **Future extensibility**: Designed to grow with your permitting system — providing a scalable foundation for GIS integration, CE screening logic, process modeling, and decision payloads.
 
 Whether you're beginning a modernization journey or enhancing an existing permitting solution, this Accelerator gives you the head start needed to meet federal standards and accelerate public outcomes.
@@ -108,10 +108,10 @@ This Accelerator implements the following entities from the CEQ NEPA and Permitt
 | Entity 3: Documents | `ContentVersion` (record type: `nepa_permit_document`) | ✅ Implemented |
 | Entity 4: Comments | `PublicComplaint` | ✅ Implemented |
 | Entity 5: Public Engagement Events | `nepa_engagement__c` (custom) | ✅ Implemented |
-| Entity 6: Case Events | `ApplicationTimeline` (PSS standard, extended) | ✅ Implemented |
-| Entity 7: GIS Data | `nepa_gis_data_element__c` (child of PSS `Polygon`) + Program lat/lon/polygon fields + GIS proximity flow | ✅ Implemented |
+| Entity 6: Case Events | `ApplicationTimeline` (APS standard, extended) | ✅ Implemented |
+| Entity 7: GIS Data | `nepa_gis_data_element__c` (child of APS `Polygon`) + Program lat/lon/polygon fields + GIS proximity flow | ✅ Implemented |
 | Entity 8: User Role | `nepa_process_team_member__c` — structured role assignment linking User, Agency (Account), and Process with CEQ-required provenance fields | ✅ Implemented |
-| Entity 9: Legal Structure | PSS `RegulatoryCode` (standard object) extended with `nepa_compliance_requirements__c`, `nepa_text_content__c`, and 5 provenance fields; `IndividualApplication` and `nepa_decision_element__c` lookup to `RegulatoryCode` | ✅ Implemented |
+| Entity 9: Legal Structure | APS `RegulatoryCode` (standard object) extended with `nepa_compliance_requirements__c`, `nepa_text_content__c`, and 5 provenance fields; `IndividualApplication` and `nepa_decision_element__c` lookup to `RegulatoryCode` | ✅ Implemented |
 
 All 6 implemented entities include the 5 custom provenance fields required by CEQ standard v1.2 (`Data Record Version`, `Data Source Agency`, `Data Source System`, `Record Owner Agency`, `Retrieved Timestamp`). `LastModifiedDate` (native Salesforce) satisfies the standard's `Last Updated` provenance property.
 
@@ -121,7 +121,7 @@ All 6 implemented entities include the 5 custom provenance fields required by CE
 This Accelerator includes the following assets:
 
 <ol>
-  <li><strong>Custom Fields</strong> on the following standard PSS objects:
+  <li><strong>Custom Fields</strong> on the following standard APS objects:
     <ul>
       <li>Individual Application — 21 fields (Entity 2: Process)</li>
       <li>Content Version — 22 fields (Entity 3: Documents)</li>
@@ -187,7 +187,7 @@ This Accelerator includes the following assets:
       <li><a href="docs/NEPA-Compliance-Improvement-Plan.md">CEQ Compliance Improvement Plan</a> — tier-based roadmap for full CEQ standard v1.2 coverage</li>
       <li><a href="docs/NEPA-Permitting-Acceleration-Plan.md">Permitting Acceleration Plan</a> — 10 ranked priorities with time-to-permit impact analysis grounded in NEPATEC2.0 data</li>
       <li><a href="docs/NEPA-Risk-Intelligence-Plan.md">Risk Intelligence Plan</a> — litigation risk scoring, challenge prediction, and defensibility gap features</li>
-      <li><a href="docs/GLOSSARY.md">Glossary</a> — NEPA, regulatory, and PSS terms used throughout this project</li>
+      <li><a href="docs/GLOSSARY.md">Glossary</a> — NEPA, regulatory, and APS terms used throughout this project</li>
     </ul>
   </li>
 </ol>
@@ -197,7 +197,7 @@ This Accelerator includes the following assets:
 
 This Accelerator is deployed via the Salesforce CLI from source. See **[docs/QUICKSTART.md](docs/QUICKSTART.md)** for the full step-by-step walkthrough covering prerequisites, deployment, permission set assignment, Flow activation, sample data loading, and verification.
 
-**License requirement:** Salesforce Public Sector Solutions — Foundations or Advanced for internal users; Communities license for external portal users. A free PSS developer org is available at the [PSS trial link](https://developer.salesforce.com/free-trials/comparison/public-sector).
+**License requirement:** Salesforce Agentforce for Public Sector — Foundations or Advanced for internal users; Communities license for external portal users. A free APS developer org is available at the [APS trial link](https://developer.salesforce.com/free-trials/comparison/public-sector).
 
 
 ## CEQ-Compliant Data Export
@@ -259,9 +259,9 @@ The Integration Procedure `NEPA/CEQExport` accepts a `projectId` (the Salesforce
 > **Note:** OmniStudio (formerly Vlocity) must be installed in your org. The Integration Procedure and DataRaptor metadata files are included in this package and can be deployed via SFDX. If you do not have OmniStudio, you can implement equivalent export logic using Apex or Flow.
 
 
-## PSS Dependency
+## APS Dependency
 
-This Accelerator requires **Salesforce Public Sector Solutions (PSS)**. If your org does not have PSS installed, see [QUICKSTART.md — PSS Substitution](docs/QUICKSTART.md#pss-substitution) for object replacement guidance.
+This Accelerator requires **Salesforce Agentforce for Public Sector (APS)**. If your org does not have APS installed, see [QUICKSTART.md — APS Substitution](docs/QUICKSTART.md#pss-substitution) for object replacement guidance.
 
 
 ## Data Model Notes
@@ -280,7 +280,7 @@ This Accelerator requires **Salesforce Public Sector Solutions (PSS)**. If your 
 
 **Main document flag**: `ContentVersion.nepa_main_document__c` (Checkbox) distinguishes the primary document body from supporting files. Set to `true` for the main EIS/EA/CE document; `false` for appendices, attachments, maps, and supplemental files. Aligns with the NEPATEC2.0 corpus `main_document` field.
 
-**Object choice — `IndividualApplication` vs. `BusinessLicenseApplication`**: The PSS standard object chosen for CEQ Entity 2 (Process) is `IndividualApplication`, not `BusinessLicenseApplication`. This is intentional. NEPA proponents include individuals, joint ventures, tribes, federal agencies, and businesses — not exclusively commercial entities — so `BusinessLicenseApplication`'s business-licensing assumptions (renewal cycles, license numbers, business entity links) do not fit the NEPA process lifecycle. `IndividualApplication` carries the stage, status, and outcome workflow fields that map directly to CEQ's Process entity properties. The PSS object label can be overridden to "NEPA Process" or "Permit Application" in Setup → Object Manager without changing the API name or any downstream metadata.
+**Object choice — `IndividualApplication` vs. `BusinessLicenseApplication`**: The APS standard object chosen for CEQ Entity 2 (Process) is `IndividualApplication`, not `BusinessLicenseApplication`. This is intentional. NEPA proponents include individuals, joint ventures, tribes, federal agencies, and businesses — not exclusively commercial entities — so `BusinessLicenseApplication`'s business-licensing assumptions (renewal cycles, license numbers, business entity links) do not fit the NEPA process lifecycle. `IndividualApplication` carries the stage, status, and outcome workflow fields that map directly to CEQ's Process entity properties. The APS object label can be overridden to "NEPA Process" or "Permit Application" in Setup → Object Manager without changing the API name or any downstream metadata.
 
 
 ## Revision History
@@ -293,7 +293,7 @@ This Accelerator requires **Salesforce Public Sector Solutions (PSS)**. If your 
 - Added `ContentVersion.nepa_main_document__c` (Checkbox) to distinguish primary documents from supporting files (appendices, attachments) — aligns with NEPATEC2.0 `main_document` flag
 - Expanded `ContentVersion.nepa_volume_title__c` from Text(255) to LongTextArea(32768) to accommodate verbose section titles from published NEPA documents
 - Added Entity 5 (Public Engagement Events) as new custom object `nepa_engagement__c`
-- Extended PSS `ApplicationTimeline` with 17 NEPA fields for Entity 6 (Case Events) and FAST-41 milestone tracking
+- Extended APS `ApplicationTimeline` with 17 NEPA fields for Entity 6 (Case Events) and FAST-41 milestone tracking
 - Added `nepa_process_status__c` picklist to `IndividualApplication` with official CEQ status values (planned/pre-application/in progress/paused/completed/cancelled)
 - Added `nepa_review_type__c` (EIS/EA/CE/Other Authorization) to `IndividualApplication`
 - Added `nepa_parent_document__c` lookup on `PublicComplaint` → `ContentVersion` to correctly model the standard's comment-document relationship

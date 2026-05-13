@@ -11,7 +11,9 @@
 
 ## Executive Summary
 
-The PSA-NEPA Permitting Accelerator is an open-source, production-ready implementation of the CEQ NEPA and Permitting Data and Technology Standard v1.2, built entirely on Salesforce Public Sector Solutions (PSS) — a FedRAMP-authorized platform. It implements all 13 CEQ-defined entities (6 standard + 7 extended) on Salesforce-native objects, delivers 30 declarative automation flows covering the full NEPA process lifecycle, and embeds a risk intelligence layer pre-seeded from 761 federal litigation cases (PermitTEC v0.1, PNNL 2025) and a CE Library of 2,105 categorical exclusions across 79 federal agencies. A regression test suite of 89 Apex tests verifies field-level compliance with the PIC OpenAPI Standard v1.2.0 across all 13 entities and the REST export API.
+The ability to efficiently permit infrastructure is foundational to American economic growth and national security. Roads, bridges, airports, water treatment plants, energy infrastructure, data centers, and national security installations all move through the NEPA environmental review process — and that process is stalled by fragmented, outdated, and highly manual technology systems that drive up costs and impose unnecessary burdens on applicants, agencies, and the American people. Existing technology solutions could accelerate this process by connecting data, systems, and processes — but the tools have not kept pace with the need.
+
+The PSA-NEPA Permitting Accelerator directly addresses this gap. It is an open-source, production-ready implementation of the CEQ NEPA and Permitting Data and Technology Standard v1.2, built entirely on Salesforce Agentforce for Public Sector (APS) — a FedRAMP-authorized platform already deployed across federal agencies. It implements all 13 CEQ-defined entities (6 standard + 7 extended) on Salesforce-native objects, delivers 30 declarative automation flows covering the full NEPA process lifecycle, and embeds a risk intelligence layer pre-seeded from 761 federal litigation cases (PermitTEC v0.1, PNNL 2025) and a CE Library of 2,105 categorical exclusions across 79 federal agencies. A regression test suite of 89 Apex tests verifies field-level compliance with the PIC OpenAPI Standard v1.2.0 across all 13 entities and the REST export API.
 
 The solution is deployable from the command line in approximately 15 minutes, requires no custom infrastructure, and is extensible to additional agencies through custom metadata configuration alone — no code changes required.
 
@@ -67,13 +69,17 @@ This disclosure is embedded in every risk score output (`nepa_risk_score_factors
 
 ### Quantified Time-to-Permit Reductions
 
-The CEQ EIS Timeline Report (January 2025) documented a median EIS completion time of 2.8 years (2019–2024), with the distribution heavily right-skewed — some processes exceeding 13 years. Environmental Assessments typically run 6–18 months. Categorical Exclusions, when correctly applied, resolve in days to weeks. The gap between an incorrect EA escalation and a proper CE determination is measured in months to years, not days.
+Every month a road, bridge, water treatment plant, energy project, or data center spends in NEPA review is a month of delayed construction, deferred jobs, and stalled critical infrastructure. The CEQ EIS Timeline Report (January 2025) documented a median EIS completion time of 2.8 years (2019–2024), with the distribution heavily right-skewed — some processes exceeding 13 years. Environmental Assessments typically run 6–18 months. Categorical Exclusions, when correctly applied, resolve in days to weeks. The gap between an incorrect EA escalation and a proper CE determination is measured in months to years — and that gap is the direct cost to infrastructure delivery and national competitiveness.
 
-This accelerator addresses three categories of delay directly:
+This accelerator addresses three categories of delay directly, each traceable to specific technology gaps in how agencies currently manage environmental review:
 
 **Category 1: CE Misclassification (6 months to 2+ years per incorrectly escalated project)**
 
-The CE Library contains 2,105 categorical exclusions across 79 federal agencies, searchable via Einstein Search and indexed with SOSL full-text search. The CE Screener BRE covers 6 agencies using 3-tier Business Rules Engine logic: NAICS routing narrows the CE namespace, agency/sector rules apply high-confidence Tier 1 mappings, and agency/action-type rules resolve ambiguous Tier 2 cases. NEPATEC v2.0 analysis identified that 23% of CE records lacked a ce_category — concentrated in BLM oil/gas and Agriculture/Rangeland projects, precisely the categories where ambiguity causes unnecessary EA escalation. The screener eliminates that ambiguity at intake.
+The CE Library contains 2,105 categorical exclusions across 79 federal agencies, searchable via Einstein Search and indexed with SOSL full-text search. The CE Screener uses Salesforce's **Business Rules Engine (BRE)** — a deterministic, rule-based decision engine, not AI or machine learning — to evaluate project attributes against pre-configured Decision Matrix rows and Expression Set formulas. BRE produces the same output for the same inputs every time: there is no probabilistic inference, no model drift, and no black-box logic. Every determination can be audited to the specific rule row that fired.
+
+The CE Screener BRE applies 3-tier deterministic logic: NAICS routing narrows the CE namespace, agency/sector Decision Matrix rows apply high-confidence Tier 1 CE mappings, and agency/action-type rows resolve Tier 2 cases where the action verb (construct vs. modify vs. renew) is the critical discriminating variable. The same BRE architecture drives the Litigation Risk Scorer: it evaluates review type, circuit geography, lead agency, adjacent statute involvement, and ESA/CWA/NHPA flags through a weighted Expression Set to produce a deterministic 0–100 risk score — with no generative AI involved in the calculation.
+
+NEPATEC v2.0 analysis identified that 23% of CE records lacked a ce_category — concentrated in BLM oil/gas and Agriculture/Rangeland projects, precisely the categories where ambiguity causes unnecessary EA escalation. The BRE screener eliminates that ambiguity at intake with an auditable, repeatable determination that agency coordinators can inspect row by row.
 
 **Category 2: Comment Analysis Bottleneck (4–8 weeks per EA/EIS on the critical path)**
 
@@ -188,9 +194,9 @@ The accelerator is architected for multi-agency deployment from the ground up. E
 
 **Cooperating Agency Support:** The `nepa_process_related_agencies__c` junction object with `nepa_role__c` picklist (Proponent / Cooperating / Participating) supports multi-agency NEPA processes where multiple federal agencies share responsibilities. The multi-party proponent pattern was a documented design requirement: NEPA proponents span individuals, businesses, federal and state agencies, tribal nations, and joint ventures — and the data model handles all of them.
 
-### PSS as the Multi-Agency Platform
+### APS as the Multi-Agency Platform
 
-Salesforce Public Sector Solutions is used across federal agencies for regulatory intake, case management, and public engagement. Deploying the accelerator into a PSS org that already serves multiple program offices means the NEPA accelerator operates alongside existing agency workflows without separate infrastructure. The FedRAMP Authorization to Operate covers the platform itself; agencies do not need to independently authorize a new system.
+Salesforce Agentforce for Public Sector is used across federal agencies for regulatory intake, case management, and public engagement. Deploying the accelerator into a PSS org that already serves multiple program offices means the NEPA accelerator operates alongside existing agency workflows without separate infrastructure. The FedRAMP Authorization to Operate covers the platform itself; agencies do not need to independently authorize a new system.
 
 The declarative-first architecture (all 30 flows, no custom Apex for business logic) means agency IT staff can inspect, modify, and extend the automation in Salesforce Flow Builder without Salesforce developer credentials or a local development toolchain. This lowers the barrier to agency-specific customization after initial deployment.
 
@@ -209,9 +215,9 @@ No flow XML modifications, no Apex changes, no deployment of new code.
 
 ### Salesforce Public Sector Expertise
 
-GPS Accelerators is a Salesforce Public Sector partner with federal permitting agency implementations. The team has direct experience deploying PSS-based solutions for regulatory intake, permitting workflows, and public engagement tracking at federal agencies — the same operational context this accelerator addresses.
+GPS Accelerators is a Salesforce Public Sector partner with federal permitting agency implementations. The team has direct experience deploying APS-based solutions for regulatory intake, permitting workflows, and public engagement tracking at federal agencies — the same operational context this accelerator addresses.
 
-The solution reflects that experience in concrete design choices: the `IndividualApplication` vs. `BusinessLicenseApplication` object selection was made because NEPA proponents are not exclusively commercial entities; the platform event error architecture was designed for the specific failure mode of Salesforce transaction rollback in bulk load scenarios; the OmniStudio isolation strategy was documented because the Flow-to-OmniIP invocation failure mode (UNKNOWN_EXCEPTION at activation, no actionable error message) is only discoverable through operational experience.
+The solution reflects that experience in concrete design choices: the `IndividualApplication` vs. `BusinessLicenseApplication` object selection was made because NEPA proponents are not exclusively commercial entities; the BRE-first architecture for CE screening and risk scoring was chosen over AI inference because deterministic, auditable rules are operationally required for federal permitting determinations; and the platform event error architecture was designed for the specific failure mode of Salesforce transaction rollback in bulk load scenarios.
 
 ### Domain-Grounded Design
 
@@ -241,7 +247,8 @@ The solution is released under an MIT license with full source code available. A
 | Litigation cases in risk model | 761 (PermitTEC v0.1, PNNL 2025) |
 | NEPA projects in baseline corpus | 61,881 (NEPATEC v2.0) |
 | Custom metadata types | 8 |
-| Custom Apex classes | 1 (infrastructure bridge only) |
+| BRE Decision Matrices + Expression Sets | 7 DMs + 2 ESs (CE Screener + Litigation Risk Scorer — deterministic, not AI) |
+| Custom Apex classes | 1 (infrastructure bridge only — all business logic is declarative BRE/Flow) |
 | API compliance regression tests | 89 Apex tests across 3 test classes |
 | Deployment time from CLI | ~15 minutes |
 | Platform FedRAMP status | Authorized (Salesforce Gov Cloud) |

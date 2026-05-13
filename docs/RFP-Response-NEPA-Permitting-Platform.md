@@ -12,7 +12,7 @@
 
 ## Executive Summary
 
-The proposed solution delivers a fully configured NEPA permitting acceleration platform built on **Salesforce Government Cloud Plus** and the **Salesforce Public Sector Solutions (PSS)** suite. It satisfies all nine CEQ Standard entities (CEQ NEPA and Permitting Data and Technology Standard v1.2), all Priority 1 functional requirements, and all Priority 1 technical, data, security, and implementation requirements.
+The proposed solution delivers a fully configured NEPA permitting acceleration platform built on **Salesforce Government Cloud Plus** and the **Salesforce Agentforce for Public Sector (APS)** suite. It satisfies all nine CEQ Standard entities (CEQ NEPA and Permitting Data and Technology Standard v1.2), all Priority 1 functional requirements, and all Priority 1 technical, data, security, and implementation requirements.
 
 The platform is FedRAMP High authorized on Salesforce Government Cloud Plus. No Agency-managed server infrastructure is required. The vast majority of capability is delivered through **configuration** — Salesforce declarative tools including Flows, Custom Metadata Types, OmniStudio Integration Procedures and DataRaptors, and the Salesforce Field Service scheduling engine — rather than custom code. This produces a maintainable, upgradeable platform that Agency administrators can extend without engaging developers for routine business rule changes.
 

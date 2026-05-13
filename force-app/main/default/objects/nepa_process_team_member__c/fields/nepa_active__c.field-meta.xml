@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_active__c</fullName>
+    <description>Convenience flag — true if this assignment is currently active. Set to false when the assignment ends rather than deleting the record for audit trail preservation.</description>
+    <inlineHelpText>Check if this assignment is currently active.</inlineHelpText>
+    <defaultValue>true</defaultValue>
+    <label>Active</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

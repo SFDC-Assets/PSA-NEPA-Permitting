@@ -112,7 +112,7 @@ Terms, acronyms, and concepts used throughout the NEPA and Permitting Data Model
 
 **Program** — A PSS standard object (API name: `Program`) used in this Accelerator for CEQ Entity 1 (Project). Represents the overall NEPA project/undertaking.
 
-**PSS (Public Sector Solutions)** — Salesforce's industry cloud for government agencies. Provides `IndividualApplication`, `Program`, `ApplicationTimeline`, Action Plans, and OmniStudio as licensed components.
+**APS (Agentforce for Public Sector)** — Salesforce's industry cloud for government agencies (formerly called Public Sector Solutions / PSS). Provides `IndividualApplication`, `Program`, `ApplicationTimeline`, Action Plans, and OmniStudio as licensed components.
 
 **PublicComplaint** — A PSS standard object used in this Accelerator for CEQ Entity 4 (Comments). Records public comments received during NEPA review periods.
 

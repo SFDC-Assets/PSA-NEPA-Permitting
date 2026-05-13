@@ -41,6 +41,7 @@ public with sharing class NepaActionPlanLauncher {
             SELECT Id, Name
             FROM ActionPlanTemplate
             WHERE UniqueName = :aptDeveloperName
+            WITH USER_MODE
             LIMIT 1
         ];
         if (templates.isEmpty()) {
@@ -53,6 +54,7 @@ public with sharing class NepaActionPlanLauncher {
             FROM ActionPlanTemplateVersion
             WHERE ActionPlanTemplateId = :templates[0].Id
                 AND Status = 'Active'
+            WITH USER_MODE
             ORDER BY Version DESC
             LIMIT 1
         ];
@@ -67,7 +69,7 @@ public with sharing class NepaActionPlanLauncher {
         ap.ActionPlanTemplateVersionId  = versions[0].Id;
         ap.TargetId                     = recordId;
         ap.StartDate                    = Date.today();
-        insert ap;
+        insert as user ap;
 
         return ap.Id;
     }

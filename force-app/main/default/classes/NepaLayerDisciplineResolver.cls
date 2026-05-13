@@ -76,7 +76,7 @@ public with sharing class NepaLayerDisciplineResolver {
             Set<String> seenDisciplines = new Set<String>();
             Map<String, Id> disciplineToLayerId = new Map<String, Id>();
 
-            for (NEPA_Layer_Discipline__mdt cmt : [
+            for (NEPA_Layer_Discipline__mdt cmt : [ //NOPMD — CMT is always readable; SECURITY_ENFORCED not applicable
                 SELECT GIS_Layer_Developer_Name__c, Discipline__c,
                        Work_Type_Developer_Name__c, WO_Subject_Template__c,
                        WO_Description_Template__c, WO_Duration_Minutes__c,
@@ -85,8 +85,8 @@ public with sharing class NepaLayerDisciplineResolver {
                 WHERE Active__c = true
                 ORDER BY Sort_Order__c ASC NULLS LAST
             ]) {
-                if (!layerDevNameToId.containsKey(cmt.GIS_Layer_Developer_Name__c)) continue;
-                if (seenDisciplines.contains(cmt.Discipline__c)) continue;
+                if (!layerDevNameToId.containsKey(cmt.GIS_Layer_Developer_Name__c)) { continue; }
+                if (seenDisciplines.contains(cmt.Discipline__c)) { continue; }
                 seenDisciplines.add(cmt.Discipline__c);
                 disciplineToLayerId.put(cmt.Discipline__c, layerDevNameToId.get(cmt.GIS_Layer_Developer_Name__c));
                 matchedCMTs.add(cmt);
@@ -140,7 +140,7 @@ public with sharing class NepaLayerDisciplineResolver {
 
             String programName = '';
             List<Program> programs = [SELECT Name FROM Program WHERE Id = :req.programId WITH SECURITY_ENFORCED LIMIT 1];
-            if (!programs.isEmpty()) programName = programs[0].Name;
+            if (!programs.isEmpty()) { programName = programs[0].Name; }
 
             for (NEPA_Layer_Discipline__mdt cmt : matchedCMTs) {
                 Id layerId = disciplineToLayerId.get(cmt.Discipline__c);
@@ -204,7 +204,7 @@ public with sharing class NepaLayerDisciplineResolver {
     }
 
     private static String tokenReplace(String template, String projectName, String layerLabel) {
-        if (String.isBlank(template)) return '';
+        if (String.isBlank(template)) { return ''; }
         return template
             .replace('{ProjectName}', projectName != null ? projectName : '')
             .replace('{LayerLabel}', layerLabel != null ? layerLabel : '');

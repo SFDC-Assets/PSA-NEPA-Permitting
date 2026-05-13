@@ -4,7 +4,7 @@
  * Creates:
  *   Entity 9 — RegulatoryAuthority (4) + RegulatoryCode (7)
  *   Entity 8 — nepa_process_team_member__c (7 ID team members)
- *   Entity 7 — Polygon (1) + nepa_gis_data_element__c (5)
+ *   Entity 7 — nepa_gis_data__c (1 GIS container) + Polygon (1) + nepa_gis_data_element__c (5)
  *              + Program lat/lon/polygon wired for proximity flow
  *
  * Run AFTER step 18 (IndividualApplication and Program must exist).
@@ -428,4 +428,50 @@ if (!gisToInsert.isEmpty()) {
     System.debug('nepa_gis_data_element__c inserted: ' + gisToInsert.size());
 }
 
-System.debug('Step 20 complete: Entity 9 (RegulatoryCode × 7 standalone), Entity 8 (Team Members), Entity 7 (GIS) loaded for Carrie Placer Mine IDI-38709.');
+// ── 7d. nepa_gis_data__c — CEQ Entity 7 GIS data container ──────────────────
+// One container record per NEPA review; links the spatial analysis package to
+// both the Program (project) and IndividualApplication (process). The container
+// inventory JSON documents all 5 nepa_gis_data_element__c child datasets.
+
+Id gisDataId;
+List<nepa_gis_data__c> existingGisData = [
+    SELECT Id FROM nepa_gis_data__c
+    WHERE nepa_parent_project__c = :programId
+    AND nepa_parent_process__c   = :appId
+    LIMIT 1
+];
+if (!existingGisData.isEmpty()) {
+    gisDataId = existingGisData[0].Id;
+    System.debug('nepa_gis_data__c (existing): ' + gisDataId);
+} else {
+    String containerInventory = JSON.serialize(new List<Map<String, String>>{
+        new Map<String, String>{ 'name' => 'Carrie Placer Mine Claim Boundary — IDI-38709',   'purpose' => 'Project Boundary', 'format' => 'GeoJSON', 'source' => 'BLM GeoBOE' },
+        new Map<String, String>{ 'name' => 'Jordan Creek Watershed Analysis Area',             'purpose' => 'Analysis Area',    'format' => 'GeoJSON', 'source' => 'NHD+ High Resolution' },
+        new Map<String, String>{ 'name' => 'Sage-Grouse PHMA — Owyhee Basin',                 'purpose' => 'Resource Layer',   'format' => 'GeoJSON', 'source' => 'ArcGIS Online — SGMA PHMA' },
+        new Map<String, String>{ 'name' => 'ESA Critical Habitat — Columbia Spotted Frog',     'purpose' => 'Resource Layer',   'format' => 'GeoJSON', 'source' => 'USFWS ArcGIS Online — ESA Critical Habitat' },
+        new Map<String, String>{ 'name' => 'NWI Wetlands — Jordan Creek Riparian Corridor',    'purpose' => 'Resource Layer',   'format' => 'GeoJSON', 'source' => 'National Wetlands Inventory' }
+    });
+    nepa_gis_data__c gisData = new nepa_gis_data__c();
+    gisData.Name                        = 'GIS Spatial Analysis Package — IDI-38709';
+    gisData.nepa_parent_project__c      = programId;
+    gisData.nepa_parent_process__c      = appId;
+    gisData.nepa_centroid_lat__c        = 42.8701;
+    gisData.nepa_centroid_lon__c        = -116.9227;
+    gisData.nepa_extent__c              = '-116.9264,42.8683,-116.9190,42.8719';
+    gisData.nepa_address__c             = 'Owyhee County, Idaho — ~9 miles SE of Jordan Valley, OR';
+    gisData.nepa_description__c         = 'GIS spatial analysis package for Carrie Placer Mine Plan of Operations (IDI-38709, DOI-BLM-ID-B030-2019-0014-EA). Contains project boundary, watershed analysis area, and three resource layers (NWI Wetlands, USFWS Critical Habitat, Sage-Grouse PHMA) used for GIS proximity screening and extraordinary circumstances determination. Proximity check detected NWI Wetlands and FWS Critical Habitat within 1-mile buffer; EC flag set on Program. GIS run completed 2019-03-12.';
+    gisData.nepa_container_inventory__c = containerInventory;
+    gisData.nepa_creator__c             = 'BLM Owyhee Field Office GIS';
+    gisData.nepa_creator_contact__c     = '{"name":"GIS Analyst — BLM Owyhee FO","agency":"Bureau of Land Management","email":"blm_ow_gis@blm.gov"}';
+    gisData.nepa_notes__c               = 'Coordinates derived from mining claim boundary submitted with Plan of Operations. Polygon approximates 15-acre claim boundary as ~808ft × 808ft rectangle. GIS layers queried at 1-mile buffer radius per NEPA_GIS_Layer_Config__mdt configuration. EPA Superfund NPL: no sites within 1 mile (rural Owyhee County). EJScreen EJ Index: 18.3 (informational — no EC keyword configured for EJ Index).';
+    gisData.nepa_data_source_agency__c  = 'BLM';
+    gisData.nepa_data_source_system__c  = 'NEPA_GIS_Proximity_Check';
+    gisData.nepa_data_record_version__c = '1.0';
+    gisData.nepa_record_owner_agency__c = 'BLM';
+    gisData.nepa_retrieved_timestamp__c = DateTime.newInstance(2019, 3, 12, 14, 23, 0);
+    insert gisData;
+    gisDataId = gisData.Id;
+    System.debug('nepa_gis_data__c inserted: ' + gisDataId);
+}
+
+System.debug('Step 20 complete: Entity 9 (RegulatoryCode × 7 standalone), Entity 8 (Team Members), Entity 7 (nepa_gis_data__c × 1 + GIS elements × 5 + Polygon) loaded for Carrie Placer Mine IDI-38709.');

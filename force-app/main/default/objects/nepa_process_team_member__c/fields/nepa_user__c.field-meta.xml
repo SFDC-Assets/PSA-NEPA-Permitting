@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_user__c</fullName>
+    <description>The Salesforce User assigned to this process in this role. CEQ Entity 8 user_id reference.</description>
+    <inlineHelpText>The staff member, contractor, or agency representative assigned to this process.</inlineHelpText>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>User</label>
+    <referenceTo>User</referenceTo>
+    <relationshipLabel>Process Team Assignments</relationshipLabel>
+    <relationshipName>Process_Team_Assignments</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

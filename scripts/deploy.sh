@@ -9,12 +9,12 @@
 #
 # Requirements:
 #   - sf CLI v2 authenticated to <target-org-alias>
-#   - Public Sector Solutions (PSS) installed in the target org
+#   - Agentforce for Public Sector (APS) installed in the target org
 #   - Run from repo root
 #
 # Phase order (dependency-safe):
 #   1  Custom object schemas   — object defs before fields/permsets/flows reference them
-#   2  Custom fields           — full objects/ dir (fields on PSS + custom objects)
+#   2  Custom fields           — full objects/ dir (fields on APS + custom objects)
 #   3  Custom labels           — referenced by Apex and flows
 #   4  Permission set          — FLS grants require fields to exist first
 #   5  Custom metadata records — CMT records used by flow decision logic
@@ -279,6 +279,8 @@ deploy "object schemas" \
     --metadata "CustomObject:nepa_ce_library__c" \
     --metadata "CustomObject:nepa_decision_payload__c" \
     --metadata "CustomObject:NEPA_Process_Model__mdt" \
+    --metadata "CustomObject:nepa_process_team_member__c" \
+    --metadata "CustomObject:nepa_gis_data__c" \
     --target-org "$TARGET_ORG"
 
 # ── phase 2: custom fields on all objects ─────────────────────────────────────
@@ -298,11 +300,27 @@ else
     echo "    (no labels to deploy)"
 fi
 
-# ── phase 4: permission set ───────────────────────────────────────────────────
-phase_header "Phase 4: Permission set"
-deploy "permission set" \
-    --source-dir force-app/main/default/permissionsets \
+# ── phase 3b: custom tabs ────────────────────────────────────────────────────
+# Must precede Phase 4 (permission set) — the permset references tabSettings
+# by tab name and Salesforce validates their existence at deploy time.
+phase_header "Phase 3b: Custom tabs"
+deploy "tabs" \
+    --metadata "CustomTab:nepa_ar_export__c" \
+    --metadata "CustomTab:nepa_detected_protection_layer__c" \
+    --metadata "CustomTab:nepa_engagement__c" \
+    --metadata "CustomTab:nepa_gis_data__c" \
+    --metadata "CustomTab:nepa_gis_data_element__c" \
+    --metadata "CustomTab:nepa_litigation__c" \
+    --metadata "CustomTab:nepa_process_team_member__c" \
+    --metadata "CustomTab:nepa_ce_library__c" \
     --target-org "$TARGET_ORG"
+
+# ── phase 4: permission set ──────────────────────────────────────────────────
+# NOTE: Permission set is deployed AFTER Phase 7 (Apex) because it references
+# ApexClass entries (NepaLayerDisciplineResolver, NepaActionPlanLauncher) that
+# must exist before the permset deploy validates. See Phase 4b below.
+phase_header "Phase 4: Permission set (deferred — see Phase 4b after Apex)"
+echo "    (permission set deployed in Phase 4b after Apex — skipping here)"
 
 # ── phase 5: custom metadata records ─────────────────────────────────────────
 phase_header "Phase 5: Custom metadata seed records"
@@ -367,6 +385,16 @@ deploy "apex" \
     --test-level RunLocalTests \
     --target-org "$TARGET_ORG"
 
+# ── phase 4b: permission set (post-apex) ─────────────────────────────────────
+# Deployed here rather than Phase 4 because the permset references:
+#   - ApexClass: NepaLayerDisciplineResolver, NepaActionPlanLauncher (need Phase 7 first)
+#   - CustomTab: all tabs (needed Phase 3b first — already done)
+#   - CustomField: all custom fields (needed Phase 2 first — already done)
+phase_header "Phase 4b: Permission set"
+deploy "permission set" \
+    --source-dir force-app/main/default/permissionsets \
+    --target-org "$TARGET_ORG"
+
 # ── phase 8: flows (one per deploy call) ──────────────────────────────────────
 # Each flow is deployed individually to avoid the Salesforce Metadata API
 # UNKNOWN_EXCEPTION that fires when multiple flows are included in a single
@@ -397,7 +425,6 @@ FLOWS=(
     NEPA_Plaintiff_Intelligence
     NEPA_Permit_Coordinator
     NEPA_FRA_Page_Limit_Setter
-    NEPA_EIS_Section_Draft_Trigger
     NEPA_AdminRecord_AutoCreate
     NEPA_Error_Logger
     NEPA_Error_Event_Handler
@@ -408,9 +435,12 @@ FLOWS=(
 
 # NEPA_EIS_Section_Assembler uses generateText (Einstein AI) — skipped unless
 # Einstein generative AI is provisioned in the target org.
+# NEPA_EIS_Section_Draft_Trigger calls NEPA_EIS_Section_Assembler as a subflow;
+# it cannot deploy until the assembler exists. Both must be deployed together.
 # NEPA_Work_Order_Generator — flow file not yet created (stub listed in docs only).
-# Deploy these manually if Einstein AI is available:
-#   sf project deploy start --metadata "Flow:NEPA_EIS_Section_Assembler" --target-org NEPADEMO --test-level NoTestRun --wait 30
+# Deploy these manually when Einstein AI is available:
+#   sf project deploy start --metadata "Flow:NEPA_EIS_Section_Assembler" --target-org "$TARGET_ORG" --test-level NoTestRun --wait 30
+#   sf project deploy start --metadata "Flow:NEPA_EIS_Section_Draft_Trigger" --target-org "$TARGET_ORG" --test-level NoTestRun --wait 30
 
 for flow in "${FLOWS[@]}"; do
     deploy_flow "$flow"
@@ -551,16 +581,10 @@ else
 fi
 
 # ── phase 9: custom tabs ──────────────────────────────────────────────────────
-phase_header "Phase 9: Custom tabs"
-deploy "tabs" \
-    --metadata "CustomTab:nepa_ar_export__c" \
-    --metadata "CustomTab:nepa_detected_protection_layer__c" \
-    --metadata "CustomTab:nepa_engagement__c" \
-    --metadata "CustomTab:nepa_gis_data_element__c" \
-    --metadata "CustomTab:nepa_litigation__c" \
-    --metadata "CustomTab:nepa_process_team_member__c" \
-    --metadata "CustomTab:nepa_ce_library__c" \
-    --target-org "$TARGET_ORG"
+# Tabs were already deployed in Phase 3b (required before permission set).
+# This phase is a no-op but retained for documentation of deployment order.
+phase_header "Phase 9: Custom tabs (already deployed in Phase 3b)"
+echo "    (tabs deployed in Phase 3b — skipping)"
 
 # ── phase 10: report types ────────────────────────────────────────────────────
 # Only the two NEPA report types — the others are installed by the managed pkg.
@@ -666,8 +690,7 @@ else
     echo "       NEPA_GIS_Proximity_Check"
     echo "       NEPA_Team_Assembly_Orchestrator"
     echo "       NEPA_WO_Milestone_Setter"
-    echo "       NEPA_EIS_Section_Draft_Trigger"
-    echo "       (NEPA_EIS_Section_Assembler requires Einstein AI — deploy separately if available)"
+    echo "       (NEPA_EIS_Section_Assembler + NEPA_EIS_Section_Draft_Trigger require Einstein AI — deploy separately if available)"
     echo "       NEPA_AdminRecord_AutoCreate"
     echo "       NEPA_Error_Logger"
     echo "       NEPA_Error_Event_Handler"

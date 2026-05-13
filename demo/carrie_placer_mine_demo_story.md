@@ -1,5 +1,5 @@
 # Demo Story: Carrie Placer Mine Plan of Operations
-## Salesforce Field Service & Public Sector Solutions — NEPA Permitting Acceleration
+## Salesforce Field Service & Agentforce for Public Sector — NEPA Permitting Acceleration
 
 **Source Data:** DOI-BLM-ID-B030-2019-0014-EA | BLM Owyhee Field Office, Marsing, Idaho
 **Real Case File:** IDI-38709 | Applied Oct 18, 2017 → Decision Nov 27, 2019 (25 months)
@@ -307,7 +307,7 @@ flowchart TB
         AR["AssignedResource"]
     end
 
-    subgraph PSS["PSS Case Management Layer"]
+    subgraph APS["APS Case Management Layer"]
         direction TB
         PROG["Program\n(Project Container)\n• Lead agency\n• Circuit\n• State\n• Sector"]
         APP2["IndividualApplication\n• NEPA Pathway\n• Litigation Risk Score\n• Plaintiff Risk Flag\n• Defensibility Score\n• Co-Permits Required"]
@@ -339,7 +339,7 @@ flowchart TB
     FIELD -->|"Downloads work orders\nCloses surveys offline\nSyncs on cell recovery"| MOBILE
 
     %% Channel → Platform
-    PORTAL -->|"Intake record creates\nIndividualApplication"| PSS
+    PORTAL -->|"Intake record creates\nIndividualApplication"| APS
     MOBILE -->|"Work order close\nevents"| FSL
 
     %% FSL internal
@@ -350,18 +350,18 @@ flowchart TB
     SR --> ST
     WT -.->|"Seasonal constraints\ninform scheduling"| OPT
 
-    %% PSS internal
+    %% APS internal
     PROG --> APP2
     APP2 --> TL
     APP2 --> CV
     APP2 --> PC
     APP2 --> ENG
 
-    %% FSL → PSS
+    %% FSL → APS
     WO -->|"Work order linked\nto IndividualApplication"| APP2
     WO -->|"Closure events\ntrigger automation"| PPT
 
-    %% Intelligence ↔ PSS
+    %% Intelligence ↔ APS
     CE -->|"Routes at intake"| APP2
     TRA -->|"Risk flag on\nIndividualApplication"| APP2
     PI -->|"Flags PublicComplaint\ncreates work order"| PC
@@ -375,7 +375,7 @@ flowchart TB
     MDT --> LRS
     LIT -->|"Circuit loss patterns\ninform risk weights"| LRS
     CORPUS -->|"Empirical thresholds\nfor screeners"| MDT
-    CEQ -->|"Metadata standard\nmaps to PSS objects"| PSS
+    CEQ -->|"Metadata standard\nmaps to APS objects"| APS
 
     %% Integrations
     PPT -->|"30-day SLA task\nauto-created"| IDWR
@@ -400,7 +400,7 @@ flowchart TB
 
 **Architecture notes:**
 - **Orange (Field Service):** The optimization engine is the scheduling brain — it reads WorkType seasonal constraints and gate availability, sequences all six work orders, and prevents double-booking.
-- **Purple (PSS Case Management):** IndividualApplication is the central record. Every specialist survey, every document, every comment, every milestone hangs off it.
+- **Purple (APS Case Management):** IndividualApplication is the central record. Every specialist survey, every document, every comment, every milestone hangs off it.
 - **Pink (Intelligence):** All four flows read from Custom Metadata Types — changing a CE code, adding a plaintiff org, or updating a circuit risk weight requires zero code change.
 - **Blue (Data Foundation):** The NEPATEC 2.0 corpus is the empirical basis for every threshold in the screeners. The model isn't hypothetical — it's derived from 61,881 real projects.
 

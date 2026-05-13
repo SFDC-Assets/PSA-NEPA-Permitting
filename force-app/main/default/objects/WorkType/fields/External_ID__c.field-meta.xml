@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>External_ID__c</fullName>
+    <description>Developer-name identifier for this WorkType, used by NepaLayerDisciplineResolver to look up the correct WorkType record from NEPA_Layer_Discipline__mdt.Work_Type_Developer_Name__c.</description>
+    <externalId>true</externalId>
+    <label>External ID</label>
+    <length>80</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

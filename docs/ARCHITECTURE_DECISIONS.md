@@ -4,7 +4,7 @@
 **Maintainer:** GPS Accelerators
 **Last Updated:** 2026-05-12
 
-Open-source NEPA permitting accelerator built on Salesforce Public Sector Solutions (PSS). Maps CEQ NEPA and Permitting Data and Technology Standard v1.2 entities to PSS standard objects, adds custom objects and 12+ declarative flows for risk intelligence, and prepares for Phase 2 OmniStudio + Agentforce portal delivery.
+Open-source NEPA permitting accelerator built on Salesforce Agentforce for Public Sector (APS). Maps CEQ NEPA and Permitting Data and Technology Standard v1.2 entities to PSS standard objects, adds custom objects and 12+ declarative flows for risk intelligence, and prepares for Phase 2 OmniStudio + Agentforce portal delivery.
 
 ---
 
@@ -12,7 +12,7 @@ Open-source NEPA permitting accelerator built on Salesforce Public Sector Soluti
 
 | ADR | Title | Status |
 |-----|-------|--------|
-| 001 | [PSS Object Mapping for CEQ Entities](#adr-001--pss-object-mapping-for-ceq-entities) | Accepted |
+| 001 | [APS Object Mapping for CEQ Entities](#adr-001--aps-object-mapping-for-ceq-entities) | Accepted |
 | 002 | [Flow-Only Risk Intelligence (No Apex)](#adr-002--flow-only-risk-intelligence-no-apex) | Accepted |
 | 003 | [Platform Event Error Architecture](#adr-003--platform-event-error-architecture) | Accepted |
 | 004 | [Custom Metadata Weight Tables](#adr-004--custom-metadata-weight-tables) | Accepted |
@@ -26,7 +26,7 @@ Open-source NEPA permitting accelerator built on Salesforce Public Sector Soluti
 
 ---
 
-## ADR 001 -- PSS Object Mapping for CEQ Entities
+## ADR 001 -- APS Object Mapping for CEQ Entities
 
 **Status:** Accepted
 **Date:** 2026-04-29
@@ -34,9 +34,9 @@ Open-source NEPA permitting accelerator built on Salesforce Public Sector Soluti
 
 ### Context
 
-The CEQ NEPA and Permitting Data and Technology Standard v1.2 defines six core entities that every NEPA tracking system must represent: Project, Process, Documents, Comments, Public Engagement Events, and Case Events. Salesforce Public Sector Solutions ships several standard objects that approximate these entities but were designed for broader regulatory intake, not specifically for NEPA. The accelerator must choose which PSS objects to adopt and where custom objects are required.
+The CEQ NEPA and Permitting Data and Technology Standard v1.2 defines six core entities that every NEPA tracking system must represent: Project, Process, Documents, Comments, Public Engagement Events, and Case Events. Salesforce Agentforce for Public Sector ships several standard objects that approximate these entities but were designed for broader regulatory intake, not specifically for NEPA. The accelerator must choose which PSS objects to adopt and where custom objects are required.
 
-Two PSS objects were candidates for the Process entity: `IndividualApplication` and `BusinessLicenseApplication`. NEPA proponents span individuals, businesses, federal and state agencies, tribal nations, and multi-party joint ventures. The selected object must carry stage/status/outcome lifecycle fields that align with CEQ Process properties without imposing assumptions about commercial licensing.
+Two APS objects were candidates for the Process entity: `IndividualApplication` and `BusinessLicenseApplication`. NEPA proponents span individuals, businesses, federal and state agencies, tribal nations, and multi-party joint ventures. The selected object must carry stage/status/outcome lifecycle fields that align with CEQ Process properties without imposing assumptions about commercial licensing.
 
 ### Decision
 
@@ -373,7 +373,7 @@ Complete all items in this checklist before deploying the accelerator to a produ
 
 ### Org Configuration
 
-- [ ] PSS (Public Sector Solutions) license is active. Verify that `IndividualApplication`, `Program`, `ApplicationTimeline`, and `PublicComplaint` are available in the target org by confirming object visibility in Setup > Object Manager.
+- [ ] APS (Agentforce for Public Sector) license is active. Verify that `IndividualApplication`, `Program`, `ApplicationTimeline`, and `PublicComplaint` are available in the target org by confirming object visibility in Setup > Object Manager.
 - [ ] API version 62.0 minimum (Spring '25). Confirm the org's metadata API version supports 62.0 by checking Setup > Company Information or running `sf org display`.
 - [ ] Platform Events are enabled (Setup > Platform Events). Required for `NEPA_Error_Event__e` publish/subscribe architecture.
 - [ ] Custom Metadata deployment permission is available. The deploying user must have System Administrator profile or a profile/permission set with the `Customize Application` permission.

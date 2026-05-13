@@ -46,7 +46,7 @@ Load files strictly in number order. Each file's parent records must exist befor
 | 17 | `17_nepa_litigation__c.csv` | nepa_litigation__c | 2 | insert (no ext ID) | Program (08) |
 | 18 | `18_postload_polymorphic.apex` | **Apex script** | — | — | Run after all CSVs; wires polymorphic lookups |
 | 19 | `19_Task.csv` | Task | 8 | `External_ID__c` | Loaded before or after Apex; WhatId/WhoId wired by step 18 |
-| 20 | `20_entities789_demo_data.apex` | **Apex script** | — | — | Run after step 18; creates RegulatoryAuthority (4), RegulatoryCode (7 standalone Entity 9), nepa_process_team_member__c (7), Polygon (1), nepa_gis_data_element__c (5); wires Program lat/lon/polygon |
+| 20 | `20_entities789_demo_data.apex` | **Apex script** | — | — | Run after step 18; creates RegulatoryAuthority (4), RegulatoryCode (7 standalone Entity 9), nepa_process_team_member__c (7), nepa_gis_data__c (1 GIS container), Polygon (1), nepa_gis_data_element__c (5); wires Program lat/lon/polygon |
 | 21 | `21_postload_discipline.apex` | **Apex script** | — | — | Run after step 18; sets ServiceResource.nepa_discipline__c = 'NEPA Specialist' on DEMO_SR_001 (demo constraint: all 7 specialists share one SR) |
 | 22 | `22_postload_gis_team_assembly.apex` | **Apex script** | — | — | Run after steps 20–21; pre-seeds GIS proximity results (nepa_detected_protection_layer__c × 4), auto-assembled team members (× 3, GIS_Auto_Assembly), and auto-generated WorkOrders (× 3, nepa_auto_generated__c = true) for the Carrie Placer Mine; sets Program nepa_extraordinary_circumstances__c = true and nepa_gis_proximity_complete__c = true |
 | 23 | `23_postload_flow_refresh.apex` | **Apex script** | — | — | Run last; re-fires all IsChanged-gated flows (Risk Scorer, CE Screener, SLA Setter, Timeline Risk, Defensibility Checker) by toggling then restoring nepa_review_type__c. Populates nepa_risk_score_factors__c, nepa_screening_confidence__c, nepa_sla_due_date__c, nepa_timeline_risk_tier__c, nepa_defensibility_gaps__c, nepa_missing_documents__c, and related computed fields. |
@@ -59,7 +59,7 @@ Load files strictly in number order. Each file's parent records must exist befor
 - OperatingHours, Account, Contact, ServiceTerritory, WorkType, ServiceResource,
   ServiceTerritoryMember, WorkOrder, ServiceAppointment, AssignedResource, Task
 
-**PSS / custom objects** — no `External_ID__c` field; use the domain natural ID:
+**APS / custom objects** — no `External_ID__c` field; use the domain natural ID:
 - `Program` → upsert on `nepa_project_id__c`  
 - `IndividualApplication` → upsert on `nepa_federal_unique_id__c`  
 - `ApplicationTimeline`, `PublicComplaint`, `nepa_engagement__c`, `nepa_litigation__c`, `ContentVersion` → **insert only** (no external ID); re-running the load script inserts duplicates for these objects
@@ -72,7 +72,7 @@ The following fields cannot be set via CSV bulk upsert. `18_postload_polymorphic
 
 | Field / Object | Why Apex | Resolution |
 |---|---|---|
-| ServiceResource `RelatedRecordId` | Requires User ID (not Contact) | Created with running user's ID; 1 SR for demo (PSS enforces 1 Technician per User) |
+| ServiceResource `RelatedRecordId` | Requires User ID (not Contact) | Created with running user's ID; 1 SR for demo (APS enforces 1 Technician per User) |
 | ServiceTerritoryMember | Depends on SR created at runtime | Single STM created after SR |
 | IndividualApplication `LicenseTypeId` | Org-specific `RegulatoryAuthorizationType` ID | Apex queries/creates "NEPA Environmental Review" RAT at runtime |
 | ContentVersion `VersionData` | Bulk API v2 cannot supply base64 Blob in CSV | Created with `Blob.valueOf(' ')` placeholder; 6 documents including Comment Response required by FONSI gate CMT |
@@ -135,11 +135,13 @@ Program (08)  [also]
   ├── nepa_protection_areas__c = "NWI Wetlands: … / FWS Critical Habitat: … / …" (22)
   ├── nepa_polygon__c → Polygon (20)
   │     └── nepa_gis_data_element__c.nepa_polygon__c (20) — 5 GIS layers
-  └── nepa_detected_protection_layer__c.nepa_program__c (22) — 4 records (1 per active layer)
-        ├── NWI_Wetlands       [is_hit=true,  EC=true]  — Freshwater Emergent Wetland × 3
-        ├── FWS_Critical_Habitat [is_hit=true, EC=true] — Greater Sage-Grouse Designated PHMA
-        ├── EPA_Superfund_NPL  [is_hit=false, EC=false] — 0 features (rural Owyhee County)
-        └── EJScreen_EJ_Index  [is_hit=true,  EC=false] — EJ Index = 18.3 (informational)
+  ├── nepa_detected_protection_layer__c.nepa_program__c (22) — 4 records (1 per active layer)
+  │     ├── NWI_Wetlands       [is_hit=true,  EC=true]  — Freshwater Emergent Wetland × 3
+  │     ├── FWS_Critical_Habitat [is_hit=true, EC=true] — Greater Sage-Grouse Designated PHMA
+  │     ├── EPA_Superfund_NPL  [is_hit=false, EC=false] — 0 features (rural Owyhee County)
+  │     └── EJScreen_EJ_Index  [is_hit=true,  EC=false] — EJ Index = 18.3 (informational)
+  └── nepa_gis_data__c.nepa_parent_project__c (20) — 1 GIS container (CEQ Entity 7)
+        [also nepa_gis_data__c.nepa_parent_process__c → IndividualApplication (09)]
 
 IndividualApplication (09)  [also — GIS auto-assembly from step 22]
   ├── nepa_process_team_member__c (nepa_assembly_source__c = 'GIS_Auto_Assembly') × 3
@@ -219,6 +221,9 @@ sf data query --target-org $TARGET \
 
 sf data query --target-org $TARGET \
   --query "SELECT Subject, nepa_discipline__c, Priority, Status FROM WorkOrder WHERE nepa_auto_generated__c = true AND nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'"
+
+sf data query --target-org $TARGET \
+  --query "SELECT Name, nepa_centroid_lat__c, nepa_centroid_lon__c, nepa_extent__c, nepa_data_source_system__c FROM nepa_gis_data__c WHERE nepa_parent_process__r.nepa_federal_unique_id__c = 'IDI-38709'"
 ```
 
 ---
@@ -283,6 +288,7 @@ sf data delete bulk --sobject nepa_process_team_member__c --where "nepa_assembly
 sf data delete bulk --sobject nepa_detected_protection_layer__c --where "nepa_program__r.nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'" --target-org $TARGET --async
 
 # Step 20 cleanup (run before Program/IndividualApplication deletes above)
+sf data delete bulk --sobject nepa_gis_data__c        --where "nepa_data_source_system__c = 'NEPA_GIS_Proximity_Check'" --target-org $TARGET --async
 sf data delete bulk --sobject nepa_gis_data_element__c --where "nepa_data_source_system__c IN ('BLM GeoBOE','NHD+ High Resolution','ArcGIS Online — SGMA PHMA','USFWS ArcGIS Online — ESA Critical Habitat','National Wetlands Inventory')" --target-org $TARGET --async
 sf data delete bulk --sobject nepa_process_team_member__c --where "nepa_data_source_system__c = 'eNEPA'" --target-org $TARGET --async
 sf data delete bulk --sobject Polygon                 --where "Name = 'Carrie Placer Mine Claim Boundary — IDI-38709'" --target-org $TARGET --async
