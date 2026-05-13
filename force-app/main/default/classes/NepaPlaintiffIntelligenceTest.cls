@@ -188,6 +188,53 @@ private class NepaPlaintiffIntelligenceTest {
     }
 
     @IsTest
+    static void plaintiffIntelligence_tribalNation_taskSubjectContainsOrgName() {
+        // When Navajo Nation matches (Is_Tribal_Nation__c=true, VERY_HIGH), the task
+        // subject formula includes the org name — verify the task was created with WhatId = IA
+        // and subject contains "Navajo" (partial check so it's tolerant of exact formula wording).
+        IndividualApplication ia = getParentApp();
+
+        Test.startTest();
+        insert buildComplaint(ia.Id, 'Navajo Nation');
+        Test.stopTest();
+
+        List<Task> tasks = [SELECT Subject, WhatId FROM Task WHERE WhatId = :ia.Id];
+        System.assertEquals(1, tasks.size(),
+            'One defensibility review task must be created for Navajo Nation match');
+        System.assertEquals(ia.Id, tasks[0].WhatId,
+            'Task WhatId must reference the parent IndividualApplication');
+        System.assert(
+            tasks[0].Subject.contains('Navajo') || tasks[0].Subject.contains('VERY_HIGH'),
+            'Task subject must reference matched org name or risk tier; got: ' + tasks[0].Subject);
+    }
+
+    @IsTest
+    static void plaintiffIntelligence_twoHighRiskOrgs_bothFlagsSet() {
+        // Insert two complaints for the same IA in a single Test.startTest() block —
+        // one from a non-tribal VERY_HIGH org, one from a tribal VERY_HIGH org.
+        // After stopTest the async paths complete; verify the tribal flag is set.
+        IndividualApplication ia = getParentApp();
+
+        PublicComplaint nontribal = buildComplaint(ia.Id, 'Center for Biological Diversity');
+        PublicComplaint tribal = buildComplaint(ia.Id, 'Navajo Nation');
+        tribal.LastName = 'Tribal Commenter';
+
+        Test.startTest();
+        insert nontribal;
+        insert tribal;
+        Test.stopTest();
+
+        IndividualApplication updated = [
+            SELECT nepa_plaintiff_risk_flag__c, nepa_tribal_plaintiff_flag__c
+            FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+        System.assertEquals(true, updated.nepa_plaintiff_risk_flag__c,
+            'nepa_plaintiff_risk_flag__c must be set after high-risk org comments');
+        System.assertEquals(true, updated.nepa_tribal_plaintiff_flag__c,
+            'nepa_tribal_plaintiff_flag__c must be set after Navajo Nation tribal comment');
+    }
+
+    @IsTest
     static void plaintiffIntelligence_bulk_multipleRecords_noSoqlInLoop() {
         IndividualApplication ia = getParentApp();
 

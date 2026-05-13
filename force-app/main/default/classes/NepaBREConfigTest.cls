@@ -789,6 +789,55 @@ private class NepaBREConfigTest {
 
     // ── Statute risk weight calibration values (Phase 1 PermitTEC corpus) ────
 
+    // ── Required Document Registry: CE, EA, EIS each have ≥1 active record ─────
+
+    @IsTest
+    static void requiredDocumentRegistry_hasRecordsForCeEaEis() {
+        // NEPA_Administrative_Record_Checker uses NEPA_Required_Document__mdt to evaluate
+        // record completeness. Each review type must have at least one active required document.
+        Map<String, Integer> countByReviewType = new Map<String, Integer>{
+            'CE' => 0, 'EA' => 0, 'EIS' => 0
+        };
+        for (NEPA_Required_Document__mdt r : [
+            SELECT Review_Type__c
+            FROM NEPA_Required_Document__mdt
+            WHERE Active__c = true
+        ]) {
+            if (countByReviewType.containsKey(r.Review_Type__c)) {
+                countByReviewType.put(r.Review_Type__c, countByReviewType.get(r.Review_Type__c) + 1);
+            }
+        }
+        for (String rt : countByReviewType.keySet()) {
+            System.assert(countByReviewType.get(rt) >= 1,
+                'NEPA_Required_Document__mdt must have at least 1 active record for review type: ' + rt
+                + '; found: ' + countByReviewType.get(rt));
+        }
+    }
+
+    @IsTest
+    static void requiredDocumentRegistry_allActiveRecordsHaveRequiredFields() {
+        List<NEPA_Required_Document__mdt> records = [
+            SELECT DeveloperName, Review_Type__c, Document_Type__c, Is_Required__c, Stage_Required_By__c
+            FROM NEPA_Required_Document__mdt
+            WHERE Active__c = true
+        ];
+        List<String> violations = new List<String>();
+        Set<String> validReviewTypes = new Set<String>{ 'CE', 'EA', 'EIS' };
+        for (NEPA_Required_Document__mdt r : records) {
+            if (!validReviewTypes.contains(r.Review_Type__c)) {
+                violations.add(r.DeveloperName + ': invalid Review_Type__c "' + r.Review_Type__c + '"');
+            }
+            if (String.isBlank(r.Document_Type__c)) {
+                violations.add(r.DeveloperName + ': missing Document_Type__c');
+            }
+            if (String.isBlank(r.Stage_Required_By__c)) {
+                violations.add(r.DeveloperName + ': missing Stage_Required_By__c');
+            }
+        }
+        System.assertEquals(0, violations.size(),
+            'Required document registry integrity violations: ' + String.join(violations, '; '));
+    }
+
     @IsTest
     static void statuteRiskWeights_pointValuesMatchCorpusCalibration() {
         // PermitTEC v0.1 calibration formula: statute_pts = round((multiplier - 1.00) * 20, 0), min 1

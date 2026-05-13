@@ -212,6 +212,48 @@ private class NepaStageGateTest {
         System.assertNotEquals(null, result.nepa_last_stage_transition__c, 'Stage transition timestamp should be stamped');
     }
 
+    // ── VR-006: error message references supplementation and 40 CFR citation ─────
+
+    @IsTest
+    static void stageGate_vr001_errorMessage_referencesCfrCitation() {
+        Program proj = getProgram();
+        IndividualApplication ia = NepaTestFactory.insertProcess(proj.Id, 'EIS', null, null);
+        ia.nepa_tiering_to_prior_eis__c = true;
+        ia.nepa_prior_nepa_date__c = Date.today().addDays(-2000);
+        ia.nepa_supplementation_review_complete__c = false;
+        ia.nepa_process_stage__c = 'Draft EIS Preparation';
+        try {
+            update ia;
+            System.assert(false, 'Expected DmlException from VR_006');
+        } catch (DmlException e) {
+            String msg = e.getMessage();
+            System.assert(
+                msg.contains('supplementation') || msg.contains('Supplementation') || msg.contains('1502.9'),
+                'VR_006 error message must reference supplementation or 40 CFR 1502.9; got: ' + msg);
+        }
+    }
+
+    // ── VR-004: error message references ESA consultation ────────────────────────
+
+    @IsTest
+    static void stageGate_vr004_errorMessage_referencesEsaConsultation() {
+        Program proj = getProgram();
+        IndividualApplication ia = NepaTestFactory.insertProcess(proj.Id, 'EA', null, null);
+        ia.nepa_esa_consultation_status__c = 'May Affect - Initiated';
+        update ia;
+
+        ia.nepa_process_stage__c = 'Decision Issued';
+        try {
+            update ia;
+            System.assert(false, 'Expected DmlException from VR_004');
+        } catch (DmlException e) {
+            String msg = e.getMessage();
+            System.assert(
+                msg.contains('ESA') || msg.contains('consultation') || msg.contains('Consultation'),
+                'VR_004 error message must reference ESA consultation; got: ' + msg);
+        }
+    }
+
     @IsTest
     static void stageGate_baseline_reviewTypeFirstSet_stampsTargetDate() {
         Program proj = getProgram();

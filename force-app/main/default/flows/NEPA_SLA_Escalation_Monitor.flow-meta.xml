@@ -31,6 +31,14 @@
             </value>
         </assignmentItems>
         <assignmentItems>
+            <!-- Reset warning flag to avoid state contamination from prior loop iteration -->
+            <assignToReference>var_UpdateRecord.nepa_sla_warning_sent__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
             <assignToReference>col_OverdueUpdates</assignToReference>
             <operator>Add</operator>
             <value>
@@ -60,6 +68,14 @@
             <operator>Assign</operator>
             <value>
                 <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <!-- Reset overdue flag to avoid state contamination from prior loop iteration -->
+            <assignToReference>var_UpdateRecord.nepa_sla_overdue__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>false</booleanValue>
             </value>
         </assignmentItems>
         <assignmentItems>

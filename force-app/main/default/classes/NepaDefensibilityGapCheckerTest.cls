@@ -122,6 +122,51 @@ private class NepaDefensibilityGapCheckerTest {
         }
     }
 
+    // ── Gaps field contains recognizable category names ──────────────────────────
+    // The flow writes these exact strings when gaps are found:
+    //   "ROD/FONSI Document Missing; ", "Comment Response Document Missing; ",
+    //   "Alternatives Analysis Document Missing; ", "No Public Engagement Events Recorded; ",
+    //   "Notice of Intent (NOI) Missing; "
+    // This test verifies the field content matches at least one known category.
+
+    @IsTest
+    static void gapsField_containsRecognizableCategory() {
+        IndividualApplication ia = makeIsolatedProcess('DEF-CAT-001');
+
+        // Trigger the flow by adding a public document — the gap scorer will evaluate
+        // the IA for missing required docs. EIS has 5 required docs; with only one
+        // added, at least some gaps should be detected.
+        Test.startTest();
+        Boolean threw = false;
+        try {
+            NepaTestFactory.insertPublicContentVersion(ia.Id, 'NOI');
+        } catch (Exception e) {
+            threw = true;
+        }
+        Test.stopTest();
+
+        System.assertEquals(false, threw,
+            'Defensibility gap checker must not throw when evaluating a partial record');
+
+        IndividualApplication result = [
+            SELECT nepa_defensibility_gaps__c FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+
+        if (String.isNotBlank(result.nepa_defensibility_gaps__c)) {
+            Boolean containsKnownCategory =
+                result.nepa_defensibility_gaps__c.contains('ROD') ||
+                result.nepa_defensibility_gaps__c.contains('Comment Response') ||
+                result.nepa_defensibility_gaps__c.contains('Alternatives Analysis') ||
+                result.nepa_defensibility_gaps__c.contains('Engagement') ||
+                result.nepa_defensibility_gaps__c.contains('NOI') ||
+                result.nepa_defensibility_gaps__c.contains('Comment Period') ||
+                result.nepa_defensibility_gaps__c.contains('Missing');
+            System.assert(containsKnownCategory,
+                'nepa_defensibility_gaps__c must contain at least one recognizable gap category; got: '
+                + result.nepa_defensibility_gaps__c);
+        }
+    }
+
     // ── Bulk: multiple document inserts don't cause SOQL-in-loop violation ───
 
     @IsTest

@@ -275,6 +275,53 @@ private class NepaSlaEscalationMonitorTest {
 
     // ── SLA Due Date Setter: review type + start date auto-populates due date ─
 
+    // ── Mixed batch: overdue and warning records processed in same flow run ──────
+
+    @IsTest
+    static void mixedBatch_overdueAndWarning_bothFlagsSet() {
+        // Both types in a single flow run to verify the nested-loop SLA config matching
+        // works correctly and the bulk collection approach handles both update paths.
+        IndividualApplication overdueIa = insertOverdueProcess('EIS');
+        IndividualApplication warningIa = insertWarningWindowProcess('EIS', 15);
+
+        Test.startTest();
+        runSlaMonitorFlow();
+        Test.stopTest();
+
+        IndividualApplication overdueResult = [
+            SELECT nepa_sla_overdue__c, nepa_sla_warning_sent__c
+            FROM IndividualApplication WHERE Id = :overdueIa.Id
+        ];
+        IndividualApplication warningResult = [
+            SELECT nepa_sla_overdue__c, nepa_sla_warning_sent__c
+            FROM IndividualApplication WHERE Id = :warningIa.Id
+        ];
+
+        System.assertEquals(true, overdueResult.nepa_sla_overdue__c,
+            'Overdue record must be flagged when processed in a mixed batch');
+        System.assertEquals(true, warningResult.nepa_sla_warning_sent__c,
+            'Warning record must have warning_sent = true when processed in a mixed batch');
+        System.assertEquals(false, warningResult.nepa_sla_overdue__c,
+            'Warning record (15 days out) must not be flagged overdue — loop state reset fix in Build_WarningUpdate');
+    }
+
+    // ── EA overdue: SLA config match works for EA review type ────────────────────
+
+    @IsTest
+    static void eaOverdue_slaConfigMatched_flagsCorrectly() {
+        IndividualApplication ia = insertOverdueProcess('EA');
+
+        Test.startTest();
+        runSlaMonitorFlow();
+        Test.stopTest();
+
+        IndividualApplication result = [
+            SELECT nepa_sla_overdue__c FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+        System.assertEquals(true, result.nepa_sla_overdue__c,
+            'EA overdue process must be flagged by SLA monitor — SLA config match for EA must work');
+    }
+
     @IsTest
     static void slaDueDateSetter_eisWithStartDate_populatesDueDate() {
         // NEPA_SLA_Due_Date_Setter is a before-save flow on IndividualApplication.
