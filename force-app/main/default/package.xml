@@ -705,6 +705,8 @@
     </types>
     <types>
         <members>nepa_ce_library__c</members>
+        <members>nepa_detected_protection_layer__c</members>
+        <members>nepa_process_team_member__c</members>
         <name>CustomTab</name>
     </types>
     <types>
