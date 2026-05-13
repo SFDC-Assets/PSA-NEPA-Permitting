@@ -16,7 +16,7 @@
     </values>
     <values>
         <field>Risk_Points__c</field>
-        <value xsi:type="xsd:decimal">5</value>
+        <value xsi:type="xsd:decimal">2</value>
     </values>
     <values>
         <field>Active__c</field>

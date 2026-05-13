@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Federal Highway Administration</label>
+    <protected>false</protected>
+    <values>
+        <field>Agency_Name__c</field>
+        <value xsi:type="xsd:string">Federal Highway Administration</value>
+    </values>
+    <values>
+        <field>Agency_Abbreviation__c</field>
+        <value xsi:type="xsd:string">FHWA</value>
+    </values>
+    <values>
+        <field>Case_Count__c</field>
+        <value xsi:type="xsd:decimal">38</value>
+    </values>
+    <values>
+        <field>Risk_Points__c</field>
+        <value xsi:type="xsd:decimal">18</value>
+    </values>
+</CustomMetadata>

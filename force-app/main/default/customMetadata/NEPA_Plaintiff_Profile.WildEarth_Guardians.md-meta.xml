@@ -20,7 +20,7 @@
     </values>
     <values>
         <field>Success_Rate__c</field>
-        <value xsi:type="xsd:decimal">0.55</value>
+        <value xsi:type="xsd:decimal">0.75</value>
     </values>
     <values>
         <field>Typical_Causes__c</field>

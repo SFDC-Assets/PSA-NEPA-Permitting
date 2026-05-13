@@ -12,11 +12,11 @@
     </values>
     <values>
         <field>Case_Count__c</field>
-        <value xsi:type="xsd:decimal">175</value>
+        <value xsi:type="xsd:decimal">148</value>
     </values>
     <values>
         <field>Risk_Points__c</field>
-        <value xsi:type="xsd:decimal">16</value>
+        <value xsi:type="xsd:decimal">28</value>
     </values>
     <values>
         <field>Low_Data_Confidence__c</field>

@@ -12,10 +12,10 @@
     </values>
     <values>
         <field>Case_Count__c</field>
-        <value xsi:type="xsd:decimal">15</value>
+        <value xsi:type="xsd:decimal">42</value>
     </values>
     <values>
         <field>Risk_Points__c</field>
-        <value xsi:type="xsd:decimal">15</value>
+        <value xsi:type="xsd:decimal">24</value>
     </values>
 </CustomMetadata>

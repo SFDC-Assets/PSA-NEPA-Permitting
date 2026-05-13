@@ -900,6 +900,26 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
+                <fieldItem>Record.nepa_tribal_plaintiff_flag__c</fieldItem>
+                <identifier>ia_risk_tribal_plaintiff_flag</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_challenge_risk_delta__c</fieldItem>
+                <identifier>ia_risk_challenge_delta</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
                 <fieldItem>Record.nepa_expedited_risk_penalty_applied__c</fieldItem>
                 <identifier>ia_risk_expedited_penalty</identifier>
             </fieldInstance>
@@ -966,6 +986,26 @@
                 <identifier>ia_tl_last_transition</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_scoping_overrun_flag__c</fieldItem>
+                <identifier>ia_tl_scoping_overrun_flag</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_projected_scoping_overrun_months__c</fieldItem>
+                <identifier>ia_tl_scoping_overrun_months</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>ia-tl-risk-c1</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -990,6 +1030,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_estimated_completion_date__c</fieldItem>
                 <identifier>ia_tl_estimated_date</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_agency_scoping_baseline_months__c</fieldItem>
+                <identifier>ia_tl_agency_scoping_baseline</identifier>
             </fieldInstance>
         </itemInstances>
         <name>ia-tl-risk-c2</name>

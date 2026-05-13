@@ -16,11 +16,11 @@
     </values>
     <values>
         <field>Prior_Case_Count__c</field>
-        <value xsi:type="xsd:decimal">29</value>
+        <value xsi:type="xsd:decimal">8</value>
     </values>
     <values>
         <field>Success_Rate__c</field>
-        <value xsi:type="xsd:decimal">0.46</value>
+        <value xsi:type="xsd:decimal">0.625</value>
     </values>
     <values>
         <field>Typical_Causes__c</field>

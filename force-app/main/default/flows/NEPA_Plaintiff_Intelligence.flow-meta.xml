@@ -48,6 +48,13 @@
             </value>
         </assignmentItems>
         <assignmentItems>
+            <assignToReference>var_MatchedIsTribalNation</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_CheckProfiles.Is_Tribal_Nation__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
             <assignToReference>var_MatchFound</assignToReference>
             <operator>Assign</operator>
             <value><booleanValue>true</booleanValue></value>
@@ -332,6 +339,7 @@
         <queriedFields>Prior_Case_Count__c</queriedFields>
         <queriedFields>Success_Rate__c</queriedFields>
         <queriedFields>Typical_Causes__c</queriedFields>
+        <queriedFields>Is_Tribal_Nation__c</queriedFields>
         <sortField>Risk_Tier__c</sortField>
         <sortOrder>Asc</sortOrder>
     </recordLookups>
@@ -359,6 +367,12 @@
         <inputAssignments>
             <field>nepa_plaintiff_risk_flag__c</field>
             <value><booleanValue>true</booleanValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_tribal_plaintiff_flag__c</field>
+            <value>
+                <elementReference>var_MatchedIsTribalNation</elementReference>
+            </value>
         </inputAssignments>
         <object>IndividualApplication</object>
     </recordUpdates>
@@ -391,6 +405,14 @@
         <triggerType>RecordAfterSave</triggerType>
     </start>
 
+    <variables>
+        <name>var_MatchedIsTribalNation</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value><booleanValue>false</booleanValue></value>
+    </variables>
     <variables>
         <name>var_MatchFound</name>
         <dataType>Boolean</dataType>

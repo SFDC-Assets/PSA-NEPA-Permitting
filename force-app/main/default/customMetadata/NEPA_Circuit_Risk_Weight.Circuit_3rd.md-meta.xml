@@ -16,7 +16,7 @@
     </values>
     <values>
         <field>Risk_Points__c</field>
-        <value xsi:type="xsd:decimal">10</value>
+        <value xsi:type="xsd:decimal">17</value>
     </values>
     <values>
         <field>Low_Data_Confidence__c</field>

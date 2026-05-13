@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>Priority 4: Timeline risk assessment for IndividualApplication. Fires after-save async when nepa_process_stage__c, nepa_process_status__c, or nepa_last_stage_transition__c changes. Computes nepa_timeline_risk_tier__c (On Track / At Risk / Stalled / Overdue) by comparing nepa_days_in_current_stage__c to review-type stage baselines. Sets nepa_estimated_completion_date__c based on remaining days at current pace. When tier transitions to At Risk or worse, creates an ApplicationTimeline event (Process Paused) and a coordinator escalation Task.</description>
+    <description>Priority 4: Timeline risk assessment for IndividualApplication. Fires after-save async when nepa_process_stage__c, nepa_process_status__c, nepa_last_stage_transition__c, or nepa_total_pages__c changes. Computes nepa_timeline_risk_tier__c (On Track / At Risk / Stalled / Overdue) by comparing nepa_days_in_current_stage__c to review-type stage baselines. For EIS, looks up per-agency median scoping durations from NEPA_Agency_Scoping_Baseline__mdt (Stage 12/13 CEQ EIS Timeline data 2010–2024) and replaces hardcoded 730-day baseline with (Median_NOI_to_DEIS + Median_DEIS_to_FEIS) × 30. CE page count &gt;17 (p95 Stage 6 threshold) and EA page count &gt;200 are promoted to At Risk regardless of timeline. When tier transitions to At Risk or worse, creates ApplicationTimeline event and coordinator escalation Task.</description>
     <label>NEPA Timeline Risk Assessor</label>
     <processType>AutoLaunchedFlow</processType>
     <status>Active</status>
@@ -13,7 +13,6 @@
     <assignments>
         <name>Assign_PreviousTier</name>
         <label>Capture Previous Tier</label>
-        <description>Capture Previous Tier</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -29,7 +28,6 @@
     <assignments>
         <name>Assign_Baseline_CE</name>
         <label>CE Baselines</label>
-        <description>CE Baselines</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -53,14 +51,14 @@
             <value><numberValue>45.0</numberValue></value>
         </assignmentItems>
         <connector>
-            <targetReference>Decision_RiskTier</targetReference>
+            <targetReference>Decision_CE_PageCount</targetReference>
         </connector>
     </assignments>
 
+    <!-- EIS 730-day fallback when no agency-specific baseline record is found -->
     <assignments>
         <name>Assign_Baseline_EIS</name>
-        <label>EIS Baselines</label>
-        <description>EIS Baselines</description>
+        <label>EIS Baselines (730d Fallback)</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -88,10 +86,65 @@
         </connector>
     </assignments>
 
+    <!-- EIS per-agency baseline: (NOI→DEIS + DEIS→FEIS) × 30 days -->
+    <assignments>
+        <name>Assign_Baseline_EIS_PerAgency</name>
+        <label>EIS Baselines (Per-Agency from MDT)</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_BaselineDays</assignToReference>
+            <operator>Assign</operator>
+            <value><elementReference>formula_EIS_BaselineDays</elementReference></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_AtRiskDays</assignToReference>
+            <operator>Assign</operator>
+            <value><elementReference>formula_EIS_AtRiskDays</elementReference></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_StalledDays</assignToReference>
+            <operator>Assign</operator>
+            <value><elementReference>formula_EIS_StalledDays</elementReference></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_OverdueDays</assignToReference>
+            <operator>Assign</operator>
+            <value><elementReference>formula_EIS_OverdueDays</elementReference></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_ScopingBaselineMonths</assignToReference>
+            <operator>Assign</operator>
+            <value><elementReference>var_AgencyBaselineMDT.Median_NOI_to_DEIS_Months__c</elementReference></value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_Scoping_Overrun</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_ScopingOverrun</name>
+        <label>Compute Scoping Overrun Values</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ScopingOverrunMonths</assignToReference>
+            <operator>Assign</operator>
+            <value><elementReference>formula_ScopingOverrunMonths</elementReference></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_ScopingOverrunFlag</assignToReference>
+            <operator>Assign</operator>
+            <value><elementReference>formula_ScopingOverrunFlag</elementReference></value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_RiskTier</targetReference>
+        </connector>
+    </assignments>
+
     <assignments>
         <name>Assign_Tier_OnTrack</name>
         <label>Set On Track</label>
-        <description>Set On Track</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -107,7 +160,6 @@
     <assignments>
         <name>Assign_Tier_AtRisk</name>
         <label>Set At Risk</label>
-        <description>Set At Risk</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -123,7 +175,6 @@
     <assignments>
         <name>Assign_Tier_Stalled</name>
         <label>Set Stalled</label>
-        <description>Set Stalled</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -139,7 +190,6 @@
     <assignments>
         <name>Assign_Tier_Overdue</name>
         <label>Set Overdue</label>
-        <description>Set Overdue</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -155,7 +205,6 @@
     <assignments>
         <name>Handle_Error</name>
         <label>Handle Error</label>
-        <description>Handle Error</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -174,18 +223,17 @@
          STEP 2: Set baseline days by review type
          CE: 30d total → At Risk 33d (110%), Stalled 38d (125%), Overdue 45d (150%)
          EA: 180d total → At Risk 198d, Stalled 225d, Overdue 270d
-         EIS: 730d total → At Risk 803d, Stalled 913d, Overdue 1095d
+         EIS: per-agency from NEPA_Agency_Scoping_Baseline__mdt → fallback 730d
     ============================================================ -->
 
     <decisions>
         <name>Decision_ReviewTypeBaseline</name>
         <label>Review Type for Baseline?</label>
-        <description>Review Type for Baseline?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>EA Default</defaultConnectorLabel>
         <defaultConnector>
-            <targetReference>Decision_RiskTier</targetReference>
+            <targetReference>Decision_EA_PageCount</targetReference>
         </defaultConnector>
         <rules>
             <name>Baseline_CE</name>
@@ -199,7 +247,6 @@
                 <targetReference>Assign_Baseline_CE</targetReference>
             </connector>
             <label>CE</label>
-            <description>CE</description>
         </rules>
         <rules>
             <name>Baseline_EIS</name>
@@ -210,10 +257,9 @@
                 <rightValue><stringValue>EIS</stringValue></rightValue>
             </conditions>
             <connector>
-                <targetReference>Assign_Baseline_EIS</targetReference>
+                <targetReference>Get_ParentProgram_EIS</targetReference>
             </connector>
             <label>EIS</label>
-            <description>EIS</description>
         </rules>
         <rules>
             <name>Baseline_OtherAuth</name>
@@ -228,7 +274,105 @@
                 <targetReference>Assign_Tier_OnTrack</targetReference>
             </connector>
             <label>Other Authorization</label>
-            <description>Other Authorization pathway bypasses baseline evaluation — always On Track</description>
+        </rules>
+    </decisions>
+
+    <!-- CE page count outlier: Stage 6 p95 threshold = 17 pages. Above → At Risk regardless of timeline. -->
+    <decisions>
+        <name>Decision_CE_PageCount</name>
+        <label>CE Page Count Outlier (&gt;17)?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Within Normal Range</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Decision_RiskTier</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>CE_PageCount_Outlier</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_total_pages__c</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue><numberValue>17</numberValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Tier_AtRisk</targetReference>
+            </connector>
+            <label>CE Page Count Outlier (&gt;17 pages)</label>
+        </rules>
+    </decisions>
+
+    <!-- EA page count outlier: >200 pages → minimum tier = At Risk. -->
+    <decisions>
+        <name>Decision_EA_PageCount</name>
+        <label>EA Page Count Outlier (&gt;200)?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Within Normal Range</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Decision_RiskTier</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>EA_PageCount_Outlier</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_total_pages__c</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue><numberValue>200</numberValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Tier_AtRisk</targetReference>
+            </connector>
+            <label>EA Page Count Outlier (&gt;200 pages)</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_AgencyBaselineFound_EIS</name>
+        <label>Agency-Specific EIS Baseline Found?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No Record — Use Fallback</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Assign_Baseline_EIS</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>AgencyBaseline_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_AgencyBaselineMDT</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Baseline_EIS_PerAgency</targetReference>
+            </connector>
+            <label>Agency Baseline Found</label>
+        </rules>
+    </decisions>
+
+    <!-- Scoping overrun check: only meaningful for EIS with an agency-specific baseline -->
+    <decisions>
+        <name>Decision_Scoping_Overrun</name>
+        <label>EIS in Scoping Stage?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Not in Scoping</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Decision_RiskTier</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>In_Scoping_Stage</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_process_stage__c</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue><stringValue>Scoping</stringValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_ScopingOverrun</targetReference>
+            </connector>
+            <label>In Scoping Stage</label>
         </rules>
     </decisions>
 
@@ -239,7 +383,6 @@
     <decisions>
         <name>Decision_RiskTier</name>
         <label>Classify Risk Tier</label>
-        <description>Classify Risk Tier</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>On Track</defaultConnectorLabel>
@@ -258,7 +401,6 @@
                 <targetReference>Assign_Tier_Overdue</targetReference>
             </connector>
             <label>Overdue (150%+ of baseline)</label>
-            <description>Overdue (150%+ of baseline)</description>
         </rules>
         <rules>
             <name>Tier_Stalled</name>
@@ -272,7 +414,6 @@
                 <targetReference>Assign_Tier_Stalled</targetReference>
             </connector>
             <label>Stalled (125–149% of baseline)</label>
-            <description>Stalled (125–149% of baseline)</description>
         </rules>
         <rules>
             <name>Tier_AtRisk</name>
@@ -286,19 +427,16 @@
                 <targetReference>Assign_Tier_AtRisk</targetReference>
             </connector>
             <label>At Risk (110–124% of baseline)</label>
-            <description>At Risk (110–124% of baseline)</description>
         </rules>
     </decisions>
 
     <!-- ============================================================
          STEP 5: Escalate only if tier worsened to At Risk or beyond
-         and the previous tier was On Track (avoid repeated escalation)
     ============================================================ -->
 
     <decisions>
         <name>Decision_EscalationNeeded</name>
         <label>Escalation Needed?</label>
-        <description>Escalation Needed?</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>No Escalation</defaultConnectorLabel>
@@ -319,7 +457,6 @@
                 <targetReference>Create_ProcessPausedEvent</targetReference>
             </connector>
             <label>Tier Worsened From On Track</label>
-            <description>Tier Worsened From On Track</description>
         </rules>
     </decisions>
 
@@ -327,7 +464,6 @@
          FORMULAS
     ============================================================ -->
 
-    <!-- Estimated completion: today + remaining days (baseline minus days spent, floored at 0) -->
     <formulas>
         <name>formula_EstimatedDate</name>
         <description>Estimates completion date as today plus remaining days (baseline minus days spent, floored at 0).</description>
@@ -335,13 +471,8 @@
         <expression>TODAY() + MAX(0, {!var_BaselineDays} - {!$Record.nepa_days_in_current_stage__c})</expression>
     </formulas>
 
-    <!-- ============================================================
-         FORMULAS (continued)
-    ============================================================ -->
-
     <formulas>
         <name>formula_EscalationDueDate</name>
-        <description>Due date for the escalation task, set to 5 days from today.</description>
         <dataType>Date</dataType>
         <expression>TODAY() + 5</expression>
     </formulas>
@@ -349,8 +480,118 @@
     <formulas>
         <name>formula_ErrorContext</name>
         <dataType>String</dataType>
-        <expression>"ReviewType:" &amp; TEXT({!$Record.nepa_review_type__c}) &amp; "|RiskTier:" &amp; {!var_RiskTier} &amp; "|PrevTier:" &amp; {!var_PreviousTier} &amp; "|BaselineDays:" &amp; TEXT({!var_BaselineDays})</expression>
+        <expression>"ReviewType:" &amp; TEXT({!$Record.nepa_review_type__c}) &amp; "|RiskTier:" &amp; {!var_RiskTier} &amp; "|PrevTier:" &amp; {!var_PreviousTier} &amp; "|BaselineDays:" &amp; TEXT({!var_BaselineDays}) &amp; "|ScopingOverrun:" &amp; TEXT({!var_ScopingOverrunMonths})</expression>
     </formulas>
+
+    <!-- Per-agency EIS baseline formulas — evaluated at runtime against var_AgencyBaselineMDT -->
+    <formulas>
+        <name>formula_EIS_BaselineDays</name>
+        <description>(Median_NOI_to_DEIS_Months__c + Median_DEIS_to_FEIS_Months__c) × 30 days.</description>
+        <dataType>Number</dataType>
+        <scale>0</scale>
+        <expression>({!var_AgencyBaselineMDT.Median_NOI_to_DEIS_Months__c} + {!var_AgencyBaselineMDT.Median_DEIS_to_FEIS_Months__c}) * 30</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_EIS_AtRiskDays</name>
+        <dataType>Number</dataType>
+        <scale>0</scale>
+        <expression>{!formula_EIS_BaselineDays} * 1.1</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_EIS_StalledDays</name>
+        <dataType>Number</dataType>
+        <scale>0</scale>
+        <expression>{!formula_EIS_BaselineDays} * 1.25</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_EIS_OverdueDays</name>
+        <dataType>Number</dataType>
+        <scale>0</scale>
+        <expression>{!formula_EIS_BaselineDays} * 1.5</expression>
+    </formulas>
+
+    <!-- Scoping overrun: (days in scoping / 30) − Scoping_Cap_Months__c. Positive = overrun. -->
+    <formulas>
+        <name>formula_ScopingOverrunMonths</name>
+        <dataType>Number</dataType>
+        <scale>1</scale>
+        <expression>({!$Record.nepa_days_in_current_stage__c} / 30) - {!var_AgencyBaselineMDT.Scoping_Cap_Months__c}</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_ScopingOverrunFlag</name>
+        <dataType>Boolean</dataType>
+        <expression>({!$Record.nepa_days_in_current_stage__c} / 30) &gt; {!var_AgencyBaselineMDT.Scoping_Cap_Months__c}</expression>
+    </formulas>
+
+    <!-- ============================================================
+         EIS AGENCY BASELINE LOOKUPS
+    ============================================================ -->
+
+    <recordLookups>
+        <name>Get_ParentProgram_EIS</name>
+        <label>Get Parent Program (EIS Agency Lookup)</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_AgencyBaseline_EIS</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Assign_Baseline_EIS</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.nepa_related_project__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Program</object>
+        <outputReference>var_ParentProgram</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>nepa_record_owner_agency__c</queriedFields>
+    </recordLookups>
+
+    <recordLookups>
+        <name>Get_AgencyBaseline_EIS</name>
+        <label>Get Agency Scoping Baseline (EIS)</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_AgencyBaselineFound_EIS</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Assign_Baseline_EIS</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Agency_Key__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_ParentProgram.nepa_record_owner_agency__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Active__c</field>
+            <operator>EqualTo</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>NEPA_Agency_Scoping_Baseline__mdt</object>
+        <outputReference>var_AgencyBaselineMDT</outputReference>
+        <queriedFields>Agency_Key__c</queriedFields>
+        <queriedFields>Median_NOI_to_DEIS_Months__c</queriedFields>
+        <queriedFields>Median_DEIS_to_FEIS_Months__c</queriedFields>
+        <queriedFields>Scoping_Cap_Months__c</queriedFields>
+        <queriedFields>Agency_Performance_Tier__c</queriedFields>
+    </recordLookups>
 
     <!-- ============================================================
          STEP 6a: Create ApplicationTimeline Process Paused event
@@ -359,7 +600,6 @@
     <recordCreates>
         <name>Create_ProcessPausedEvent</name>
         <label>Create Process Paused Timeline Event</label>
-        <description>Create Process Paused Timeline Event</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <inputAssignments>
@@ -398,7 +638,6 @@
     <recordCreates>
         <name>Create_EscalationTask</name>
         <label>Create Timeline Risk Escalation Task</label>
-        <description>Create Timeline Risk Escalation Task</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <inputAssignments>
@@ -436,14 +675,13 @@
     </recordCreates>
 
     <!-- ============================================================
-         STEP 4: Write risk tier and estimated date back to the record
+         STEP 4: Write risk tier, estimated date, and scoping fields back
     ============================================================ -->
 
     <!-- code-analyzer-suppress flow:SameRecordUpdate — intentional async after-save write-back via AsyncAfterCommit scheduledPath; this is the recommended pattern for expensive same-record updates -->
     <recordUpdates>
         <name>Update_IndividualApplication</name>
         <label>Update Timeline Risk Fields</label>
-        <description>Update Timeline Risk Fields</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <filterLogic>and</filterLogic>
@@ -460,6 +698,18 @@
             <field>nepa_projected_completion_date__c</field>
             <value><elementReference>formula_EstimatedDate</elementReference></value>
         </inputAssignments>
+        <inputAssignments>
+            <field>nepa_scoping_overrun_flag__c</field>
+            <value><elementReference>var_ScopingOverrunFlag</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_agency_scoping_baseline_months__c</field>
+            <value><elementReference>var_ScopingBaselineMonths</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_projected_scoping_overrun_months__c</field>
+            <value><elementReference>var_ScopingOverrunMonths</elementReference></value>
+        </inputAssignments>
         <object>IndividualApplication</object>
         <connector>
             <targetReference>Decision_EscalationNeeded</targetReference>
@@ -472,7 +722,6 @@
     <subflows>
         <name>Call_ErrorLogger</name>
         <label>Log Flow Error</label>
-        <description>Log Flow Error</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <flowName>NEPA_Error_Logger</flowName>
@@ -534,6 +783,11 @@
             <operator>IsChanged</operator>
             <value><booleanValue>true</booleanValue></value>
         </filters>
+        <filters>
+            <field>nepa_total_pages__c</field>
+            <operator>IsChanged</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </filters>
     </start>
 
     <!-- ============================================================
@@ -559,7 +813,7 @@
     </variables>
     <variables>
         <name>var_BaselineDays</name>
-        <description>Expected days to complete the current stage at 100%, by review type.</description>
+        <description>Expected days to complete the current stage at 100%, by review type. For EIS, set from agency MDT; fallback 730d.</description>
         <dataType>Number</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -604,5 +858,52 @@
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_ParentProgram</name>
+        <description>Parent Program record — queried for EIS agency key lookup.</description>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Program</objectType>
+    </variables>
+    <variables>
+        <name>var_AgencyBaselineMDT</name>
+        <description>Agency-specific scoping baseline from NEPA_Agency_Scoping_Baseline__mdt. Null if no match found.</description>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>NEPA_Agency_Scoping_Baseline__mdt</objectType>
+    </variables>
+    <variables>
+        <name>var_ScopingOverrunMonths</name>
+        <description>Months by which scoping exceeds Scoping_Cap_Months__c. Negative = on track. Written to nepa_projected_scoping_overrun_months__c.</description>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>1</scale>
+        <value><numberValue>0</numberValue></value>
+    </variables>
+    <variables>
+        <name>var_ScopingOverrunFlag</name>
+        <description>True when scoping days exceed the agency cap. Written to nepa_scoping_overrun_flag__c.</description>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value><booleanValue>false</booleanValue></value>
+    </variables>
+    <variables>
+        <name>var_ScopingBaselineMonths</name>
+        <description>Agency median NOI-to-DEIS months. Written to nepa_agency_scoping_baseline_months__c.</description>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>1</scale>
+        <value><numberValue>0</numberValue></value>
     </variables>
 </Flow>

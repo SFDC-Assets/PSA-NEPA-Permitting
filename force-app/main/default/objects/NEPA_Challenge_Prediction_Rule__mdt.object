@@ -50,6 +50,33 @@
         <unique>false</unique>
     </fields>
     <fields>
+        <fullName>Risk_Delta__c</fullName>
+        <description>Additional risk points added to nepa_challenge_risk_delta__c on the IndividualApplication when this rule matches. Derived from PermitTEC v0.1 sector-circuit win-rate differentials.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
+        <label>Risk Delta Points</label>
+        <precision>5</precision>
+        <scale>1</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Trigger_Sector__c</fullName>
+        <description>Primary sector value on the IndividualApplication that activates this rule (e.g., "Energy Production and Management"). Blank means not sector-dependent.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Trigger Sector</label>
+        <length>100</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Trigger_Plaintiff_Flag__c</fullName>
+        <description>When true, this rule fires only when nepa_tribal_plaintiff_flag__c is true on the parent IndividualApplication. Used for the Tribal Plaintiff Override rule.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <defaultValue>false</defaultValue>
+        <label>Trigger Tribal Plaintiff Flag</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
         <fullName>Active__c</fullName>
         <description>Whether this rule is currently active. SubscriberControlled so agencies can enable/disable rules without a package update.</description>
         <fieldManageability>SubscriberControlled</fieldManageability>

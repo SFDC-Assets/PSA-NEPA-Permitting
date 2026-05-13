@@ -73,6 +73,14 @@
         <unique>false</unique>
     </fields>
     <fields>
+        <fullName>Is_Tribal_Nation__c</fullName>
+        <description>True when this plaintiff is a federally recognized Tribal Nation. Tribal challengers achieve 87.5% win rate in NEPA litigation (PermitTEC Stage 10) — the highest of any plaintiff category. Triggers an additional +10 litigation risk score bonus and sets nepa_tribal_plaintiff_flag__c on the parent IndividualApplication.</description>
+        <defaultValue>false</defaultValue>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Is Tribal Nation</label>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
         <fullName>Active__c</fullName>
         <description>When false, this profile is excluded from Plaintiff Intelligence matching.</description>
         <defaultValue>true</defaultValue>

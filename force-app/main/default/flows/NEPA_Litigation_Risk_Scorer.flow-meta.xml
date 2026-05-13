@@ -50,6 +50,30 @@
                 <elementReference>$Record.nepa_record_completeness__c</elementReference>
             </value>
         </inputParameters>
+        <inputParameters>
+            <name>ChallengeDelta</name>
+            <value>
+                <elementReference>$Record.nepa_challenge_risk_delta__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>SectorCircuitKey</name>
+            <value>
+                <elementReference>formula_SectorCircuitKey</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>ScopingOverrunFlag</name>
+            <value>
+                <elementReference>$Record.nepa_scoping_overrun_flag__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>ScopingOverrunMonths</name>
+            <value>
+                <elementReference>$Record.nepa_projected_scoping_overrun_months__c</elementReference>
+            </value>
+        </inputParameters>
         <nameSegment>NEPA_Litigation_Risk_Scorer</nameSegment>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </actionCalls>
@@ -189,17 +213,22 @@
     <formulas>
         <name>formula_RiskTier</name>
         <dataType>String</dataType>
-        <expression>IF( {!Call_NEPA_Risk_Scorer.RiskScore} &gt;= 75, &quot;Very High&quot;, IF( {!Call_NEPA_Risk_Scorer.RiskScore} &gt;= 50, &quot;High&quot;, IF( {!Call_NEPA_Risk_Scorer.RiskScore} &gt;= 25, &quot;Moderate&quot;, &quot;Low&quot; ) ) )</expression>
+        <expression>IF( {!Call_NEPA_Risk_Scorer.RiskScore} &gt;= 58, &quot;Very High&quot;, IF( {!Call_NEPA_Risk_Scorer.RiskScore} &gt;= 45, &quot;High&quot;, IF( {!Call_NEPA_Risk_Scorer.RiskScore} &gt;= 35, &quot;Moderate&quot;, &quot;Low&quot; ) ) )</expression>
     </formulas>
     <formulas>
         <name>formula_ScoreFactorsSummary</name>
         <dataType>String</dataType>
-        <expression>&quot;[AI-GENERATED — PermitTEC v0.1, PNNL 2025, 761 cases; circuit weights based on small sample, treat as directional] &quot; &amp; &quot;ReviewType+Agency+Circuit scored via BRE DM lookup; Statutes:&quot; &amp; TEXT({!var_StatutePoints}) &amp; &quot;pts&quot;</expression>
+        <expression>&quot;[AI-GENERATED — PermitTEC v0.1 684 usable cases; Stage 7 calibrated weights; agency loss_rate×0.40×2.5; circuit (multiplier−0.30)×25×1.5; statute (multiplier−1.0)×20] &quot; &amp; &quot;ReviewType+Agency+Circuit scored via BRE DM; Statutes:&quot; &amp; TEXT({!var_StatutePoints}) &amp; &quot;pts&quot;</expression>
     </formulas>
     <formulas>
         <name>formula_ScoreFactorsWithPenalty</name>
         <dataType>String</dataType>
         <expression>{!var_ScoreFactors} &amp; &quot;; APA PENALTY: 1.5x multiplier applied — Expedited/Emergency procedure. Immediate record gap remediation required.&quot;</expression>
+    </formulas>
+    <formulas>
+        <name>formula_SectorCircuitKey</name>
+        <dataType>String</dataType>
+        <expression>IF( NOT(ISBLANK(TEXT({!Get_RelatedProject.nepa_primary_sector__c}))) &amp;&amp; NOT(ISBLANK({!Get_RelatedProject.nepa_circuit__c})), TEXT({!Get_RelatedProject.nepa_primary_sector__c}) &amp; &quot;|&quot; &amp; {!Get_RelatedProject.nepa_circuit__c}, &quot;Default|Default&quot; )</expression>
     </formulas>
     <label>NEPA Litigation Risk Scorer</label>
     <loops>
@@ -240,6 +269,7 @@
         <queriedFields>nepa_circuit__c</queriedFields>
         <queriedFields>nepa_adjacent_statutes__c</queriedFields>
         <queriedFields>nepa_record_owner_agency__c</queriedFields>
+        <queriedFields>nepa_primary_sector__c</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>

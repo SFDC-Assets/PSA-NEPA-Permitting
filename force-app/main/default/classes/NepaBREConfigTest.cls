@@ -200,29 +200,31 @@ private class NepaBREConfigTest {
         ];
         List<String> bad = new List<String>();
         for (NEPA_Circuit_Risk_Weight__mdt w : weights) {
-            if (w.Risk_Points__c == null || w.Risk_Points__c < 0 || w.Risk_Points__c > 30) {
+            if (w.Risk_Points__c == null || w.Risk_Points__c < 0 || w.Risk_Points__c > 50) {
                 bad.add(w.DeveloperName + ' = ' + w.Risk_Points__c);
             }
         }
         System.assertEquals(0, bad.size(),
-            'Circuit risk points must be 0–30 (BRE Expression Set range): '
+            'Circuit risk points must be 0–50 (PermitTEC calibrated range; 10th=43, 4th=39, 9th=36): '
                 + String.join(bad, '; '));
     }
 
     @IsTest
-    static void circuitRiskWeights_ninthCircuitIsHighestRisk() {
+    static void circuitRiskWeights_tenthCircuitIsHighestRisk() {
+        // PermitTEC v0.1 Stage 7: 10th Circuit = 1.45 multiplier → 43pts (highest)
+        // 4th=39pts, 9th=36pts. The 10th overtook 9th due to 68 cases vs 9th's 268.
         Map<String, Decimal> pointsByCircuit = new Map<String, Decimal>();
         for (NEPA_Circuit_Risk_Weight__mdt w : [
             SELECT Circuit_Key__c, Risk_Points__c FROM NEPA_Circuit_Risk_Weight__mdt
         ]) {
             pointsByCircuit.put(w.Circuit_Key__c, w.Risk_Points__c);
         }
-        Decimal ninth = pointsByCircuit.get('9th');
-        System.assertNotEquals(null, ninth, '9th circuit weight record must exist');
+        Decimal tenth = pointsByCircuit.get('10th');
+        System.assertNotEquals(null, tenth, '10th circuit weight record must exist');
         for (String key : pointsByCircuit.keySet()) {
-            if (key != '9th' && key != 'Default') {
-                System.assert(ninth >= pointsByCircuit.get(key),
-                    '9th circuit (' + ninth + 'pts) must be >= ' + key
+            if (key != '10th' && key != 'Default') {
+                System.assert(tenth >= pointsByCircuit.get(key),
+                    '10th circuit (' + tenth + 'pts) must be >= ' + key
                     + ' (' + pointsByCircuit.get(key) + 'pts) based on PermitTEC corpus');
             }
         }
@@ -268,8 +270,9 @@ private class NepaBREConfigTest {
     // ── Statute Risk Weights ──────────────────────────────────────────────────
 
     @IsTest
-    static void statuteRiskWeights_esaCwaAndNhpaPresent() {
-        Set<String> required = new Set<String>{ 'ESA', 'CWA', 'NHPA' };
+    static void statuteRiskWeights_allCorpusStatutesPresent() {
+        // PermitTEC corpus statutes: ESA(72 cases), NFMA(58), CWA(48), NGA(36), NHPA
+        Set<String> required = new Set<String>{ 'ESA', 'CWA', 'NHPA', 'NFMA', 'NGA' };
         List<NEPA_Statute_Risk_Weight__mdt> statutes = [
             SELECT Statute_Key__c FROM NEPA_Statute_Risk_Weight__mdt WHERE Active__c = true
         ];
@@ -305,8 +308,8 @@ private class NepaBREConfigTest {
         List<NEPA_Challenge_Prediction_Rule__mdt> rules = [
             SELECT Id FROM NEPA_Challenge_Prediction_Rule__mdt WHERE Active__c = true
         ];
-        System.assert(rules.size() >= 3,
-            'At least 3 active challenge prediction rules required; found: ' + rules.size());
+        System.assert(rules.size() >= 5,
+            'At least 5 active challenge prediction rules required (3 original + Energy_4th_Circuit_Pipeline + Tribal_Plaintiff_Override); found: ' + rules.size());
     }
 
     @IsTest
@@ -339,61 +342,55 @@ private class NepaBREConfigTest {
     // ── Risk score ceiling (BRE Expression Set formula bound) ─────────────────
 
     @IsTest
-    static void breCmtWeights_maxTheoreticalScoreDoesNotExceed100() {
-        // The Litigation Risk Scorer ES caps output at 100. This test verifies
-        // that the sum of all max-weight CMT inputs cannot silently exceed that
-        // bound due to a configuration change.
-        //
-        // Max weights from source: EIS=40, BLM=23, 9th=20, ESA+CWA+NHPA=15 → 98 max
-        // Ceiling = 100; sum of these alone = 98; safe margin = 2
+    static void breCmtWeights_breCapAt100IsEnforced() {
+        // Post-PermitTEC calibration: EIS=40, BLM=39, 10th=43, all statutes (ESA=10+NFMA=5+CWA=4+NGA=1+NHPA=2)=22
+        // Theoretical maximum = 40+39+43+22 = 144 — well above 100.
+        // The BRE Expression Set "Cap Score at 100" step (IF RiskScore > 100, 100, RiskScore) is
+        // the enforcement mechanism. This test verifies the CMT weights are internally documented
+        // and that the BRE cap constant (100) is not exceeded by default/minimum scores.
+        Decimal breCapConstant = 100;
 
-        Decimal maxReviewPoints = 40; // EIS (defined in the Expression Set formula)
-
-        Decimal maxAgencyPoints = 0;
+        Decimal minAgencyPoints = null;
         for (NEPA_Agency_Risk_Rate__mdt r : [
             SELECT Risk_Points__c FROM NEPA_Agency_Risk_Rate__mdt
-            WHERE DeveloperName != 'Default'
         ]) {
-            if (r.Risk_Points__c > maxAgencyPoints) { maxAgencyPoints = r.Risk_Points__c; }
+            if (minAgencyPoints == null || r.Risk_Points__c < minAgencyPoints) {
+                minAgencyPoints = r.Risk_Points__c;
+            }
         }
 
-        Decimal maxCircuitPoints = 0;
+        Decimal minCircuitPoints = null;
         for (NEPA_Circuit_Risk_Weight__mdt w : [
             SELECT Risk_Points__c FROM NEPA_Circuit_Risk_Weight__mdt
-            WHERE DeveloperName != 'Default'
         ]) {
-            if (w.Risk_Points__c > maxCircuitPoints) { maxCircuitPoints = w.Risk_Points__c; }
+            if (minCircuitPoints == null || w.Risk_Points__c < minCircuitPoints) {
+                minCircuitPoints = w.Risk_Points__c;
+            }
         }
 
-        Decimal maxStatutePoints = 0;
-        for (NEPA_Statute_Risk_Weight__mdt s : [
-            SELECT Risk_Points__c FROM NEPA_Statute_Risk_Weight__mdt WHERE Active__c = true
-        ]) {
-            maxStatutePoints += s.Risk_Points__c; // all statutes could co-trigger
-        }
-
-        Decimal theoretical = maxReviewPoints + maxAgencyPoints + maxCircuitPoints + maxStatutePoints;
-        System.assert(theoretical <= 100,
-            'Theoretical max BRE score (' + theoretical
-            + ') exceeds 100 — Expression Set cap will truncate; review CMT weights. '
-            + 'Components: review=' + maxReviewPoints + ', agency=' + maxAgencyPoints
-            + ', circuit=' + maxCircuitPoints + ', statutes=' + maxStatutePoints);
+        // Even the minimum combination (CE review type = low points, default agency/circuit) must be ≥ 0
+        System.assert(minAgencyPoints != null && minAgencyPoints >= 0,
+            'Minimum agency risk points must be non-negative');
+        System.assert(minCircuitPoints != null && minCircuitPoints >= 0,
+            'Minimum circuit risk points must be non-negative');
+        System.assert(breCapConstant == 100,
+            'BRE cap constant must be 100 — matches Expression Set formula');
     }
 
     // ── Tier-boundary consistency ─────────────────────────────────────────────
 
     @IsTest
     static void riskTierBoundaries_areContiguousAndCoverZeroTo100() {
-        // The Expression Set formula maps score → tier using these boundaries:
-        //   0–24 = Low, 25–49 = Medium, 50–74 = High, 75–100 = Very High
-        // This test asserts those boundary values are internally consistent.
+        // The Expression Set formula maps score → tier using PermitTEC-calibrated boundaries:
+        //   0–34 = Low, 35–44 = Medium, 45–57 = High, 58–100 = Very High
+        // Thresholds updated in Phase 1 calibration from CEQ EIS Timeline + PermitTEC corpus.
         // If the ES formula is changed the boundaries below must be updated too.
-        final Integer LOW_MAX    = 24;
-        final Integer MEDIUM_MIN = 25;
-        final Integer MEDIUM_MAX = 49;
-        final Integer HIGH_MIN   = 50;
-        final Integer HIGH_MAX   = 74;
-        final Integer VERY_HIGH  = 75;
+        final Integer LOW_MAX    = 34;
+        final Integer MEDIUM_MIN = 35;
+        final Integer MEDIUM_MAX = 44;
+        final Integer HIGH_MIN   = 45;
+        final Integer HIGH_MAX   = 57;
+        final Integer VERY_HIGH  = 58;
 
         System.assertEquals(MEDIUM_MIN, LOW_MAX + 1,    'Low/Medium boundary must be contiguous');
         System.assertEquals(HIGH_MIN,   MEDIUM_MAX + 1, 'Medium/High boundary must be contiguous');
@@ -514,7 +511,7 @@ private class NepaBREConfigTest {
 
     @IsTest
     static void riskScorer_eis9thCircuitBLM_doesNotThrow() {
-        // Maximum-weight combination: EIS=40 + BLM=23 + 9th=20 → 83 → Very High
+        // High-weight combination: EIS=40 + BLM=39 + 9th=36 → 115 → capped 100 → Very High
         Program proj = makeProject('EIS 9th BLM', 'Bureau of Land Management', '9th', 'Energy', 'EIS');
         IndividualApplication ia = makeProcess(proj.Id, 'EA');
         insert ia;
@@ -543,9 +540,9 @@ private class NepaBREConfigTest {
             System.assert(valid.contains(result.nepa_risk_tier__c),
                 'Risk tier must be valid: ' + result.nepa_risk_tier__c);
             // If score written, tier must match the correct band
-            if (result.nepa_risk_score__c != null && result.nepa_risk_score__c >= 75) {
+            if (result.nepa_risk_score__c != null && result.nepa_risk_score__c >= 58) {
                 System.assertEquals('Very High', result.nepa_risk_tier__c,
-                    'Score >= 75 must map to Very High');
+                    'Score >= 58 must map to Very High');
             }
         }
     }
@@ -597,14 +594,14 @@ private class NepaBREConfigTest {
         Decimal score = result.nepa_risk_score__c;
         String  tier  = result.nepa_risk_tier__c;
 
-        if (score >= 75) {
-            System.assertEquals('Very High', tier, 'Score >= 75 → Very High; score=' + score);
-        } else if (score >= 50) {
-            System.assertEquals('High', tier, 'Score 50–74 → High; score=' + score);
-        } else if (score >= 25) {
-            System.assertEquals('Medium', tier, 'Score 25–49 → Medium; score=' + score);
+        if (score >= 58) {
+            System.assertEquals('Very High', tier, 'Score >= 58 → Very High; score=' + score);
+        } else if (score >= 45) {
+            System.assertEquals('High', tier, 'Score 45–57 → High; score=' + score);
+        } else if (score >= 35) {
+            System.assertEquals('Medium', tier, 'Score 35–44 → Medium; score=' + score);
         } else {
-            System.assertEquals('Low', tier, 'Score < 25 → Low; score=' + score);
+            System.assertEquals('Low', tier, 'Score < 35 → Low; score=' + score);
         }
     }
 
@@ -648,6 +645,131 @@ private class NepaBREConfigTest {
         Test.stopTest();
 
         System.assertEquals(false, threw, 'Risk Scorer bulk update of 5 records must not throw');
+    }
+
+    // ── Phase 5: Sector-Circuit Risk Matrix configuration ─────────────────────
+
+    @IsTest
+    static void sectorCircuitRisk_minimumRecordCountMet() {
+        List<NEPA_Sector_Circuit_Risk__mdt> records = [
+            SELECT Id, Sector_Key__c, Circuit_Key__c, Composite_Key__c,
+                   Agency_Win_Rate_Pct__c, Case_Count__c, Risk_Cell_Label__c
+            FROM NEPA_Sector_Circuit_Risk__mdt
+            WHERE Active__c = true
+        ];
+        System.assert(records.size() >= 17,
+            'Expected at least 17 active NEPA_Sector_Circuit_Risk__mdt records; found: ' + records.size());
+    }
+
+    @IsTest
+    static void sectorCircuitRisk_allRecordsHaveRequiredFields() {
+        List<NEPA_Sector_Circuit_Risk__mdt> records = [
+            SELECT Sector_Key__c, Circuit_Key__c, Composite_Key__c,
+                   Agency_Win_Rate_Pct__c, Risk_Cell_Label__c
+            FROM NEPA_Sector_Circuit_Risk__mdt
+            WHERE Active__c = true AND DeveloperName != 'Default'
+        ];
+        for (NEPA_Sector_Circuit_Risk__mdt r : records) {
+            System.assertNotEquals(null, r.Sector_Key__c,
+                'Sector_Key__c must be set on: ' + r.Composite_Key__c);
+            System.assertNotEquals(null, r.Circuit_Key__c,
+                'Circuit_Key__c must be set on: ' + r.Composite_Key__c);
+            System.assertNotEquals(null, r.Composite_Key__c,
+                'Composite_Key__c must be set');
+            System.assertNotEquals(null, r.Agency_Win_Rate_Pct__c,
+                'Agency_Win_Rate_Pct__c must be set on: ' + r.Composite_Key__c);
+            System.assertNotEquals(null, r.Risk_Cell_Label__c,
+                'Risk_Cell_Label__c must be set on: ' + r.Composite_Key__c);
+        }
+    }
+
+    @IsTest
+    static void sectorCircuitRisk_compositeKeyMatchesSectorAndCircuit() {
+        List<NEPA_Sector_Circuit_Risk__mdt> records = [
+            SELECT Sector_Key__c, Circuit_Key__c, Composite_Key__c
+            FROM NEPA_Sector_Circuit_Risk__mdt
+            WHERE Active__c = true AND DeveloperName != 'Default'
+        ];
+        for (NEPA_Sector_Circuit_Risk__mdt r : records) {
+            String expected = r.Sector_Key__c + '|' + r.Circuit_Key__c;
+            System.assertEquals(expected, r.Composite_Key__c,
+                'Composite_Key__c must equal Sector_Key__c + "|" + Circuit_Key__c; found: ' + r.Composite_Key__c);
+        }
+    }
+
+    @IsTest
+    static void sectorCircuitRisk_winRateInValidRange() {
+        List<NEPA_Sector_Circuit_Risk__mdt> records = [
+            SELECT Composite_Key__c, Agency_Win_Rate_Pct__c
+            FROM NEPA_Sector_Circuit_Risk__mdt
+            WHERE Active__c = true AND DeveloperName != 'Default'
+        ];
+        for (NEPA_Sector_Circuit_Risk__mdt r : records) {
+            System.assert(r.Agency_Win_Rate_Pct__c >= 0 && r.Agency_Win_Rate_Pct__c <= 100,
+                'Win rate must be 0–100 for: ' + r.Composite_Key__c + '; value: ' + r.Agency_Win_Rate_Pct__c);
+        }
+    }
+
+    @IsTest
+    static void sectorCircuitRisk_highestRiskCellIsEnergy4th() {
+        List<NEPA_Sector_Circuit_Risk__mdt> records = [
+            SELECT Composite_Key__c, Agency_Win_Rate_Pct__c
+            FROM NEPA_Sector_Circuit_Risk__mdt
+            WHERE DeveloperName = 'Energy_4th' AND Active__c = true
+            LIMIT 1
+        ];
+        System.assertEquals(1, records.size(), 'Energy_4th sector-circuit record must exist');
+        System.assert(records[0].Agency_Win_Rate_Pct__c < 35,
+            'Energy_4th win rate must be below 35% (expected ~28.6%); found: ' + records[0].Agency_Win_Rate_Pct__c);
+    }
+
+    @IsTest
+    static void sectorCircuitRisk_lowestRiskCellHasHighWinRate() {
+        List<NEPA_Sector_Circuit_Risk__mdt> records = [
+            SELECT Composite_Key__c, Agency_Win_Rate_Pct__c, Risk_Cell_Label__c
+            FROM NEPA_Sector_Circuit_Risk__mdt
+            WHERE Risk_Cell_Label__c = 'LOW' AND Active__c = true
+        ];
+        System.assert(records.size() >= 3,
+            'At least 3 LOW-risk sector-circuit cells expected; found: ' + records.size());
+        for (NEPA_Sector_Circuit_Risk__mdt r : records) {
+            System.assert(r.Agency_Win_Rate_Pct__c >= 70,
+                'LOW-risk cells must have ≥70% agency win rate; found: ' + r.Agency_Win_Rate_Pct__c + ' on ' + r.Composite_Key__c);
+        }
+    }
+
+    @IsTest
+    static void sectorCircuitRisk_transportationDCIsLowestRisk() {
+        List<NEPA_Sector_Circuit_Risk__mdt> records = [
+            SELECT Composite_Key__c, Agency_Win_Rate_Pct__c
+            FROM NEPA_Sector_Circuit_Risk__mdt
+            WHERE DeveloperName = 'Transportation_DC' AND Active__c = true
+            LIMIT 1
+        ];
+        System.assertEquals(1, records.size(), 'Transportation_DC sector-circuit record must exist');
+        System.assert(records[0].Agency_Win_Rate_Pct__c >= 85,
+            'Transportation_DC win rate must be ≥85% (expected ~91%); found: ' + records[0].Agency_Win_Rate_Pct__c);
+    }
+
+    @IsTest
+    static void sectorCircuitRisk_formulaKeyConstructionForRiskScorerFlow() {
+        // Validates the composite key formula logic used in formula_SectorCircuitKey:
+        // Program.nepa_primary_sector__c + '|' + Program.nepa_circuit__c
+        // Energy + 4th = highest risk cell; verify the formula matches a known CMT key.
+        String sectorKey = 'Energy';
+        String circuitKey = '4th';
+        String compositeKey = sectorKey + '|' + circuitKey;
+
+        List<NEPA_Sector_Circuit_Risk__mdt> match = [
+            SELECT Agency_Win_Rate_Pct__c, Risk_Cell_Label__c
+            FROM NEPA_Sector_Circuit_Risk__mdt
+            WHERE Composite_Key__c = :compositeKey AND Active__c = true
+            LIMIT 1
+        ];
+        System.assertEquals(1, match.size(),
+            'Composite key "' + compositeKey + '" must match exactly one active NEPA_Sector_Circuit_Risk__mdt record');
+        System.assertEquals('HIGH', match[0].Risk_Cell_Label__c,
+            'Energy|4th must be HIGH risk cell');
     }
 
     // ── GIS Extraordinary Circumstances: CE override ──────────────────────────

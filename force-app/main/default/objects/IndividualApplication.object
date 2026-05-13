@@ -883,6 +883,16 @@
 
     <!-- P6 Phase 1 Completion fields -->
     <fields>
+        <fullName>nepa_tribal_plaintiff_flag__c</fullName>
+        <description>Set to true by NEPA_Plaintiff_Intelligence Flow when the matched plaintiff profile has Is_Tribal_Nation__c = true. Tribal Nation challengers achieve 87.5% win rate in NEPA litigation (PermitTEC Stage 10) — the highest of any plaintiff category. Triggers an additional +10 risk score bonus beyond the standard plaintiff bonus.</description>
+        <inlineHelpText>A federally recognized Tribal Nation has submitted a comment on this process. Tribal plaintiffs have the highest win rate in federal NEPA litigation. Immediate legal review and consultation documentation audit required.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Tribal Plaintiff Flag</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
         <fullName>nepa_plaintiff_risk_flag__c</fullName>
         <description>Set to true by NEPA_Plaintiff_Intelligence Flow when a PublicComplaint linked to this application is submitted by an organization matching a HIGH or VERY_HIGH record in NEPA_Plaintiff_Profile__mdt. Triggers a Legal Defensibility Review task and increases the litigation risk score by 25 points (PLAINTIFF_RISK_BONUS).</description>
         <inlineHelpText>Known high-risk plaintiff organization has submitted a comment on this process. See Legal Defensibility Review task for details.</inlineHelpText>
@@ -891,6 +901,90 @@
         <required>false</required>
         <trackHistory>true</trackHistory>
         <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_challenge_risk_delta__c</fullName>
+        <description>Accumulated risk delta points from NEPA_Challenge_Prediction_Rule__mdt records matched by the NEPA_Challenge_Predictor flow. Each matched rule contributes its Risk_Delta__c value. Passed as additional input to the BRE scoring pipeline.</description>
+        <inlineHelpText>Additional risk points from matched challenge prediction rules (sector-circuit, tribal plaintiff). Feeds the litigation risk composite score.</inlineHelpText>
+        <defaultValue>0</defaultValue>
+        <label>Challenge Risk Delta Points</label>
+        <precision>5</precision>
+        <scale>1</scale>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+    </fields>
+    <fields>
+        <fullName>nepa_scoping_overrun_flag__c</fullName>
+        <description>Set to true by NEPA_Timeline_Risk_Assessor when the time spent in the Scoping stage exceeds the agency-specific Scoping_Cap_Months__c from NEPA_Agency_Scoping_Baseline__mdt. Elevates timeline risk tier and triggers early warning.</description>
+        <inlineHelpText>Scoping phase has exceeded the agency-specific baseline duration. Review scoping scope and resource allocation.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Scoping Overrun Flag</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_agency_scoping_baseline_months__c</fullName>
+        <description>Agency-specific median NOI-to-DEIS duration in months, sourced from NEPA_Agency_Scoping_Baseline__mdt. Set by NEPA_Timeline_Risk_Assessor for EIS processes. Used as the denominator for scoping overrun calculations.</description>
+        <inlineHelpText>Median months from NOI to DEIS for the lead agency, based on CEQ EIS Timeline data 2010–2024.</inlineHelpText>
+        <label>Agency Scoping Baseline (Months)</label>
+        <precision>5</precision>
+        <scale>1</scale>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+    </fields>
+    <fields>
+        <fullName>nepa_projected_scoping_overrun_months__c</fullName>
+        <description>Projected number of months the scoping phase will exceed the agency baseline. Computed by NEPA_Timeline_Risk_Assessor as: (nepa_days_in_current_stage__c / 30) − Scoping_Cap_Months__c. Negative values indicate on-track.</description>
+        <inlineHelpText>Months by which current scoping duration exceeds the agency-specific baseline cap. Negative = on track.</inlineHelpText>
+        <label>Projected Scoping Overrun (Months)</label>
+        <precision>5</precision>
+        <scale>1</scale>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+    </fields>
+    <fields>
+        <fullName>nepa_sector_circuit_win_rate__c</fullName>
+        <description>Agency win rate percentage for the sector-circuit combination derived from PermitTEC v0.1 litigation corpus (Stage 13 matrix). Set by NEPA_Challenge_Predictor or NEPA_Litigation_Risk_Scorer when a matching NEPA_Sector_Circuit_Risk__mdt record exists.</description>
+        <inlineHelpText>Historical agency win rate for this project's sector and judicial circuit combination. Lower values indicate higher litigation risk.</inlineHelpText>
+        <label>Sector-Circuit Win Rate (%)</label>
+        <precision>5</precision>
+        <scale>1</scale>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+    </fields>
+    <fields>
+        <fullName>nepa_litigation_risk_cell_label__c</fullName>
+        <description>Risk classification for the sector-circuit cell from NEPA_Sector_Circuit_Risk__mdt. HIGH = agency win rate below 45%; MODERATE = 45–70%; LOW = above 70%. Set alongside nepa_sector_circuit_win_rate__c.</description>
+        <inlineHelpText>Risk level for this project's sector and circuit combination based on historical litigation outcomes.</inlineHelpText>
+        <label>Litigation Risk Cell Label</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>HIGH</fullName>
+                    <default>false</default>
+                    <label>HIGH</label>
+                </value>
+                <value>
+                    <fullName>MODERATE</fullName>
+                    <default>false</default>
+                    <label>MODERATE</label>
+                </value>
+                <value>
+                    <fullName>LOW</fullName>
+                    <default>false</default>
+                    <label>LOW</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
     </fields>
     <fields>
         <fullName>nepa_connected_actions_identified__c</fullName>

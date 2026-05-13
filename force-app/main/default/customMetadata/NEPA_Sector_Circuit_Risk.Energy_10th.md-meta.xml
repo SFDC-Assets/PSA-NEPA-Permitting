@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Energy - 10th Circuit</label>
+    <protected>false</protected>
+    <values>
+        <field>Sector_Key__c</field>
+        <value xsi:type="xsd:string">Energy</value>
+    </values>
+    <values>
+        <field>Circuit_Key__c</field>
+        <value xsi:type="xsd:string">10th</value>
+    </values>
+    <values>
+        <field>Composite_Key__c</field>
+        <value xsi:type="xsd:string">Energy|10th</value>
+    </values>
+    <values>
+        <field>Agency_Win_Rate_Pct__c</field>
+        <value xsi:type="xsd:decimal">40.0</value>
+    </values>
+    <values>
+        <field>Case_Count__c</field>
+        <value xsi:type="xsd:decimal">15</value>
+    </values>
+    <values>
+        <field>Risk_Cell_Label__c</field>
+        <value xsi:type="xsd:string">HIGH</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

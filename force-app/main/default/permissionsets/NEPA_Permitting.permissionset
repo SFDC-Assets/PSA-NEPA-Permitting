@@ -508,7 +508,49 @@
         <field>IndividualApplication.nepa_plaintiff_risk_flag__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    
+
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_tribal_plaintiff_flag__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_challenge_risk_delta__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_scoping_overrun_flag__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_agency_scoping_baseline_months__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_projected_scoping_overrun_months__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_sector_circuit_win_rate__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_litigation_risk_cell_label__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+
     <fieldPermissions>
         <editable>true</editable>
         <field>IndividualApplication.nepa_polygon__c</field>
@@ -767,7 +809,13 @@
         <field>Program.nepa_adjacent_statutes__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    
+
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Program.nepa_agency_performance_tier__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+
     <fieldPermissions>
         <editable>true</editable>
         <field>Program.nepa_applicant_naics__c</field>

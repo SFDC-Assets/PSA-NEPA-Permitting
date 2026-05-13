@@ -281,6 +281,8 @@ deploy "object schemas" \
     --metadata "CustomObject:NEPA_Process_Model__mdt" \
     --metadata "CustomObject:nepa_process_team_member__c" \
     --metadata "CustomObject:nepa_gis_data__c" \
+    --metadata "CustomObject:NEPA_Agency_Scoping_Baseline__mdt" \
+    --metadata "CustomObject:NEPA_Sector_Circuit_Risk__mdt" \
     --target-org "$TARGET_ORG"
 
 # ── phase 2: custom fields on all objects ─────────────────────────────────────
@@ -431,6 +433,7 @@ FLOWS=(
     NEPA_FlowError_CountIncrementer
     NEPA_Team_Assembly_Orchestrator
     NEPA_WO_Milestone_Setter
+    NEPA_Agency_Tier_Setter
 )
 
 # NEPA_EIS_Section_Assembler uses generateText (Einstein AI) — skipped unless
@@ -690,6 +693,7 @@ else
     echo "       NEPA_GIS_Proximity_Check"
     echo "       NEPA_Team_Assembly_Orchestrator"
     echo "       NEPA_WO_Milestone_Setter"
+    echo "       NEPA_Agency_Tier_Setter"
     echo "       (NEPA_EIS_Section_Assembler + NEPA_EIS_Section_Draft_Trigger require Einstein AI — deploy separately if available)"
     echo "       NEPA_AdminRecord_AutoCreate"
     echo "       NEPA_Error_Logger"

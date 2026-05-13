@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>Evaluates active NEPA_Challenge_Prediction_Rule__mdt records against the IndividualApplication's review type and related project's adjacent statutes. Writes predicted challenge grounds and plain-language notes to the process record.</description>
+    <description>Evaluates active NEPA_Challenge_Prediction_Rule__mdt records against the IndividualApplication's review type, sector, adjacent statutes, and tribal plaintiff flag. Writes predicted challenge grounds, plain-language notes, and accumulated Risk_Delta points to the process record.</description>
     <label>NEPA Challenge Predictor</label>
     <processType>AutoLaunchedFlow</processType>
-    <status>Draft</status>
+    <status>Active</status>
 
     <!-- Assignments -->
     <assignments>
@@ -43,7 +43,7 @@
 
     <assignments>
         <name>Append_Prediction</name>
-        <label>Append Ground and Notes</label>
+        <label>Append Ground, Notes, and Risk Delta</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
@@ -59,6 +59,13 @@
             <value>
                 <stringValue>{!var_PredictionNotes}{!var_CurrentRule.Challenge_Ground__c}: {!var_CurrentRule.Explanation__c}
 </stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_TotalRiskDelta</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>var_CurrentRule.Risk_Delta__c</elementReference>
             </value>
         </assignmentItems>
         <connector>
@@ -119,7 +126,7 @@
     <formulas>
         <name>formula_ErrorContext</name>
         <dataType>String</dataType>
-        <expression>"ReviewType:" &amp; {!$Record.nepa_review_type__c} &amp; "|PredictedGrounds:" &amp; {!var_PredictedGrounds} &amp; "|AdjacentStatutes:" &amp; {!var_AdjacentStatutes} &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
+        <expression>"ReviewType:" &amp; TEXT({!$Record.nepa_review_type__c}) &amp; "|PredictedGrounds:" &amp; {!var_PredictedGrounds} &amp; "|AdjacentStatutes:" &amp; {!var_AdjacentStatutes} &amp; "|RiskDelta:" &amp; TEXT({!var_TotalRiskDelta}) &amp; "|Step:" &amp; {!var_CurrentStep}</expression>
     </formulas>
 
     <!-- Decisions -->
@@ -176,10 +183,24 @@
                     <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>var_CurrentRule.Trigger_Sector__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>var_CurrentRule.Trigger_Plaintiff_Flag__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Append_Prediction</targetReference>
             </connector>
-            <label>Review Type Match (no statute req)</label>
+            <label>Review Type Match (no statute, no sector, no tribal req)</label>
         </rules>
         <rules>
             <name>Statute_Match</name>
@@ -198,10 +219,68 @@
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>var_CurrentRule.Trigger_Plaintiff_Flag__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Append_Prediction</targetReference>
             </connector>
             <label>Adjacent Statute Match</label>
+        </rules>
+        <rules>
+            <name>Sector_Match</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_CurrentRule.Trigger_Sector__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>rec_RelatedProject.nepa_primary_sector__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>var_CurrentRule.Trigger_Sector__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>var_CurrentRule.Trigger_Plaintiff_Flag__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Append_Prediction</targetReference>
+            </connector>
+            <label>Sector Match</label>
+        </rules>
+        <rules>
+            <name>Tribal_Plaintiff_Match</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_CurrentRule.Trigger_Plaintiff_Flag__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.nepa_tribal_plaintiff_flag__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Append_Prediction</targetReference>
+            </connector>
+            <label>Tribal Plaintiff Flag Match</label>
         </rules>
     </decisions>
 
@@ -268,6 +347,9 @@
         <queriedFields>Challenge_Ground__c</queriedFields>
         <queriedFields>Trigger_Review_Type__c</queriedFields>
         <queriedFields>Trigger_Adjacent_Statute__c</queriedFields>
+        <queriedFields>Trigger_Sector__c</queriedFields>
+        <queriedFields>Trigger_Plaintiff_Flag__c</queriedFields>
+        <queriedFields>Risk_Delta__c</queriedFields>
         <queriedFields>Explanation__c</queriedFields>
         <queriedFields>Priority__c</queriedFields>
         <sortField>Priority__c</sortField>
@@ -295,6 +377,7 @@
         <outputReference>rec_RelatedProject</outputReference>
         <queriedFields>Id</queriedFields>
         <queriedFields>nepa_adjacent_statutes__c</queriedFields>
+        <queriedFields>nepa_primary_sector__c</queriedFields>
     </recordLookups>
 
     <!-- Record Updates -->
@@ -317,6 +400,12 @@
             <field>nepa_challenge_prediction_notes__c</field>
             <value>
                 <elementReference>var_PredictionNotes</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_challenge_risk_delta__c</field>
+            <value>
+                <elementReference>var_TotalRiskDelta</elementReference>
             </value>
         </inputAssignments>
         <object>IndividualApplication</object>
@@ -357,6 +446,13 @@
                 <booleanValue>true</booleanValue>
             </value>
         </filters>
+        <filters>
+            <field>nepa_tribal_plaintiff_flag__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
     </start>
 
     <!-- Variables -->
@@ -389,6 +485,15 @@
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_TotalRiskDelta</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>1</scale>
+        <value><numberValue>0</numberValue></value>
     </variables>
     <variables>
         <name>rec_RelatedProject</name>

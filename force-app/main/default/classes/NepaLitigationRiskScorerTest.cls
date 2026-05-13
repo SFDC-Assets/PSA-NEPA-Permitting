@@ -46,7 +46,7 @@ private class NepaLitigationRiskScorerTest {
 
     @IsTest
     static void eis_9thCircuit_BLM_producesHighScore() {
-        // EIS = 40pts + BLM = 23pts + 9th Circuit = 20pts → base 83 → Very High
+        // EIS = 40pts + BLM = 39pts + 9th Circuit = 36pts → base 115 → capped 100 → Very High
         Program proj = makeProject('Bureau of Land Management', '9th');
         IndividualApplication ia = makeProcess(proj.Id, 'EIS');
         insert ia;
@@ -82,9 +82,9 @@ private class NepaLitigationRiskScorerTest {
     }
 
     @IsTest
-    static void eis_producesVeryHighTier_whenScoreAbove75() {
-        // EIS=40 + BLM=23 + 9th=20 = 83 — should be Very High
-        Program proj = makeProject('Bureau of Land Management', '9th');
+    static void eis_producesVeryHighTier_whenScoreAbove58() {
+        // EIS=40 + BLM=39 + 10th=43 → base 122 → capped 100 → Very High (threshold ≥58)
+        Program proj = makeProject('Bureau of Land Management', '10th');
         IndividualApplication ia = makeProcess(proj.Id, 'EA');
         insert ia;
 
@@ -101,9 +101,9 @@ private class NepaLitigationRiskScorerTest {
             WHERE Id = :ia.Id
         ];
 
-        if (result.nepa_risk_score__c != null && result.nepa_risk_score__c >= 75) {
+        if (result.nepa_risk_score__c != null && result.nepa_risk_score__c >= 58) {
             System.assertEquals('Very High', result.nepa_risk_tier__c,
-                'Score >= 75 must map to Very High tier; score was: ' + result.nepa_risk_score__c);
+                'Score >= 58 must map to Very High tier; score was: ' + result.nepa_risk_score__c);
         }
     }
 
@@ -258,14 +258,14 @@ private class NepaLitigationRiskScorerTest {
         System.assert(validTiers.contains(tier),
             'Risk tier must be one of Low/Medium/High/Very High; got: ' + tier);
 
-        if (score >= 75) {
-            System.assertEquals('Very High', tier, 'Score >= 75 must be Very High');
-        } else if (score >= 50) {
-            System.assertEquals('High', tier, 'Score 50-74 must be High');
-        } else if (score >= 25) {
-            System.assertEquals('Medium', tier, 'Score 25-49 must be Medium');
+        if (score >= 58) {
+            System.assertEquals('Very High', tier, 'Score >= 58 must be Very High');
+        } else if (score >= 45) {
+            System.assertEquals('High', tier, 'Score 45-57 must be High');
+        } else if (score >= 35) {
+            System.assertEquals('Medium', tier, 'Score 35-44 must be Medium');
         } else {
-            System.assertEquals('Low', tier, 'Score < 25 must be Low');
+            System.assertEquals('Low', tier, 'Score < 35 must be Low');
         }
     }
 

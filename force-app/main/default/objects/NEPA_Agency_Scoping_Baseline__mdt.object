@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Agency-specific EIS scoping baseline durations derived from CEQ EIS Timeline data 2010–2024 (1,903 Final EIS records). Used by NEPA_Timeline_Risk_Assessor to replace the hardcoded 730-day baseline with per-agency medians and to compute scoping overrun flags.</description>
+    <label>NEPA Agency Scoping Baseline</label>
+    <pluralLabel>NEPA Agency Scoping Baselines</pluralLabel>
+    <fields>
+        <fullName>Agency_Key__c</fullName>
+        <description>Abbreviation used as lookup key matching nepa_record_owner_agency__c on Program (e.g., BLM, USFS, FERC, USACE).</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Agency Key</label>
+        <length>20</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Agency_Name__c</fullName>
+        <description>Full agency name for display purposes.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Agency Name</label>
+        <length>100</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Median_NOI_to_DEIS_Months__c</fullName>
+        <description>Median months from Notice of Intent to Draft EIS publication for this agency, derived from CEQ EIS Timeline data 2010–2024. Used as the per-agency scoping baseline in NEPA_Timeline_Risk_Assessor.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Median NOI to DEIS (Months)</label>
+        <precision>5</precision>
+        <scale>1</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Median_DEIS_to_FEIS_Months__c</fullName>
+        <description>Median months from Draft EIS to Final EIS publication for this agency. Combined with Median_NOI_to_DEIS_Months__c to derive the full EIS baseline in days: (NOI_to_DEIS + DEIS_to_FEIS) × 30.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Median DEIS to FEIS (Months)</label>
+        <precision>5</precision>
+        <scale>1</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Scoping_Cap_Months__c</fullName>
+        <description>CEQ-recommended scoping cap in months. Defaults to 24 per 40 CFR 1501.10(b)(2) two-year page-one limit guidance. Used to compute nepa_scoping_overrun_flag__c and nepa_projected_scoping_overrun_months__c.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
+        <defaultValue>24</defaultValue>
+        <label>Scoping Cap (Months)</label>
+        <precision>5</precision>
+        <scale>1</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Agency_Performance_Tier__c</fullName>
+        <description>Performance classification based on median NOI-to-DEIS duration relative to CEQ 2-year target. Fast_and_Defensible = ≤18mo; Slow_Scoping_Bottleneck = 19–42mo; Legally_Vulnerable = &gt;30mo with high litigation loss rate.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Agency Performance Tier</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Fast_and_Defensible</fullName>
+                    <default>false</default>
+                    <label>Fast and Defensible</label>
+                </value>
+                <value>
+                    <fullName>Slow_Scoping_Bottleneck</fullName>
+                    <default>false</default>
+                    <label>Slow Scoping Bottleneck</label>
+                </value>
+                <value>
+                    <fullName>Legally_Vulnerable</fullName>
+                    <default>false</default>
+                    <label>Legally Vulnerable</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Active__c</fullName>
+        <description>Whether this baseline record is currently in use. SubscriberControlled so agencies can swap in agency-specific overrides.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
+        <defaultValue>true</defaultValue>
+        <label>Active</label>
+        <type>Checkbox</type>
+    </fields>
+</CustomObject>

@@ -45,6 +45,7 @@ For each CSV file:
 | `NEPA_Risk_Agency.csv` | NEPA Risk Scorer - Agency Risk Points | `AgencyName` | 6 rows using picklist abbreviations (USFS=25, BLM=23, FERC=15, USACE=12, USFWS=10, Default=5); values must match `Program.nepa_record_owner_agency__c` picklist |
 | `NEPA_Risk_Circuit.csv` | NEPA Risk Scorer - Circuit Risk Points | `CircuitKey` | 13 rows sourced from NEPA_Circuit_Risk_Weight__mdt; wildcard default row (DEFAULT, MatchScore=0) |
 | `NEPA_Permit_Matrix_BRE.csv` | NEPA Permit Matrix | `Sector`, `ProjectType` | 9 rows mirroring NEPA_Permit_Matrix__mdt |
+| `NEPA_Risk_SectorCircuit.csv` | NEPA Risk Scorer - Sector Circuit Risk Points | `SectorCircuitKey` | 17 rows: composite `Sector\|Circuit` key → WinRatePct, CaseCount, RiskCellLabel; wildcard `*` default row. Used by BRE V3 SectorCircuitTerm. **Import only after activating NEPA_Risk_SectorCircuit DM V1. Keep ES V3 in Draft until after import and sandbox validation.** |
 
 ## Demo Record Routing
 

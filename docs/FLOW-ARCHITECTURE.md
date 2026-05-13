@@ -58,11 +58,12 @@ flowchart TD
 | Flow | Type | Trigger / Entry |
 |---|---|---|
 | NEPA_Administrative_Record_Checker | Autolaunched subflow | Called from Stage Gate |
+| NEPA_Agency_Tier_Setter | After-save | Program update (nepa_record_owner_agency__c change) |
 | NEPA_AdminRecord_AutoCreate | After-save | ContentVersion insert |
 | NEPA_CE_Determination_Router | After-save | IndividualApplication (CE pathway) |
 | NEPA_CE_Intake | Before-save | IndividualApplication insert (CE) |
 | NEPA_CE_Screener | After-save | IndividualApplication (CE, on update) |
-| NEPA_Challenge_Predictor | After-save | nepa_litigation__c insert/update |
+| NEPA_Challenge_Predictor | After-save | IndividualApplication update (review type / sector / tribal flag change) |
 | NEPA_Comment_Period_Gate | Before-save | IndividualApplication update |
 | NEPA_Comment_Triage_Save | Autolaunched | Invoked from Apex / Agent |
 | NEPA_Defensibility_Gap_Checker | Autolaunched subflow | Called from trigger wrappers |
@@ -77,7 +78,7 @@ flowchart TD
 | NEPA_GIS_Proximity_Check | Autolaunched subflow | Called from CE Screener |
 | NEPA_Litigation_Risk_Scorer | Autolaunched | Invoked from BRE / Agent |
 | NEPA_Permit_Coordinator | Autolaunched | Invoked from Agent |
-| NEPA_Plaintiff_Intelligence | After-save | nepa_litigation__c insert/update |
+| NEPA_Plaintiff_Intelligence | After-save | PublicComplaint insert |
 | NEPA_Record_Completeness_Scorer | After-save | IndividualApplication update |
 | NEPA_SLA_Due_Date_Setter | Before-save | ApplicationTimeline insert |
 | NEPA_SLA_Escalation_Monitor | Scheduled | Daily on overdue ApplicationTimeline |

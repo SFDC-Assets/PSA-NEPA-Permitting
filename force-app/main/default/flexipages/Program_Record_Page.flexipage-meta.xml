@@ -360,6 +360,16 @@
                 <identifier>prog_risk_litigation_count</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_agency_performance_tier__c</fieldItem>
+                <identifier>prog_risk_agency_perf_tier</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>prog-risk-c1</name>
         <type>Facet</type>
     </flexiPageRegions>

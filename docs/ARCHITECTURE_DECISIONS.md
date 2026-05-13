@@ -2,7 +2,7 @@
 
 **Project:** PSA-NEPA-Permitting-Data-Model
 **Maintainer:** GPS Accelerators
-**Last Updated:** 2026-05-12
+**Last Updated:** 2026-05-13
 
 Open-source NEPA permitting accelerator built on Salesforce Agentforce for Public Sector (APS). Maps CEQ NEPA and Permitting Data and Technology Standard v1.2 entities to PSS standard objects, adds custom objects and 12+ declarative flows for risk intelligence, and prepares for Phase 2 OmniStudio + Agentforce portal delivery.
 
@@ -134,7 +134,7 @@ Risk intelligence flows require configurable weight tables for litigation risk f
 
 ### Decision
 
-Eight Custom Metadata Types store risk weights and screening rules:
+Nine Custom Metadata Types store risk weights and screening rules:
 
 | Custom Metadata Type | Purpose |
 |---|---|
@@ -145,6 +145,7 @@ Eight Custom Metadata Types store risk weights and screening rules:
 | `NEPA_CE_Screening_Rule__mdt` | CE eligibility screening rules by agency and project type |
 | `NEPA_Challenge_Prediction_Rule__mdt` | Challenge ground prediction patterns |
 | `NEPA_Required_Document__mdt` | Required document checklists by review type |
+| `NEPA_Agency_Scoping_Baseline__mdt` | Per-agency EIS scoping baseline durations (NOI→DEIS, DEIS→FEIS median months, scoping cap) derived from CEQ EIS Timeline data 2010–2024 |
 | `NEPA_Flow_Error__c` | Error logging target (standard custom object, not CMT) |
 
 **Agency matching logic:** `NEPA_CE_Screening_Rule__mdt.Agency__c` is a restricted picklist (`ALL` / `BLM` / `DOD` / `DOE` / `FERC` / `FWS` / `USACE` / `USFS`). The CE Screener flow uses `EqualTo` comparison, not `Contains`. Agency-specific rules take precedence; the `ALL`-agency fallback lookup fires only when no agency-specific rule matches.
@@ -394,7 +395,7 @@ Complete all items in this checklist before deploying the accelerator to a produ
 
 ### Custom Metadata Seeding
 
-- [ ] Deploy all 8 Custom Metadata Types and their records before activating any risk intelligence flows. Flows reference CMT records at runtime; missing records cause silent no-match defaults that produce incorrect scores.
+- [ ] Deploy all 9 Custom Metadata Types and their records before activating any risk intelligence flows. Flows reference CMT records at runtime; missing records cause silent no-match defaults that produce incorrect scores.
 - [ ] Set `Effective_Date__c` on all `NEPA_CE_Screening_Rule__mdt` records at deployment time to establish the initial audit baseline.
 - [ ] Review `NEPA_Agency_Risk_Rate__mdt` and `NEPA_Circuit_Risk_Weight__mdt` records against the agency's actual operational footprint. The seeded records are derived from the PermitTEC national corpus -- agency-specific litigation rates and circuit weights may differ from national averages.
 

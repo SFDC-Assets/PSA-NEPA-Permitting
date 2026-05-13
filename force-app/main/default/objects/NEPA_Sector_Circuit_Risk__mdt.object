@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Sector × Circuit litigation risk matrix derived from PermitTEC v0.1 Stage 13 analysis. Cells with ≥3 cases from the 761-case corpus. Used by NEPA_Litigation_Risk_Scorer V3 to add a sector-circuit composite term to the risk score. WinRatePct is the federal agency win rate (low win rate = higher risk).</description>
+    <label>NEPA Sector Circuit Risk</label>
+    <pluralLabel>NEPA Sector Circuit Risks</pluralLabel>
+    <fields>
+        <fullName>Sector_Key__c</fullName>
+        <description>Sector abbreviation matching Program.nepa_primary_sector__c (e.g., Energy, Transportation, Agriculture, PublicLands, Water, Military, Other).</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Sector Key</label>
+        <length>50</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Circuit_Key__c</fullName>
+        <description>Circuit abbreviation matching Program.nepa_circuit__c (e.g., 9th, DC, 10th, 4th). Combined with Sector_Key__c as the composite lookup key: Sector_Key__c + '|' + Circuit_Key__c.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Circuit Key</label>
+        <length>10</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Composite_Key__c</fullName>
+        <description>Computed composite lookup key: Sector_Key__c + '|' + Circuit_Key__c. Used as the Decision Matrix input column for BRE lookup. Example: 'Energy|4th'.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Composite Key</label>
+        <length>65</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Agency_Win_Rate_Pct__c</fullName>
+        <description>Federal agency win rate percentage for this sector-circuit cell from PermitTEC v0.1 Stage 13 matrix. Low value = high litigation risk. Used in SectorCircuitTerm formula: 0.20 × (1 - WinRate/100) × DataQualityWeight.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Agency Win Rate (%)</label>
+        <precision>5</precision>
+        <scale>1</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Case_Count__c</fullName>
+        <description>Number of PermitTEC v0.1 cases in this sector-circuit cell. Cells with &lt;3 cases have data quality weight of 0.5 in scoring formula.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Case Count</label>
+        <precision>5</precision>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Risk_Cell_Label__c</fullName>
+        <description>Categorical risk label for this sector-circuit cell. HIGH = win rate &lt;50%; MODERATE = 50–74%; LOW = ≥75%.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Risk Cell Label</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>HIGH</fullName>
+                    <default>false</default>
+                    <label>HIGH</label>
+                </value>
+                <value>
+                    <fullName>MODERATE</fullName>
+                    <default>false</default>
+                    <label>MODERATE</label>
+                </value>
+                <value>
+                    <fullName>LOW</fullName>
+                    <default>false</default>
+                    <label>LOW</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Active__c</fullName>
+        <description>Whether this sector-circuit risk cell is active in the scoring model.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
+        <defaultValue>true</defaultValue>
+        <label>Active</label>
+        <type>Checkbox</type>
+    </fields>
+</CustomObject>

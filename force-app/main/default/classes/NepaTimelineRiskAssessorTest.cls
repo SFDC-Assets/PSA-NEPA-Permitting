@@ -94,7 +94,9 @@ private class NepaTimelineRiskAssessorTest {
         System.assertEquals(false, threw, 'Timeline risk assessor must not throw on status change');
     }
 
-    // ── On Track: stage transition 10 days ago → well below 730-day EIS baseline ──
+    // ── On Track: stage transition 10 days ago → well below per-agency EIS baseline ──
+    // EIS baseline is now per-agency from NEPA_Agency_Scoping_Baseline__mdt.
+    // BLM baseline = (28 + 13) × 30 = 1230d; 10 days is far below all agency baselines.
 
     @IsTest
     static void onTrack_whenDaysInStageWellBelowBaseline() {
@@ -119,22 +121,23 @@ private class NepaTimelineRiskAssessorTest {
 
         if (result.nepa_timeline_risk_tier__c != null) {
             System.assertEquals('On Track', result.nepa_timeline_risk_tier__c,
-                'Transition 10 days ago in EIS Draft Preparation should be On Track (baseline 730d)');
+                'Transition 10 days ago should be On Track — below all per-agency EIS baselines');
         }
     }
 
-    // ── Overdue: stage transition 1200 days ago → far exceeds 730-day EIS baseline ──
+    // ── Overdue: stage transition 2000 days ago → exceeds all per-agency EIS baselines ──
+    // Highest per-agency baseline: FAA = (47+12)*30 = 1770d. 2000 days exceeds all agencies.
 
     @IsTest
     static void overdue_whenDaysInStageExceedOverdueThreshold() {
         Program proj = NepaTestFactory.insertProgram('TRA-004', 'Overdue Project', 'BLM');
         IndividualApplication ia = makeEISProcess(proj.Id);
-        ia.nepa_last_stage_transition__c = daysAgo(1200); // 1200 days in stage
+        ia.nepa_last_stage_transition__c = daysAgo(2000); // 2000 days exceeds all per-agency baselines
         insert ia;
 
         IndividualApplication iaUpdate = new IndividualApplication(Id = ia.Id);
         iaUpdate.nepa_process_stage__c           = 'Draft EIS Preparation';
-        iaUpdate.nepa_last_stage_transition__c    = daysAgo(1200);
+        iaUpdate.nepa_last_stage_transition__c    = daysAgo(2000);
 
         Test.startTest();
         update iaUpdate;
@@ -150,7 +153,7 @@ private class NepaTimelineRiskAssessorTest {
             System.assert(
                 result.nepa_timeline_risk_tier__c == 'Overdue'
                 || result.nepa_timeline_risk_tier__c == 'Stalled',
-                '1200 days in EIS Draft Preparation must be Stalled or Overdue; got: '
+                '2000 days in EIS Draft Preparation must be Stalled or Overdue (exceeds all per-agency baselines); got: '
                     + result.nepa_timeline_risk_tier__c
             );
         }
@@ -307,6 +310,154 @@ private class NepaTimelineRiskAssessorTest {
         if (result.nepa_projected_completion_date__c != null) {
             System.assert(result.nepa_projected_completion_date__c >= Date.today(),
                 'Projected completion date must not be in the past');
+        }
+    }
+
+    // ── CE page count outlier: >17 pages → At Risk regardless of timeline ───────
+    // Stage 6 corpus analysis: p95 CE page count = 17 pages. Above this signals scope creep.
+
+    @IsTest
+    static void cePageCount_aboveThreshold_producesAtRisk() {
+        Program proj = NepaTestFactory.insertProgram('TRA-PAGE-CE-001', 'CE Page Outlier', 'BLM');
+        IndividualApplication ia = new IndividualApplication();
+        ia.Category                      = 'Permit';
+        ia.LicenseTypeId                 = getLicenseTypeId();
+        ia.nepa_related_project__c       = proj.Id;
+        ia.nepa_review_type__c           = 'CE';
+        ia.nepa_process_status__c        = 'in progress';
+        ia.nepa_process_stage__c         = 'CE Determination';
+        ia.nepa_last_stage_transition__c = daysAgo(5); // well within timeline — page count drives risk
+        ia.nepa_total_pages__c           = 20; // > 17 threshold
+        insert ia;
+
+        IndividualApplication iaUpdate = new IndividualApplication(Id = ia.Id);
+        iaUpdate.nepa_total_pages__c = 21; // trigger IsChanged
+
+        Test.startTest();
+        Boolean threw = false;
+        try { update iaUpdate; } catch (Exception e) { threw = true; }
+        Test.stopTest();
+
+        System.assertEquals(false, threw, 'CE page count outlier flow must not throw');
+
+        IndividualApplication result = [
+            SELECT nepa_timeline_risk_tier__c, nepa_classification_basis__c
+            FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+
+        if (result.nepa_timeline_risk_tier__c != null) {
+            System.assertEquals('At Risk', result.nepa_timeline_risk_tier__c,
+                'CE with >17 pages must produce At Risk — page count outlier override');
+        }
+    }
+
+    @IsTest
+    static void cePageCount_withinThreshold_doesNotElevateRisk() {
+        Program proj = NepaTestFactory.insertProgram('TRA-PAGE-CE-002', 'CE Page Normal', 'BLM');
+        IndividualApplication ia = new IndividualApplication();
+        ia.Category                      = 'Permit';
+        ia.LicenseTypeId                 = getLicenseTypeId();
+        ia.nepa_related_project__c       = proj.Id;
+        ia.nepa_review_type__c           = 'CE';
+        ia.nepa_process_status__c        = 'in progress';
+        ia.nepa_process_stage__c         = 'CE Determination';
+        ia.nepa_last_stage_transition__c = daysAgo(5);
+        ia.nepa_total_pages__c           = 10; // ≤ 17 threshold
+        insert ia;
+
+        IndividualApplication iaUpdate = new IndividualApplication(Id = ia.Id);
+        iaUpdate.nepa_total_pages__c = 11;
+
+        Test.startTest();
+        Boolean threw = false;
+        try { update iaUpdate; } catch (Exception e) { threw = true; }
+        Test.stopTest();
+
+        System.assertEquals(false, threw, 'CE within page threshold must not throw');
+
+        IndividualApplication result = [
+            SELECT nepa_timeline_risk_tier__c
+            FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+
+        if (result.nepa_timeline_risk_tier__c != null) {
+            System.assertNotEquals('At Risk', result.nepa_timeline_risk_tier__c,
+                'CE with ≤17 pages and recent transition should not be At Risk due to page count');
+        }
+    }
+
+    // ── EA page count outlier: >200 pages → minimum At Risk ─────────────────────
+
+    @IsTest
+    static void eaPageCount_aboveThreshold_producesAtRisk() {
+        Program proj = NepaTestFactory.insertProgram('TRA-PAGE-EA-001', 'EA Page Outlier', 'BLM');
+        IndividualApplication ia = new IndividualApplication();
+        ia.Category                      = 'Permit';
+        ia.LicenseTypeId                 = getLicenseTypeId();
+        ia.nepa_related_project__c       = proj.Id;
+        ia.nepa_review_type__c           = 'EA';
+        ia.nepa_process_status__c        = 'in progress';
+        ia.nepa_process_stage__c         = 'EA Preparation';
+        ia.nepa_last_stage_transition__c = daysAgo(5); // well within timeline — page count drives risk
+        ia.nepa_total_pages__c           = 250; // > 200 threshold
+        insert ia;
+
+        IndividualApplication iaUpdate = new IndividualApplication(Id = ia.Id);
+        iaUpdate.nepa_total_pages__c = 251;
+
+        Test.startTest();
+        Boolean threw = false;
+        try { update iaUpdate; } catch (Exception e) { threw = true; }
+        Test.stopTest();
+
+        System.assertEquals(false, threw, 'EA page count outlier flow must not throw');
+
+        IndividualApplication result = [
+            SELECT nepa_timeline_risk_tier__c
+            FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+
+        if (result.nepa_timeline_risk_tier__c != null) {
+            System.assertEquals('At Risk', result.nepa_timeline_risk_tier__c,
+                'EA with >200 pages must produce at minimum At Risk — page count outlier');
+        }
+    }
+
+    // ── Scoping overrun: EIS days in scoping stage exceeds agency cap ────────────
+    // BLM scoping cap = 24 months. 750 days = 25 months → exceeds cap.
+
+    @IsTest
+    static void scopingOverrun_whenDaysExceedAgencyCap_setsFlag() {
+        Program proj = NepaTestFactory.insertProgram('TRA-SCOPING-001', 'Scoping Overrun', 'BLM');
+        IndividualApplication ia = makeEISProcess(proj.Id);
+        ia.nepa_process_stage__c         = 'Scoping';
+        ia.nepa_last_stage_transition__c = daysAgo(750); // ~25 months; BLM cap = 24 months
+        insert ia;
+
+        IndividualApplication iaUpdate = new IndividualApplication(Id = ia.Id);
+        iaUpdate.nepa_process_stage__c        = 'Scoping'; // keep in scoping to test overrun
+        iaUpdate.nepa_last_stage_transition__c = daysAgo(750);
+
+        Test.startTest();
+        Boolean threw = false;
+        try { update iaUpdate; } catch (Exception e) { threw = true; }
+        Test.stopTest();
+
+        System.assertEquals(false, threw, 'Scoping overrun detection must not throw');
+
+        IndividualApplication result = [
+            SELECT nepa_scoping_overrun_flag__c, nepa_projected_scoping_overrun_months__c,
+                   nepa_agency_scoping_baseline_months__c
+            FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+
+        if (result.nepa_scoping_overrun_flag__c != null) {
+            System.assertEquals(true, result.nepa_scoping_overrun_flag__c,
+                '750 days in Scoping for BLM (cap 24mo=720d) should set nepa_scoping_overrun_flag__c');
+        }
+        if (result.nepa_projected_scoping_overrun_months__c != null) {
+            System.assert(result.nepa_projected_scoping_overrun_months__c > 0,
+                'Projected scoping overrun months must be positive when flag is set');
         }
     }
 
