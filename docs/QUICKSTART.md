@@ -106,6 +106,8 @@ All 8 phases should report `Status: Succeeded`. Fix any errors before proceeding
 
 ## Step 3 — Deploy All Metadata
 
+### Option A — Phased deploy script (first-time install, recommended)
+
 Run the full deploy:
 
 ```bash
@@ -131,6 +133,31 @@ The script deploys in dependency order:
 | 9–16 | Tabs, report types, reports, dashboards, layouts, LWC, FlexiPages, Lightning app |
 
 Expected total time: 10–15 minutes.
+
+### Option B — Single-shot manifest deploy (re-deploy to existing org)
+
+If the target org already has the base schema deployed and you need to push updates:
+
+```bash
+sf project deploy start \
+  --manifest manifest/deploy_clean.xml \
+  --target-org NEPADEV \
+  --test-level NoTestRun \
+  --wait 60
+```
+
+`manifest/deploy_clean.xml` deploys 706 components in a single call. It intentionally excludes components that require special handling:
+
+| Excluded component | Reason |
+|---|---|
+| `OmniDataTransform` / `OmniIntegrationProcedure` / `OmniScript` | Deployed via standard Metadata API in Phase 8c; excluded here because `DRUpsertDetectedLayer` requires a two-step deploy with globalKey patching that the phased script handles automatically |
+| `BotVersion` | Requires Agentforce agent publish workflow; deploy via Agent CLI |
+| `ConnectedApp:NEPA_CEQExport_API` | XML structure error (`oauthFlows` invalid in `oauthConfig`); fix before including |
+| `ExpressionSetDefinition` | Platform rejects deploy if a version is already active; manage versions via BRE UI |
+| `FlexiPage:Program_Record_Page` | Some orgs have this page pre-bound to `CGC_Program__c`; excluded to avoid sobjectType conflict |
+| `Flow:NEPA_EIS_Section_Assembler` + `NEPA_EIS_Section_Draft_Trigger` | Require Einstein Generative AI provisioning |
+
+For a first-time install, use the phased script (Option A) — it handles the OmniStudio two-step deploy and dependency ordering.
 
 ---
 
@@ -828,3 +855,27 @@ sf data query --query "SELECT Id FROM PermissionSetAssignment WHERE Assignee.Use
 
 **`generate_ce_explorer_cmt.py` — this script is obsolete**
 The earlier approach stored CE Explorer data as Custom Metadata records in `NEPA_CE_Code__mdt`. This was replaced by the `nepa_ce_library__c` custom object approach (SOSL-searchable, Einstein Search-discoverable, Experience Cloud guest-accessible). Use `scripts/load_ce_library.py` instead. The `generate_ce_explorer_cmt.py` file is preserved in `scripts/` for reference only.
+
+**`UNKNOWN_EXCEPTION` on deploy with no structured error**
+This is a Salesforce pod-level rejection that fires before component parsing. Common causes:
+- Multiple `<types>` blocks for the same metadata type in `package.xml` — deduplicate
+- `<fullName>` or `<description>` elements present in a deploy manifest — these are valid in `package.xml` but invalid in `manifest/deploy_clean.xml`-style deploy manifests
+- A Flow using `<actionType>generateText</actionType>` (Einstein AI) when Einstein GenAI is not provisioned — exclude the flow or provision Einstein first
+- Misformatted source files in the project tree (see below)
+
+**"Not found in zipped directory" for 100+ field components**
+Fields on standard APS objects (`Program`, `IndividualApplication`, `ContentVersion`, `PublicComplaint`, `ApplicationTimeline`) must exist as individual `objects/<Object>/fields/<field>.field-meta.xml` files. Fields embedded inside a flat `.object-meta.xml` are silently ignored for standard objects. Similarly, `RecordType` and `ValidationRule` definitions must be extracted to `objects/<Object>/recordTypes/` and `objects/<Object>/validationRules/` subdirectories.
+
+**Source-format file naming errors on fresh clone**
+The Metadata API source format requires:
+- `.object-meta.xml` (not bare `.object`)
+- `.layout-meta.xml` (not bare `.layout`)
+- `.permissionset-meta.xml` (not bare `.permissionset`)
+
+If you see "ComponentSetError" or deployment failures citing missing metadata types, check that all files in `force-app/` have the correct `-meta.xml` suffix.
+
+**`FlexiPage Program_Record_Page` fails with object type mismatch**
+Some PSS orgs (particularly those upgraded from an older managed package) have `Program_Record_Page` pre-assigned to `CGC_Program__c`. The Metadata API cannot change the `sobjectType` of an existing Lightning page. The deploy script handles this with `allow-failure` on this page. To fully resolve: delete the existing `Program_Record_Page` in Setup → Lightning App Builder, then redeploy.
+
+**`ConnectedApp:NEPA_CEQExport_API` parse error**
+The source file has an `<oauthFlows>` element inside `<oauthConfig>` which is invalid for API v62. The ConnectedApp is excluded from `manifest/deploy_clean.xml` and the phased script. To fix: open `force-app/main/default/connectedApps/NEPA_CEQExport_API.connectedApp-meta.xml`, remove the `<oauthFlows>` block, validate against the ConnectedApp schema, and redeploy using `--metadata "ConnectedApp:NEPA_CEQExport_API"`.

@@ -98,6 +98,54 @@
 #      - Flow element: <actionCalls actionType=apex> referencing the class name
 #    The correct method is invokeMethod() on an instance — not the static
 #    runIntegrationService() call, which does not exist in this package version.
+#
+# 10. OmniDataTransform, OmniIntegrationProcedure, OmniScript deploy via standard
+#     Metadata API — no vlocity-build / DataPack tooling required. The Salesforce CLI
+#     source format for these types uses .rpt-meta.xml (DataRaptor), .oip-meta.xml (IP),
+#     and .omniscript-meta.xml / .json (OmniScript). The platform validates IP
+#     dependencies (DataRaptors) at deploy time; if the org index hasn't yet indexed
+#     newly-deployed DRs, the OmniScript deploy may fail with "Couldn't find dependent
+#     components" — retry after ~30 minutes or activate manually via OmniStudio Designer.
+#
+# 11. ConnectedApp:NEPA_CEQExport_API has an XML structure error in the source file:
+#     <oauthFlows> is not valid inside <oauthConfig> for this API version.
+#     ConnectedApps are excluded from manifest/deploy_clean.xml until this is resolved.
+#     To fix: remove <oauthFlows> from the ConnectedApp XML and redeploy.
+#
+# 12. manifest/deploy_clean.xml is a single-shot manifest deploy alternative to this
+#     phased script. It deploys 706 components in one call and is useful for re-deploys
+#     to an org that already has the base schema. It excludes: OmniDataTransform,
+#     OmniIntegrationProcedure, OmniScript, BotVersion, ConnectedApp,
+#     ExpressionSetDefinition, NEPA_EIS_Section_Assembler, NEPA_EIS_Section_Draft_Trigger,
+#     and Program_Record_Page. Use the phased script for first-time deploys.
+#       sf project deploy start --manifest manifest/deploy_clean.xml \
+#         --target-org <alias> --test-level NoTestRun --wait 60
+#
+# 13. Source-format file requirements (common failure mode on clone-and-deploy):
+#     - Object files must use .object-meta.xml suffix (not bare .object)
+#     - Layout files must use .layout-meta.xml suffix (not bare .layout)
+#     - Permission set files must use .permissionset-meta.xml suffix
+#     - Fields on standard objects (Program, IndividualApplication, ContentVersion,
+#       PublicComplaint, ApplicationTimeline) must exist as individual
+#       objects/<Object>/fields/<field>.field-meta.xml files — fields inside a flat
+#       .object-meta.xml are silently ignored by the Metadata API for standard objects
+#     - RecordType and ValidationRule definitions on standard objects must similarly be
+#       extracted to objects/<Object>/recordTypes/ and objects/<Object>/validationRules/
+#     - CustomLabel aggregate member "CustomLabels" does not resolve from source;
+#       list individual label developer names as separate <members> entries in any manifest
+#     - Layout Name field behavior must be "Required" (not "Edit" or "Readonly") or
+#       the Metadata API rejects the layout with a validation error
+#
+# 14. FlexiPage Program_Record_Page:
+#     Some orgs (e.g., pre-existing PSS installs) have Program_Record_Page already
+#     assigned to CGC_Program__c (the PSS base package object alias). The Metadata API
+#     cannot change the sobjectType of an existing Lightning page — attempting to deploy
+#     with sobjectType=Program will fail. In that case either:
+#     a) Exclude Program_Record_Page from the deploy and assign the page manually in
+#        Setup → Lightning App Builder, or
+#     b) Remove the existing page in the org before deploying.
+#     The source file is checked in with sobjectType=Program (the correct value for
+#     APS trial orgs). See manifest/deploy_clean.xml for the excluded manifest path.
 
 set -euo pipefail
 
@@ -627,10 +675,15 @@ else
 fi
 
 # ── phase 15: flexipages ──────────────────────────────────────────────────────
-# Only the 12 NEPA-specific pages checked into this repo.
+# Only the NEPA-specific pages checked into this repo.
 # All non-NEPA flexipages have been removed from force-app/main/default/flexipages/.
+#
+# Program_Record_Page: deployed individually with allow-failure because some orgs
+# (pre-existing PSS installs) already have Program_Record_Page bound to CGC_Program__c.
+# The Metadata API cannot change the sobjectType of an existing page. If it fails here,
+# assign the page manually in Setup → Lightning App Builder. (See idiosyncrasy #14.)
 phase_header "Phase 15: FlexiPages (NEPA record and home pages)"
-deploy "flexipages" \
+deploy "flexipages (non-Program)" \
     --metadata "FlexiPage:ApplicationTimeline_Record_Page" \
     --metadata "FlexiPage:Individual_Application_Record_Page" \
     --metadata "FlexiPage:IndividualApplication_Record_Page" \
@@ -641,10 +694,13 @@ deploy "flexipages" \
     --metadata "FlexiPage:NEPA_Litigation_Record_Page" \
     --metadata "FlexiPage:NEPA_Permitting_Home" \
     --metadata "FlexiPage:NEPA_Process_Team_Member_Record_Page" \
-    --metadata "FlexiPage:Program_Record_Page" \
     --metadata "FlexiPage:Public_Comment_Record_Page" \
     --metadata "FlexiPage:NEPA_CE_Library_Record_Page" \
     --metadata "FlexiPage:NEPA_Decision_Payload_Record_Page" \
+    --target-org "$TARGET_ORG"
+
+deploy "Program_Record_Page" allow-failure \
+    --metadata "FlexiPage:Program_Record_Page" \
     --target-org "$TARGET_ORG"
 
 # ── phase 16: lightning app ───────────────────────────────────────────────────
