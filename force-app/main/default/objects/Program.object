@@ -412,6 +412,17 @@
         <type>DateTime</type>
     </fields>
     <fields>
+        <fullName>nepa_other__c</fullName>
+        <description>Extension bag for agency-specific or non-standard properties. Stores arbitrary JSON for interoperability with systems that require fields beyond the CEQ standard schema. Maps to the CEQ standard project.other (jsonb) property.</description>
+        <inlineHelpText>JSON extension bag for additional properties not covered by the standard schema.</inlineHelpText>
+        <label>Other (JSON)</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>2</visibleLines>
+    </fields>
+    <fields>
         <fullName>nepa_gis_proximity_complete__c</fullName>
         <defaultValue>false</defaultValue>
         <description>Set to true by NEPA_GIS_Proximity_IP when the async GIS proximity check has completed and proximity results have been written to nepa_protection_areas__c, nepa_gis_last_checked__c, and nepa_extraordinary_circumstances__c. NEPA_CE_Screener reads this flag before evaluating extraordinary circumstances — if false, the screener defers the GIS stage and routes to manual review rather than assuming no proximity. Reset to false when nepa_location_lat__c or nepa_location_lon__c changes.</description>

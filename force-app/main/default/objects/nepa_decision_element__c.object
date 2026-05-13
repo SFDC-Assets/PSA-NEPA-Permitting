@@ -273,6 +273,118 @@
         <type>Checkbox</type>
     </fields>
 
+    <!-- ── PIC OpenAPI standard fields (decision_element entity) ─────────── -->
+    <fields>
+        <fullName>nepa_title__c</fullName>
+        <description>Short descriptive name for this decision criterion or determination. Maps to the CEQ standard decision_element.title property.</description>
+        <inlineHelpText>Short name for this decision element (e.g., "CE Acreage Limit — BLM Oil & Gas").</inlineHelpText>
+        <label>Title</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_description__c</fullName>
+        <description>Full description of this decision criterion or determination. Maps to the CEQ standard decision_element.description property.</description>
+        <inlineHelpText>Full description of the criterion, including any regulatory context.</inlineHelpText>
+        <label>Description</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_measure__c</fullName>
+        <description>The measurable quantity or attribute name for this criterion (e.g., "Disturbance Acres", "Noise Level dB"). Maps to the CEQ standard decision_element.measure property.</description>
+        <inlineHelpText>Name of the measurable quantity evaluated by this criterion (e.g., "Disturbance Acres").</inlineHelpText>
+        <label>Measure</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_process_model_id__c</fullName>
+        <description>DeveloperName of the NEPA_Process_Model__mdt record this decision element belongs to. Stored as Text because Custom Metadata Types cannot be Lookup targets from custom objects. Maps to the CEQ standard decision_element.process_model foreign key.</description>
+        <inlineHelpText>DeveloperName of the associated process model (e.g., EIS_Standard, CE_BLM).</inlineHelpText>
+        <label>Process Model ID</label>
+        <length>80</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_parent_decision_element__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Parent decision element for hierarchical criteria structures (e.g., a sub-criterion of a broader screening category). Maps to the CEQ standard decision_element.parent_decision_element_id property.</description>
+        <inlineHelpText>Parent criterion when this element is a sub-criterion in a hierarchy.</inlineHelpText>
+        <label>Parent Decision Element</label>
+        <referenceTo>nepa_decision_element__c</referenceTo>
+        <relationshipLabel>Child Decision Elements</relationshipLabel>
+        <relationshipName>Child_Decision_Elements</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_form_text__c</fullName>
+        <description>The question or prompt text shown to users in a screening form for this criterion. Maps to the CEQ standard decision_element.form_text property.</description>
+        <inlineHelpText>Screening form question presented to applicants or reviewers for this criterion.</inlineHelpText>
+        <label>Screening Form Text</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_form_data__c</fullName>
+        <description>JSON definition of the structured screening form for this criterion, including field names, types, and validation rules. Maps to the CEQ standard decision_element.form_data property.</description>
+        <inlineHelpText>JSON schema for the screening form fields (e.g., {"acreage": {"type": "number", "required": true}}).</inlineHelpText>
+        <label>Screening Form Data (JSON)</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_intersect__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>True when evaluation of this criterion requires a spatial intersection check (e.g., project footprint must intersect a protected area layer). Maps to the CEQ standard decision_element.intersect property.</description>
+        <inlineHelpText>Check when this criterion requires a spatial intersect with a GIS layer to evaluate.</inlineHelpText>
+        <label>Spatial Intersect Required</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_response_data__c</fullName>
+        <description>JSON object storing the structured evaluation response data for this decision element when used in a process-level context. Maps to the CEQ standard decision_element.response_data property.</description>
+        <inlineHelpText>Structured evaluation response data (JSON) captured when this element was evaluated for a specific process.</inlineHelpText>
+        <label>Response Data (JSON)</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_other__c</fullName>
+        <description>Extension bag for agency-specific or non-standard properties. Stores arbitrary JSON for interoperability with systems that require fields beyond the CEQ standard schema. Maps to the CEQ standard decision_element.other (jsonb) property.</description>
+        <inlineHelpText>JSON extension bag for additional properties not covered by the standard schema.</inlineHelpText>
+        <label>Other (JSON)</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>2</visibleLines>
+    </fields>
+
     <!-- ── Criteria catalog fields (existing) ────────────────────────────── -->
     <fields>
         <fullName>nepa_legal_reference__c</fullName>

@@ -364,6 +364,53 @@
         <members>nepa_decision_payload__c.nepa_data_source_system__c</members>
         <members>nepa_decision_payload__c.nepa_record_owner_agency__c</members>
         <members>nepa_decision_payload__c.nepa_retrieved_timestamp__c</members>
+        <!-- PIC API compliance: Phase 1 — decision_element additions -->
+        <members>nepa_decision_element__c.nepa_title__c</members>
+        <members>nepa_decision_element__c.nepa_description__c</members>
+        <members>nepa_decision_element__c.nepa_measure__c</members>
+        <members>nepa_decision_element__c.nepa_process_model_id__c</members>
+        <members>nepa_decision_element__c.nepa_parent_decision_element__c</members>
+        <members>nepa_decision_element__c.nepa_form_text__c</members>
+        <members>nepa_decision_element__c.nepa_form_data__c</members>
+        <members>nepa_decision_element__c.nepa_intersect__c</members>
+        <members>nepa_decision_element__c.nepa_response_data__c</members>
+        <members>nepa_decision_element__c.nepa_other__c</members>
+        <!-- PIC API compliance: Phase 2 — nepa_decision_log__c fields -->
+        <members>nepa_decision_log__c.nepa_process__c</members>
+        <members>nepa_decision_log__c.nepa_decision_element__c</members>
+        <members>nepa_decision_log__c.nepa_project__c</members>
+        <members>nepa_decision_log__c.nepa_parent_log__c</members>
+        <members>nepa_decision_log__c.nepa_evaluation_data__c</members>
+        <members>nepa_decision_log__c.nepa_response__c</members>
+        <members>nepa_decision_log__c.nepa_result__c</members>
+        <members>nepa_decision_log__c.nepa_result_bool__c</members>
+        <members>nepa_decision_log__c.nepa_result_notes__c</members>
+        <members>nepa_decision_log__c.nepa_result_data__c</members>
+        <members>nepa_decision_log__c.nepa_result_source__c</members>
+        <members>nepa_decision_log__c.nepa_data_annotation__c</members>
+        <members>nepa_decision_log__c.nepa_evaluation_data_annotation__c</members>
+        <members>nepa_decision_log__c.nepa_other__c</members>
+        <members>nepa_decision_log__c.nepa_data_record_version__c</members>
+        <members>nepa_decision_log__c.nepa_data_source_agency__c</members>
+        <members>nepa_decision_log__c.nepa_data_source_system__c</members>
+        <members>nepa_decision_log__c.nepa_record_owner_agency__c</members>
+        <members>nepa_decision_log__c.nepa_retrieved_timestamp__c</members>
+        <!-- PIC API compliance: Phase 3 — process_instance FK + other -->
+        <members>IndividualApplication.nepa_process_model_id__c</members>
+        <members>IndividualApplication.nepa_other__c</members>
+        <!-- PIC API compliance: Phase 4 — nepa_other__c on all core objects -->
+        <members>Program.nepa_other__c</members>
+        <members>ContentVersion.nepa_other__c</members>
+        <members>PublicComplaint.nepa_other__c</members>
+        <members>nepa_engagement__c.nepa_other__c</members>
+        <members>ApplicationTimeline.nepa_other__c</members>
+        <members>nepa_decision_payload__c.nepa_other__c</members>
+        <!-- PIC API compliance: Phase 5 — NEPA_Process_Model__mdt additions -->
+        <members>NEPA_Process_Model__mdt.Description__c</members>
+        <members>NEPA_Process_Model__mdt.Agency__c</members>
+        <members>NEPA_Process_Model__mdt.Legal_Structure_Citation__c</members>
+        <members>NEPA_Process_Model__mdt.Parent_Model_Developer_Name__c</members>
+        <members>NEPA_Process_Model__mdt.Screening_Description__c</members>
         <!-- nepa_decision_element__c -->
         <members>nepa_decision_element__c.nepa_legal_reference__c</members>
         <members>nepa_decision_element__c.nepa_category__c</members>
@@ -435,6 +482,7 @@
         <members>nepa_process_related_agencies__c</members>
         <members>nepa_project_agency_relationship__c</members>
         <members>nepa_decision_element__c</members>
+        <members>nepa_decision_log__c</members>
         <members>nepa_decision_payload__c</members>
         <members>nepa_ce_library__c</members>
         <members>nepa_gis_data_element__c</members>
@@ -736,6 +784,7 @@
         <members>NepaCommentEJDetectorTest</members>
         <members>NepaCommentTriageParser</members>
         <members>NepaCommentTriageParserTest</members>
+        <members>NepaApiComplianceTest</members>
         <name>ApexClass</name>
     </types>
     <types>

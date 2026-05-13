@@ -91,6 +91,53 @@
         <type>Text</type>
         <unique>false</unique>
     </fields>
+    <!-- ── PIC OpenAPI standard fields (process_model entity) ─────────────── -->
+    <fields>
+        <fullName>Description__c</fullName>
+        <description>Full description of this process model. Maps to the CEQ standard process_model.description property.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Description</label>
+        <length>32768</length>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Agency__c</fullName>
+        <description>Federal agency that owns or primarily uses this process model (e.g., BLM, USFS, USACE). Maps to the CEQ standard process_model.agency property.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Agency</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Legal_Structure_Citation__c</fullName>
+        <description>CFR or USC citation for the legal authority governing this process model (e.g., "40 CFR Part 1502, 42 U.S.C. 4321"). Stored as Text because CMTs cannot have Lookup fields to RegulatoryCode. Maps to the CEQ standard process_model.legal_structure_id property.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Legal Structure Citation</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Parent_Model_Developer_Name__c</fullName>
+        <description>DeveloperName of the parent process model when this is a derivative or specialized model (e.g., a BLM-specific CE model derived from the base CE model). CMTs cannot self-reference via Lookup. Maps to the CEQ standard process_model.parent_model property.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Parent Model Developer Name</label>
+        <length>80</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Screening_Description__c</fullName>
+        <description>Human-readable description of the screening process for this review type, including eligibility criteria and screening steps. Maps to the CEQ standard process_model.screening_description property.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Screening Description</label>
+        <length>32768</length>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+
     <fields>
         <fullName>Active__c</fullName>
         <description>Inactive records are excluded from CE Screener routing and Stage Gate validation. Allows new process models to be staged before cutover.</description>

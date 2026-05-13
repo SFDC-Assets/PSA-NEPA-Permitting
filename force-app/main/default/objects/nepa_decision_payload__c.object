@@ -373,6 +373,17 @@
         <trackHistory>false</trackHistory>
         <type>DateTime</type>
     </fields>
+    <fields>
+        <fullName>nepa_other__c</fullName>
+        <description>Extension bag for agency-specific or non-standard properties. Stores arbitrary JSON for interoperability with systems that require fields beyond the CEQ standard schema. Maps to the CEQ standard process_decision_payload.other (jsonb) property.</description>
+        <inlineHelpText>JSON extension bag for additional properties not covered by the standard schema.</inlineHelpText>
+        <label>Other (JSON)</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>2</visibleLines>
+    </fields>
     <label>NEPA Decision Payload</label>
     <nameField>
         <label>Decision Payload Name</label>

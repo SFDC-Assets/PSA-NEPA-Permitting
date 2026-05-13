@@ -541,6 +541,17 @@
         <trackTrending>false</trackTrending>
         <type>DateTime</type>
     </fields>
+    <fields>
+        <fullName>nepa_other__c</fullName>
+        <description>Extension bag for agency-specific or non-standard properties. Stores arbitrary JSON for interoperability with systems that require fields beyond the CEQ standard schema. Maps to the CEQ standard engagement.other (jsonb) property.</description>
+        <inlineHelpText>JSON extension bag for additional properties not covered by the standard schema.</inlineHelpText>
+        <label>Other (JSON)</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>2</visibleLines>
+    </fields>
     <label>NEPA Public Engagement Event</label>
     <nameField>
         <displayFormat>ENG-{00000000}</displayFormat>

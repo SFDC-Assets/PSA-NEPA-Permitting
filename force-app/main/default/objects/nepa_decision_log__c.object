@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName><formFactor>Large</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName><formFactor>Small</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName><formFactor>Large</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName><formFactor>Small</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName><formFactor>Large</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName><formFactor>Small</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName><formFactor>Large</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName><formFactor>Small</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName><formFactor>Large</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName><formFactor>Small</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName><formFactor>Large</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName><formFactor>Small</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName><formFactor>Large</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName><formFactor>Small</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName><formFactor>Large</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName><formFactor>Small</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName><formFactor>Large</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName><formFactor>Small</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName><formFactor>Large</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName><formFactor>Small</formFactor><type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>CEQ Standard Entity — process_decision_payload (evaluation record role). Per-criterion evaluation log: links a decision_element criterion to a process_instance and stores the evaluation inputs, boolean result, and explanation data. Distinct from nepa_decision_payload__c (which stores the final ROD/FONSI document record). Together these two objects satisfy the full CEQ process_decision_payload standard: nepa_decision_log__c for per-criterion screening/evaluation audit; nepa_decision_payload__c for the final structured determination document. Supports administrative record completeness and Decision Explainer integration if available in the target org.</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableLicensing>false</enableLicensing>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <externalSharingModel>ControlledByParent</externalSharingModel>
+
+    <!-- ── Core FKs ─────────────────────────────────────────────────────────── -->
+    <fields>
+        <fullName>nepa_process__c</fullName>
+        <description>The NEPA process (IndividualApplication) this evaluation log belongs to. MasterDetail — deleting the process cascades deletion of all child logs. Maps to CEQ standard process_decision_payload.process.</description>
+        <inlineHelpText>The NEPA review process this evaluation log documents.</inlineHelpText>
+        <label>NEPA Process</label>
+        <referenceTo>IndividualApplication</referenceTo>
+        <relationshipLabel>Decision Logs</relationshipLabel>
+        <relationshipName>Decision_Logs</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackHistory>false</trackHistory>
+        <type>MasterDetail</type>
+    </fields>
+    <fields>
+        <fullName>nepa_decision_element__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>The decision element criterion evaluated in this log entry. Maps to CEQ standard process_decision_payload.process_decision_element.</description>
+        <inlineHelpText>The specific criterion from the decision element catalog that was evaluated.</inlineHelpText>
+        <label>Decision Element</label>
+        <referenceTo>nepa_decision_element__c</referenceTo>
+        <relationshipLabel>Decision Logs</relationshipLabel>
+        <relationshipName>Decision_Logs</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_project__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>The project (Program) associated with this evaluation. Denormalized from the process for direct project-level querying. Maps to CEQ standard process_decision_payload.project.</description>
+        <inlineHelpText>Project associated with this evaluation log.</inlineHelpText>
+        <label>Project</label>
+        <referenceTo>Program</referenceTo>
+        <relationshipLabel>Decision Logs</relationshipLabel>
+        <relationshipName>Decision_Logs_Project</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_parent_log__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Parent log entry for hierarchical evaluation chains (e.g., a sub-criterion log nested under a composite criterion log). Maps to CEQ standard process_decision_payload.parent_payload.</description>
+        <inlineHelpText>Parent log entry for nested evaluation chains.</inlineHelpText>
+        <label>Parent Log</label>
+        <referenceTo>nepa_decision_log__c</referenceTo>
+        <relationshipLabel>Child Logs</relationshipLabel>
+        <relationshipName>Child_Decision_Logs</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+
+    <!-- ── Evaluation input/output ──────────────────────────────────────────── -->
+    <fields>
+        <fullName>nepa_evaluation_data__c</fullName>
+        <description>JSON object containing the input data used to evaluate this criterion (e.g., {"acreage": 4.2, "action_type": "OilGas_Drilling", "agency": "BLM"}). Maps to CEQ standard process_decision_payload.evaluation_data.</description>
+        <inlineHelpText>JSON input data used to evaluate this criterion.</inlineHelpText>
+        <label>Evaluation Data (JSON)</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_response__c</fullName>
+        <description>Narrative response to the decision element for this process — the applicant's or reviewer's answer to the screening question. Maps to CEQ standard process_decision_payload.response.</description>
+        <inlineHelpText>Narrative response to the screening criterion.</inlineHelpText>
+        <label>Response</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_result__c</fullName>
+        <description>Text outcome of the evaluation (e.g., "CE Qualifies", "Extraordinary Circumstances Triggered", "Insufficient Data"). Maps to CEQ standard process_decision_payload.result.</description>
+        <inlineHelpText>Text outcome of this evaluation (e.g., "CE Qualifies", "Escalate to EA").</inlineHelpText>
+        <label>Result</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_result_bool__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Boolean pass/fail result of this criterion evaluation. True = criterion satisfied (e.g., CE qualifies); False = criterion not satisfied (e.g., acreage exceeds limit, requires EA). Maps to CEQ standard process_decision_payload.result_bool.</description>
+        <inlineHelpText>True if this criterion was satisfied; False if not.</inlineHelpText>
+        <label>Result (Pass/Fail)</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_result_notes__c</fullName>
+        <description>Supplemental notes explaining the result, including edge cases, borderline determinations, or manual override rationale. Maps to CEQ standard process_decision_payload.result_notes.</description>
+        <inlineHelpText>Notes explaining the result, especially for borderline or manually overridden evaluations.</inlineHelpText>
+        <label>Result Notes</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_result_data__c</fullName>
+        <description>JSON object containing structured result data beyond the text result (e.g., matched CE code, risk score breakdown, spatial intersection results). Maps to CEQ standard process_decision_payload.result_data.</description>
+        <inlineHelpText>Structured result data as JSON (e.g., matched CE code, computed scores).</inlineHelpText>
+        <label>Result Data (JSON)</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_result_source__c</fullName>
+        <description>Source of the evaluation result: BRE (Business Rules Engine), Manual, AI (model-generated), or External (third-party system). Maps to CEQ standard process_decision_payload.result_source.</description>
+        <inlineHelpText>How this result was produced: BRE, Manual, AI, or External.</inlineHelpText>
+        <label>Result Source</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+
+    <!-- ── Annotation fields ─────────────────────────────────────────────────── -->
+    <fields>
+        <fullName>nepa_data_annotation__c</fullName>
+        <description>Human-readable annotation describing the evaluation data — its source, quality, or any known gaps. Maps to CEQ standard process_decision_payload.data_annotation.</description>
+        <inlineHelpText>Annotation on the evaluation input data (source, quality, known gaps).</inlineHelpText>
+        <label>Data Annotation</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>2</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_evaluation_data_annotation__c</fullName>
+        <description>Structured JSON annotation on the evaluation data, for machine-readable quality and provenance metadata. Maps to CEQ standard process_decision_payload.evaluation_data_annotation.</description>
+        <inlineHelpText>Structured JSON annotation on the evaluation data for machine-readable metadata.</inlineHelpText>
+        <label>Evaluation Data Annotation (JSON)</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>2</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_other__c</fullName>
+        <description>Extension bag for agency-specific or non-standard properties. Stores arbitrary JSON for interoperability with systems that require fields beyond the CEQ standard schema. Maps to CEQ standard process_decision_payload.other (jsonb) property.</description>
+        <inlineHelpText>JSON extension bag for additional properties not covered by the standard schema.</inlineHelpText>
+        <label>Other (JSON)</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>2</visibleLines>
+    </fields>
+
+    <!-- ── CEQ v1.2 provenance fields ────────────────────────────────────────── -->
+    <fields>
+        <fullName>nepa_data_record_version__c</fullName>
+        <description>Version identifier for this decision log record. Required provenance field per CEQ Data and Technology Standard v1.2.</description>
+        <inlineHelpText>Record version for provenance tracking.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Record Version</label>
+        <length>50</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_agency__c</fullName>
+        <description>The federal agency that originated this decision log record. Required provenance field per CEQ Data and Technology Standard v1.2.</description>
+        <inlineHelpText>Agency that originated this record (e.g., BLM, USFS, USACE).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Source Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_system__c</fullName>
+        <description>The source system from which this record was ingested or originated. Required provenance field per CEQ Data and Technology Standard v1.2.</description>
+        <inlineHelpText>Originating system (e.g., BRE, CE Screener, manual entry).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Source System</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_record_owner_agency__c</fullName>
+        <description>The federal agency responsible for maintaining this record. Required provenance field per CEQ Data and Technology Standard v1.2.</description>
+        <inlineHelpText>Agency responsible for this record's ongoing accuracy.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Record Owner Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_retrieved_timestamp__c</fullName>
+        <description>Timestamp when this record was retrieved or imported from an external source system. Required provenance field per CEQ Data and Technology Standard v1.2.</description>
+        <inlineHelpText>When this record was imported from an external system, if applicable.</inlineHelpText>
+        <label>Retrieved Timestamp</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+
+    <label>NEPA Decision Log</label>
+    <nameField>
+        <displayFormat>LOG-{0000000000}</displayFormat>
+        <label>Decision Log Name</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>NEPA Decision Logs</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ControlledByParent</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>
