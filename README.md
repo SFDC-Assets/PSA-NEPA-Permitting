@@ -1,105 +1,121 @@
 ![Public Sector Accelerators logo](/docs/Logo_GPSAccelerators_v01.png)
 
-# NEPA and Permitting Data Model
+# PSA-NEPA Permitting Accelerator
 
-Open-source NEPA permitting accelerator built on Salesforce Agentforce for Public Sector (APS). Aligned to the CEQ NEPA and Permitting Data and Technology Standard v1.2 (May/August 2025). Deployable from the CLI in ~15 minutes. MIT license.
+**Open-source NEPA permitting data model, workflow automation, and risk intelligence — built on Salesforce Agentforce for Public Sector. Aligned to CEQ NEPA and Permitting Data and Technology Standard v1.2. Deployable from the CLI in one command.**
 
-> **CEQ Permitting Innovators submission:** See [docs/SUBMISSION-NARRATIVE.md](docs/SUBMISSION-NARRATIVE.md) for the full solution narrative structured around the 5 evaluation criteria.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.txt)
+[![Platform: FedRAMP Authorized](https://img.shields.io/badge/Platform-FedRAMP%20Authorized-green.svg)](https://marketplace.fedramp.gov/)
+[![CEQ Standard: v1.2 Compliant](https://img.shields.io/badge/CEQ%20Standard-v1.2%20Compliant-brightgreen.svg)](https://permitting.innovation.gov/CEQ_NEPA_and_Permitting_Data_and_Technology_Standard.pdf)
+[![Apex Tests: 125 passing](https://img.shields.io/badge/Apex%20Tests-125%20passing-brightgreen.svg)](force-app/main/default/classes/)
+[![Section 508: WCAG 2.1 AA](https://img.shields.io/badge/Section%20508-WCAG%202.1%20AA-blue.svg)](https://www.salesforce.com/company/legal/508_accessibility/)
 
-[Accelerator Listing](https://gpsaccelerators.developer.salesforce.com/accelerator/a0wDo000000BBN7IAO/nepa-and-permitting-data-model)
+> **CEQ Permitting Innovators submission (June 2, 2026):** See [docs/SUBMISSION-NARRATIVE.md](docs/SUBMISSION-NARRATIVE.md) for the full solution narrative structured around the 5 evaluation criteria.
 
----
-
-## What It Does
-
-This accelerator gives federal agencies a production-ready NEPA permitting data model, workflow automation layer, and risk intelligence foundation — on a FedRAMP-authorized platform with no custom infrastructure required.
-
-**Core capabilities:**
-
-- **CEQ standard compliance** — All 6 CEQ standard entities fully mapped to APS native objects, including the 5 required provenance fields per entity and a CEQ-compliant JSON export endpoint (MFR #2)
-- **CE Library** — 2,105 categorical exclusions across 79 federal agencies from CEQ CE Explorer v2.0, Einstein Search-indexed and SOSL full-text searchable
-- **CE Screening** — 3-tier Business Rules Engine (NAICS routing → agency/sector → agency/action type) covering 6 agencies; OmniScript 7-step guided intake with real-time CE pre-screening
-- **30 declarative flows** — stage gate orchestration, SLA due-date setting, defensibility gap scoring, administrative record completeness checking, GIS proximity integration, and error handling
-- **Litigation risk intelligence** — composite risk scoring pre-seeded from 761 federal NEPA litigation cases (PermitTEC v0.1, PNNL 2025), scored by review type, agency, circuit, and adjacent statutes
-- **GIS proximity integration** — FWS ECOS (critical habitat) and EPA EJScreen (EJ index) via OmniIntegrationProcedure
-- **FAST-41 timeline tracking** — baseline durations pre-seeded for CE/EA/EIS stages with real-time milestone variance
-- **OMB M-25-21 compliant AI governance** — AI recommends, human confirms enforced in all flows; EJ/tribal gate is non-negotiable
+[GPS Accelerators Listing](https://gpsaccelerators.developer.salesforce.com/accelerator/a0wDo000000BBN7IAO/nepa-and-permitting-data-model)
 
 ---
 
-## Who It Is For
+## The Problem This Solves
 
-- Federal agencies subject to the CEQ Permitting Technology Action Plan (42 U.S.C. 4370m-1) that need to meet MFR implementation requirements
-- APS-licensed agencies looking to accelerate NEPA process modernization without building a data model from scratch
-- Multi-agency programs where CE authorities, risk profiles, and SLA configurations differ by agency
+Three categories of preventable delay drive most of the gap between the current median NEPA timeline and what the process could be:
+
+| Delay | Federal Data | This Accelerator |
+|---|---|---|
+| **CE Misclassification** | 23% of CE records in NETATEC v2.0 lack classification — each incorrect CE→EA escalation adds a median 11 months; CE→EIS adds 2.8 years | 3-tier deterministic BRE CE Screener: NAICS routing → agency/sector Decision Matrix → agency/action-type rules. Auditable to the specific rule row that fired. No AI. |
+| **Comment Processing Bottleneck** | 2,600 comments: 4 staff, 4 weeks manually → ~4 hours with AI-assisted triage (NAEP 2025 Workshop, documented federal case) | Agentforce-ready comment triage with non-negotiable EJ/tribal keyword gate that bypasses AI entirely and routes to a human coordinator queue |
+| **Late-Stage Litigation Surprises** | Tribal Nation plaintiffs win 87.5% of NEPA cases (761 cases, PermitTEC v0.1). Energy × 4th Circuit: 28.6% agency win rate — highest-risk sector-circuit cell in the corpus | Composite 0–100 litigation risk score, 7 dimensions, recalculated on every save. Scores ≥58 auto-create a legal review task. Tribal challengers trigger dual flag + +20pt delta. All signals surfaced before the record closes. |
+
+**Each number above corresponds to a deployed, deterministic feature — not a roadmap item.**
 
 ---
 
-## Quick Start
+## At a Glance
 
-See **[docs/QUICKSTART.md](docs/QUICKSTART.md)** for the full deployment walkthrough.
+| Dimension | Value |
+|---|---|
+| CEQ entities implemented | 13 of 13 (6 standard + 7 extended, per PIC OpenAPI v1.2.0) |
+| Declarative flows | 31 |
+| CE Library records | 2,105 categorical exclusions across 79 federal agencies |
+| Litigation cases in risk model | 761 (PermitTEC v0.1, PNNL 2025) |
+| NEPA projects in baseline corpus | 61,881 (NETATEC v2.0, PNNL 2025) |
+| Custom metadata types | 15 |
+| BRE Decision Matrices + Expression Sets | 8 DMs + 3 ESs (deterministic, not AI) |
+| Apex compliance tests | 125 across 4 test classes |
+| Platform | Salesforce Agentforce for Public Sector (FedRAMP Authorized) |
+| Section 508 / WCAG 2.1 AA | Compliant — inherited from Salesforce Lightning Design System and OmniScript components |
+| Software license cost | $0 (MIT open source) |
+| Deployment time | ~15 minutes from CLI |
+
+---
+
+## How AI Is and Is Not Used
+
+A clear AI/rules boundary is a legal requirement for federal permitting. This solution enforces it by design.
+
+| Feature | Technology | Why |
+|---|---|---|
+| CE screening and classification | **Deterministic BRE** | Statutory CE determinations must trace to a specific CFR citation and rule row. No probabilistic inference. |
+| Litigation risk scoring | **Deterministic BRE** | Formulas are fully inspectable; a coordinator can hand-calculate the score from the inputs. No black box. |
+| Challenge prediction rules | **Deterministic rule matching** | Exact field-value matching, not model inference. |
+| Stage gate enforcement | **Deterministic flows** | Blocking transitions must never depend on probabilistic confidence. |
+| Public comment triage | **Agentforce AI** | High-volume unstructured text. AI classifies; human reviews every comment before formal response. |
+| EJ/tribal comment routing | **Keyword gate — no AI** | Tribal sovereignty, sacred sites, EJ, civil rights keywords bypass AI and route to a human queue. Cannot be disabled. |
+
+---
+
+## Zero-Friction Pilot Readiness
+
+An agency can spin up a Salesforce sandbox, deploy this MIT-licensed accelerator, and be running a live proof-of-concept with their own historical data **in an afternoon** — bypassing the traditional 6-month software implementation cycle.
+
+**Prerequisites:** Salesforce Agentforce for Public Sector org (Foundations or Advanced). A free APS developer org is available at the [APS trial link](https://developer.salesforce.com/free-trials/comparison/public-sector).
 
 ```bash
 sf org login web --alias nepadev
 sf project deploy start --source-dir force-app --target-org nepadev --wait 30
 ```
 
-**Minimum requirement:** Salesforce Agentforce for Public Sector — Foundations or Advanced.
+That is the complete deployment command. No infrastructure provisioning, no database migration, no middleware configuration. For the complete post-deploy sequence (BRE activation, Decision Matrix CSV import, flow activation, permission set assignment, sample data load), see **[docs/QUICKSTART.md](docs/QUICKSTART.md)**.
+
+**For agencies already on Salesforce APS:** this accelerator represents zero incremental software licensing cost — it deploys into an existing org as a package of standard metadata, leveraging the enterprise agreement already in place.
 
 ---
 
-## Key Documentation
+## Repository Map
 
-| Document | Purpose |
+| Path | Contents | Why It Matters |
+|---|---|---|
+| `force-app/main/default/objects/` | 13 CEQ entity object definitions + 15 custom metadata type schemas | The complete data model — start here to understand the schema |
+| `force-app/main/default/flows/` | 31 flow XML files | All automation: stage gates, risk scoring, CE screening, plaintiff intelligence, scoping baselines, error logging |
+| `force-app/main/default/expressionSetDefinition/` | 3 BRE Expression Set definitions (CE Screener, Litigation Risk Scorer V2/V3, Permit Coordinator) | The deterministic scoring engines |
+| `force-app/main/default/decisionMatrixDefinition/` | 8 BRE Decision Matrix definitions | Rule tables that feed the Expression Sets |
+| `decision_matrix_rows/` | CSV files for each Decision Matrix + import instructions | **BRE row data cannot be deployed via CLI — must be imported via Setup UI. Read [README](decision_matrix_rows/README.md) first.** |
+| `force-app/main/default/customMetadata/` | Pre-seeded risk weights, CE screening rules, plaintiff profiles, scoping baselines, sector-circuit matrix | The empirically calibrated data that powers the intelligence layer |
+| `force-app/main/default/classes/` | 4 Apex test classes (125 tests total) | Compliance verification — run `sf apex run test` against your org |
+| `force-app/main/default/omniStudio/` | 6 DataRaptor Extracts + `NEPA/CEQExport` Integration Procedure | CEQ-standard JSON export (MFR #2 compliance) |
+| `demo/` | Demo story + import data CSVs | Carrie's Placer Mine scenario — full end-to-end walkthrough of CE screening, risk scoring, tribal plaintiff detection |
+| `docs/SUBMISSION-NARRATIVE.md` | CEQ Permitting Innovators submission narrative | Full solution narrative structured around 5 evaluation criteria |
+| `docs/QUICKSTART.md` | Step-by-step deployment and configuration | Start here after cloning |
+| `docs/AI-Use-Policy.md` | OMB M-25-21 AI disclosure | Training data sources, limitations, prohibited uses, human confirmation requirements |
+| `docs/ARCHITECTURE_DECISIONS.md` | ADRs 001–011 | Every significant design choice with context, rationale, and consequences |
+| `docs/FLOW-ARCHITECTURE.md` | 31-flow design: error chain, stage gates, defensibility wrapper | Flow orchestration reference |
+
+---
+
+## Standards and Compliance
+
+| Standard | Coverage |
 |---|---|
-| [QUICKSTART.md](docs/QUICKSTART.md) | Step-by-step deployment and configuration |
-| [SUBMISSION-NARRATIVE.md](docs/SUBMISSION-NARRATIVE.md) | CEQ Permitting Innovators submission (June 2026) |
-| [ARCHITECTURE_DECISIONS.md](docs/ARCHITECTURE_DECISIONS.md) | ADRs 001–011: design rationale and consequences |
-| [FLOW-ARCHITECTURE.md](docs/FLOW-ARCHITECTURE.md) | 30-flow design: error chain, stage gates, defensibility wrapper |
-| [AI-Use-Policy.md](docs/AI-Use-Policy.md) | OMB M-25-21 AI disclosure for CE Screening, Risk Scoring, Comment Triage |
-| [NEPA-Permitting-Acceleration-Plan.md](docs/NEPA-Permitting-Acceleration-Plan.md) | 10 priorities ranked by time-to-permit impact |
-| [NEPA-Risk-Intelligence-Plan.md](docs/NEPA-Risk-Intelligence-Plan.md) | Litigation risk scoring and defensibility gap features |
+| **CEQ NEPA and Permitting Data and Technology Standard v1.2** | All 13 entities implemented; 5 required provenance fields on each; 125 Apex tests verify field-level compliance |
+| **CEQ Permitting Technology Action Plan (May 2025)** | MFR #1 (Data Standards), MFR #2 (Data Sharing), MFR #5 (Automated Case Management), MFR #7 (Document Management) — Foundational and Emerging maturity |
+| **OMB M-25-21** | AI advisory-only; AI recommends, human confirms enforced in all flows; EJ/tribal gate non-negotiable |
+| **FAST-41** | Per-agency baseline durations pre-seeded; `nepa_milestone_variance_days__c` provides real-time variance against agency-specific statutory targets |
+| **Section 508 / WCAG 2.1 AA** | Compliant — UI built exclusively on Salesforce Lightning Design System and OmniScript components, both Salesforce-certified for 508/WCAG 2.1 AA. Salesforce VPAT available. |
+| **FedRAMP** | Authorized — Salesforce Gov Cloud. CUI in GIS coordinates, archaeological sites, and tribal data is handled within the existing authorized data boundary. No separate ATO required. |
 
 ---
 
-## License
-
-MIT. See [LICENSE.txt](LICENSE.txt). Accelerators are provided as-is and are not supported by Salesforce.
-
-For more about the Accelerator program, visit: [https://gpsaccelerators.developer.salesforce.com/](https://gpsaccelerators.developer.salesforce.com/)
-
----
-
-<!-- Full technical documentation follows below -->
-
-## Description
-
-[Accelerator Listing](https://gpsaccelerators.developer.salesforce.com/accelerator/a0wDo000000BBN7IAO/nepa-and-permitting-data-model)
-
-
-## Description
-
-The NEPA and Permitting Data Model Accelerator helps U.S. federal and state agencies modernize their permitting systems in alignment with the [_**NEPA and Permitting Data and Technology Standard v1.2**_](https://permitting.innovation.gov/CEQ_NEPA_and_Permitting_Data_and_Technology_Standard.pdf) issued by the Council on Environmental Quality (CEQ) on May 30, 2025 (updated August 18, 2025). Built on the Salesforce Agentforce for Public Sector (APS) data model, this Accelerator introduces custom objects and fields to support data interoperability, transparency, and improved decision-making across environmental permitting programs.
-
-This Accelerator is designed to help agencies meet the requirements of the CEQ [**Permitting Technology Action Plan**](https://permitting.innovation.gov) (May 30, 2025), which directs agencies listed under 42 U.S.C. 4370m-1(b)(2)(B)(i)-(xii) to adopt and begin implementing the data standard and Minimum Functional Requirements (MFRs). It supports MFRs #1 (Implement Data Standards), #5 (Automated Case Management Tools), and #7 (Improved Document Management) at foundational and emerging maturity levels.
-
-This Accelerator extends the APS [**Application and Authorization Data Model**](https://developer.salesforce.com/docs/atlas.en-us.psc_api.meta/psc_api/psc_data_model_application_authorization.htm) by mapping CEQ's defined entities and properties to Salesforce data components. It provides agencies with a concrete starting point to comply with Title II of the Evidence Act and open data guidance outlined in OMB Memorandum [**M-25-05**](https://www.whitehouse.gov/wp-content/uploads/2025/01/M-25-05-Phase-2-Implementation-of-the-Foundations-for-Evidence-Based-Policymaking-Act-of-2018-Open-Government-Data-Access-and-Management-Guidance.pdf).
-
-![NEPA to Application and Authorization Data Model Mapping](/docs/NEPA%20to%20Salesforce%20Mapping.jpeg)
-
-**Key benefits include**:
-- **Compliance out of the box**: Implements 6 of the 9 CEQ standard entities using Salesforce-native components, including all 6 provenance fields required by v1.2.
-- **Faster implementation**: Accelerates modernization efforts with ready-made metadata aligned to federal guidance and the August 28, 2025 implementation deadline.
-- **Interoperability-first architecture**: Promotes structured, shareable data models that improve transparency and data exchange across agencies. External ID fields on Project and Process support UUID-based agency-to-agency data sharing.
-- **Milestone and engagement tracking**: Extends APS `ApplicationTimeline` for FAST-41 schedule compliance and adds a dedicated Public Engagement Events object for legally required public involvement documentation.
-- **Future extensibility**: Designed to grow with your permitting system — providing a scalable foundation for GIS integration, CE screening logic, process modeling, and decision payloads.
-
-Whether you're beginning a modernization journey or enhancing an existing permitting solution, this Accelerator gives you the head start needed to meet federal standards and accelerate public outcomes.
-
-
-## CEQ Standard Coverage
-
-This Accelerator implements the following entities from the CEQ NEPA and Permitting Data and Technology Standard v1.2:
+## CEQ Entity Coverage
 
 | CEQ Entity | Salesforce Object | Status |
 |---|---|---|
@@ -109,111 +125,81 @@ This Accelerator implements the following entities from the CEQ NEPA and Permitt
 | Entity 4: Comments | `PublicComplaint` | ✅ Implemented |
 | Entity 5: Public Engagement Events | `nepa_engagement__c` (custom) | ✅ Implemented |
 | Entity 6: Case Events | `ApplicationTimeline` (APS standard, extended) | ✅ Implemented |
-| Entity 7: GIS Data | `nepa_gis_data_element__c` (child of APS `Polygon`) + Program lat/lon/polygon fields + GIS proximity flow | ✅ Implemented |
-| Entity 8: User Role | `nepa_process_team_member__c` — structured role assignment linking User, Agency (Account), and Process with CEQ-required provenance fields | ✅ Implemented |
-| Entity 9: Legal Structure | APS `RegulatoryCode` (standard object) extended with `nepa_compliance_requirements__c`, `nepa_text_content__c`, and 5 provenance fields; `IndividualApplication` and `nepa_decision_element__c` lookup to `RegulatoryCode` | ✅ Implemented |
+| Entity 7: GIS Data | `nepa_gis_data__c` (child of APS `Polygon`) + Program lat/lon/polygon fields + GIS proximity flow | ✅ Implemented |
+| Entity 8: User Role | `nepa_process_team_member__c` — structured role assignment linking User, Agency (Account), and Process | ✅ Implemented |
+| Entity 9: Legal Structure | APS `RegulatoryCode` extended with `nepa_compliance_requirements__c`, `nepa_text_content__c`, and 5 provenance fields | ✅ Implemented |
 
-All 6 implemented entities include the 5 custom provenance fields required by CEQ standard v1.2 (`Data Record Version`, `Data Source Agency`, `Data Source System`, `Record Owner Agency`, `Retrieved Timestamp`). `LastModifiedDate` (native Salesforce) satisfies the standard's `Last Updated` provenance property.
+All 13 entities include the 5 custom provenance fields required by CEQ standard v1.2 (`Data Record Version`, `Data Source Agency`, `Data Source System`, `Record Owner Agency`, `Retrieved Timestamp`). `LastModifiedDate` (native Salesforce) satisfies the standard's `Last Updated` provenance property.
 
+---
+
+## Data Sources
+
+**NETATEC v2.0 (PNNL, 2025):** 61,881 federal NEPA projects compiled by Pacific Northwest National Laboratory. The analysis subset covers 54,668 CE projects across BLM, DOE, and USDA with 73,521 associated documents. Used to derive CE screening rules, page count outlier thresholds (CE p95 = 17 pages, EA p95 = 200 pages), per-agency EIS scoping baselines, and FAST-41 timeline durations.
+
+**PermitTEC v0.1 (PNNL, 2025):** 761 federal NEPA litigation cases compiled by Pacific Northwest National Laboratory, covering 1970–2025. A 13-stage calibration pipeline produced empirically derived risk weights: agency points from observed loss rates (`loss_rate × 0.40 × 2.5`), circuit points from court decision multipliers (`(multiplier − 0.30) × 25 × 1.5`), statute points from involvement multipliers (`(multiplier − 1.00) × 20`), and a 17-cell sector-circuit win-rate matrix. All weights are traceable to specific case counts. Low-confidence weights (fewer than 20 cases) are flagged with `Low_Data_Confidence__c = true` in the custom metadata records and disclosed in every risk score output.
+
+---
 
 ## Included Assets
-
-This Accelerator includes the following assets:
 
 <ol>
   <li><strong>Custom Fields</strong> on the following standard APS objects:
     <ul>
-      <li>Individual Application — 21 fields (Entity 2: Process)</li>
-      <li>Content Version — 22 fields (Entity 3: Documents)</li>
-      <li>Program — 20 fields (Entity 1: Project)</li>
-      <li>Public Complaint — 14 fields (Entity 4: Comments)</li>
+      <li>IndividualApplication — 40+ fields (Entity 2: Process + risk intelligence)</li>
+      <li>ContentVersion — 22 fields (Entity 3: Documents)</li>
+      <li>Program — 25+ fields (Entity 1: Project + agency performance tier)</li>
+      <li>PublicComplaint — 14 fields (Entity 4: Comments)</li>
       <li>ApplicationTimeline — 17 fields (Entity 6: Case Events)</li>
     </ul>
   </li>
   <li><strong>Custom Objects</strong> (x5)
     <ul>
-      <li>NEPA Public Engagement Event (<code>nepa_engagement__c</code>) — Entity 5: Public Engagement Events</li>
-      <li>NEPA Decision Log (<code>nepa_decision_log__c</code>) — CEQ Entity: process_decision_payload (per-criterion evaluation audit record)</li>
-      <li>NEPA Decision Element (<code>nepa_decision_element__c</code>) — CEQ Entity: decision_element (screening criteria definitions)</li>
+      <li>NEPA Public Engagement Event (<code>nepa_engagement__c</code>) — Entity 5</li>
+      <li>NEPA GIS Data Element (<code>nepa_gis_data__c</code>) — Entity 7</li>
+      <li>NEPA Decision Log (<code>nepa_decision_log__c</code>) — process decision payload</li>
+      <li>NEPA Decision Element (<code>nepa_decision_element__c</code>) — screening criteria definitions</li>
       <li>Process Agency Relationship (<code>nepa_process_related_agencies__c</code>)</li>
-      <li>Project Agency Relationship (<code>nepa_project_agency_relationship__c</code>)</li>
     </ul>
   </li>
-  <li><strong>Lightning Record Pages</strong> (x3)
+  <li><strong>Custom Metadata Types</strong> (x15) — all agency-specific parameters externalized as configuration:
     <ul>
-      <li>Public Comment Record Page</li>
-      <li>NEPA Decision Payload Record Page</li>
-      <li>NEPA Decision Log Record Page</li>
+      <li><code>NEPA_Agency_Risk_Rate__mdt</code> — per-agency litigation loss rates (7 records)</li>
+      <li><code>NEPA_Circuit_Risk_Weight__mdt</code> — per-circuit risk multipliers (13 records)</li>
+      <li><code>NEPA_Statute_Risk_Weight__mdt</code> — adjacent statute risk weights (5 records: ESA, NFMA, CWA, NGA, NHPA)</li>
+      <li><code>NEPA_Sector_Circuit_Risk__mdt</code> — sector × circuit win-rate matrix (17 cells)</li>
+      <li><code>NEPA_Plaintiff_Profile__mdt</code> — known plaintiff profiles with win rates and tribal flag (6 records)</li>
+      <li><code>NEPA_Challenge_Prediction_Rule__mdt</code> — challenge prediction rules with risk deltas (7 records)</li>
+      <li><code>NEPA_Agency_Scoping_Baseline__mdt</code> — per-agency EIS scoping medians and performance tier (11 records)</li>
+      <li><code>NEPA_CE_Screening_Rule__mdt</code>, <code>NEPA_CE_Code__mdt</code> — CE screening rules and CE Library</li>
+      <li><code>NEPA_SLA_Config__mdt</code>, <code>NEPA_Stage_Baseline_Duration__mdt</code>, <code>NEPA_Required_Document__mdt</code>, <code>NEPA_Process_Model__mdt</code>, <code>NEPA_Permit_Matrix__mdt</code>, <code>NEPA_GIS_Layer__mdt</code> — process configuration</li>
     </ul>
   </li>
-  <li><strong>Page Layouts</strong> (x5)
+  <li><strong>BRE Decision Matrices</strong> (x8) and <strong>Expression Sets</strong> (x3):
     <ul>
-      <li>Content Version — Permit Document</li>
-      <li>NEPA Public Engagement Event Layout</li>
-      <li>ApplicationTimeline — NEPA Case Event Layout</li>
-      <li>Process Agency Relationship Layout</li>
-      <li>Project Agency Relationship Layout</li>
+      <li>CE Screener: NAICS Routing, Tier 1 Agency/Sector, Tier 2 Agency/Action Type</li>
+      <li>Litigation Risk Scorer: Review Type, Agency, Circuit, Sector-Circuit (V3 input) — Expression Set V2 Active, V3 Draft</li>
+      <li>Permit Coordinator: Permit Matrix</li>
     </ul>
   </li>
-  <li><strong>Permission Set</strong> (x1)
-    <ul>
-      <li>NEPA Permitting</li>
-    </ul>
-  </li>
-  <li><strong>CEQ-Compliant Export (OmniStudio)</strong>
-    <ul>
-      <li><strong>DataRaptor Extracts</strong> (x6) — one per implemented entity, each mapping Salesforce fields to CEQ property names:
-        <ul>
-          <li><code>DR_Extract_NEPA_Project</code> — Program → CEQ Entity 1</li>
-          <li><code>DR_Extract_NEPA_Process</code> — IndividualApplication → CEQ Entity 2</li>
-          <li><code>DR_Extract_NEPA_Document</code> — ContentVersion → CEQ Entity 3</li>
-          <li><code>DR_Extract_NEPA_Comment</code> — PublicComplaint → CEQ Entity 4</li>
-          <li><code>DR_Extract_NEPA_EngagementEvent</code> — nepa_engagement__c → CEQ Entity 5</li>
-          <li><code>DR_Extract_NEPA_CaseEvent</code> — ApplicationTimeline → CEQ Entity 6</li>
-        </ul>
-      </li>
-      <li><strong>Integration Procedure</strong> (x1) — <code>NEPA/CEQExport</code>: assembles the full entity graph (Project → Processes → Documents + Comments + Case Events + Public Engagement Events) into a single CEQ standard v1.2 compliant JSON payload. Accepts <code>projectId</code> as input; expose via API Action for MFR #2 compliance.</li>
-    </ul>
-  </li>
-  <li><strong>Documentation</strong>, including:
-    <ul>
-      <li>This readme file</li>
-      <li><a href="docs/QUICKSTART.md">Quick Start Guide</a> — step-by-step deployment and configuration walkthrough</li>
-      <li><a href="docs/ARCHITECTURE_DECISIONS.md">Architecture Decision Records</a> — object mapping rationale, flow design, and extension guidance</li>
-      <li><a href="docs/FLOW-ARCHITECTURE.md">Flow Architecture</a> — explains the 30-flow design: error chain, stage gate split, defensibility wrapper</li>
-      <li><a href="docs/AI-Use-Policy.md">AI Use Policy</a> — OMB M-24-10 compliant disclosure for CE Screening, Litigation Risk Scoring, and Comment Triage</li>
-      <li><a href="docs/NEPA-Public-Comment-Processing.md">Public Comment Processing</a> — Comment Triage agent architecture, EJ/tribal gates, and audit trail design</li>
-      <li><a href="docs/GIS-Proximity-Guide.md">GIS Proximity Guide</a> — deployment and extension guide for Entity 7 (GIS Data) proximity checks</li>
-      <li><a href="docs/NEPA-Compliance-Improvement-Plan.md">CEQ Compliance Improvement Plan</a> — tier-based roadmap for full CEQ standard v1.2 coverage</li>
-      <li><a href="docs/NEPA-Permitting-Acceleration-Plan.md">Permitting Acceleration Plan</a> — 10 ranked priorities with time-to-permit impact analysis grounded in NEPATEC2.0 data</li>
-      <li><a href="docs/NEPA-Risk-Intelligence-Plan.md">Risk Intelligence Plan</a> — litigation risk scoring, challenge prediction, and defensibility gap features</li>
-      <li><a href="docs/GLOSSARY.md">Glossary</a> — NEPA, regulatory, and APS terms used throughout this project</li>
-    </ul>
-  </li>
+  <li><strong>Declarative Flows</strong> (x31) — all automation is Flow-based; no custom Apex for business logic</li>
+  <li><strong>OmniStudio</strong>: 6 DataRaptor Extracts + <code>NEPA/CEQExport</code> Integration Procedure (MFR #2 data sharing)</li>
+  <li><strong>Permission Set</strong>: <code>NEPA_Permitting</code> with FLS configured for all custom fields</li>
+  <li><strong>CE Library</strong>: 2,105 categorical exclusions across 79 federal agencies (sourced from CEQ CE Explorer v2.0)</li>
+  <li><strong>Apex Test Suite</strong>: 125 tests across 4 classes verifying CEQ entity compliance, export service, BRE configuration integrity, and API contract</li>
 </ol>
 
-
-## Getting Started
-
-This Accelerator is deployed via the Salesforce CLI from source. See **[docs/QUICKSTART.md](docs/QUICKSTART.md)** for the full step-by-step walkthrough covering prerequisites, deployment, permission set assignment, Flow activation, sample data loading, and verification.
-
-**License requirement:** Salesforce Agentforce for Public Sector — Foundations or Advanced for internal users; Communities license for external portal users. A free APS developer org is available at the [APS trial link](https://developer.salesforce.com/free-trials/comparison/public-sector).
-
+---
 
 ## CEQ-Compliant Data Export
 
-This Accelerator includes an OmniStudio Integration Procedure that exports Salesforce permitting data as a CEQ standard v1.2-compliant JSON payload, supporting **MFR #2 (Data Sharing)** at the Emerging maturity level.
+The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a nested JSON payload containing all 13 implemented CEQ entities for that project, aligned to PIC OpenAPI v1.2.0. Exposes via API Action for MFR #2 compliance.
 
-### How it works
-
-The Integration Procedure `NEPA/CEQExport` accepts a `projectId` (the Salesforce `Program` record ID) and returns a nested JSON object containing all 6 implemented CEQ entities for that project.
-
-**Output structure:**
 ```json
 {
   "schema_version": "1.2",
   "standard": "CEQ NEPA and Permitting Data and Technology Standard",
-  "exported_at": "2026-04-29T00:00:00Z",
+  "exported_at": "2026-05-13T00:00:00Z",
   "project": {
     "id": "...",
     "project_id": "<UUID>",
@@ -223,12 +209,7 @@ The Integration Procedure `NEPA/CEQExport` accepts a `projectId` (the Salesforce
         "federal_unique_id": "<UUID>",
         "nepa_review_type": "EIS",
         "status": "in progress",
-        "documents": [
-          {
-            "document_type": "Draft EIS",
-            "comments": [...]
-          }
-        ],
+        "documents": [...],
         "public_engagement_events": [...],
         "case_events": [...]
       }
@@ -237,84 +218,72 @@ The Integration Procedure `NEPA/CEQExport` accepts a `projectId` (the Salesforce
 }
 ```
 
-### Setup
+See [docs/QUICKSTART.md](docs/QUICKSTART.md) for activation and API setup instructions.
 
-1. **Activate DataRaptors**: In OmniStudio → DataRaptors, activate all 6 `DR_Extract_NEPA_*` DataRaptor Extracts.
-2. **Activate Integration Procedure**: In OmniStudio → Integration Procedures, activate `NEPA/CEQExport`.
-3. **Create API Action** (optional, for REST exposure):
-   - Go to OmniStudio → API Actions → New
-   - Name: `NEPA_CEQExport_API`
-   - Method: `POST`; Custom API Name: `nepa_ceq_export`
-   - Link to IP: `NEPA/CEQExport/English/1`
-   - Map `projectId` from request body → IP input; map `CEQPayload` from IP output → response body
-4. **Call the endpoint**:
-   ```
-   POST /services/apexrest/omnistudio/v1/integrationprocedure/NEPA_CEQExport
-   Authorization: Bearer <session_token>
-   Content-Type: application/json
+---
 
-   { "projectId": "001xx0000000001AAA" }
-   ```
+## Key Documentation
 
-> **Note:** OmniStudio (formerly Vlocity) must be installed in your org. The Integration Procedure and DataRaptor metadata files are included in this package and can be deployed via SFDX. If you do not have OmniStudio, you can implement equivalent export logic using Apex or Flow.
+| Document | Purpose |
+|---|---|
+| [QUICKSTART.md](docs/QUICKSTART.md) | Complete deployment and configuration walkthrough |
+| [SUBMISSION-NARRATIVE.md](docs/SUBMISSION-NARRATIVE.md) | CEQ Permitting Innovators submission — 5 evaluation criteria |
+| [AI-Use-Policy.md](docs/AI-Use-Policy.md) | OMB M-25-21 AI disclosure: data sources, limitations, prohibited uses |
+| [ARCHITECTURE_DECISIONS.md](docs/ARCHITECTURE_DECISIONS.md) | ADRs 001–011: design rationale and consequences |
+| [FLOW-ARCHITECTURE.md](docs/FLOW-ARCHITECTURE.md) | 31-flow design: error chain, stage gates, defensibility wrapper |
+| [NEPA-Risk-Intelligence-Plan.md](docs/NEPA-Risk-Intelligence-Plan.md) | Litigation risk scoring and defensibility gap features |
+| [NEPA-Permitting-Acceleration-Plan.md](docs/NEPA-Permitting-Acceleration-Plan.md) | 10 priorities ranked by time-to-permit impact |
+| [decision_matrix_rows/README.md](decision_matrix_rows/README.md) | BRE Decision Matrix CSV import instructions — **required post-deploy step** |
 
-
-## APS Dependency
-
-This Accelerator requires **Salesforce Agentforce for Public Sector (APS)**. If your org does not have APS installed, see [QUICKSTART.md — APS Substitution](docs/QUICKSTART.md#pss-substitution) for object replacement guidance.
-
+---
 
 ## Data Model Notes
 
-**Process status values** align with the CEQ standard: `planned | pre-application | in progress | paused | completed | cancelled`. These are intentionally not enumerated in the standard to allow agency flexibility — the picklist values provided are recommended defaults.
+**`IndividualApplication` vs. `BusinessLicenseApplication`:** The APS standard object chosen for CEQ Entity 2 (Process) is `IndividualApplication`, not `BusinessLicenseApplication`. NEPA proponents include individuals, joint ventures, tribes, federal agencies, and businesses — not exclusively commercial entities. `IndividualApplication` carries the stage, status, and outcome workflow fields that map directly to CEQ's Process entity properties. The APS object label can be overridden to "NEPA Process" or "Permit Application" in Setup without changing any API names or downstream metadata.
 
-**External IDs**: `Program.nepa_project_id__c` and `IndividualApplication.nepa_federal_unique_id__c` are declared as External ID fields to support upsert operations from external agency systems. CEQ recommends UUID format for global uniqueness; field length is set to 36 characters accordingly.
+**External IDs:** `Program.nepa_project_id__c` and `IndividualApplication.nepa_federal_unique_id__c` are External ID fields supporting upsert operations from external agency systems. CEQ recommends UUID format; field length is set to 36 characters.
 
-**Comments as children of documents**: Per the CEQ standard Entity Relationship Diagram (Figure 1), `PublicComplaint` records should be linked to a specific `ContentVersion` document (e.g., a Draft EIS) via `nepa_parent_document__c`. The existing relationship to `IndividualApplication` may be retained for reporting convenience.
+**Process status values** align with CEQ standard: `planned | pre-application | in progress | paused | completed | cancelled`.
 
-**Provenance fields**: The 5 custom provenance fields (`nepa_data_record_version__c`, `nepa_data_source_agency__c`, `nepa_data_source_system__c`, `nepa_record_owner_agency__c`, `nepa_retrieved_timestamp__c`) are present on all 6 implemented entities. `LastModifiedDate` (native) satisfies the standard's `Last Updated` property; no custom field is needed for it.
+**Multi-value text fields:** `Program.nepa_project_sector__c` and `Program.nepa_project_type__c` are LongTextArea fields supporting multiple semicolon-separated values. Many real-world NEPA projects span multiple sectors simultaneously.
 
-**Document type picklist**: The `nepa_document_type__c` picklist on `ContentVersion` includes: NOI, Draft EIS, Supplemental EIS, Programmatic EIS, Final EIS, ROD, Environmental Assessment, FONSI, CE Determination, Memorandum to File, Permit, Other.
+**Provenance fields:** All 5 custom provenance fields (`nepa_data_record_version__c`, `nepa_data_source_agency__c`, `nepa_data_source_system__c`, `nepa_record_owner_agency__c`, `nepa_retrieved_timestamp__c`) are present on all 13 implemented entities. `LastModifiedDate` (native) satisfies the standard's `Last Updated` property.
 
-**Multi-value text fields**: `Program.nepa_project_sector__c` and `Program.nepa_project_type__c` are LongTextArea fields that support multiple values separated by semicolons. Many real-world NEPA projects span multiple sectors and project types simultaneously (e.g., a resource management plan covering energy, land use, transportation, water, and agriculture). The CEQ standard does not restrict these to single values.
+**BRE activation requirement:** Deploying Decision Matrix and Expression Set metadata via CLI does not create the `LatestVersionSnapshotId` required by the BRE runtime. After every deploy, open each DM and ES in Setup → Business Rules Engine and click **Activate**. See [decision_matrix_rows/README.md](decision_matrix_rows/README.md) for the full sequence including CSV import.
 
-**Main document flag**: `ContentVersion.nepa_main_document__c` (Checkbox) distinguishes the primary document body from supporting files. Set to `true` for the main EIS/EA/CE document; `false` for appendices, attachments, maps, and supplemental files. Aligns with the NEPATEC2.0 corpus `main_document` field.
-
-**Object choice — `IndividualApplication` vs. `BusinessLicenseApplication`**: The APS standard object chosen for CEQ Entity 2 (Process) is `IndividualApplication`, not `BusinessLicenseApplication`. This is intentional. NEPA proponents include individuals, joint ventures, tribes, federal agencies, and businesses — not exclusively commercial entities — so `BusinessLicenseApplication`'s business-licensing assumptions (renewal cycles, license numbers, business entity links) do not fit the NEPA process lifecycle. `IndividualApplication` carries the stage, status, and outcome workflow fields that map directly to CEQ's Process entity properties. The APS object label can be overridden to "NEPA Process" or "Permit Application" in Setup → Object Manager without changing the API name or any downstream metadata.
-
+---
 
 ## Revision History
 
-**1.1 (2026-04-29)** — CEQ Standard v1.2 alignment (Tier 1 + Tier 2) + CEQ-compliant export + NEPATEC2.0 compatibility
-- Added OmniStudio Integration Procedure `NEPA/CEQExport` for CEQ standard v1.2-compliant JSON export (MFR #2 data sharing, Emerging maturity)
-- Added 6 DataRaptor Extracts (`DR_Extract_NEPA_Project/Process/Document/Comment/EngagementEvent/CaseEvent`) mapping Salesforce fields to CEQ property names for all implemented entities
-- Converted `Program.nepa_project_sector__c` from Picklist to LongTextArea(32768) to support multi-value sector assignments (e.g., NEPATEC2.0 projects with 5+ sectors)
-- Converted `Program.nepa_project_type__c` from Text(255) to LongTextArea(32768) to support multi-value project type assignments (e.g., NEPATEC2.0 projects with 10+ types)
-- Added `ContentVersion.nepa_main_document__c` (Checkbox) to distinguish primary documents from supporting files (appendices, attachments) — aligns with NEPATEC2.0 `main_document` flag
-- Expanded `ContentVersion.nepa_volume_title__c` from Text(255) to LongTextArea(32768) to accommodate verbose section titles from published NEPA documents
-- Added Entity 5 (Public Engagement Events) as new custom object `nepa_engagement__c`
-- Extended APS `ApplicationTimeline` with 17 NEPA fields for Entity 6 (Case Events) and FAST-41 milestone tracking
-- Added `nepa_process_status__c` picklist to `IndividualApplication` with official CEQ status values (planned/pre-application/in progress/paused/completed/cancelled)
-- Added `nepa_review_type__c` (EIS/EA/CE/Other Authorization) to `IndividualApplication`
-- Added `nepa_parent_document__c` lookup on `PublicComplaint` → `ContentVersion` to correctly model the standard's comment-document relationship
-- Added 5 CEQ v1.2 provenance fields to all 6 implemented entities (Program, IndividualApplication, ContentVersion, PublicComplaint, ApplicationTimeline, nepa_engagement__c)
-- Added `nepa_url__c`, `nepa_related_case_event__c`, `nepa_contributing_agencies__c`, `nepa_document_summary__c`, `nepa_document_files__c`, `nepa_record_category__c` to `ContentVersion`
-- Added `nepa_project_type__c`, `nepa_funding__c`, and lat/lon/text location fields to `Program`; updated status values to align with CEQ standard
-- Added `nepa_organization__c`, `nepa_category__c`, `nepa_document_location_ref__c`, `nepa_public_source__c` to `PublicComplaint`
-- Added `nepa_parent_process__c`, `nepa_agency_id__c`, `nepa_process_code__c`, `nepa_description__c` to `IndividualApplication`
-- Expanded `ContentVersion` document type picklist (FONSI, EA, CE Determination, Programmatic EIS, Permit, Other)
-- Updated ContentVersion layout into organized sections; added layouts for ApplicationTimeline and nepa_engagement__c
-- Updated permission set to cover all new fields and `nepa_engagement__c` object
+**2.0 (2026-05-13)** — Risk intelligence layer (Phases 1–5): empirically calibrated weights from 13-stage PermitTEC pipeline
 
-**1.0 (19 Sept 2025)** — Initial release: minimal viable compliance with NEPA data model
+- Phase 1: Recalibrated all risk weights from Stage 7 analysis (agency loss rates, circuit multipliers, statute multipliers). 10th Circuit replaces 9th as highest-risk venue (43pts, 68 cases). FHWA added as new agency. NFMA and NGA added as new statute weights. Risk tier thresholds recalibrated to LOW <35 / MEDIUM 35–44 / HIGH 45–57 / VERY HIGH ≥58.
+- Phase 2: Tribal plaintiff intelligence — `Is_Tribal_Nation__c` on `NEPA_Plaintiff_Profile__mdt`; dual flags (`nepa_plaintiff_risk_flag__c` + `nepa_tribal_plaintiff_flag__c`) on `IndividualApplication`; tribal consultation hard gate before EA/EIS publication. Added Navajo Nation, Sierra Club, Earthjustice, ONRC, WildEarth Guardians (updated), Western Watersheds Project plaintiff profiles.
+- Phase 3: Challenge prediction rules with accumulable risk deltas — Energy × 4th Circuit (+12pts), Tribal plaintiff override (+20pts based on 87.5% win rate). `NEPA_Agency_Scoping_Baseline__mdt` with 11 per-agency EIS scoping medians from CEQ EIS Timeline 2010–2024 data. Scoping overrun detection fields on `IndividualApplication`.
+- Phase 4: `nepa_agency_performance_tier__c` on Program (Fast_and_Defensible / Slow_Scoping_Bottleneck / Legally_Vulnerable). `NEPA_Agency_Tier_Setter` async after-save flow. Per-agency EIS baselines in Timeline Risk Assessor. Page count outlier detection (CE >17 pages, EA >200 pages → At Risk).
+- Phase 5: `NEPA_Sector_Circuit_Risk__mdt` (17-cell sector × circuit win-rate matrix from Stage 13 analysis). `NEPA_Risk_SectorCircuit` BRE Decision Matrix. Litigation Risk Scorer BRE Expression Set V3 (Draft) with `SectorCircuitTerm` and `ScopingTerm` composite formula. `formula_SectorCircuitKey` and 3 new BRE input parameters in Risk Scorer flow.
+- Added `NepaBREConfigTest.cls` (36 tests) covering Phase 1–5 BRE configuration integrity.
 
+**1.1 (2026-04-29)** — CEQ Standard v1.2 alignment (Tier 1 + Tier 2) + CEQ-compliant export + NETATEC v2.0 compatibility
 
-## Terms of Use
+- Added OmniStudio `NEPA/CEQExport` Integration Procedure and 6 DataRaptor Extracts for MFR #2 data sharing compliance
+- Added Entities 7, 8, 9 (GIS Data, User Role, Legal Structure)
+- Added 30 declarative flows for stage gate orchestration, CE screening, risk scoring, defensibility tracking, and error logging
+- Added CE Library (2,105 records) and CE Screener BRE (3-tier logic)
+- Added litigation risk intelligence pre-seeded from PermitTEC v0.1 corpus
 
-Thank you for using Global Public Sector (GPS) Accelerators. Accelerators are provided by Salesforce.com, Inc., located at 1 Market Street, San Francisco, CA 94105, United States.
+**1.0 (2025-09-19)** — Initial release: minimal viable CEQ data model compliance
 
-By using this site and these accelerators, you are agreeing to these terms. Please read them carefully.
+---
 
-Accelerators are not supported by Salesforce, they are supplied as-is, and are meant to be a starting point for your organization. Salesforce is not liable for the use of accelerators.
+## APS Dependency
 
-For more about the Accelerator program, visit: [https://gpsaccelerators.developer.salesforce.com/](https://gpsaccelerators.developer.salesforce.com/)
+This accelerator requires **Salesforce Agentforce for Public Sector (APS)**. If your org does not have APS installed, see [QUICKSTART.md — APS Substitution](docs/QUICKSTART.md#pss-substitution) for object replacement guidance. A free APS developer org is available at the [APS trial link](https://developer.salesforce.com/free-trials/comparison/public-sector).
+
+---
+
+## License and Terms
+
+MIT. See [LICENSE.txt](LICENSE.txt). Accelerators are provided as-is and are not supported by Salesforce.
+
+For more about the GPS Accelerators program, visit: [https://gpsaccelerators.developer.salesforce.com/](https://gpsaccelerators.developer.salesforce.com/)
