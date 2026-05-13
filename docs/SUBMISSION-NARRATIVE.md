@@ -220,6 +220,10 @@ Federal software deployments routinely fail not because the technology is wrong 
 
 **Low-friction configuration by agency staff:** Custom metadata records — CE screening rules, risk weights, scoping baselines — can be created and updated through standard Salesforce Setup screens by agency administrators with the `Customize Application` permission. No developer access, no deployment pipeline required. The parameters an agency is most likely to need to adjust (CE code coverage, agency-specific SLA targets) are the ones that are most accessible to non-technical staff.
 
+### Section 508 and Accessibility Compliance
+
+**The applicant-facing UI is Section 508 and WCAG 2.1 AA compliant by construction.** The OmniScript CE Intake Wizard and all Lightning record pages are built exclusively on Salesforce Lightning Design System (SLDS) components and OmniStudio OmniScripts — both of which are Salesforce-certified for Section 508 and WCAG 2.1 AA accessibility. Keyboard navigation, screen reader compatibility (ARIA labels, focus management), sufficient color contrast ratios, and error identification are inherited from the platform component library rather than custom-implemented, which means compliance is not degraded by agency-specific configuration changes. Agencies do not need to commission a separate accessibility audit before deployment; Salesforce publishes and maintains the Voluntary Product Accessibility Template (VPAT) for these components. Accessibility compliance is a procurement checkbox in every federal IT acquisition — this solution checks it at the platform level, not the implementation level.
+
 ### Transparency, Audit Trail, and Sensitive Data Protection
 
 **Every AI output is labeled and traceable.** All AI-assisted content is flagged with `nepa_ai_generated__c`. Risk score outputs carry a full disclosure in `nepa_risk_score_factors__c` — including the exact formula, the number of cases the weights were derived from, and the statistical confidence level — so coordinators and auditors can evaluate the basis of any score without consulting external documentation.
@@ -232,23 +236,33 @@ Federal software deployments routinely fail not because the technology is wrong 
 
 ## Criterion 3: Readiness
 
-### Deployable Today
+### Zero-Friction Pilot Readiness
 
-The accelerator deploys from the Salesforce CLI in approximately 15 minutes:
+An agency can spin up a Salesforce sandbox, deploy this MIT-licensed accelerator, and be running a live proof-of-concept with their own historical data **in an afternoon** — bypassing the traditional 6-month software implementation cycle entirely.
 
 ```bash
 sf org login web --alias nepadev
 sf project deploy start --source-dir force-app --target-org nepadev --wait 30
 ```
 
-All metadata is source-tracked and version-controlled. The repository includes:
+That is the complete deployment command. No infrastructure provisioning, no database migration, no middleware configuration, no vendor onboarding call. The repository includes everything needed to go from zero to a running system:
 
 - Complete object, field, and custom metadata type definitions
 - 31 flow XML files (deployable as Draft; activation is a separate step documented in QUICKSTART.md)
 - Permission set with field-level security configured for all custom fields
 - 6 DataRaptor Extracts and 1 Integration Procedure for CEQ-compliant data export
 - Custom metadata records pre-seeded with empirically calibrated PermitTEC litigation weights, CE screening rules, per-agency EIS scoping baselines, sector-circuit risk matrix, plaintiff profiles, and challenge prediction rules
-- Sample data scripts and demo story for verification
+- Sample data scripts and a documented demo story for verification
+
+A pilot agency running on a Salesforce sandbox can evaluate every feature described in this narrative against real project data before committing to any production deployment decision. The barrier to evaluation is an afternoon, not a procurement cycle.
+
+### Total Cost of Ownership
+
+**For agencies already on Salesforce APS, this accelerator represents zero incremental software licensing cost.** The accelerator is MIT-licensed open source — no per-seat fee, no platform fee, no vendor lock-in. It deploys into an existing Salesforce APS org as a package of standard metadata, leveraging the enterprise agreement the agency already holds.
+
+Dozens of federal agencies use Salesforce APS for regulatory intake, case management, benefits administration, and public engagement. For those agencies, adopting this accelerator means activating NEPA-specific workflows on a platform already authorized, already in production, and already familiar to their IT and program staff — not evaluating, procuring, and onboarding a standalone permitting platform that duplicates infrastructure they already own.
+
+For agencies not currently on APS, the accelerator's open-source license means the software itself has no acquisition cost; the investment is the platform subscription, which covers far more than NEPA permitting alone.
 
 ### Standards Alignment
 
