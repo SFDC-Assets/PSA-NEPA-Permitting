@@ -1242,6 +1242,47 @@
         <field>nepa_decision_element__c.nepa_threshold_unit__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <!-- nepa_decision_element__c process-level determination fields (added 2026-05-12) -->
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_process__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_determination_type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_determination_outcome__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_determination_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_determination_basis__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_responsible_official__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_document_id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_ec_review_complete__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_decision_modification__c.nepa_attributed_cluster_count__c</field>

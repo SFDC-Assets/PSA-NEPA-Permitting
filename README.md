@@ -2,7 +2,77 @@
 
 # NEPA and Permitting Data Model
 
-Ready-made NEPA and permitting data model that aligns with the CEQ's NEPA and Permitting Data and Technology Standard v1.2.
+Open-source NEPA permitting accelerator built on Salesforce Public Sector Solutions (PSS). Aligned to the CEQ NEPA and Permitting Data and Technology Standard v1.2 (May/August 2025). Deployable from the CLI in ~15 minutes. MIT license.
+
+> **CEQ Permitting Innovators submission:** See [docs/SUBMISSION-NARRATIVE.md](docs/SUBMISSION-NARRATIVE.md) for the full solution narrative structured around the 5 evaluation criteria.
+
+[Accelerator Listing](https://gpsaccelerators.developer.salesforce.com/accelerator/a0wDo000000BBN7IAO/nepa-and-permitting-data-model)
+
+---
+
+## What It Does
+
+This accelerator gives federal agencies a production-ready NEPA permitting data model, workflow automation layer, and risk intelligence foundation — on a FedRAMP-authorized platform with no custom infrastructure required.
+
+**Core capabilities:**
+
+- **CEQ standard compliance** — All 6 CEQ standard entities fully mapped to PSS native objects, including the 5 required provenance fields per entity and a CEQ-compliant JSON export endpoint (MFR #2)
+- **CE Library** — 2,105 categorical exclusions across 79 federal agencies from CEQ CE Explorer v2.0, Einstein Search-indexed and SOSL full-text searchable
+- **CE Screening** — 3-tier Business Rules Engine (NAICS routing → agency/sector → agency/action type) covering 6 agencies; OmniScript 7-step guided intake with real-time CE pre-screening
+- **30 declarative flows** — stage gate orchestration, SLA due-date setting, defensibility gap scoring, administrative record completeness checking, GIS proximity integration, and error handling
+- **Litigation risk intelligence** — composite risk scoring pre-seeded from 761 federal NEPA litigation cases (PermitTEC v0.1, PNNL 2025), scored by review type, agency, circuit, and adjacent statutes
+- **GIS proximity integration** — FWS ECOS (critical habitat) and EPA EJScreen (EJ index) via OmniIntegrationProcedure
+- **FAST-41 timeline tracking** — baseline durations pre-seeded for CE/EA/EIS stages with real-time milestone variance
+- **OMB M-25-21 compliant AI governance** — AI recommends, human confirms enforced in all flows; EJ/tribal gate is non-negotiable
+
+---
+
+## Who It Is For
+
+- Federal agencies subject to the CEQ Permitting Technology Action Plan (42 U.S.C. 4370m-1) that need to meet MFR implementation requirements
+- PSS-licensed agencies looking to accelerate NEPA process modernization without building a data model from scratch
+- Multi-agency programs where CE authorities, risk profiles, and SLA configurations differ by agency
+
+---
+
+## Quick Start
+
+See **[docs/QUICKSTART.md](docs/QUICKSTART.md)** for the full deployment walkthrough.
+
+```bash
+sf org login web --alias nepadev
+sf project deploy start --source-dir force-app --target-org nepadev --wait 30
+```
+
+**Minimum requirement:** Salesforce Public Sector Solutions — Foundations or Advanced.
+
+---
+
+## Key Documentation
+
+| Document | Purpose |
+|---|---|
+| [QUICKSTART.md](docs/QUICKSTART.md) | Step-by-step deployment and configuration |
+| [SUBMISSION-NARRATIVE.md](docs/SUBMISSION-NARRATIVE.md) | CEQ Permitting Innovators submission (June 2026) |
+| [ARCHITECTURE_DECISIONS.md](docs/ARCHITECTURE_DECISIONS.md) | ADRs 001–011: design rationale and consequences |
+| [FLOW-ARCHITECTURE.md](docs/FLOW-ARCHITECTURE.md) | 30-flow design: error chain, stage gates, defensibility wrapper |
+| [AI-Use-Policy.md](docs/AI-Use-Policy.md) | OMB M-25-21 AI disclosure for CE Screening, Risk Scoring, Comment Triage |
+| [NEPA-Permitting-Acceleration-Plan.md](docs/NEPA-Permitting-Acceleration-Plan.md) | 10 priorities ranked by time-to-permit impact |
+| [NEPA-Risk-Intelligence-Plan.md](docs/NEPA-Risk-Intelligence-Plan.md) | Litigation risk scoring and defensibility gap features |
+
+---
+
+## License
+
+MIT. See [LICENSE.txt](LICENSE.txt). Accelerators are provided as-is and are not supported by Salesforce.
+
+For more about the Accelerator program, visit: [https://gpsaccelerators.developer.salesforce.com/](https://gpsaccelerators.developer.salesforce.com/)
+
+---
+
+<!-- Full technical documentation follows below -->
+
+## Description
 
 [Accelerator Listing](https://gpsaccelerators.developer.salesforce.com/accelerator/a0wDo000000BBN7IAO/nepa-and-permitting-data-model)
 

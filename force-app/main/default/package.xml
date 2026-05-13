@@ -375,6 +375,14 @@
         <members>nepa_decision_element__c.nepa_evaluation_method__c</members>
         <members>nepa_decision_element__c.nepa_expected_data__c</members>
         <members>nepa_decision_element__c.nepa_active__c</members>
+        <members>nepa_decision_element__c.nepa_process__c</members>
+        <members>nepa_decision_element__c.nepa_determination_type__c</members>
+        <members>nepa_decision_element__c.nepa_determination_outcome__c</members>
+        <members>nepa_decision_element__c.nepa_determination_date__c</members>
+        <members>nepa_decision_element__c.nepa_determination_basis__c</members>
+        <members>nepa_decision_element__c.nepa_responsible_official__c</members>
+        <members>nepa_decision_element__c.nepa_document_id__c</members>
+        <members>nepa_decision_element__c.nepa_ec_review_complete__c</members>
         <!-- nepa_gis_data_element__c -->
         <members>nepa_gis_data_element__c.nepa_polygon__c</members>
         <members>nepa_gis_data_element__c.nepa_format__c</members>

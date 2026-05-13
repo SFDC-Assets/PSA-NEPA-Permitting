@@ -2,7 +2,7 @@
 
 **Project:** PSA-NEPA-Permitting-Data-Model
 **Maintainer:** GPS Accelerators
-**Last Updated:** 2026-05-01
+**Last Updated:** 2026-05-12
 
 Open-source NEPA permitting accelerator built on Salesforce Public Sector Solutions (PSS). Maps CEQ NEPA and Permitting Data and Technology Standard v1.2 entities to PSS standard objects, adds custom objects and 12+ declarative flows for risk intelligence, and prepares for Phase 2 OmniStudio + Agentforce portal delivery.
 
@@ -21,6 +21,8 @@ Open-source NEPA permitting accelerator built on Salesforce Public Sector Soluti
 | 007 | [LDV and Data Skew Mitigations](#adr-007--ldv-and-data-skew-mitigations) | Accepted |
 | 008 | [Agentforce / RAG Data Readiness](#adr-008--agentforce--rag-data-readiness) | Accepted |
 | 009 | [Apex Bridge for Flow-to-OmniIP Invocation](#adr-009--apex-bridge-for-flow-to-omniip-invocation) | Accepted |
+| 010 | [CE Library as Custom Object (nepa_ce_library__c)](#adr-010--ce-library-as-custom-object-nepa_ce_library__c) | Accepted |
+| 011 | [OmniScript CE Intake over Screen Flow](#adr-011--omniscript-ce-intake-over-screen-flow) | Accepted |
 
 ---
 
@@ -407,3 +409,93 @@ Complete all items in this checklist before deploying the accelerator to a produ
 - [ ] Ensure all autolaunched flows invoked as subflows have documented input/output variables. These variable signatures become the Integration Procedure FlowAction contract in Phase 2.
 - [ ] Verify that OmniStudio is installed or included in the PSS license before beginning Phase 2 development.
 - [ ] Create `docs/CMT_Update_Guide.md` using the template provided in the accelerator. Train agency admin staff on CMT update procedures (including the create-new-record-with-new-date pattern for audit preservation) before Phase 2 go-live.
+
+---
+
+## ADR 010 -- CE Library as Custom Object (nepa_ce_library__c)
+
+**Status:** Accepted
+**Date:** 2026-05-12
+**Deciders:** GPS Accelerators architecture team
+
+### Context
+
+The initial approach to storing categorical exclusion codes used `NEPA_CE_Code__mdt` — a Custom Metadata Type with one record per CE code. This approach had three operational limitations that became blocking constraints as the CE Library grew to 2,105 records across 79 federal agencies:
+
+1. **Not SOSL-searchable.** Custom Metadata records are not indexed by the platform search engine. Users searching for a CE code by keyword (e.g., "routine maintenance" or "bench-scale research") could not use Salesforce search — they had to know the exact code identifier. This violated the discovery requirement: applicants and NEPA coordinators need to find applicable exclusions by description, not by CFR citation string.
+
+2. **Not Experience Cloud guest-accessible.** Custom Metadata records are not directly queryable by Experience Cloud guest users or portal users without going through an Apex or Flow intermediary. The Phase 2 portal design required applicants to browse and search the CE catalog without requiring a Salesforce license.
+
+3. **Not Einstein Search-indexable.** Einstein Search works on sObject records, not Custom Metadata. As the library expanded to the full federal CE catalog, SOSL full-text search on exclusion description text became a core UX requirement for both the intake wizard and the coordinator record page.
+
+The metadata-redeployment problem was also a concern: adding new CE codes to a CMT-based library requires a metadata deployment with appropriate permissions. For a federal agency adding exclusions from a newly-adopted regulatory amendment, a data load operation is operationally simpler than a metadata deployment cycle.
+
+### Decision
+
+Replace `NEPA_CE_Code__mdt` as the primary CE catalog with `nepa_ce_library__c` — a custom object with `enableSearch=true`, loaded from CEQ CE Explorer v2.0 (2,105 records, 79 agencies).
+
+**Object configuration:**
+
+- `enableSearch=true` enables SOSL full-text search on all indexed text fields
+- External ID field (`nepa_ce_code_external_id__c`) is the idempotency key for load operations, formatted as `{agency}__{code}` (e.g., `DOE__B1.3`, `BLM__516DM11.9E9`)
+- Key fields: `nepa_agency__c` (Text), `nepa_ce_code__c` (Text), `nepa_cfr_authority__c` (Text), `nepa_plain_language_description__c` (LongTextArea), `nepa_acreage_threshold__c` (Number), `nepa_indoor_only__c` (Checkbox), `nepa_requires_gis_review__c` (Checkbox), `nepa_record_count_nepatec__c` (Number — corpus frequency, used to sort results)
+
+**Load pattern:** The data load script uses `sf data upsert bulk` keyed on `nepa_ce_code_external_id__c`. The operation is idempotent: re-running the script after an agency adds new exclusions updates existing records and inserts new ones without creating duplicates.
+
+**Relationship to BRE:** The Business Rules Engine CE Screener expression sets still reference `NEPA_CE_Screening_Rule__mdt` for routing logic (which CE code to recommend given agency + sector + action type inputs). The `nepa_ce_library__c` object holds the full catalog for search and display. The two are linked by `nepa_ce_code__c` — the screener outputs a code string; the UI resolves the description, authority, and threshold details from `nepa_ce_library__c`.
+
+### Consequences
+
+- **SOSL full-text search on exclusion description text.** Users can search for "routine maintenance" or "indoor bench-scale" and retrieve relevant exclusions without knowing the code string. Einstein Search surfaces CE library records in global search results.
+- **Scalable to the full federal catalog without metadata redeployment.** Adding exclusions from a new agency or a regulatory amendment is a data load, not a metadata deployment. No `sf project deploy start` required; no `Customize Application` permission needed for the add operation.
+- **Experience Cloud accessible.** Portal users can query `nepa_ce_library__c` directly via standard object permissions. FLS and object-level sharing are configured in the permission set, not in application logic.
+- **`NEPA_CE_Code__mdt` retained for backward compatibility.** The existing CMT is not deleted. BRE expression set rows that reference CE code values by string still work. The CMT will be deprecated in a future release once all BRE reference patterns are migrated to the custom object.
+- **Load script must be idempotent.** Any bulk load operation against `nepa_ce_library__c` must use upsert with the external ID, not insert. Duplicate CE records with the same agency + code combination would produce incorrect screener results and confusing search output.
+
+---
+
+## ADR 011 -- OmniScript CE Intake over Screen Flow
+
+**Status:** Accepted
+**Date:** 2026-05-12
+**Deciders:** GPS Accelerators architecture team
+
+### Context
+
+The 7-step CE intake wizard — which collects project attributes, triggers GIS proximity checks, runs CE pre-screening, and creates the `IndividualApplication` record — needed an implementation technology choice. Two options were evaluated:
+
+**Option A: Screen Flow** (`NEPA_CE_Intake` — the existing Phase 1 implementation)
+
+Screen Flow is a standard Salesforce declarative capability available in all editions, with no additional license requirement. It provides conditional section visibility, navigation buttons, and standard field components. Business logic embedded in a Screen Flow runs as a series of Flow elements visible in Flow Builder.
+
+**Option B: OmniScript** with backing Integration Procedures (`CEScreeningIP`, `CESaveIP`) and DataRaptor Extract
+
+OmniScript is part of OmniStudio, which is included in PSS. It provides a purpose-built guided wizard runtime with a built-in progress bar, conditional step navigation, and native rendering in Experience Cloud without additional configuration. Integration Procedures (IPs) are the data layer: they call DataRaptors, invoke external APIs, and write records — completely separate from the UI layer.
+
+### Decision
+
+Implement the CE intake wizard as an OmniScript backed by two Integration Procedures:
+
+- **`CEScreeningIP`** — reads project attributes, queries `nepa_ce_library__c` and `NEPA_CE_Screening_Rule__mdt`, executes the CE pre-screening logic, and returns the recommended review type, CE code set, confidence level, and extraordinary circumstances flags
+- **`CESaveIP`** — creates or updates the `IndividualApplication` record with screener outputs, triggers GIS proximity checks via `NEPA_GISProximityIP`, and logs the `nepa_classification_basis__c` audit trail
+- **DataRaptor Extract** (`DR_Extract_CELibrarySearch`) — powers the CE code lookup in step 4 of the wizard, returning ranked results from `nepa_ce_library__c` based on agency and sector inputs
+
+**Rationale:**
+
+1. **PSS already includes OmniStudio.** The license cost of OmniScript is zero for PSS customers. Avoiding OmniScript to preserve a pure-Screen-Flow design would forgo a platform capability that is already available and better suited to the requirement.
+
+2. **Integration Procedures call DataRaptors natively.** The CE pre-screening logic requires querying `nepa_ce_library__c` for matching codes, joining with `NEPA_CE_Screening_Rule__mdt` routing rules, and applying BRE outputs. IPs handle this data orchestration cleanly. Embedding the same logic in a Screen Flow would require Get Records elements inside the flow with complex collection iteration — the pattern ADR 002 explicitly discourages for bulk-safety reasons.
+
+3. **Native Experience Cloud rendering.** OmniScript renders natively in Experience Cloud without the embedding friction of Screen Flows (which require a Flow component on a record page or community page). Phase 2 portal delivery requires the intake wizard to be accessible to Experience Cloud guest and authenticated users.
+
+4. **Clean separation of UI and data logic.** The OmniScript owns step navigation, conditional field display, and progress tracking. The IPs own data reads, writes, and external API calls. This separation makes the screening logic independently testable and independently updatable — changing a screening rule does not require redeploying the OmniScript UI.
+
+5. **Built-in progress bar and conditional navigation.** The 7-step intake wizard benefits from OmniScript's native progress bar and conditional step skipping (e.g., step 6 GIS footprint is skipped for indoor-only B3.6 project types). Replicating this in a Screen Flow requires custom LWC navigation components.
+
+### Consequences
+
+- **Requires OmniStudio activation.** OmniStudio must be installed in the target org and its components activated before the CE intake wizard is usable. QUICKSTART.md documents the OmniStudio activation sequence, including the manual fallback for Integration Procedure activation when the CLI deployment does not trigger automatic activation.
+- **Element type naming is platform-restricted.** OmniScript element types are a restricted picklist on the `OmniUiCard` sObject. `Text Area` is the correct value; `TextArea` (no space) is not a valid element type and will cause a runtime rendering error. This distinction is not caught at deploy time — it fails silently at OmniScript load. All element type values in OmniScript XML must match the exact platform picklist values.
+- **Integration Procedure activation may lag deployment.** When IPs are deployed via `sf project deploy start`, the platform creates the underlying `OmniProcess` records but does not always automatically activate them. If `CEScreeningIP` or `CESaveIP` is not in Active state after deployment, the OmniScript will fail at the step that calls the IP. The manual activation fallback (Setup → OmniStudio → Integration Procedures → Activate) is documented in QUICKSTART.md.
+- **Screen Flow remains as the Phase 1 fallback.** `NEPA_CE_Intake` (Screen Flow) is preserved in the repository and remains deployable for organizations that do not have OmniStudio available or prefer to delay OmniStudio adoption. Per ADR 005, no new business logic should be added to the Screen Flow — it is frozen at Phase 1 capability.
+- **ADR 005 compatibility.** The autolaunched scoring flows (`NEPA_CE_Screener`, `NEPA_Litigation_Risk_Scorer`, `NEPA_Defensibility_Gap_Checker`) are invoked from `CEScreeningIP` via FlowAction steps — exactly the integration surface ADR 005 established. No refactoring of the scoring flows was required to support the OmniScript path.
