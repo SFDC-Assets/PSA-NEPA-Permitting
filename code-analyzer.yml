@@ -1,0 +1,10 @@
+# Salesforce Code Analyzer v5 project configuration.
+# See: https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/config-custom.html
+
+suppressions:
+  disable_suppressions: false
+  # nepa_upsert_key__c is a composite external ID for idempotent upsert, not an auth token.
+  # PMD ProtectSensitiveData fires on the word "key" in the field name — confirmed false positive.
+  "force-app/main/default/objects/nepa_detected_protection_layer__c/fields/nepa_upsert_key__c.field-meta.xml":
+    - rule_selector: "pmd:ProtectSensitiveData"
+      max_suppressed_violations: 1
