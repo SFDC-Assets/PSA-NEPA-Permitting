@@ -274,27 +274,10 @@ private class NepaLitigationRiskScorerTest {
     @IsTest
     static void bulk_multipleRecords_noException() {
         Program proj = makeProject('Bureau of Land Management', 'DC');
-        List<IndividualApplication> ias = new List<IndividualApplication>();
-        for (Integer i = 0; i < 5; i++) {
-            ias.add(makeProcess(proj.Id, 'EA'));
-        }
-        insert ias;
-
-        List<IndividualApplication> updates = new List<IndividualApplication>();
-        for (IndividualApplication ia : ias) {
-            updates.add(new IndividualApplication(Id = ia.Id, nepa_review_type__c = 'EIS'));
-        }
-
         Test.startTest();
-        Boolean threw = false;
-        try {
-            update updates;
-        } catch (Exception e) {
-            threw = true;
-        }
+        Boolean ok = NepaTestFactory.runBulkReviewTypeUpdate(proj.Id, 5, 'EA', 'EIS');
         Test.stopTest();
-
-        System.assertEquals(false, threw, 'Risk scorer bulk update must not throw');
+        System.assertEquals(true, ok, 'Risk scorer bulk update must not throw');
     }
 
     @IsTest

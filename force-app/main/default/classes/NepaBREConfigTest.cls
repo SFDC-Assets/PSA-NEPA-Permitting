@@ -385,18 +385,18 @@ private class NepaBREConfigTest {
         //   0–34 = Low, 35–44 = Medium, 45–57 = High, 58–100 = Very High
         // Thresholds updated in Phase 1 calibration from CEQ EIS Timeline + PermitTEC corpus.
         // If the ES formula is changed the boundaries below must be updated too.
-        final Integer LOW_MAX    = 34;
-        final Integer MEDIUM_MIN = 35;
-        final Integer MEDIUM_MAX = 44;
-        final Integer HIGH_MIN   = 45;
-        final Integer HIGH_MAX   = 57;
-        final Integer VERY_HIGH  = 58;
+        final Integer lowMax    = 34;
+        final Integer mediumMin = 35;
+        final Integer mediumMax = 44;
+        final Integer highMin   = 45;
+        final Integer highMax   = 57;
+        final Integer veryHigh  = 58;
 
-        System.assertEquals(MEDIUM_MIN, LOW_MAX + 1,    'Low/Medium boundary must be contiguous');
-        System.assertEquals(HIGH_MIN,   MEDIUM_MAX + 1, 'Medium/High boundary must be contiguous');
-        System.assertEquals(VERY_HIGH,  HIGH_MAX + 1,   'High/Very High boundary must be contiguous');
+        System.assertEquals(mediumMin, lowMax + 1,    'Low/Medium boundary must be contiguous');
+        System.assertEquals(highMin,   mediumMax + 1, 'Medium/High boundary must be contiguous');
+        System.assertEquals(veryHigh,  highMax + 1,   'High/Very High boundary must be contiguous');
         System.assertEquals(0,  0, 'Low tier starts at 0');
-        System.assert(VERY_HIGH <= 100, 'Very High tier starts at or below 100');
+        System.assert(veryHigh <= 100, 'Very High tier starts at or below 100');
     }
 
 
@@ -628,23 +628,10 @@ private class NepaBREConfigTest {
     @IsTest
     static void riskScorer_bulk5Records_doesNotThrow() {
         Program proj = makeProject('Bulk Risk', 'Bureau of Land Management', 'DC', 'Energy', 'EIS');
-        List<IndividualApplication> ias = new List<IndividualApplication>();
-        for (Integer i = 0; i < 5; i++) {
-            ias.add(makeProcess(proj.Id, 'EA'));
-        }
-        insert ias;
-
-        List<IndividualApplication> updates = new List<IndividualApplication>();
-        for (IndividualApplication ia : ias) {
-            updates.add(new IndividualApplication(Id = ia.Id, nepa_review_type__c = 'EIS'));
-        }
-
         Test.startTest();
-        Boolean threw = false;
-        try { update updates; } catch (Exception e) { threw = true; }
+        Boolean ok = NepaTestFactory.runBulkReviewTypeUpdate(proj.Id, 5, 'EA', 'EIS');
         Test.stopTest();
-
-        System.assertEquals(false, threw, 'Risk Scorer bulk update of 5 records must not throw');
+        System.assertEquals(true, ok, 'Risk Scorer bulk update of 5 records must not throw');
     }
 
     // ── Phase 5: Sector-Circuit Risk Matrix configuration ─────────────────────

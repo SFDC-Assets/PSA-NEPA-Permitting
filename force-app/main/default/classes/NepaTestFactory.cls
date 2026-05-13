@@ -349,6 +349,24 @@ public class NepaTestFactory {
         return g;
     }
 
+    // ── Bulk test helpers ────────────────────────────────────────────────────
+
+    /** Creates n processes under proj, then bulk-updates them to newReviewType. Returns true if no exception. */
+    public static Boolean runBulkReviewTypeUpdate(Id projId, Integer n, String fromReviewType, String toReviewType) {
+        List<IndividualApplication> ias = new List<IndividualApplication>();
+        for (Integer i = 0; i < n; i++) {
+            ias.add(makeProcess(projId, fromReviewType));
+        }
+        insert ias;
+        List<IndividualApplication> updates = new List<IndividualApplication>();
+        for (IndividualApplication ia : ias) {
+            updates.add(new IndividualApplication(Id = ia.Id, nepa_review_type__c = toReviewType));
+        }
+        Boolean threw = false;
+        try { update updates; } catch (Exception e) { threw = true; }
+        return !threw;
+    }
+
     // ── nepa_process_team_member__c (CEQ Entity 8) ───────────────────────────
 
     /**
