@@ -1,10 +1,10 @@
 {
-  "Name": "DR_Extract_NEPA_GISData",
+  "Name": "DR_Extract_NEPA_GISData_ByProcess",
   "Type": "Extract",
   "IsActive__c": false,
-  "Description": "CEQ Entity: gis_data (PIC OpenAPI v1.2.0). Extracts nepa_gis_data__c records linked to a Project (Program). Input: projectId (Program.Id). Output path: gis_data. Used in NEPA_CEQExport step GetGISData.",
+  "Description": "CEQ Entity: gis_data linked to a specific process (IndividualApplication). Input: processId. Output path: gis_data. Used inside the LoopProcesses block of NEPA_CEQExport.",
   "SObjectType": "nepa_gis_data__c",
-  "WhereClause": "nepa_parent_project__c = :projectId",
+  "WhereClause": "nepa_parent_process__c = :processId",
   "OutputPath": "gis_data",
   "Mappings": [
     {"SObjectField": "Id", "OutputKey": "id", "DataType": "STRING"},

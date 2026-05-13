@@ -4,7 +4,7 @@
 **Standard:** CEQ NEPA and Permitting Data and Technology Standard v1.2.0
 **Reference spec:** https://github.com/GSA-TTS/pic-standards — `src/openapi/openapi.yaml` (6,094 lines, 13 schemas)
 **Created:** 2026-05-12
-**Status:** In progress — Phases 1–5 not yet started
+**Status:** Completed — Phases 1–6 deployed to NEPADEMO 2026-05-12
 
 ---
 
@@ -17,15 +17,15 @@ A field-by-field comparison of the PIC OpenAPI spec (`openapi.yaml`, v12.2.3) ag
 | Standard Entity | Our Object | Coverage |
 |---|---|---|
 | `project` | `Program` | Strong |
-| `process_instance` | `IndividualApplication` | Strong — 1 FK missing |
+| `process_instance` | `IndividualApplication` | Complete — nepa_process_model_id__c added (Phase 3) |
 | `document` | `ContentVersion` | Strong |
 | `comment` | `PublicComplaint` | Strong |
 | `engagement` | `nepa_engagement__c` | Strong |
 | `case_event` | `ApplicationTimeline` | Strong |
-| `decision_element` | `nepa_decision_element__c` | Partial — 9 fields missing |
-| `process_decision_payload` | `nepa_decision_payload__c` | Misaligned — different concept; new object needed |
-| `process_model` | `NEPA_Process_Model__mdt` | Partial — 5 fields missing |
-| `gis_data` | *(PSS Polygon — no direct map)* | Gap — deferred Phase 6 |
+| `decision_element` | `nepa_decision_element__c` | Complete — all 9 fields added (Phase 1) |
+| `process_decision_payload` | `nepa_decision_log__c` | Complete — new object created (Phase 2) |
+| `process_model` | `NEPA_Process_Model__mdt` | Complete — all 5 fields added (Phase 5) |
+| `gis_data` | `nepa_gis_data__c` | Complete — new object created (Phase 6) |
 | `gis_data_element` | `nepa_gis_data_element__c` | Strong |
 | `legal_structure` | `RegulatoryCode` (PSS standard) | Partial — platform object, no custom fields added |
 | `user_role` | *(Permission Sets — no data record)* | By-design gap — Salesforce platform mechanism |
@@ -165,8 +165,8 @@ Add 5 fields to `NEPA_Process_Model__mdt`:
 
 ## Phase 6 — `gis_data` container object (Deferred)
 
-**Priority:** Medium — deferred to separate session
-**Reason:** Multi-parent GIS container requires a new `nepa_gis_data__c` custom object with lookup fields for process, document, case_event, and engagement. This touches GIS analysis flows and the existing Polygon-based pattern. Scope warrants a dedicated session.
+**Status:** Complete — deployed 2026-05-12
+`nepa_gis_data__c` custom object created with 6 parent lookups (Program, IndividualApplication, ApplicationTimeline, PublicComplaint, nepa_engagement__c; ContentDocument as Text(18)), geometry fields, creator fields, data container fields, provenance, and extension bag. FLS in NEPA_Permitting permission set. Layout and FlexiPage created.
 
 **Standard fields to implement when addressed:**
 
@@ -197,18 +197,16 @@ Add 5 fields to `NEPA_Process_Model__mdt`:
 ## Execution Order
 
 ```
-Phase 1  →  nepa_decision_element__c fields + FLS + package.xml
-Phase 2  →  nepa_decision_log__c new object + FLS + package.xml
-Phase 3  →  IndividualApplication process_model FK + FLS + package.xml
-Phase 4  →  nepa_other__c on 7 remaining objects + FLS + package.xml
-Phase 5  →  NEPA_Process_Model__mdt 5 new CMT fields + package.xml
-Phase 6  →  nepa_gis_data__c (deferred — separate session)
+Phase 1  ✓  nepa_decision_element__c fields + FLS + package.xml (deployed 2026-05-12)
+Phase 2  ✓  nepa_decision_log__c new object + FLS + package.xml (deployed 2026-05-12)
+Phase 3  ✓  IndividualApplication process_model FK + FLS + package.xml (deployed 2026-05-12)
+Phase 4  ✓  nepa_other__c on 7 remaining objects + FLS + package.xml (deployed 2026-05-12)
+Phase 5  ✓  NEPA_Process_Model__mdt 5 new CMT fields + package.xml (deployed 2026-05-12)
+Phase 6  ✓  nepa_gis_data__c new object + FLS + package.xml (2026-05-12)
 ```
 
-Each phase ends with a dry-run deploy validation:
-```bash
-sf project deploy start --dry-run --source-dir force-app --target-org NEPADEMO --wait 30 --json 2>/dev/null
-```
+NepaApiComplianceTest passes all tests in NEPADEMO as of 2026-05-12 (note: ContentVersion DML tests
+use Schema.describeSObjectFields() assertions due to SDO package trigger interference in this demo org).
 
 ---
 

@@ -430,6 +430,30 @@
         <members>nepa_decision_element__c.nepa_responsible_official__c</members>
         <members>nepa_decision_element__c.nepa_document_id__c</members>
         <members>nepa_decision_element__c.nepa_ec_review_complete__c</members>
+        <!-- nepa_gis_data__c -->
+        <members>nepa_gis_data__c.nepa_address__c</members>
+        <members>nepa_gis_data__c.nepa_centroid_lat__c</members>
+        <members>nepa_gis_data__c.nepa_centroid_lon__c</members>
+        <members>nepa_gis_data__c.nepa_container_inventory__c</members>
+        <members>nepa_gis_data__c.nepa_creator__c</members>
+        <members>nepa_gis_data__c.nepa_creator_contact__c</members>
+        <members>nepa_gis_data__c.nepa_data_container__c</members>
+        <members>nepa_gis_data__c.nepa_data_record_version__c</members>
+        <members>nepa_gis_data__c.nepa_data_source_agency__c</members>
+        <members>nepa_gis_data__c.nepa_data_source_system__c</members>
+        <members>nepa_gis_data__c.nepa_description__c</members>
+        <members>nepa_gis_data__c.nepa_extent__c</members>
+        <members>nepa_gis_data__c.nepa_map_image__c</members>
+        <members>nepa_gis_data__c.nepa_notes__c</members>
+        <members>nepa_gis_data__c.nepa_other__c</members>
+        <members>nepa_gis_data__c.nepa_parent_case_event__c</members>
+        <members>nepa_gis_data__c.nepa_parent_comment__c</members>
+        <members>nepa_gis_data__c.nepa_parent_document_id__c</members>
+        <members>nepa_gis_data__c.nepa_parent_engagement__c</members>
+        <members>nepa_gis_data__c.nepa_parent_process__c</members>
+        <members>nepa_gis_data__c.nepa_parent_project__c</members>
+        <members>nepa_gis_data__c.nepa_record_owner_agency__c</members>
+        <members>nepa_gis_data__c.nepa_retrieved_timestamp__c</members>
         <!-- nepa_gis_data_element__c -->
         <members>nepa_gis_data_element__c.nepa_polygon__c</members>
         <members>nepa_gis_data_element__c.nepa_format__c</members>
@@ -485,6 +509,7 @@
         <members>nepa_decision_log__c</members>
         <members>nepa_decision_payload__c</members>
         <members>nepa_ce_library__c</members>
+        <members>nepa_gis_data__c</members>
         <members>nepa_gis_data_element__c</members>
         <!-- __mdt custom metadata type schemas -->
         <members>NEPA_Agency_Risk_Rate__mdt</members>
@@ -701,11 +726,13 @@
         <members>NEPA_CE_Library_Record_Page</members>
         <members>NEPA_Decision_Payload_Record_Page</members>
         <members>NEPA_Decision_Log_Record_Page</members>
+        <members>NEPA_GIS_Data_Record_Page</members>
         <name>FlexiPage</name>
     </types>
     <types>
         <members>nepa_ce_library__c</members>
         <members>nepa_detected_protection_layer__c</members>
+        <members>nepa_gis_data__c</members>
         <members>nepa_process_team_member__c</members>
         <name>CustomTab</name>
     </types>
@@ -716,6 +743,7 @@
         <members>nepa_process_related_agencies__c-Permit Application Agency Relationship Layout</members>
         <members>nepa_project_agency_relationship__c-Project Agency Relationship Layout</members>
         <members>nepa_decision_log__c-NEPA Decision Log Layout</members>
+        <members>nepa_gis_data__c-NEPA GIS Data Layout</members>
         <name>Layout</name>
     </types>
     <types>
@@ -749,6 +777,7 @@
         <members>DR_Extract_NEPA_EngagementEvent</members>
         <members>DR_Extract_NEPA_CaseEvent</members>
         <members>DR_Extract_NEPA_GISData</members>
+        <members>DR_Extract_NEPA_GISData_ByProcess</members>
         <members>DR_Extract_NEPA_TeamMember</members>
         <members>DR_Extract_NEPA_LegalStructure</members>
         <!-- CE Intake: DataRaptor Load and CE Library lookup -->

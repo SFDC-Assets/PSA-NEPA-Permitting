@@ -6,7 +6,7 @@
   "VersionNumber": 1,
   "IsActive": true,
   "IsIntegrationProcedure": true,
-  "Description": "Assembles a CEQ NEPA and Permitting Data and Technology Standard v1.2 compliant JSON payload for a given Project (Program). Inputs: projectId (Program.Id). Output: CEQPayload containing all 9 implemented entities: Project (with GIS Data), Processes (with Documents + Comments, Team Members, Legal Structure), Public Engagement Events, and Case Events.",
+  "Description": "Assembles a CEQ NEPA and Permitting Data and Technology Standard v1.2 compliant JSON payload for a given Project (Program). Inputs: projectId (Program.Id). Output: CEQPayload containing all 9 implemented entities: Project (with project-level GIS Data), Processes (with Documents + Comments, Team Members, Legal Structure, process-level GIS Data), Public Engagement Events, and Case Events.",
   "PropertySetConfig": "{\"persistentComponent\":true,\"trackingCustomData\":{},\"enableLWCRuntime\":true}",
   "WebComponentKey": "NEPA/CEQExport/English/1",
   "Elements": [
@@ -43,8 +43,8 @@
         "bundleName": "DR_Extract_NEPA_GISData",
         "inputMap": [
           {
-            "name": "polygonId",
-            "value": "%Project:polygon_id%",
+            "name": "projectId",
+            "value": "%projectId%",
             "valueType": "reference"
           }
         ],
@@ -233,6 +233,26 @@
               }
             ],
             "outputPath": "currentProcess:legal_structure",
+            "failOnStepError": false,
+            "postTransformBundle": ""
+          }
+        },
+        {
+          "Name": "GetGISDataForProcess",
+          "Type": "DataRaptor Extract Action",
+          "SequenceNumber": 8,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "bundleName": "DR_Extract_NEPA_GISData_ByProcess",
+            "inputMap": [
+              {
+                "name": "processId",
+                "value": "%currentProcess:id%",
+                "valueType": "reference"
+              }
+            ],
+            "outputPath": "currentProcess:gis_data",
             "failOnStepError": false,
             "postTransformBundle": ""
           }

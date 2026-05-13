@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName><formFactor>Large</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName><formFactor>Small</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName><formFactor>Large</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName><formFactor>Small</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName><formFactor>Large</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName><formFactor>Small</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName><formFactor>Large</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName><formFactor>Small</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName><formFactor>Large</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName><formFactor>Small</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName><formFactor>Large</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName><formFactor>Small</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName><formFactor>Large</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName><formFactor>Small</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName><formFactor>Large</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName><formFactor>Small</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName><formFactor>Large</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName><formFactor>Small</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName><formFactor>Large</formFactor><type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName><formFactor>Small</formFactor><type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>CEQ Standard Entity — gis_data (PIC OpenAPI v1.2.0). Multi-parent GIS container linking spatial data packages to NEPA entities (project, process, document, case event, comment, engagement). Stores geometry metadata, centroid, bounding extent, creator information, and structured data containers. Supports MFR #6 (Integrated GIS Analysis Tools). Children nepa_gis_data_element__c records hold per-layer dataset metadata.</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableLicensing>false</enableLicensing>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <externalSharingModel>Private</externalSharingModel>
+
+    <!-- Parent lookups — multi-parent pattern; all optional, at least one expected -->
+    <fields>
+        <fullName>nepa_parent_project__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>CEQ gis_data.parent_project_id — the NEPA project (Program) this GIS package is associated with.</description>
+        <inlineHelpText>The NEPA project this GIS data container belongs to.</inlineHelpText>
+        <label>Project</label>
+        <referenceTo>Program</referenceTo>
+        <relationshipLabel>GIS Data Containers</relationshipLabel>
+        <relationshipName>GIS_Data_Project</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_parent_process__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>CEQ gis_data.parent_process_id — the NEPA process (IndividualApplication) this GIS package is associated with.</description>
+        <inlineHelpText>The NEPA process (review) this GIS data container belongs to.</inlineHelpText>
+        <label>Process</label>
+        <referenceTo>IndividualApplication</referenceTo>
+        <relationshipLabel>GIS Data Containers</relationshipLabel>
+        <relationshipName>GIS_Data_Process</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_parent_document_id__c</fullName>
+        <description>CEQ gis_data.parent_document_id — stores the ContentDocumentId (Text(18)) of the associated permit document. Salesforce does not support Lookup fields targeting ContentDocument/ContentVersion.</description>
+        <inlineHelpText>ContentDocumentId of the associated permit document (18-character Salesforce ID).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Parent Document ID</label>
+        <length>18</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_parent_case_event__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>CEQ gis_data.parent_case_event_id — the case event (ApplicationTimeline) this GIS package is associated with.</description>
+        <inlineHelpText>The case event milestone this GIS data container belongs to.</inlineHelpText>
+        <label>Case Event</label>
+        <referenceTo>ApplicationTimeline</referenceTo>
+        <relationshipLabel>GIS Data Containers</relationshipLabel>
+        <relationshipName>GIS_Data_Case_Event</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_parent_comment__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>CEQ gis_data.parent_comment_id — the public comment (PublicComplaint) this GIS package is associated with.</description>
+        <inlineHelpText>The public comment this GIS data container belongs to.</inlineHelpText>
+        <label>Comment</label>
+        <referenceTo>PublicComplaint</referenceTo>
+        <relationshipLabel>GIS Data Containers</relationshipLabel>
+        <relationshipName>GIS_Data_Comment</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_parent_engagement__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>CEQ gis_data.parent_engagement_id — the public engagement event this GIS package is associated with.</description>
+        <inlineHelpText>The public engagement event this GIS data container belongs to.</inlineHelpText>
+        <label>Engagement Event</label>
+        <referenceTo>nepa_engagement__c</referenceTo>
+        <relationshipLabel>GIS Data Containers</relationshipLabel>
+        <relationshipName>GIS_Data_Engagement</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+
+    <!-- Descriptive fields -->
+    <fields>
+        <fullName>nepa_description__c</fullName>
+        <description>CEQ gis_data.description — human-readable description of this GIS data package and its role in the NEPA analysis.</description>
+        <inlineHelpText>Describe the spatial data and its role in the NEPA analysis.</inlineHelpText>
+        <label>Description</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_extent__c</fullName>
+        <description>CEQ gis_data.extent — bounding box or spatial extent description for the GIS package (e.g., WKT ENVELOPE or minLon,minLat,maxLon,maxLat).</description>
+        <inlineHelpText>Bounding box or extent (WKT ENVELOPE or minLon,minLat,maxLon,maxLat).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Extent</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_centroid_lat__c</fullName>
+        <description>CEQ gis_data.centroid_lat — latitude of the centroid for this GIS data package (decimal degrees, WGS84).</description>
+        <inlineHelpText>Centroid latitude in decimal degrees (WGS84).</inlineHelpText>
+        <label>Centroid Latitude</label>
+        <precision>10</precision>
+        <required>false</required>
+        <scale>6</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_centroid_lon__c</fullName>
+        <description>CEQ gis_data.centroid_lon — longitude of the centroid for this GIS data package (decimal degrees, WGS84).</description>
+        <inlineHelpText>Centroid longitude in decimal degrees (WGS84).</inlineHelpText>
+        <label>Centroid Longitude</label>
+        <precision>11</precision>
+        <required>false</required>
+        <scale>6</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_address__c</fullName>
+        <description>CEQ gis_data.address — street address or location description associated with the primary GIS feature.</description>
+        <inlineHelpText>Street address or location description for the primary spatial feature.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Address</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_notes__c</fullName>
+        <description>CEQ gis_data.notes — free-text notes about this GIS data package (data quality issues, collection methodology, limitations).</description>
+        <inlineHelpText>Notes on data quality, collection methodology, or limitations.</inlineHelpText>
+        <label>Notes</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+
+    <!-- Creator fields -->
+    <fields>
+        <fullName>nepa_creator__c</fullName>
+        <description>CEQ gis_data.creator — name of the person or organization that created this GIS data package.</description>
+        <inlineHelpText>Name of the person or organization that created this GIS dataset.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Creator</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_creator_contact__c</fullName>
+        <description>CEQ gis_data.creator_contact — contact information for the creator (JSON: name, email, phone, agency).</description>
+        <inlineHelpText>Creator contact information as JSON (name, email, phone, agency).</inlineHelpText>
+        <label>Creator Contact</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+
+    <!-- Structured data container fields -->
+    <fields>
+        <fullName>nepa_container_inventory__c</fullName>
+        <description>CEQ gis_data.container_inventory — JSON array of dataset identifiers and metadata included in this GIS container package.</description>
+        <inlineHelpText>JSON array of datasets included in this GIS container (id, name, type, purpose).</inlineHelpText>
+        <label>Container Inventory</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_map_image__c</fullName>
+        <description>CEQ gis_data.map_image — JSON object describing the map image representation of this GIS package (url, format, width, height, scale).</description>
+        <inlineHelpText>Map image metadata as JSON (url, format, width, height, scale).</inlineHelpText>
+        <label>Map Image</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_data_container__c</fullName>
+        <description>CEQ gis_data.data_container — JSON blob for the primary GIS data payload (GeoJSON, bounding geometry, or structured spatial index).</description>
+        <inlineHelpText>Primary GIS data payload as JSON (GeoJSON, spatial index, or structured geometry).</inlineHelpText>
+        <label>Data Container</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>6</visibleLines>
+    </fields>
+
+    <!-- Extension bag -->
+    <fields>
+        <fullName>nepa_other__c</fullName>
+        <description>CEQ standard v1.2 extension bag — JSON object for non-standard properties required by specific agency implementations.</description>
+        <inlineHelpText>JSON extension bag for agency-specific properties not covered by the standard schema.</inlineHelpText>
+        <label>Other (JSON)</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+
+    <!-- Provenance fields -->
+    <fields>
+        <fullName>nepa_data_record_version__c</fullName>
+        <description>CEQ standard v1.2 provenance: version identifier for this data record.</description>
+        <label>Data Record Version</label>
+        <length>50</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_agency__c</fullName>
+        <description>CEQ standard v1.2 provenance: agency that is the source of this data record.</description>
+        <label>Data Source Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_system__c</fullName>
+        <description>CEQ standard v1.2 provenance: system of record that originated this data.</description>
+        <label>Data Source System</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_record_owner_agency__c</fullName>
+        <description>CEQ standard v1.2 provenance: agency responsible for maintaining this record.</description>
+        <label>Record Owner Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_retrieved_timestamp__c</fullName>
+        <description>CEQ standard v1.2 provenance: timestamp when this record was retrieved from the source system.</description>
+        <label>Retrieved Timestamp</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+
+    <label>NEPA GIS Data</label>
+    <nameField>
+        <label>GIS Data Name</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>NEPA GIS Data</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>Private</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

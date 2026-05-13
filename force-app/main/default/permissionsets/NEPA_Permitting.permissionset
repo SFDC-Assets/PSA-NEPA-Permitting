@@ -1645,7 +1645,123 @@
         <field>nepa_gis_data_element__c.nepa_retrieved_timestamp__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    
+
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_address__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_centroid_lat__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_centroid_lon__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_container_inventory__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_creator__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_creator_contact__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_data_container__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_data_record_version__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_data_source_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_data_source_system__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_description__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_extent__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_map_image__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_notes__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_other__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_parent_case_event__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_parent_comment__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_parent_document_id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_parent_engagement__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_parent_process__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_parent_project__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_record_owner_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_retrieved_timestamp__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_litigation__c.nepa_case_title__c</field>
@@ -2059,6 +2175,15 @@
         <allowEdit>true</allowEdit>
         <allowRead>true</allowRead>
         <modifyAllRecords>false</modifyAllRecords>
+        <object>nepa_gis_data__c</object>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
         <object>IndividualApplication</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
@@ -2293,6 +2418,10 @@
     </tabSettings>
     <tabSettings>
         <tab>nepa_ar_export__c</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>nepa_gis_data__c</tab>
         <visibility>Available</visibility>
     </tabSettings>
     <tabSettings>

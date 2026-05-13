@@ -78,7 +78,7 @@ The script deploys in dependency order:
 
 | Phase | Contents |
 |---|---|
-| 1 | Custom object schemas and custom metadata type schemas (`nepa_ce_library__c`, `nepa_decision_payload__c`, `NEPA_Process_Model__mdt` included) |
+| 1 | Custom object schemas and custom metadata type schemas (`nepa_ce_library__c`, `nepa_decision_payload__c`, `nepa_decision_log__c`, `nepa_decision_element__c`, `NEPA_Process_Model__mdt` included) |
 | 2 | Custom fields on Program, IndividualApplication, ContentVersion, PublicComplaint, ApplicationTimeline |
 | 3 | Custom labels |
 | 4 | NEPA_Permitting permission set |
@@ -190,6 +190,7 @@ The deployment includes custom Lightning Record Pages for all 6 CEQ entities. As
    - `NEPA Litigation Record Page`
    - `NEPA CE Library Record Page`
    - `NEPA Decision Payload Record Page`
+   - `NEPA Decision Log Record Page`
 
 ### 4e. Load CE Library Reference Data
 
@@ -746,6 +747,8 @@ Expected: 1 or more CE Library records matching the term "pipeline" across exclu
 | Litigation case | `nepa_litigation__c` | `nepa_case_name__c`, `nepa_circuit__c`, `nepa_outcome__c` |
 | CE reference library | `nepa_ce_library__c` | `nepa_agency_abbr__c`, `nepa_exclusion_text__c`, `nepa_active__c` — SOSL/Einstein Search-indexed |
 | Decision payload (ROD/FONSI/CE det.) | `nepa_decision_payload__c` | `nepa_decision_type__c`, `nepa_decision_date__c`, `nepa_rationale__c` |
+| Screening criterion definition | `nepa_decision_element__c` | `nepa_title__c`, `nepa_determination_type__c`, `nepa_form_text__c` |
+| Per-criterion evaluation log | `nepa_decision_log__c` | `nepa_process__c`, `nepa_decision_element__c`, `nepa_result_bool__c`, `nepa_result__c` |
 
 ---
 

@@ -130,16 +130,20 @@ This Accelerator includes the following assets:
       <li>ApplicationTimeline — 17 fields (Entity 6: Case Events)</li>
     </ul>
   </li>
-  <li><strong>Custom Objects</strong> (x3)
+  <li><strong>Custom Objects</strong> (x5)
     <ul>
       <li>NEPA Public Engagement Event (<code>nepa_engagement__c</code>) — Entity 5: Public Engagement Events</li>
+      <li>NEPA Decision Log (<code>nepa_decision_log__c</code>) — CEQ Entity: process_decision_payload (per-criterion evaluation audit record)</li>
+      <li>NEPA Decision Element (<code>nepa_decision_element__c</code>) — CEQ Entity: decision_element (screening criteria definitions)</li>
       <li>Process Agency Relationship (<code>nepa_process_related_agencies__c</code>)</li>
       <li>Project Agency Relationship (<code>nepa_project_agency_relationship__c</code>)</li>
     </ul>
   </li>
-  <li><strong>Lightning Record Page</strong> (x1)
+  <li><strong>Lightning Record Pages</strong> (x3)
     <ul>
       <li>Public Comment Record Page</li>
+      <li>NEPA Decision Payload Record Page</li>
+      <li>NEPA Decision Log Record Page</li>
     </ul>
   </li>
   <li><strong>Page Layouts</strong> (x5)
