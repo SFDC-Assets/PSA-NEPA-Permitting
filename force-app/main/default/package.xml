@@ -700,6 +700,7 @@
         <members>Public_Comment_Record_Page</members>
         <members>NEPA_CE_Library_Record_Page</members>
         <members>NEPA_Decision_Payload_Record_Page</members>
+        <members>NEPA_Decision_Log_Record_Page</members>
         <name>FlexiPage</name>
     </types>
     <types>
@@ -712,6 +713,7 @@
         <members>nepa_engagement__c-NEPA Public Engagement Event Layout</members>
         <members>nepa_process_related_agencies__c-Permit Application Agency Relationship Layout</members>
         <members>nepa_project_agency_relationship__c-Project Agency Relationship Layout</members>
+        <members>nepa_decision_log__c-NEPA Decision Log Layout</members>
         <name>Layout</name>
     </types>
     <types>
