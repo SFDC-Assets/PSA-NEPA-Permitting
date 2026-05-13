@@ -11,7 +11,7 @@
 
 ## Executive Summary
 
-The PSA-NEPA Permitting Accelerator is an open-source, production-ready implementation of the CEQ NEPA and Permitting Data and Technology Standard v1.2, built entirely on Salesforce Public Sector Solutions (PSS) — a FedRAMP-authorized platform. It maps all six CEQ-defined entities to Salesforce-native objects, delivers 30 declarative automation flows covering the full NEPA process lifecycle, and embeds a risk intelligence layer pre-seeded from 761 federal litigation cases (PermitTEC v0.1, PNNL 2025) and a CE Library of 2,105 categorical exclusions across 79 federal agencies.
+The PSA-NEPA Permitting Accelerator is an open-source, production-ready implementation of the CEQ NEPA and Permitting Data and Technology Standard v1.2, built entirely on Salesforce Public Sector Solutions (PSS) — a FedRAMP-authorized platform. It implements all 13 CEQ-defined entities (6 standard + 7 extended) on Salesforce-native objects, delivers 30 declarative automation flows covering the full NEPA process lifecycle, and embeds a risk intelligence layer pre-seeded from 761 federal litigation cases (PermitTEC v0.1, PNNL 2025) and a CE Library of 2,105 categorical exclusions across 79 federal agencies. A regression test suite of 89 Apex tests verifies field-level compliance with the PIC OpenAPI Standard v1.2.0 across all 13 entities and the REST export API.
 
 The solution is deployable from the command line in approximately 15 minutes, requires no custom infrastructure, and is extensible to additional agencies through custom metadata configuration alone — no code changes required.
 
@@ -155,7 +155,7 @@ All metadata is source-tracked and version-controlled. The repository includes:
 
 The solution is aligned to:
 
-- **CEQ NEPA and Permitting Data and Technology Standard v1.2** (May 30 / August 18, 2025): All 6 CEQ standard entities implemented with the 5 required provenance fields
+- **CEQ NEPA and Permitting Data and Technology Standard v1.2** (May 30 / August 18, 2025): All 13 CEQ entities implemented with the 5 required provenance fields on each. A dedicated regression test suite (`NepaApiComplianceTest`, `NepaCeqExportServiceTest`, `NepaEntity789Test`) of 89 Apex tests verifies write-and-read compliance for every entity's standard fields, provenance pattern, and `nepa_other__c` extension bag against the PIC OpenAPI specification.
 - **CEQ Permitting Technology Action Plan (May 2025)**: Supports MFR #1 (Data Standards), MFR #2 (Data Sharing), MFR #5 (Automated Case Management), and MFR #7 (Document Management) at Foundational and Emerging maturity levels
 - **OMB M-25-21**: AI features are advisory-only; AI recommends, human confirms is enforced in all flows; human override always available
 - **FAST-41**: Timeline tracking pre-seeded with baseline durations; `nepa_milestone_variance_days__c` provides real-time variance against statutory targets
@@ -234,7 +234,7 @@ The solution is released under an MIT license with full source code available. A
 
 | Dimension | Value |
 |---|---|
-| CEQ standard entities implemented | 6 of 6 (all defined entities) |
+| CEQ entities implemented | 13 of 13 (6 standard + 7 extended, per PIC OpenAPI v1.2.0) |
 | Total declarative flows | 30 |
 | CE Library records | 2,105 categorical exclusions |
 | Agencies covered in CE Library | 79 |
@@ -242,6 +242,7 @@ The solution is released under an MIT license with full source code available. A
 | NEPA projects in baseline corpus | 61,881 (NEPATEC v2.0) |
 | Custom metadata types | 8 |
 | Custom Apex classes | 1 (infrastructure bridge only) |
+| API compliance regression tests | 89 Apex tests across 3 test classes |
 | Deployment time from CLI | ~15 minutes |
 | Platform FedRAMP status | Authorized (Salesforce Gov Cloud) |
 | License | MIT (open source) |

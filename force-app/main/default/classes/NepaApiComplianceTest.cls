@@ -843,6 +843,221 @@ private class NepaApiComplianceTest {
     }
 
     // ══════════════════════════════════════════════════════════════════════════
+    // Entity 7 — gis_data → nepa_gis_data__c (Phase 6)
+    // ══════════════════════════════════════════════════════════════════════════
+
+    @IsTest
+    static void gisData_standardFields_persist() {
+        Program proj = getProject();
+        IndividualApplication ia = getProcess();
+        nepa_gis_data__c g = NepaTestFactory.insertGisData(proj.Id, ia.Id);
+
+        nepa_gis_data__c result = [
+            SELECT nepa_parent_project__c, nepa_parent_process__c,
+                   nepa_description__c, nepa_centroid_lat__c, nepa_centroid_lon__c,
+                   nepa_address__c, nepa_creator__c
+            FROM nepa_gis_data__c WHERE Id = :g.Id
+        ];
+        System.assertEquals(proj.Id, result.nepa_parent_project__c);
+        System.assertEquals(ia.Id,   result.nepa_parent_process__c);
+        System.assertEquals(44.5833, result.nepa_centroid_lat__c);
+        System.assertEquals(-110.6333, result.nepa_centroid_lon__c);
+        System.assertEquals('BLM GIS Division', result.nepa_creator__c);
+        System.assert(result.nepa_address__c.contains('Yellowstone'));
+    }
+
+    @IsTest
+    static void gisData_projectLevel_noProcess_persists() {
+        Program proj = getProject();
+        nepa_gis_data__c g = NepaTestFactory.makeGisData(proj.Id, null);
+        g.nepa_parent_process__c = null;
+        insert g;
+
+        nepa_gis_data__c result = [
+            SELECT nepa_parent_project__c, nepa_parent_process__c
+            FROM nepa_gis_data__c WHERE Id = :g.Id
+        ];
+        System.assertEquals(proj.Id, result.nepa_parent_project__c);
+        System.assertEquals(null, result.nepa_parent_process__c);
+    }
+
+    @IsTest
+    static void gisData_caseEventParent_resolves() {
+        IndividualApplication ia = getProcess();
+        ApplicationTimeline evt = NepaTestFactory.insertPublicTimelineEvent(ia.Id);
+
+        nepa_gis_data__c g = new nepa_gis_data__c();
+        g.Name                       = 'Case Event GIS';
+        g.nepa_parent_case_event__c  = evt.Id;
+        insert g;
+
+        nepa_gis_data__c result = [SELECT nepa_parent_case_event__c FROM nepa_gis_data__c WHERE Id = :g.Id];
+        System.assertEquals(evt.Id, result.nepa_parent_case_event__c);
+    }
+
+    @IsTest
+    static void gisData_commentParent_resolves() {
+        IndividualApplication ia = getProcess();
+        PublicComplaint pc = new PublicComplaint();
+        pc.IncidentDate            = Date.today();
+        pc.nepa_related_process__c = ia.Id;
+        pc.nepa_comment_body__c    = 'GIS test comment.';
+        pc.nepa_public_access__c   = 'Public';
+        insert pc;
+
+        nepa_gis_data__c g = new nepa_gis_data__c();
+        g.Name                    = 'Comment GIS';
+        g.nepa_parent_comment__c  = pc.Id;
+        insert g;
+
+        nepa_gis_data__c result = [SELECT nepa_parent_comment__c FROM nepa_gis_data__c WHERE Id = :g.Id];
+        System.assertEquals(pc.Id, result.nepa_parent_comment__c);
+    }
+
+    @IsTest
+    static void gisData_engagementParent_resolves() {
+        IndividualApplication ia = getProcess();
+        nepa_engagement__c e = NepaTestFactory.insertPublicEngagement(ia.Id);
+
+        nepa_gis_data__c g = new nepa_gis_data__c();
+        g.Name                       = 'Engagement GIS';
+        g.nepa_parent_engagement__c  = e.Id;
+        insert g;
+
+        nepa_gis_data__c result = [SELECT nepa_parent_engagement__c FROM nepa_gis_data__c WHERE Id = :g.Id];
+        System.assertEquals(e.Id, result.nepa_parent_engagement__c);
+    }
+
+    @IsTest
+    static void gisData_parentDocumentId_textField_persists() {
+        // nepa_parent_document_id__c is Text(18) — ContentDocument FK limitation
+        nepa_gis_data__c g = new nepa_gis_data__c();
+        g.Name                          = 'Document GIS';
+        g.nepa_parent_document_id__c    = '069000000000001AAA';
+        insert g;
+
+        nepa_gis_data__c result = [SELECT nepa_parent_document_id__c FROM nepa_gis_data__c WHERE Id = :g.Id];
+        System.assertEquals('069000000000001AAA', result.nepa_parent_document_id__c);
+    }
+
+    @IsTest
+    static void gisData_dataContainerFields_persist() {
+        Program proj = getProject();
+        nepa_gis_data__c g = NepaTestFactory.makeGisData(proj.Id, null);
+        g.nepa_container_inventory__c = 'ESA Critical Habitat Layer, NWI Wetlands Layer';
+        g.nepa_map_image__c           = 'https://example.arcgis.com/map.png';
+        g.nepa_data_container__c      = 'https://example.arcgis.com/featureservice/0';
+        g.nepa_extent__c              = 'POLYGON((-111.0 44.0, -110.0 44.0, -110.0 45.0, -111.0 45.0, -111.0 44.0))';
+        insert g;
+
+        nepa_gis_data__c result = [
+            SELECT nepa_container_inventory__c, nepa_map_image__c, nepa_data_container__c, nepa_extent__c
+            FROM nepa_gis_data__c WHERE Id = :g.Id
+        ];
+        System.assert(result.nepa_container_inventory__c.contains('ESA'));
+        System.assert(result.nepa_map_image__c.contains('arcgis'));
+        System.assert(result.nepa_data_container__c.contains('featureservice'));
+        System.assert(result.nepa_extent__c.contains('POLYGON'));
+    }
+
+    @IsTest
+    static void gisData_provenance_fields_persist() {
+        Program proj = getProject();
+        nepa_gis_data__c g = NepaTestFactory.makeGisData(proj.Id, null);
+        g.nepa_data_source_agency__c  = 'USFWS';
+        g.nepa_data_source_system__c  = 'ECOS';
+        g.nepa_data_record_version__c = '2024-12';
+        g.nepa_record_owner_agency__c = 'BLM';
+        g.nepa_retrieved_timestamp__c = DateTime.now();
+        insert g;
+
+        nepa_gis_data__c result = [
+            SELECT nepa_data_source_agency__c, nepa_data_source_system__c,
+                   nepa_data_record_version__c, nepa_record_owner_agency__c,
+                   nepa_retrieved_timestamp__c
+            FROM nepa_gis_data__c WHERE Id = :g.Id
+        ];
+        System.assertEquals('USFWS',    result.nepa_data_source_agency__c);
+        System.assertEquals('ECOS',     result.nepa_data_source_system__c);
+        System.assertEquals('2024-12',  result.nepa_data_record_version__c);
+        System.assertEquals('BLM',      result.nepa_record_owner_agency__c);
+        System.assertNotEquals(null,    result.nepa_retrieved_timestamp__c);
+    }
+
+    @IsTest
+    static void gisData_other_extensionBag_persists() {
+        Program proj = getProject();
+        nepa_gis_data__c g = NepaTestFactory.makeGisData(proj.Id, null);
+        g.nepa_other__c = '{"arcgis_layer_id": "critical_habitat_v2", "resolution_meters": 30}';
+        insert g;
+
+        nepa_gis_data__c result = [SELECT nepa_other__c FROM nepa_gis_data__c WHERE Id = :g.Id];
+        System.assert(result.nepa_other__c.contains('arcgis_layer_id'));
+    }
+
+    @IsTest
+    static void gisData_creatorContact_field_persists() {
+        Program proj = getProject();
+        nepa_gis_data__c g = NepaTestFactory.makeGisData(proj.Id, null);
+        g.nepa_creator_contact__c = 'gis.team@blm.gov';
+        g.nepa_notes__c           = 'Downloaded from BLM EGIS portal. Reprojected to WGS84.';
+        insert g;
+
+        nepa_gis_data__c result = [
+            SELECT nepa_creator_contact__c, nepa_notes__c
+            FROM nepa_gis_data__c WHERE Id = :g.Id
+        ];
+        System.assertEquals('gis.team@blm.gov', result.nepa_creator_contact__c);
+        System.assert(result.nepa_notes__c.contains('WGS84'));
+    }
+
+    @IsTest
+    static void gisData_parentProcess_setNull_onProcessDelete() {
+        Program proj = NepaTestFactory.insertProgram('GIS-SETNULL-001', 'SetNull Test', 'EPA');
+        IndividualApplication ia = NepaTestFactory.insertOpenProcess(proj.Id, 'CE');
+
+        nepa_gis_data__c g = new nepa_gis_data__c();
+        g.Name                   = 'SetNull GIS';
+        g.nepa_parent_process__c = ia.Id;
+        insert g;
+
+        delete ia;
+
+        nepa_gis_data__c result = [SELECT nepa_parent_process__c FROM nepa_gis_data__c WHERE Id = :g.Id];
+        System.assertEquals(null, result.nepa_parent_process__c);
+    }
+
+    @IsTest
+    static void gisData_bulk_insert_251() {
+        Program proj = getProject();
+        IndividualApplication ia = getProcess();
+        List<nepa_gis_data__c> records = new List<nepa_gis_data__c>();
+        for (Integer i = 0; i < 251; i++) {
+            nepa_gis_data__c g = NepaTestFactory.makeGisData(proj.Id, ia.Id);
+            g.Name = 'Bulk GIS ' + i;
+            records.add(g);
+        }
+        insert records;
+        System.assertEquals(251, [SELECT COUNT() FROM nepa_gis_data__c WHERE nepa_parent_project__c = :proj.Id]);
+    }
+
+    @IsTest
+    static void gisData_schemaFields_compile() {
+        Map<String, Schema.SObjectField> fields = Schema.SObjectType.nepa_gis_data__c.fields.getMap();
+        for (String f : new List<String>{
+            'nepa_parent_project__c', 'nepa_parent_process__c', 'nepa_parent_document_id__c',
+            'nepa_parent_case_event__c', 'nepa_parent_comment__c', 'nepa_parent_engagement__c',
+            'nepa_description__c', 'nepa_extent__c', 'nepa_centroid_lat__c', 'nepa_centroid_lon__c',
+            'nepa_address__c', 'nepa_notes__c', 'nepa_creator__c', 'nepa_creator_contact__c',
+            'nepa_container_inventory__c', 'nepa_map_image__c', 'nepa_data_container__c',
+            'nepa_other__c', 'nepa_data_record_version__c', 'nepa_data_source_agency__c',
+            'nepa_data_source_system__c', 'nepa_record_owner_agency__c', 'nepa_retrieved_timestamp__c'
+        }) {
+            System.assert(fields.containsKey(f), 'Missing field on nepa_gis_data__c: ' + f);
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
     // Entity 9 — process_model → NEPA_Process_Model__mdt (compile-time schema)
     // Custom metadata type fields are DeveloperControlled — no insert in Apex.
     // These tests verify the schema compiles against all expected fields.

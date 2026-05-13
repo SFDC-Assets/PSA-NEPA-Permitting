@@ -289,7 +289,33 @@ public class NepaTestFactory {
         return insertContentVersionRecord(linkedEntityId, false, docType);
     }
 
-    // ── nepa_gis_data_element__c (CEQ Entity 7) ──────────────────────────────
+    // ── nepa_gis_data__c (CEQ Entity 7 — gis_data) ──────────────────────────
+
+    public static nepa_gis_data__c makeGisData(Id projectId, Id processId) {
+        nepa_gis_data__c g = new nepa_gis_data__c();
+        g.Name                        = 'Test GIS Record';
+        g.nepa_parent_project__c      = projectId;
+        g.nepa_parent_process__c      = processId;
+        g.nepa_description__c         = 'Test spatial data record.';
+        g.nepa_centroid_lat__c        = 44.5833;
+        g.nepa_centroid_lon__c        = -110.6333;
+        g.nepa_address__c             = 'Yellowstone National Park, WY 82190';
+        g.nepa_creator__c             = 'BLM GIS Division';
+        g.nepa_data_source_agency__c  = 'BLM';
+        g.nepa_data_source_system__c  = 'ArcGIS Enterprise';
+        g.nepa_data_record_version__c = '1.0';
+        g.nepa_record_owner_agency__c = 'BLM';
+        g.nepa_retrieved_timestamp__c = DateTime.now();
+        return g;
+    }
+
+    public static nepa_gis_data__c insertGisData(Id projectId, Id processId) {
+        nepa_gis_data__c g = makeGisData(projectId, processId);
+        insert g;
+        return g;
+    }
+
+    // ── nepa_gis_data_element__c (CEQ Entity 7 proximity screening) ─────────
 
     /**
      * Builds an unsaved GIS data element.
