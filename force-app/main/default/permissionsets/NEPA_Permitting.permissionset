@@ -1,17 +1,17 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <description>Provides access to NEPA Permitting compliant data model. Implements CEQ NEPA and Permitting Data and Technology Standard v1.2. Requires additional Public Sector Access permission set to be assigned.</description>
-    <!-- IndividualApplication (Entity 2: Process) fields -->
-    <!-- Program (Entity 1: Project) fields -->
-    <!-- nepa_engagement__c (Entity 5: Public Engagement Events) -->
-    <!-- CE Screening fields (Priority 2: Automated CE Screening) -->
-    <!-- nepa_action_type__c, nepa_disturbance_acres__c, nepa_extraordinary_circumstances__c are editable: applicant/PM fills these in at intake -->
-    <!-- Junction object fields: all junction fields (Agency__c, Processes__c, nepa_Project__c, nepa_role__c) are required — omitted from fieldPermissions -->
-    <!-- Mandate 1: Comment period gating fields -->
-    <!-- Mandate 3: APA expedited review penalty fields -->
-    <!-- nepa_review_timeline_type__c is editable: PM sets this at intake -->
-    <!-- Phase 5: nepa_ar_export__c fields — status written by batch; PM can create/read; counsel can read -->
-    <!-- NEPA_Flow_Error__c fields (written by flows, readable by admins) -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <hasActivationRequired>false</hasActivationRequired>
     <label>NEPA Permitting</label>
     <fieldPermissions>
@@ -44,7 +44,7 @@
         <field>ApplicationTimeline.nepa_event_description__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- ApplicationTimeline (Entity 6: Case Events) custom fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>ApplicationTimeline.nepa_event_type__c</field>
@@ -115,7 +115,7 @@
         <field>ContentVersion.nepa_agency_adopted_date__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- Phase 5: AR export index fields on ContentVersion (written by batch job) -->
+    
     <fieldPermissions>
         <editable>false</editable>
         <field>ContentVersion.nepa_ar_included__c</field>
@@ -146,7 +146,7 @@
         <field>ContentVersion.nepa_data_source_system__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- Phase 5: Sponsor chain-of-custody fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>ContentVersion.nepa_document_custody__c</field>
@@ -187,7 +187,7 @@
         <field>ContentVersion.nepa_fra_page_limit__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- Phase 5: FRA page limit fields — page_limit and fra_overlimit set by flow/formula (read-only); page_count and is_appendix editable -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>ContentVersion.nepa_is_appendix__c</field>
@@ -238,7 +238,7 @@
         <field>ContentVersion.nepa_related_case_event__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- ContentVersion (Entity 3: Documents) fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>ContentVersion.nepa_related_document__c</field>
@@ -254,7 +254,7 @@
         <field>ContentVersion.nepa_revision_number__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- Mandate 4: AI EIS draft document fields (read-only — written by NEPA_EIS_Section_Assembler Flow) -->
+    
     <fieldPermissions>
         <editable>false</editable>
         <field>ContentVersion.nepa_section_type__c</field>
@@ -285,7 +285,7 @@
         <field>ContentVersion.nepa_volume_title__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_screening_confidence__c and nepa_classification_basis__c are read-only: written by NEPA_CE_Screener Flow -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>IndividualApplication.nepa_action_type__c</field>
@@ -301,7 +301,7 @@
         <field>IndividualApplication.nepa_applicant_contact__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- AI AUP compliance fields -->
+    
     <fieldPermissions>
         <editable>false</editable>
         <field>IndividualApplication.nepa_ce_pathway_recommendation__c</field>
@@ -347,13 +347,13 @@
         <field>IndividualApplication.nepa_clock_paused__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- P5 Permit Coordinator fields (read-only — written by NEPA_Permit_Coordinator Flow) -->
+    
     <fieldPermissions>
         <editable>false</editable>
         <field>IndividualApplication.nepa_co_permits_required__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- Phase 1 Risk Intelligence fields (read-only — written by Flows) -->
+    
     <fieldPermissions>
         <editable>false</editable>
         <field>IndividualApplication.nepa_comment_period_days__c</field>
@@ -394,7 +394,7 @@
         <field>IndividualApplication.nepa_days_in_current_stage__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- P2 Data Quality fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>IndividualApplication.nepa_decision_document_type__c</field>
@@ -460,7 +460,7 @@
         <field>IndividualApplication.nepa_fra_adjusted_deadline__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- Phase 5: FRA statutory clock fields — nepa_clock_pause_days__c and nepa_fra_adjusted_deadline__c are formulas (read-only) -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>IndividualApplication.nepa_fra_statutory_deadline__c</field>
@@ -471,7 +471,7 @@
         <field>IndividualApplication.nepa_joint_lead_agency__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- Priority 6: Workflow Orchestration fields (read-only — written by NEPA_Stage_Gate Flow) -->
+    
     <fieldPermissions>
         <editable>false</editable>
         <field>IndividualApplication.nepa_last_stage_transition__c</field>
@@ -502,19 +502,19 @@
         <field>IndividualApplication.nepa_parent_process__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- P6 Phase 1 Completion fields -->
+    
     <fieldPermissions>
         <editable>false</editable>
         <field>IndividualApplication.nepa_plaintiff_risk_flag__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- IndividualApplication Tier 3 wiring fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>IndividualApplication.nepa_polygon__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_portal_comment_intake_open__c is a formula checkbox — read-only by nature -->
+    
     <fieldPermissions>
         <editable>false</editable>
         <field>IndividualApplication.nepa_portal_comment_intake_open__c</field>
@@ -555,7 +555,7 @@
         <field>IndividualApplication.nepa_processing_status__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- AI Governance fields: OMB M-24-10 structured output and separation of AI recommendation from human determination -->
+    
     <fieldPermissions>
         <editable>false</editable>
         <field>IndividualApplication.nepa_projected_completion_date__c</field>
@@ -576,7 +576,7 @@
         <field>IndividualApplication.nepa_purpose_need__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- Priority 9: Administrative Record Completeness fields (read-only — written by NEPA_Administrative_Record_Checker Flow) -->
+    
     <fieldPermissions>
         <editable>false</editable>
         <field>IndividualApplication.nepa_record_completeness__c</field>
@@ -607,7 +607,7 @@
         <field>IndividualApplication.nepa_retrieved_timestamp__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_expedited_risk_penalty_applied__c is read-only: written by NEPA_Litigation_Risk_Scorer Flow -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>IndividualApplication.nepa_review_timeline_type__c</field>
@@ -658,7 +658,7 @@
         <field>IndividualApplication.nepa_screening_confidence__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- IndividualApplication SLA / intake / operational fields -->
+    
     <fieldPermissions>
         <editable>false</editable>
         <field>IndividualApplication.nepa_sla_due_date__c</field>
@@ -674,7 +674,7 @@
         <field>IndividualApplication.nepa_sla_warning_sent__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- P5 Litigation Guardrail fields -->
+    
     <fieldPermissions>
         <editable>false</editable>
         <field>IndividualApplication.nepa_small_sample_warning__c</field>
@@ -710,7 +710,7 @@
         <field>IndividualApplication.nepa_tiering_to_prior_eis__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- Priority 4: Timeline Risk fields (read-only — written by NEPA_Timeline_Risk_Assessor Flow; nepa_days_in_current_stage__c is formula) -->
+    
     <fieldPermissions>
         <editable>false</editable>
         <field>IndividualApplication.nepa_timeline_risk_tier__c</field>
@@ -736,7 +736,7 @@
         <field>NEPA_Flow_Error__c.nepa_error_context__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- Note: nepa_flow_api_name__c is required on NEPA_Flow_Error__c and cannot be listed in fieldPermissions -->
+    
     <fieldPermissions>
         <editable>false</editable>
         <field>NEPA_Flow_Error__c.nepa_error_message__c</field>
@@ -767,13 +767,13 @@
         <field>Program.nepa_adjacent_statutes__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- CE Screening field (Priority 2) -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>Program.nepa_applicant_naics__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- Phase 1 Risk Intelligence fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>Program.nepa_circuit__c</field>
@@ -824,7 +824,7 @@
         <field>Program.nepa_lead_agency__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- Program roll-up from litigation -->
+    
     <fieldPermissions>
         <editable>false</editable>
         <field>Program.nepa_litigation_count__c</field>
@@ -860,7 +860,7 @@
         <field>Program.nepa_polygon__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- P2 Data Quality fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>Program.nepa_primary_sector__c</field>
@@ -921,7 +921,7 @@
         <field>Program.nepa_start_date__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- PublicComplaint (Entity 4: Comments) fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>PublicComplaint.Method_of_Submission__c</field>
@@ -932,7 +932,7 @@
         <field>PublicComplaint.nepa_agency_response__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- AI Triage Audit Trail fields (OMB M-24-10) -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>PublicComplaint.nepa_ai_confidence_score__c</field>
@@ -1018,7 +1018,7 @@
         <field>PublicComplaint.nepa_litigation_threat_basis__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- Phase 5: Vermont Yankee litigation threat fields — flag and basis written by agent/flow; legal_review_status editable by counsel -->
+    
     <fieldPermissions>
         <editable>false</editable>
         <field>PublicComplaint.nepa_litigation_threat_flag__c</field>
@@ -1034,7 +1034,7 @@
         <field>PublicComplaint.nepa_parent_document__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- PublicComplaint PII redaction fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>PublicComplaint.nepa_pii_redacted__c</field>
@@ -1080,13 +1080,13 @@
         <field>PublicComplaint.nepa_retrieved_timestamp__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- Priority 1: AI-Assisted Comment Analysis fields -->
+    
     <fieldPermissions>
         <editable>false</editable>
         <field>PublicComplaint.nepa_sentiment__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- RegulatoryCode (CEQ Entity 9) custom fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>RegulatoryCode.nepa_compliance_requirements__c</field>
@@ -1122,7 +1122,7 @@
         <field>RegulatoryCode.nepa_text_content__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- ServiceResource NEPA discipline field -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>ServiceResource.nepa_discipline__c</field>
@@ -1138,7 +1138,7 @@
         <field>WorkOrder.nepa_discipline__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- WorkOrder NEPA fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>WorkOrder.nepa_process__c</field>
@@ -1179,13 +1179,13 @@
         <field>nepa_ar_export__c.nepa_requested_by__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_process__c, nepa_export_status__c, nepa_export_type__c are required fields — omitted per Salesforce FLS rules for required fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_ar_export__c.nepa_requested_date__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_comment_attribution__c — junction; nepa_modification__c and nepa_comment__c are required — omitted per Salesforce FLS rules for required fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_comment_attribution__c.nepa_attribution_note__c</field>
@@ -1211,7 +1211,7 @@
         <field>nepa_decision_element__c.nepa_expected_data__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_decision_element__c (MFR #3/#4) fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_decision_element__c.nepa_legal_reference__c</field>
@@ -1242,7 +1242,7 @@
         <field>nepa_decision_element__c.nepa_threshold_unit__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_decision_element__c process-level determination fields (added 2026-05-12) -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_decision_element__c.nepa_process__c</field>
@@ -1288,7 +1288,7 @@
         <field>nepa_decision_modification__c.nepa_attributed_cluster_count__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_decision_modification__c — nepa_process__c, nepa_modification_type__c, nepa_decision_element_affected__c, nepa_attribution_type__c are required — omitted per Salesforce FLS rules for required fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_decision_modification__c.nepa_attributed_cluster_id__c</field>
@@ -1309,8 +1309,8 @@
         <field>nepa_decision_modification__c.nepa_recorded_by__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_ce_library__c (CE Explorer searchable reference library) — read/write for coordinator, read for all -->
-    <!-- nepa_ce_explorer_id__c and nepa_agency_abbr__c omitted: required fields cannot have FLS grants -->
+    
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_ce_library__c.nepa_source_id__c</field>
@@ -1356,8 +1356,8 @@
         <field>nepa_ce_library__c.nepa_active__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_decision_payload__c (CEQ Decision Payload Entity) fields -->
-    <!-- nepa_decision_type__c omitted: required picklist fields cannot have FLS grants -->
+    
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_decision_payload__c.nepa_decision_date__c</field>
@@ -1458,13 +1458,13 @@
         <field>nepa_detected_protection_layer__c.nepa_is_hit__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_detected_protection_layer__c fields — nepa_program__c (MasterDetail) and nepa_layer_developer_name__c (Required) omitted: system-managed -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_detected_protection_layer__c.nepa_layer_label__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_upsert_key__c: formula field — read-only, set by system -->
+    
     <fieldPermissions>
         <editable>false</editable>
         <field>nepa_detected_protection_layer__c.nepa_upsert_key__c</field>
@@ -1510,13 +1510,13 @@
         <field>nepa_engagement__c.nepa_data_source_system__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_engagement__c core fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_engagement__c.nepa_document__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_process__c, nepa_engagement_type__c, nepa_start_datetime__c are required fields — omitted from fieldPermissions -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_engagement__c.nepa_end_datetime__c</field>
@@ -1557,7 +1557,7 @@
         <field>nepa_engagement__c.nepa_record_owner_agency__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_engagement__c engagement quality fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_engagement__c.nepa_registered_count__c</field>
@@ -1598,7 +1598,7 @@
         <field>nepa_gis_data_element__c.nepa_coordinate_system__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_gis_data_element__c provenance fields (CEQ Entity 7) -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_gis_data_element__c.nepa_data_record_version__c</field>
@@ -1624,7 +1624,7 @@
         <field>nepa_gis_data_element__c.nepa_format__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_gis_data_element__c (MFR #6) fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_gis_data_element__c.nepa_polygon__c</field>
@@ -1645,7 +1645,7 @@
         <field>nepa_gis_data_element__c.nepa_retrieved_timestamp__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_litigation__c (PermitTEC litigation cases) fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_litigation__c.nepa_case_title__c</field>
@@ -1721,7 +1721,7 @@
         <field>nepa_litigation__c.nepa_ruling_date__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_process_related_agencies__c interagency coordination fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_process_related_agencies__c.nepa_input_due_date__c</field>
@@ -1787,7 +1787,7 @@
         <field>nepa_process_team_member__c.nepa_retrieved_timestamp__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_process_team_member__c new Phase 2 fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_process_team_member__c.nepa_service_resource__c</field>
@@ -1803,13 +1803,13 @@
         <field>nepa_process_team_member__c.nepa_trigger_layer__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_process_team_member__c (CEQ Entity 8) — all fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_process_team_member__c.nepa_user__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_project_agency_relationship__c fields -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_project_agency_relationship__c.nepa_Project__c</field>
@@ -1825,7 +1825,7 @@
         <field>nepa_project_analogous_case__c.nepa_coordinator_notes__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <!-- nepa_project_analogous_case__c — junction; nepa_project__c is MasterDetail (required/system), nepa_litigation__c is Lookup -->
+    
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_project_analogous_case__c.nepa_litigation__c</field>
@@ -1842,6 +1842,190 @@
         <readable>true</readable>
     </fieldPermissions>
 
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_title__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_description__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_measure__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_process_model_id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_parent_decision_element__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_form_text__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_form_data__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_intersect__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_response_data__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_other__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_log__c.nepa_decision_element__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_log__c.nepa_project__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_log__c.nepa_parent_log__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_log__c.nepa_evaluation_data__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_log__c.nepa_response__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_log__c.nepa_result__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_log__c.nepa_result_bool__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_log__c.nepa_result_notes__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_log__c.nepa_result_data__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_log__c.nepa_result_source__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_log__c.nepa_data_annotation__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_log__c.nepa_evaluation_data_annotation__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_log__c.nepa_other__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_log__c.nepa_data_record_version__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_log__c.nepa_data_source_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_log__c.nepa_data_source_system__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_log__c.nepa_record_owner_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_log__c.nepa_retrieved_timestamp__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_process_model_id__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_other__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Program.nepa_other__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ContentVersion.nepa_other__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_other__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_engagement__c.nepa_other__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>ApplicationTimeline.nepa_other__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_payload__c.nepa_other__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>false</allowDelete>
@@ -1950,7 +2134,7 @@
         <object>nepa_decision_modification__c</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    <!-- nepa_decision_payload__c — CEQ Entity Decision Payload; MasterDetail child of IndividualApplication -->
+    
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>false</allowDelete>
@@ -1960,7 +2144,7 @@
         <object>nepa_decision_payload__c</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    <!-- nepa_ce_library__c — Read (all), Create/Edit (admin data load); no delete to protect reference integrity -->
+    
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>false</allowDelete>
@@ -1979,7 +2163,7 @@
         <object>nepa_comment_attribution__c</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    <!-- Phase 5: nepa_ar_export__c — PM creates export requests; batch writes results; Private sharing model -->
+    
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>false</allowDelete>
@@ -1989,7 +2173,7 @@
         <object>nepa_ar_export__c</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    <!-- nepa_project_analogous_case__c — Phase 2 AI analogous case linking; coordinators create/edit, read-only for others -->
+    
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>false</allowDelete>
@@ -1999,7 +2183,7 @@
         <object>nepa_project_analogous_case__c</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    <!-- CEQ Entity 1: Program (Project) — parent of nepa_project_analogous_case__c and all NEPA process records -->
+    
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>false</allowDelete>
@@ -2009,7 +2193,7 @@
         <object>Program</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    <!-- CEQ Entity 3: ContentVersion (Documents) -->
+    
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>false</allowDelete>
@@ -2019,7 +2203,7 @@
         <object>ContentVersion</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    <!-- CEQ Entity 4: PublicComplaint (Comments) -->
+    
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>false</allowDelete>
@@ -2029,7 +2213,7 @@
         <object>PublicComplaint</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    <!-- CEQ Entity 6: ApplicationTimeline (Case Events) -->
+    
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>false</allowDelete>
@@ -2039,7 +2223,7 @@
         <object>ApplicationTimeline</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    <!-- nepa_process_team_member__c object permissions (CEQ Entity 8) -->
+    
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>true</allowDelete>
@@ -2049,7 +2233,7 @@
         <object>nepa_process_team_member__c</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    <!-- nepa_detected_protection_layer__c (GIS-driven team assembly) -->
+    
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>true</allowDelete>
@@ -2059,7 +2243,7 @@
         <object>nepa_detected_protection_layer__c</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    <!-- WorkOrder (FSL) — created by NEPA_Work_Order_Generator flow -->
+    
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>false</allowDelete>
@@ -2069,7 +2253,7 @@
         <object>WorkOrder</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    <!-- ServiceResource (FSL) — read-only; system-managed by FSL -->
+    
     <objectPermissions>
         <allowCreate>false</allowCreate>
         <allowDelete>false</allowDelete>
@@ -2079,58 +2263,7 @@
         <object>ServiceResource</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    <!-- ── PIC API compliance fields: Phase 1 — decision_element additions ─── -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_element__c.nepa_title__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_element__c.nepa_description__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_element__c.nepa_measure__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_element__c.nepa_process_model_id__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_element__c.nepa_parent_decision_element__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_element__c.nepa_form_text__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_element__c.nepa_form_data__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_element__c.nepa_intersect__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_element__c.nepa_response_data__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_element__c.nepa_other__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- ── Phase 2 — nepa_decision_log__c object + FLS ──────────────────────── -->
+    
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>true</allowDelete>
@@ -2140,144 +2273,7 @@
         <object>nepa_decision_log__c</object>
         <viewAllRecords>false</viewAllRecords>
     </objectPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_log__c.nepa_process__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_log__c.nepa_decision_element__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_log__c.nepa_project__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_log__c.nepa_parent_log__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_log__c.nepa_evaluation_data__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_log__c.nepa_response__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_log__c.nepa_result__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_log__c.nepa_result_bool__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_log__c.nepa_result_notes__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_log__c.nepa_result_data__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_log__c.nepa_result_source__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_log__c.nepa_data_annotation__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_log__c.nepa_evaluation_data_annotation__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_log__c.nepa_other__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_log__c.nepa_data_record_version__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_log__c.nepa_data_source_agency__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_log__c.nepa_data_source_system__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_log__c.nepa_record_owner_agency__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_log__c.nepa_retrieved_timestamp__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- ── Phase 3 — process_instance process_model FK + other ──────────────── -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>IndividualApplication.nepa_process_model_id__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>IndividualApplication.nepa_other__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- ── Phase 4 — nepa_other__c on remaining 6 core objects ─────────────── -->
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Program.nepa_other__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ContentVersion.nepa_other__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>PublicComplaint.nepa_other__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_engagement__c.nepa_other__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>ApplicationTimeline.nepa_other__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>nepa_decision_payload__c.nepa_other__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <!-- NepaCeqExportService classAccess omitted — class not yet implemented -->
+    
     <classAccesses>
         <apexClass>NepaLayerDisciplineResolver</apexClass>
         <enabled>true</enabled>
