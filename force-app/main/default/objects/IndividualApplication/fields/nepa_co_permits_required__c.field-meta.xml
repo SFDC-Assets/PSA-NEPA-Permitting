@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_co_permits_required__c</fullName>
+        <description>Semicolon-delimited list of required co-permits and authorizations identified from the NEPA Permit Matrix for this project sector and type. Populated automatically by NEPA_Permit_Coordinator flow when nepa_review_type__c is set. Coordinator should verify and supplement as needed.</description>
+        <inlineHelpText>Required permits identified from sector/type matrix. Verify and supplement before advancing to scoping.</inlineHelpText>
+        <label>Co-Permits Required</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </CustomField>

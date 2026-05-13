@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_public_access__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Whether this document is publicly accessible. True = publicly visible; False = restricted to agency staff.</description>
+        <inlineHelpText>Check to make this document publicly visible on the portal.</inlineHelpText>
+        <label>Public Access</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </CustomField>

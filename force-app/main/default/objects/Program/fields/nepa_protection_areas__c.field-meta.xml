@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_protection_areas__c</fullName>
+        <description>Summary of federal protection areas and environmental constraints identified within proximity of the project location by the NEPA_GIS_Proximity_IP. Auto-populated when nepa_location_lat__c and nepa_location_lon__c are set. Each line lists the layer label and matching feature name(s). Read-only — updated by Integration Procedure.</description>
+        <inlineHelpText>Federal protection areas (wetlands, Superfund, critical habitat, EJ) identified near this project. Auto-populated by GIS proximity check.</inlineHelpText>
+        <label>Protection Areas</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <length>32768</length>
+        <visibleLines>8</visibleLines>
+    </CustomField>

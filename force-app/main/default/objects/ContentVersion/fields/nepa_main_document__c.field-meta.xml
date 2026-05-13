@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_main_document__c</fullName>
+        <description>Indicates whether this file is the primary/main document (true) or supporting material such as an appendix, attachment, or supplemental file (false). Aligns with NEPATEC2.0 main_document flag.</description>
+        <inlineHelpText>Check if this is the main document. Leave unchecked for appendices, attachments, and supplemental files.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Main Document</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </CustomField>

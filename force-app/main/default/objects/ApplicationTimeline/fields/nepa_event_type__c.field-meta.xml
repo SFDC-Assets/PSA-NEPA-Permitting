@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_event_type__c</fullName>
+        <description>NEPA event classification per CEQ standard Entity 6 Event Type property.</description>
+        <inlineHelpText>Type of NEPA milestone this case event represents.</inlineHelpText>
+        <label>NEPA Event Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>NOI</fullName>
+                    <default>false</default>
+                    <label>NOI</label>
+                </value>
+                <value>
+                    <fullName>Scoping Open</fullName>
+                    <default>false</default>
+                    <label>Scoping Open</label>
+                </value>
+                <value>
+                    <fullName>Scoping Complete</fullName>
+                    <default>false</default>
+                    <label>Scoping Complete</label>
+                </value>
+                <value>
+                    <fullName>Draft EIS Published</fullName>
+                    <default>false</default>
+                    <label>Draft EIS Published</label>
+                </value>
+                <value>
+                    <fullName>Comment Period Open</fullName>
+                    <default>false</default>
+                    <label>Comment Period Open</label>
+                </value>
+                <value>
+                    <fullName>Comment Period Closed</fullName>
+                    <default>false</default>
+                    <label>Comment Period Closed</label>
+                </value>
+                <value>
+                    <fullName>Final EIS Published</fullName>
+                    <default>false</default>
+                    <label>Final EIS Published</label>
+                </value>
+                <value>
+                    <fullName>ROD Issued</fullName>
+                    <default>false</default>
+                    <label>ROD Issued</label>
+                </value>
+                <value>
+                    <fullName>EA Initiated</fullName>
+                    <default>false</default>
+                    <label>EA Initiated</label>
+                </value>
+                <value>
+                    <fullName>FONSI Issued</fullName>
+                    <default>false</default>
+                    <label>FONSI Issued</label>
+                </value>
+                <value>
+                    <fullName>CE Determination</fullName>
+                    <default>false</default>
+                    <label>CE Determination</label>
+                </value>
+                <value>
+                    <fullName>Permit Issued</fullName>
+                    <default>false</default>
+                    <label>Permit Issued</label>
+                </value>
+                <value>
+                    <fullName>Process Paused</fullName>
+                    <default>false</default>
+                    <label>Process Paused</label>
+                </value>
+                <value>
+                    <fullName>Process Cancelled</fullName>
+                    <default>false</default>
+                    <label>Process Cancelled</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </CustomField>

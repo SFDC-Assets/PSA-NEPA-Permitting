@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_clock_pause_days__c</fullName>
+        <description>Formula: IF(nepa_clock_pause_start__c is not null AND nepa_clock_pause_end__c is not null, nepa_clock_pause_end__c - nepa_clock_pause_start__c, 0). Calculated number of suspended days to add back to the statutory deadline.</description>
+        <inlineHelpText>Total days the clock has been suspended. Added to statutory deadline to compute adjusted deadline.</inlineHelpText>
+        <formula>IF(
+  AND(NOT(ISBLANK(nepa_clock_pause_start__c)), NOT(ISBLANK(nepa_clock_pause_end__c))),
+  nepa_clock_pause_end__c - nepa_clock_pause_start__c,
+  0
+)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Clock Pause Days</label>
+        <precision>8</precision>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </CustomField>

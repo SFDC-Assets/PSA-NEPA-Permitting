@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_ar_index_number__c</fullName>
+        <description>Sequential index number assigned to this document within an Administrative Record export package. Court-ready AR packages require a numbered document index. Assigned by the NEPA_AR_Export process when nepa_ar_included__c is set to true.</description>
+        <inlineHelpText>AR package document index number. Assigned automatically when the AR export is compiled.</inlineHelpText>
+        <label>AR Index Number</label>
+        <precision>8</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </CustomField>

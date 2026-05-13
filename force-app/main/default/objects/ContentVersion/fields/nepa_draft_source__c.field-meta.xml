@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_draft_source__c</fullName>
+        <description>Provenance of this document draft. AI-Generated = fully machine-authored by NEPA_EIS_Section_Assembler; Human-Authored = entirely written by staff; AI-Assisted = AI-generated draft subsequently edited by a human. Required for OMB M-24-10 AI use disclosure. AI-Generated documents must be reviewed by a Subject Matter Expert before publication.</description>
+        <inlineHelpText>Who authored this document. AI-Generated drafts require SME review and sign-off before inclusion in the administrative record.</inlineHelpText>
+        <label>Draft Source</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>AI-Generated</fullName><default>false</default><label>AI-Generated</label></value>
+                <value><fullName>Human-Authored</fullName><default>false</default><label>Human-Authored</label></value>
+                <value><fullName>AI-Assisted</fullName><default>false</default><label>AI-Assisted</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </CustomField>

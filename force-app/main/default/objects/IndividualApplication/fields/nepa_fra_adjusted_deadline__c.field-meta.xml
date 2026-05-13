@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_fra_adjusted_deadline__c</fullName>
+        <description>Effective FRA deadline after adding clock suspension days. Formula: nepa_fra_statutory_deadline__c + nepa_clock_pause_days__c. This is the date used for overdue determination in NEPA_SLA_Escalation_Monitor when the clock has been paused. Equals nepa_fra_statutory_deadline__c when no pause has occurred.</description>
+        <inlineHelpText>Statutory deadline + suspended days. This is the operative compliance deadline when a pause has occurred.</inlineHelpText>
+        <formula>nepa_fra_statutory_deadline__c + nepa_clock_pause_days__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>FRA Adjusted Deadline</label>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </CustomField>

@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_small_sample_warning__c</fullName>
+        <description>True when the circuit matched in NEPA_Circuit_Risk_Weight__mdt has Low_Data_Confidence__c = true (fewer than 5 PermitTEC cases for that circuit). Set by NEPA_Litigation_Risk_Scorer. UI component shows warning: litigation risk estimate for this circuit is based on fewer than 5 historical cases — treat as directional only.</description>
+        <inlineHelpText>Circuit risk estimate based on fewer than 5 historical cases. Treat as directional guidance only — not a statistical prediction.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Circuit Small Sample Warning</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </CustomField>

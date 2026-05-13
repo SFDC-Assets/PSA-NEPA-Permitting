@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_organization__c</fullName>
+        <description>Optional organization affiliation of the commenter.</description>
+        <inlineHelpText>Organization or affiliation of the commenter (optional).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Organization</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </CustomField>

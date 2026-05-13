@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_extraordinary_circumstances__c</fullName>
+        <description>Set to true by NEPA_GIS_Proximity_IP when a proximity match triggers an extraordinary circumstances keyword (e.g., WETLANDS, FLOODPLAIN, critical habitat) as defined in NEPA_GIS_Layer__mdt. When true, the CE Screener will not recommend a CE pathway — the project requires at minimum an EA.</description>
+        <inlineHelpText>True if GIS proximity check found extraordinary circumstances that preclude a CE determination.</inlineHelpText>
+        <label>Extraordinary Circumstances (GIS)</label>
+        <required>false</required>
+        <defaultValue>false</defaultValue>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </CustomField>

@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_requires_human_review__c</fullName>
+        <description>Set to true by the EJ detector gate when the comment mentions tribal sovereignty, sacred sites, environmental justice communities, low-income impact, or civil rights. Bypasses AI categorization and routes to a human EJ/Tribal Liaison coordinator.</description>
+        <inlineHelpText>Flagged for mandatory human review. Set automatically when EJ/tribal/civil-rights triggers are detected.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Requires Human Review</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </CustomField>

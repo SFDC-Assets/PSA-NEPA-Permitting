@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_circuit__c</fullName>
+        <description>Federal circuit court jurisdiction for this project's geography. Drives geographic risk weight in litigation risk scoring (9th Circuit and D.C. Circuit carry highest rates in PermitTEC corpus).</description>
+        <inlineHelpText>Federal circuit (e.g., 9th, D.C., 4th) for litigation risk geography weighting.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Federal Circuit</label>
+        <length>50</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </CustomField>

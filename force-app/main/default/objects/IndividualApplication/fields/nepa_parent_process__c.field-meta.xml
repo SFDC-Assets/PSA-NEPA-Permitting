@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_parent_process__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Reference to Process ID of parent process (e.g., an earlier NEPA process that resulted in a programmatic analysis the agency is tiering from).</description>
+        <inlineHelpText>Parent process for nested or tiered NEPA reviews.</inlineHelpText>
+        <label>Parent Process</label>
+        <referenceTo>IndividualApplication</referenceTo>
+        <relationshipLabel>Child Processes</relationshipLabel>
+        <relationshipName>Child_Processes</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </CustomField>

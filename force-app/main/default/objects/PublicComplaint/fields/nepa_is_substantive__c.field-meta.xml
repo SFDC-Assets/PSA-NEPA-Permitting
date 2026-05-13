@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_is_substantive__c</fullName>
+        <description>Indicates whether this comment is substantive and requires an individual agency response. AI-assigned, human-validated.</description>
+        <inlineHelpText>Check if this comment is substantive and requires an individual response per NEPA requirements.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Is Substantive</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </CustomField>

@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_litigation_threat_flag__c</fullName>
+        <description>True when the AI Triage Agent has identified this comment as a potential "issue exhaustion" comment under the Vermont Yankee doctrine. These are technically specific, legally precise objections that may be setting up a future APA lawsuit. Flagged comments must be routed to agency legal counsel for a substantive written response in the Final EIS — failure to respond may result in vacatur. Set by NEPA_Comment_Triage Agent; human-reviewable via nepa_legal_review_status__c.</description>
+        <inlineHelpText>AI flagged this comment as a potential Vermont Yankee issue exhaustion comment. Route to legal counsel for required written response.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Litigation Threat Flag</label>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </CustomField>

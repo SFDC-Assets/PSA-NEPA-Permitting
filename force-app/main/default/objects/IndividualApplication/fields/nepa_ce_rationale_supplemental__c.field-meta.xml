@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_ce_rationale_supplemental__c</fullName>
+        <description>Free-text supplemental CE rationale. Companion to nepa_process_code__c (the structured CE code picklist). Addresses the ce_category free-text chaos identified in NEPATEC feature engineering — structured code goes in nepa_process_code__c; narrative explanation and non-standard citations go here.</description>
+        <inlineHelpText>Supplemental CE rationale, non-standard citations, or coordinator notes. Use nepa_process_code__c for the structured CE code.</inlineHelpText>
+        <label>CE Rationale Supplemental</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </CustomField>

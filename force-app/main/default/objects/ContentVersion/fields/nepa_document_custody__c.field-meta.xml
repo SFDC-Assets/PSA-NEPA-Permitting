@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_document_custody__c</fullName>
+        <description>Chain-of-custody status for FRA sponsor-prepared documents. Agency Original: no sponsor involvement. Sponsor Draft: uploaded by the project sponsor portal user, not yet reviewed. Agency Under Review: assigned to an agency reviewer. Agency Modified: agency made substantive edits. Agency Adopted: agency independently evaluated and formally adopted the document per FRA requirements. History tracking enabled — the transition from Sponsor Draft to Agency Adopted is the key APA defensibility record.</description>
+        <inlineHelpText>Custody status of this document. Sponsor Draft documents must reach Agency Adopted before use in the official administrative record.</inlineHelpText>
+        <label>Document Custody Status</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Agency Original</fullName><default>true</default><label>Agency Original</label></value>
+                <value><fullName>Sponsor Draft</fullName><default>false</default><label>Sponsor Draft</label></value>
+                <value><fullName>Agency Under Review</fullName><default>false</default><label>Agency Under Review</label></value>
+                <value><fullName>Agency Modified</fullName><default>false</default><label>Agency Modified</label></value>
+                <value><fullName>Agency Adopted</fullName><default>false</default><label>Agency Adopted</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </CustomField>

@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_stage_gate_processed__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Idempotency guard for NEPA_Stage_Gate_Orchestrator. Set to true by the orchestrator after it successfully advances nepa_process_stage__c. Reset to false by a before-save flow when nepa_status__c on the parent ApplicationTimeline record changes away from Completed, or when a new ApplicationTimeline event is opened. Prevents concurrent ApplicationTimeline completions for the same process from advancing the stage twice in a race condition.</description>
+        <inlineHelpText>Internal idempotency flag — managed by Stage Gate Orchestrator. Do not edit manually.</inlineHelpText>
+        <label>Stage Gate Processed</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </CustomField>

@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_location_text__c</fullName>
+        <description>Text description of location. Where location is more complex than a point or is multi-state/regional, use a text response (WKT or address).</description>
+        <inlineHelpText>Text description of location (WKT, address, or region description).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Location Text</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </CustomField>

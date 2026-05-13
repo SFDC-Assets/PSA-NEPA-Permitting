@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_related_case_event__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Reference to the Case Event (ApplicationTimeline) that this document is associated with (e.g., NOI publication event).</description>
+        <inlineHelpText>Case event milestone that produced or is associated with this document.</inlineHelpText>
+        <label>Related Case Event</label>
+        <referenceTo>ApplicationTimeline</referenceTo>
+        <relationshipLabel>Documents</relationshipLabel>
+        <relationshipName>NEPA_Documents</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </CustomField>

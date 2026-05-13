@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_waiver_invoked__c</fullName>
+        <description>True when the agency is asserting a statutory NEPA waiver (e.g., IIRIRA Section 102(c), EPAct Section 390). Triggers VR-003 validation rule: blocks save without an attached OGC legal sufficiency memo and valid funding authority citation per 42 USC 4332(2)(C).</description>
+        <inlineHelpText>Check only when a statutory NEPA waiver applies. Requires OGC legal sufficiency memo before project can advance.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>NEPA Waiver Invoked</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <type>Checkbox</type>
+    </CustomField>

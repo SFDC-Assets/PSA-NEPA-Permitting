@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_connected_actions_identified__c</fullName>
+        <description>Set by coordinator when connected or similar actions under 40 CFR 1508.25(a) have been identified and scoped. Required by the Stage Gate VR-001 extension to advance EA/EIS to Draft EIS Publication. Addresses DG-002 (connected/cumulative actions not systematically scoped).</description>
+        <inlineHelpText>Connected and similar actions (40 CFR 1508.25) have been identified and scoped. Required before Draft EIS publication for EA/EIS processes.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Connected Actions Identified</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <type>Checkbox</type>
+    </CustomField>

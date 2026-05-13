@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_contributing_agencies__c</fullName>
+        <description>Agencies that contributed to preparation or review of this document.</description>
+        <inlineHelpText>Agencies that contributed to preparation or review of this document.</inlineHelpText>
+        <label>Contributing Agencies</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </CustomField>

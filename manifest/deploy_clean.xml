@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>nepa_permitting</fullName>
-    <description>Open source package used with Agentforce for Public Sector for a NEPA compliant data model. Implements CEQ NEPA and Permitting Data and Technology Standard v1.2 (May 30, 2025, updated August 18, 2025).</description>
     <types>
-        <!-- IndividualApplication (Entity 2: Process) -->
+        
         <members>IndividualApplication.nepa_risk_score__c</members>
         <members>IndividualApplication.nepa_risk_tier__c</members>
         <members>IndividualApplication.nepa_risk_score_factors__c</members>
@@ -36,31 +34,31 @@
         <members>IndividualApplication.nepa_data_source_system__c</members>
         <members>IndividualApplication.nepa_record_owner_agency__c</members>
         <members>IndividualApplication.nepa_retrieved_timestamp__c</members>
-        <!-- Priority 6: Workflow Orchestration fields -->
+        
         <members>IndividualApplication.nepa_last_stage_transition__c</members>
         <members>IndividualApplication.nepa_target_completion_date__c</members>
-        <!-- Priority 4: Timeline Risk fields -->
+        
         <members>IndividualApplication.nepa_timeline_risk_tier__c</members>
         <members>IndividualApplication.nepa_estimated_completion_date__c</members>
         <members>IndividualApplication.nepa_days_in_current_stage__c</members>
-        <!-- Priority 9: Administrative Record Completeness fields -->
+        
         <members>IndividualApplication.nepa_record_completeness__c</members>
         <members>IndividualApplication.nepa_missing_documents__c</members>
         <members>IndividualApplication.nepa_record_completeness_updated__c</members>
-        <!-- SLA tracking fields -->
+        
         <members>IndividualApplication.nepa_sla_due_date__c</members>
         <members>IndividualApplication.nepa_sla_warning_sent__c</members>
         <members>IndividualApplication.nepa_sla_overdue__c</members>
-        <!-- CE Screening fields (Priority 2) -->
+        
         <members>IndividualApplication.nepa_action_type__c</members>
         <members>IndividualApplication.nepa_disturbance_acres__c</members>
         <members>IndividualApplication.nepa_regulatory_citation__c</members>
         <members>IndividualApplication.nepa_screening_confidence__c</members>
         <members>IndividualApplication.nepa_extraordinary_circumstances__c</members>
         <members>IndividualApplication.nepa_classification_basis__c</members>
-        <!-- Tier 3 CEQ wiring fields -->
+        
         <members>IndividualApplication.nepa_polygon__c</members>
-        <!-- Program (Entity 1: Project) -->
+        
         <members>Program.nepa_circuit__c</members>
         <members>Program.nepa_adjacent_statutes__c</members>
         <members>Program.nepa_litigation_count__c</members>
@@ -85,9 +83,9 @@
         <members>Program.nepa_data_source_system__c</members>
         <members>Program.nepa_record_owner_agency__c</members>
         <members>Program.nepa_retrieved_timestamp__c</members>
-        <!-- CE Screening fields (Priority 2) -->
+        
         <members>Program.nepa_applicant_naics__c</members>
-        <!-- ContentVersion (Entity 3: Documents) -->
+        
         <members>ContentVersion.nepa_document_revision__c</members>
         <members>ContentVersion.nepa_document_type__c</members>
         <members>ContentVersion.nepa_prepared_by__c</members>
@@ -111,7 +109,7 @@
         <members>ContentVersion.nepa_data_source_system__c</members>
         <members>ContentVersion.nepa_record_owner_agency__c</members>
         <members>ContentVersion.nepa_retrieved_timestamp__c</members>
-        <!-- PublicComplaint (Entity 4: Comments) -->
+        
         <members>PublicComplaint.nepa_parent_document__c</members>
         <members>PublicComplaint.Method_of_Submission__c</members>
         <members>PublicComplaint.nepa_agency_response__c</members>
@@ -126,18 +124,18 @@
         <members>PublicComplaint.nepa_data_source_system__c</members>
         <members>PublicComplaint.nepa_record_owner_agency__c</members>
         <members>PublicComplaint.nepa_retrieved_timestamp__c</members>
-        <!-- Priority 1: AI-Assisted Comment Analysis fields -->
+        
         <members>PublicComplaint.nepa_sentiment__c</members>
         <members>PublicComplaint.nepa_is_substantive__c</members>
         <members>PublicComplaint.nepa_cluster_id__c</members>
         <members>PublicComplaint.nepa_response_status__c</members>
-        <!-- AI Triage Audit Trail fields (OMB M-24-10) -->
+        
         <members>PublicComplaint.nepa_ai_confidence_score__c</members>
         <members>PublicComplaint.nepa_ai_triage_rationale__c</members>
         <members>PublicComplaint.nepa_requires_human_review__c</members>
         <members>PublicComplaint.nepa_human_override__c</members>
         <members>PublicComplaint.nepa_ai_triage_timestamp__c</members>
-        <!-- nepa_engagement__c (Entity 5: Public Engagement Events) -->
+        
         <members>nepa_engagement__c.nepa_process__c</members>
         <members>nepa_engagement__c.nepa_engagement_type__c</members>
         <members>nepa_engagement__c.nepa_start_datetime__c</members>
@@ -152,7 +150,7 @@
         <members>nepa_engagement__c.nepa_data_source_system__c</members>
         <members>nepa_engagement__c.nepa_record_owner_agency__c</members>
         <members>nepa_engagement__c.nepa_retrieved_timestamp__c</members>
-        <!-- ApplicationTimeline (Entity 6: Case Events) custom fields -->
+        
         <members>ApplicationTimeline.nepa_event_type__c</members>
         <members>ApplicationTimeline.nepa_event_description__c</members>
         <members>ApplicationTimeline.nepa_source__c</members>
@@ -172,12 +170,12 @@
         <members>ApplicationTimeline.nepa_start_date__c</members>
         <members>ApplicationTimeline.nepa_end_date__c</members>
         <members>ApplicationTimeline.nepa_related_process__c</members>
-        <!-- PublicComplaint portal submission fields -->
+        
         <members>PublicComplaint.nepa_comment_body__c</members>
         <members>PublicComplaint.nepa_email__c</members>
-        <!-- Mandate 1: Comment period gating -->
+        
         <members>PublicComplaint.nepa_related_process__c</members>
-        <!-- Phase 5: FRA statutory clock fields (42 U.S.C. 4336a) -->
+        
         <members>IndividualApplication.nepa_fra_statutory_deadline__c</members>
         <members>IndividualApplication.nepa_clock_paused__c</members>
         <members>IndividualApplication.nepa_clock_pause_start__c</members>
@@ -185,11 +183,11 @@
         <members>IndividualApplication.nepa_clock_pause_days__c</members>
         <members>IndividualApplication.nepa_fra_adjusted_deadline__c</members>
         <members>IndividualApplication.nepa_clock_pause_reason__c</members>
-        <!-- Phase 5: Vermont Yankee issue exhaustion litigation threat fields -->
+        
         <members>PublicComplaint.nepa_litigation_threat_flag__c</members>
         <members>PublicComplaint.nepa_litigation_threat_basis__c</members>
         <members>PublicComplaint.nepa_legal_review_status__c</members>
-        <!-- Phase 5: FRA page limit + sponsor chain-of-custody + AR export fields on ContentVersion -->
+        
         <members>ContentVersion.nepa_is_appendix__c</members>
         <members>ContentVersion.nepa_page_count__c</members>
         <members>ContentVersion.nepa_fra_page_limit__c</members>
@@ -199,7 +197,7 @@
         <members>ContentVersion.nepa_agency_adopted_date__c</members>
         <members>ContentVersion.nepa_ar_included__c</members>
         <members>ContentVersion.nepa_ar_index_number__c</members>
-        <!-- Phase 5: nepa_ar_export__c fields -->
+        
         <members>nepa_ar_export__c.nepa_process__c</members>
         <members>nepa_ar_export__c.nepa_export_status__c</members>
         <members>nepa_ar_export__c.nepa_export_type__c</members>
@@ -210,7 +208,7 @@
         <members>nepa_ar_export__c.nepa_export_download_url__c</members>
         <members>nepa_ar_export__c.nepa_export_error__c</members>
         <members>nepa_ar_export__c.nepa_requested_by__c</members>
-        <!-- Mandate 2: CMT temporal versioning — Effective_Start_Date__c + Sunset_Date__c on all 7 CMTs -->
+        
         <members>NEPA_CE_Screening_Rule__mdt.Effective_Start_Date__c</members>
         <members>NEPA_CE_Screening_Rule__mdt.Sunset_Date__c</members>
         <members>NEPA_CE_Code__mdt.Effective_Start_Date__c</members>
@@ -225,15 +223,15 @@
         <members>NEPA_Statute_Risk_Weight__mdt.Sunset_Date__c</members>
         <members>NEPA_Required_Document__mdt.Effective_Start_Date__c</members>
         <members>NEPA_Required_Document__mdt.Sunset_Date__c</members>
-        <!-- Mandate 3: APA expedited penalty fields -->
+        
         <members>IndividualApplication.nepa_review_timeline_type__c</members>
         <members>IndividualApplication.nepa_expedited_risk_penalty_applied__c</members>
-        <!-- Mandate 1: Comment period formula gating (read-only formula) -->
+        
         <members>IndividualApplication.nepa_portal_comment_intake_open__c</members>
-        <!-- Mandate 4: AI EIS draft fields -->
+        
         <members>ContentVersion.nepa_section_type__c</members>
         <members>ContentVersion.nepa_draft_source__c</members>
-        <!-- Custom metadata type fields (schema) -->
+        
         <members>NEPA_Agency_Risk_Rate__mdt.Agency_Name__c</members>
         <members>NEPA_Agency_Risk_Rate__mdt.Agency_Abbreviation__c</members>
         <members>NEPA_Agency_Risk_Rate__mdt.Case_Count__c</members>
@@ -282,7 +280,7 @@
         <members>NEPA_Statute_Risk_Weight__mdt.Case_Count__c</members>
         <members>NEPA_Statute_Risk_Weight__mdt.Risk_Points__c</members>
         <members>NEPA_Statute_Risk_Weight__mdt.Active__c</members>
-        <!-- NEPA_Process_Model__mdt fields -->
+        
         <members>NEPA_Process_Model__mdt.Review_Type__c</members>
         <members>NEPA_Process_Model__mdt.Statutory_Authority__c</members>
         <members>NEPA_Process_Model__mdt.Max_Timeline_Days__c</members>
@@ -293,12 +291,12 @@
         <members>NEPA_Process_Model__mdt.Required_Review_Stages__c</members>
         <members>NEPA_Process_Model__mdt.CEQ_Data_Standard_Entity__c</members>
         <members>NEPA_Process_Model__mdt.Active__c</members>
-        <!-- NEPA_SLA_Config__mdt fields -->
+        
         <members>NEPA_SLA_Config__mdt.Review_Type__c</members>
         <members>NEPA_SLA_Config__mdt.Total_Days__c</members>
         <members>NEPA_SLA_Config__mdt.Warning_Days_Before_Due__c</members>
         <members>NEPA_SLA_Config__mdt.Active__c</members>
-        <!-- NEPA_Required_Document__mdt fields -->
+        
         <members>NEPA_Required_Document__mdt.Review_Type__c</members>
         <members>NEPA_Required_Document__mdt.Document_Type__c</members>
         <members>NEPA_Required_Document__mdt.Is_Required__c</members>
@@ -306,12 +304,12 @@
         <members>NEPA_Required_Document__mdt.Display_Order__c</members>
         <members>NEPA_Required_Document__mdt.Active__c</members>
         <members>NEPA_Required_Document__mdt.Gate_Event_Type__c</members>
-        <!-- NEPA_Flow_Error__c fields -->
+        
         <members>NEPA_Flow_Error__c.nepa_flow_api_name__c</members>
         <members>NEPA_Flow_Error__c.nepa_error_message__c</members>
         <members>NEPA_Flow_Error__c.nepa_record_id__c</members>
         <members>NEPA_Flow_Error__c.nepa_occurred_at__c</members>
-        <!-- nepa_litigation__c (PermitTEC litigation cases) custom fields -->
+        
         <members>nepa_litigation__c.nepa_case_title__c</members>
         <members>nepa_litigation__c.nepa_citation__c</members>
         <members>nepa_litigation__c.nepa_court__c</members>
@@ -327,7 +325,7 @@
         <members>nepa_litigation__c.nepa_data_source_system__c</members>
         <members>nepa_litigation__c.nepa_data_record_version__c</members>
         <members>nepa_litigation__c.nepa_extraction_quality__c</members>
-        <!-- RegulatoryCode (CEQ Entity 9) custom fields -->
+        
         <members>RegulatoryCode.nepa_compliance_requirements__c</members>
         <members>RegulatoryCode.nepa_text_content__c</members>
         <members>RegulatoryCode.nepa_data_record_version__c</members>
@@ -335,7 +333,7 @@
         <members>RegulatoryCode.nepa_data_source_system__c</members>
         <members>RegulatoryCode.nepa_record_owner_agency__c</members>
         <members>RegulatoryCode.nepa_retrieved_timestamp__c</members>
-        <!-- nepa_ce_library__c (CE Explorer searchable reference library) -->
+        
         <members>nepa_ce_library__c.nepa_ce_explorer_id__c</members>
         <members>nepa_ce_library__c.nepa_source_id__c</members>
         <members>nepa_ce_library__c.nepa_agency_abbr__c</members>
@@ -347,7 +345,7 @@
         <members>nepa_ce_library__c.nepa_extraordinary_circumstances__c</members>
         <members>nepa_ce_library__c.nepa_dataset_version__c</members>
         <members>nepa_ce_library__c.nepa_active__c</members>
-        <!-- nepa_decision_payload__c -->
+        
         <members>nepa_decision_payload__c.nepa_decision_type__c</members>
         <members>nepa_decision_payload__c.nepa_decision_date__c</members>
         <members>nepa_decision_payload__c.nepa_selected_alternative__c</members>
@@ -364,7 +362,7 @@
         <members>nepa_decision_payload__c.nepa_data_source_system__c</members>
         <members>nepa_decision_payload__c.nepa_record_owner_agency__c</members>
         <members>nepa_decision_payload__c.nepa_retrieved_timestamp__c</members>
-        <!-- PIC API compliance: Phase 1 — decision_element additions -->
+        
         <members>nepa_decision_element__c.nepa_title__c</members>
         <members>nepa_decision_element__c.nepa_description__c</members>
         <members>nepa_decision_element__c.nepa_measure__c</members>
@@ -375,7 +373,7 @@
         <members>nepa_decision_element__c.nepa_intersect__c</members>
         <members>nepa_decision_element__c.nepa_response_data__c</members>
         <members>nepa_decision_element__c.nepa_other__c</members>
-        <!-- PIC API compliance: Phase 2 — nepa_decision_log__c fields -->
+        
         <members>nepa_decision_log__c.nepa_process__c</members>
         <members>nepa_decision_log__c.nepa_decision_element__c</members>
         <members>nepa_decision_log__c.nepa_project__c</members>
@@ -395,23 +393,23 @@
         <members>nepa_decision_log__c.nepa_data_source_system__c</members>
         <members>nepa_decision_log__c.nepa_record_owner_agency__c</members>
         <members>nepa_decision_log__c.nepa_retrieved_timestamp__c</members>
-        <!-- PIC API compliance: Phase 3 — process_instance FK + other -->
+        
         <members>IndividualApplication.nepa_process_model_id__c</members>
         <members>IndividualApplication.nepa_other__c</members>
-        <!-- PIC API compliance: Phase 4 — nepa_other__c on all core objects -->
+        
         <members>Program.nepa_other__c</members>
         <members>ContentVersion.nepa_other__c</members>
         <members>PublicComplaint.nepa_other__c</members>
         <members>nepa_engagement__c.nepa_other__c</members>
         <members>ApplicationTimeline.nepa_other__c</members>
         <members>nepa_decision_payload__c.nepa_other__c</members>
-        <!-- PIC API compliance: Phase 5 — NEPA_Process_Model__mdt additions -->
+        
         <members>NEPA_Process_Model__mdt.Description__c</members>
         <members>NEPA_Process_Model__mdt.Agency__c</members>
         <members>NEPA_Process_Model__mdt.Legal_Structure_Citation__c</members>
         <members>NEPA_Process_Model__mdt.Parent_Model_Developer_Name__c</members>
         <members>NEPA_Process_Model__mdt.Screening_Description__c</members>
-        <!-- nepa_decision_element__c -->
+        
         <members>nepa_decision_element__c.nepa_legal_reference__c</members>
         <members>nepa_decision_element__c.nepa_category__c</members>
         <members>nepa_decision_element__c.nepa_review_type__c</members>
@@ -430,7 +428,7 @@
         <members>nepa_decision_element__c.nepa_responsible_official__c</members>
         <members>nepa_decision_element__c.nepa_document_id__c</members>
         <members>nepa_decision_element__c.nepa_ec_review_complete__c</members>
-        <!-- nepa_gis_data__c -->
+        
         <members>nepa_gis_data__c.nepa_address__c</members>
         <members>nepa_gis_data__c.nepa_centroid_lat__c</members>
         <members>nepa_gis_data__c.nepa_centroid_lon__c</members>
@@ -454,7 +452,7 @@
         <members>nepa_gis_data__c.nepa_parent_project__c</members>
         <members>nepa_gis_data__c.nepa_record_owner_agency__c</members>
         <members>nepa_gis_data__c.nepa_retrieved_timestamp__c</members>
-        <!-- nepa_gis_data_element__c -->
+        
         <members>nepa_gis_data_element__c.nepa_polygon__c</members>
         <members>nepa_gis_data_element__c.nepa_format__c</members>
         <members>nepa_gis_data_element__c.nepa_access_method__c</members>
@@ -463,13 +461,13 @@
         <members>nepa_gis_data_element__c.nepa_purpose__c</members>
         <members>nepa_gis_data_element__c.nepa_database_reference__c</members>
         <members>nepa_gis_data_element__c.nepa_access_information__c</members>
-        <!-- Junction objects -->
+        
         <members>nepa_process_related_agencies__c.Agency__c</members>
         <members>nepa_process_related_agencies__c.Processes__c</members>
         <members>nepa_process_related_agencies__c.nepa_role__c</members>
         <members>nepa_project_agency_relationship__c.Agency__c</members>
         <members>nepa_project_agency_relationship__c.nepa_Project__c</members>
-        <!-- Comment responsiveness: decision modification attribution -->
+        
         <members>nepa_decision_modification__c.nepa_process__c</members>
         <members>nepa_decision_modification__c.nepa_modification_type__c</members>
         <members>nepa_decision_modification__c.nepa_decision_element_affected__c</members>
@@ -483,7 +481,7 @@
         <members>nepa_comment_attribution__c.nepa_modification__c</members>
         <members>nepa_comment_attribution__c.nepa_comment__c</members>
         <members>nepa_comment_attribution__c.nepa_attribution_note__c</members>
-        <!-- Engagement quality fields (Mandate 3) -->
+        
         <members>nepa_engagement__c.nepa_registered_count__c</members>
         <members>nepa_engagement__c.nepa_comments_received_count__c</members>
         <members>nepa_engagement__c.nepa_advance_notice_days__c</members>
@@ -496,7 +494,7 @@
         <name>CustomField</name>
     </types>
     <types>
-        <!-- __c custom objects -->
+        
         <members>nepa_decision_modification__c</members>
         <members>nepa_comment_attribution__c</members>
         <members>nepa_ar_export__c</members>
@@ -511,7 +509,7 @@
         <members>nepa_ce_library__c</members>
         <members>nepa_gis_data__c</members>
         <members>nepa_gis_data_element__c</members>
-        <!-- __mdt custom metadata type schemas -->
+        
         <members>NEPA_Agency_Risk_Rate__mdt</members>
         <members>NEPA_Circuit_Risk_Weight__mdt</members>
         <members>NEPA_Challenge_Prediction_Rule__mdt</members>
@@ -521,31 +519,31 @@
         <members>NEPA_Statute_Risk_Weight__mdt</members>
         <members>NEPA_SLA_Config__mdt</members>
         <members>NEPA_Process_Model__mdt</members>
-        <!-- Platform events -->
+        
         <members>NEPA_Error_Event__e</members>
         <name>CustomObject</name>
     </types>
     <types>
-        <!-- NEPA_Agency_Risk_Rate seed records -->
+        
         <members>NEPA_Agency_Risk_Rate.Army_Corps</members>
         <members>NEPA_Agency_Risk_Rate.BLM</members>
         <members>NEPA_Agency_Risk_Rate.Default</members>
         <members>NEPA_Agency_Risk_Rate.FERC</members>
         <members>NEPA_Agency_Risk_Rate.Forest_Service</members>
         <members>NEPA_Agency_Risk_Rate.FWS</members>
-        <!-- NEPA_Circuit_Risk_Weight seed records -->
+        
         <members>NEPA_Circuit_Risk_Weight.Circuit_10th</members>
         <members>NEPA_Circuit_Risk_Weight.Circuit_4th</members>
         <members>NEPA_Circuit_Risk_Weight.Circuit_9th</members>
         <members>NEPA_Circuit_Risk_Weight.DC</members>
         <members>NEPA_Circuit_Risk_Weight.Default</members>
-        <!-- NEPA_Challenge_Prediction_Rule seed records -->
+        
         <members>NEPA_Challenge_Prediction_Rule.Adjacent_Statute_ESA</members>
         <members>NEPA_Challenge_Prediction_Rule.EIS_Inadequacy</members>
         <members>NEPA_Challenge_Prediction_Rule.Failure_to_Prepare</members>
         <members>NEPA_Challenge_Prediction_Rule.Failure_to_Supplement</members>
         <members>NEPA_Challenge_Prediction_Rule.Improper_CE_Reliance</members>
-        <!-- NEPA_CE_Screening_Rule seed records -->
+        
         <members>NEPA_CE_Screening_Rule.NAICS_112</members>
         <members>NEPA_CE_Screening_Rule.NAICS_1131</members>
         <members>NEPA_CE_Screening_Rule.NAICS_1153</members>
@@ -608,7 +606,7 @@
         <members>NEPA_CE_Screening_Rule.T2_DOE_TransmissionUpgrade</members>
         <members>NEPA_CE_Screening_Rule.T2_GIS_Disqualify</members>
         <members>NEPA_CE_Screening_Rule.T2_HighAcreage</members>
-        <!-- NEPA_CE_Code seed records -->
+        
         <members>NEPA_CE_Code.CEC_36_CFR_220_6</members>
         <members>NEPA_CE_Code.CEC_43_CFR_46_210</members>
         <members>NEPA_CE_Code.CEC_516_DM_11</members>
@@ -646,17 +644,17 @@
         <members>NEPA_CE_Code.CEC_Energy_Policy_Act_2005_Sec_390_b_4</members>
         <members>NEPA_CE_Code.CEC_Energy_Policy_Act_2005_Sec_390_Cat</members>
         <members>NEPA_CE_Code.CEC_FLPMA_402_h</members>
-        <!-- NEPA_Process_Model seed records -->
+        
         <members>NEPA_Process_Model.EIS</members>
         <members>NEPA_Process_Model.EA</members>
         <members>NEPA_Process_Model.CE</members>
         <members>NEPA_Process_Model.Other_Authorization</members>
-        <!-- NEPA_SLA_Config seed records -->
+        
         <members>NEPA_SLA_Config.EIS</members>
         <members>NEPA_SLA_Config.EA</members>
         <members>NEPA_SLA_Config.CE</members>
         <members>NEPA_SLA_Config.Other_Authorization</members>
-        <!-- NEPA_Required_Document seed records -->
+        
         <members>NEPA_Required_Document.CE_CE_Determination</members>
         <members>NEPA_Required_Document.CE_Memorandum_to_File</members>
         <members>NEPA_Required_Document.EA_Comment_Response</members>
@@ -667,53 +665,50 @@
         <members>NEPA_Required_Document.EIS_Final_EIS</members>
         <members>NEPA_Required_Document.EIS_NOI</members>
         <members>NEPA_Required_Document.EIS_ROD</members>
-        <!-- NEPA_Statute_Risk_Weight seed records -->
+        
         <members>NEPA_Statute_Risk_Weight.ESA</members>
         <members>NEPA_Statute_Risk_Weight.CWA</members>
         <members>NEPA_Statute_Risk_Weight.NHPA</members>
         <name>CustomMetadata</name>
     </types>
     <types>
-        <!-- Phase 1 Risk Intelligence Flows -->
+        
         <members>NEPA_Litigation_Risk_Scorer</members>
         <members>NEPA_Challenge_Predictor</members>
         <members>NEPA_Defensibility_Gap_Checker</members>
         <members>NEPA_Defensibility_Trigger_ContentVersion</members>
         <members>NEPA_Defensibility_Trigger_Engagement</members>
-        <!-- Priority 2: CE Screening + Routing Flows + Guided Intake Screen Flow -->
+        
         <members>NEPA_CE_Screener</members>
         <members>NEPA_CE_Determination_Router</members>
         <members>NEPA_CE_Intake</members>
-        <!-- Priority 4: Timeline Risk Assessment -->
+        
         <members>NEPA_Timeline_Risk_Assessor</members>
-        <!-- Priority 6: Workflow Orchestration -->
+        
         <members>NEPA_Stage_Gate</members>
         <members>NEPA_Stage_Gate_Orchestrator</members>
         <members>NEPA_Stage_Gate_Doc_Check</members>
-        <!-- Priority 9: Administrative Record Completeness -->
+        
         <members>NEPA_Administrative_Record_Checker</members>
         <members>NEPA_AdminRecord_AutoCreate</members>
         <members>NEPA_Record_Completeness_Scorer</members>
-        <!-- SLA Flows -->
+        
         <members>NEPA_SLA_Due_Date_Setter</members>
         <members>NEPA_SLA_Escalation_Monitor</members>
-        <!-- Error logging -->
+        
         <members>NEPA_Error_Logger</members>
         <members>NEPA_Error_Event_Handler</members>
         <members>NEPA_FlowError_CountIncrementer</members>
-        <!-- Comment Triage Agent save flow -->
+        
         <members>NEPA_Comment_Triage_Save</members>
-        <!-- Phase 5: FRA page limit before-save flow -->
+        
         <members>NEPA_FRA_Page_Limit_Setter</members>
-        <!-- Mandate 1: Automated comment period kill-switch -->
+        
         <members>NEPA_Comment_Period_Gate</members>
-        <!-- Mandate 4: Real-time AI EIS section assembly -->
-        <members>NEPA_EIS_Section_Draft_Trigger</members>
-        <members>NEPA_EIS_Section_Assembler</members>
         <name>Flow</name>
     </types>
     <types>
-        <!-- Industries Action Plan Templates -->
+        
         <members>NEPA_EIS_Process_Milestones</members>
         <members>NEPA_EA_Process_Milestones</members>
         <members>NEPA_CE_Process_Milestones</members>
@@ -721,7 +716,6 @@
     </types>
     <types>
         <members>IndividualApplication_Record_Page</members>
-        <members>Program_Record_Page</members>
         <members>Public_Comment_Record_Page</members>
         <members>NEPA_CE_Library_Record_Page</members>
         <members>NEPA_Decision_Payload_Record_Page</members>
@@ -747,12 +741,16 @@
         <name>Layout</name>
     </types>
     <types>
-        <!-- Mandate 1: Belt-and-suspenders validation rule -->
         <members>PublicComplaint.NEPA_Comment_Period_Closed</members>
         <name>ValidationRule</name>
     </types>
     <types>
-        <members>CustomLabels</members>
+        <members>NEPA_EventType_CE_Determination</members>
+        <members>NEPA_EventType_Process_Paused</members>
+        <members>NEPA_Status_Pending</members>
+        <members>NEPA_Status_In_Progress</members>
+        <members>NEPA_Source_CE_Screener</members>
+        <members>NEPA_Source_Timeline_Risk_Assessor</members>
         <name>CustomLabel</name>
     </types>
     <types>
@@ -760,46 +758,8 @@
         <name>PermissionSet</name>
     </types>
     <types>
-        <members>NewEvent</members>
-        <members>NewTask</members>
-        <name>QuickAction</name>
-    </types>
-    <types>
         <members>ContentVersion.nepa_permit_document</members>
         <name>RecordType</name>
-    </types>
-    <types>
-        <!-- CEQ Export: DataRaptor Extracts (one per entity) -->
-        <members>DR_Extract_NEPA_Project</members>
-        <members>DR_Extract_NEPA_Process</members>
-        <members>DR_Extract_NEPA_Document</members>
-        <members>DR_Extract_NEPA_Comment</members>
-        <members>DR_Extract_NEPA_EngagementEvent</members>
-        <members>DR_Extract_NEPA_CaseEvent</members>
-        <members>DR_Extract_NEPA_GISData</members>
-        <members>DR_Extract_NEPA_GISData_ByProcess</members>
-        <members>DR_Extract_NEPA_TeamMember</members>
-        <members>DR_Extract_NEPA_LegalStructure</members>
-        <!-- CE Intake: DataRaptor Load and CE Library lookup -->
-        <members>DR_Load_NEPA_Process</members>
-        <members>DR_Extract_CE_LibraryByAgency</members>
-        <name>OmniDataTransform</name>
-    </types>
-    <types>
-        <members>NEPA/CEQExport</members>
-        <members>NEPA/CEScreeningIP</members>
-        <members>NEPA/CESaveIP</members>
-        <name>OmniIntegrationProcedure</name>
-    </types>
-    <types>
-        <members>NEPA/CEIntake</members>
-        <!-- CE Intake OmniScript -->
-        <members>NEPA/CE_Intake</members>
-        <name>OmniScript</name>
-    </types>
-    <types>
-        <members>NEPA_CEQExport_API</members>
-        <name>ConnectedApp</name>
     </types>
     <types>
         <members>NepaProjectController</members>
@@ -824,21 +784,11 @@
         <name>ApexClass</name>
     </types>
     <types>
-        <!-- CE Screening BRE -->
-        <members>NEPA_CE_Screener</members>
-        <name>ExpressionSetDefinition</name>
-    </types>
-    <types>
-        <!-- Comment Triage Agent prompt template -->
+        
         <members>NEPA_Comment_Triage_Analysis</members>
-        <!-- Mandate 4: AI EIS section draft prompt -->
+        
         <members>NEPA_EIS_Section_Draft</members>
         <name>GenAiPromptTemplate</name>
-    </types>
-    <types>
-        <!-- Comment Triage Agentforce Agent -->
-        <members>NEPA_Comment_Triage</members>
-        <name>BotVersion</name>
     </types>
     <version>62.0</version>
 </Package>

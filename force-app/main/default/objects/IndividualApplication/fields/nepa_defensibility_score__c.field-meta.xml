@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_defensibility_score__c</fullName>
+        <description>Percentage (0-100) of expected administrative record elements present for this process type. Recalculated when documents, engagements, or timeline events change.</description>
+        <inlineHelpText>Record completeness score: percentage of required documents and milestones present.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Defensibility Score</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>1</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </CustomField>

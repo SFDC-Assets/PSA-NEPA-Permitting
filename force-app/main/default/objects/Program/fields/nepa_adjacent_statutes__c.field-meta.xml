@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_adjacent_statutes__c</fullName>
+        <description>Adjacent statutes implicated by this project (e.g., ESA; CWA; NHPA; APA). Multiple values separated by semicolons. Each statute adds compound claim risk per PermitTEC analysis.</description>
+        <inlineHelpText>Adjacent statutes (ESA; CWA; NHPA; APA). Each one increases litigation compound claim risk.</inlineHelpText>
+        <label>Adjacent Statutes</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>2</visibleLines>
+    </CustomField>

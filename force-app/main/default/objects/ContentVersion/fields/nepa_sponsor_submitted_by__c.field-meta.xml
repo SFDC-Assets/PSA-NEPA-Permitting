@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_sponsor_submitted_by__c</fullName>
+        <description>Portal username or display name of the project sponsor who uploaded this document. Auto-populated by the portal submission flow for Sponsor Draft documents. Part of the FRA chain-of-custody record that proves the agency received and independently reviewed sponsor-prepared materials.</description>
+        <inlineHelpText>Project sponsor portal user who submitted this draft. Auto-populated for sponsor-submitted documents.</inlineHelpText>
+        <label>Sponsor Submitted By</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </CustomField>

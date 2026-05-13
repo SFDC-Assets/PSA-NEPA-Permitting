@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_primary_sector__c</fullName>
+        <description>Single primary sector for this project. Enforces the NEPATEC feature engineering recommendation: replace the free-text nepa_project_sector__c array with a controlled single-select primary + optional multi-value secondary. Sector is the 7th-ranked CE/EA/EIS discriminator (lift 0.45). Energy projects must not have Land Development - Urban as primary.</description>
+        <inlineHelpText>Primary project sector. Select the single most applicable sector — add secondary sectors to Project Sector (text field).</inlineHelpText>
+        <label>Primary Sector</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Agriculture and Natural Resource Management</fullName><default>false</default><label>Agriculture and Natural Resource Management</label></value>
+                <value><fullName>Energy Production and Management</fullName><default>false</default><label>Energy Production and Management</label></value>
+                <value><fullName>Transportation and Infrastructure</fullName><default>false</default><label>Transportation and Infrastructure</label></value>
+                <value><fullName>Land Development and Urban Planning</fullName><default>false</default><label>Land Development and Urban Planning</label></value>
+                <value><fullName>Water and Waste Management</fullName><default>false</default><label>Water and Waste Management</label></value>
+                <value><fullName>Environmental Policy and Regulation</fullName><default>false</default><label>Environmental Policy and Regulation</label></value>
+                <value><fullName>Miscellaneous and Emerging Technologies</fullName><default>false</default><label>Miscellaneous and Emerging Technologies</label></value>
+                <value><fullName>Materials and Manufacturing</fullName><default>false</default><label>Materials and Manufacturing</label></value>
+                <value><fullName>Military, Defense, and Emergency Response</fullName><default>false</default><label>Military, Defense, and Emergency Response</label></value>
+                <value><fullName>Technology and Data Management</fullName><default>false</default><label>Technology and Data Management</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </CustomField>

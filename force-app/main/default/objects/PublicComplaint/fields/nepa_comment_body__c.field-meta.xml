@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_comment_body__c</fullName>
+        <description>Full text of the public comment submitted via the portal or other channel.</description>
+        <inlineHelpText>Full text of this public comment.</inlineHelpText>
+        <label>Comment Body</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>8</visibleLines>
+    </CustomField>

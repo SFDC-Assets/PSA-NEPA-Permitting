@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>NEPA_Comment_Period_Closed</fullName>
+        <active>true</active>
+        <description>Blocks new comments after the comment period end date. ISNEW() guard allows flows to update existing records post-deadline. Fail-open: missing lookup or end date allows insert.</description>
+        <errorConditionFormula>AND(
+  ISNEW(),
+  NOT(ISBLANK(nepa_related_process__c)),
+  NOT(ISBLANK(nepa_related_process__r.nepa_public_comment_period_end_date__c)),
+  nepa_related_process__r.nepa_public_comment_period_end_date__c &lt; NOW()
+)</errorConditionFormula>
+        <errorMessage>The public comment period for this NEPA process has closed. Comments submitted after the deadline cannot be accepted.</errorMessage>
+    </ValidationRule>

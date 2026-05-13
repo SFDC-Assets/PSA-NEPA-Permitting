@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_risk_score_is_ai__c</fullName>
+        <description>Always true. Permanently indicates that nepa_risk_score__c is computed by NEPA_Litigation_Risk_Scorer using PermitTEC v0.1 historical data. Required by Salesforce AI AUP: AI-generated scores must be disclosed as such. Field is formula-driven and cannot be overwritten.</description>
+        <inlineHelpText>This risk score is AI-computed from PermitTEC v0.1 historical litigation data. Treat as analytical guidance — not a legal determination.</inlineHelpText>
+        <externalId>false</externalId>
+        <formula>TRUE</formula>
+        <label>Risk Score is AI-Generated</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </CustomField>

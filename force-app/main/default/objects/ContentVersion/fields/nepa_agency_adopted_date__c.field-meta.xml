@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_agency_adopted_date__c</fullName>
+        <description>Date the agency formally adopted this sponsor-prepared document into the official administrative record. The period between document upload and this date quantifies the agency's independent review time — a critical metric for demonstrating supervisory control in APA litigation. Required when nepa_document_custody__c = Agency Adopted.</description>
+        <inlineHelpText>Date the agency formally adopted this sponsor-prepared document. Captures independent review duration for APA defensibility.</inlineHelpText>
+        <label>Agency Adopted Date</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </CustomField>

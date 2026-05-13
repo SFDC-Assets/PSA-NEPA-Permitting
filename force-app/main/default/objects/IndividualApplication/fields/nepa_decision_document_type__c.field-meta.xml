@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_decision_document_type__c</fullName>
+        <description>Type of decision document for this NEPA process. Separate from nepa_review_type__c (CE/EA/EIS) to fix doc_type conflation identified in feature engineering: ROD and FONSI must not co-label a CE process. Validation rule blocks FONSI/ROD when review type is CE.</description>
+        <inlineHelpText>Decision document type (ROD, FONSI, NOA, DR). Separate from review type (CE/EA/EIS).</inlineHelpText>
+        <label>Decision Document Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>ROD</fullName><default>false</default><label>Record of Decision (ROD)</label></value>
+                <value><fullName>FONSI</fullName><default>false</default><label>Finding of No Significant Impact (FONSI)</label></value>
+                <value><fullName>NOA</fullName><default>false</default><label>Notice of Availability (NOA)</label></value>
+                <value><fullName>DR</fullName><default>false</default><label>Decision Record (DR)</label></value>
+                <value><fullName>CE Determination</fullName><default>false</default><label>CE Determination</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </CustomField>

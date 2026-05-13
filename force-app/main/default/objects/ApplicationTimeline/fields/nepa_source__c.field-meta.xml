@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_source__c</fullName>
+        <description>Identifies the system or process that created this event (e.g., CE Screener, Timeline Risk Assessor), or a URL reference for manually created events.</description>
+        <inlineHelpText>System name or URL identifying the source of this case event.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Source</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </CustomField>

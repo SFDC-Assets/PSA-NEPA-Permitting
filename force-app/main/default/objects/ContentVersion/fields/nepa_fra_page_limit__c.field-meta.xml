@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_fra_page_limit__c</fullName>
+        <description>FRA statutory page limit for this document type: EA = 75, Draft EIS = 150, Final EIS = 300. Set by a before-save flow based on nepa_document_type__c. Null for document types with no statutory limit (CE documents, appendices, supporting analysis). Stored here to enable report formula comparisons without a CMT lookup.</description>
+        <inlineHelpText>FRA statutory page limit: EA = 75, Draft EIS = 150, Final EIS = 300. Null for exempt types.</inlineHelpText>
+        <label>FRA Page Limit</label>
+        <precision>6</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </CustomField>

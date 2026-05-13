@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_clock_pause_end__c</fullName>
+        <description>Date the statutory clock suspension ended. When populated, the NEPA_SLA_Due_Date_Setter recalculates nepa_fra_adjusted_deadline__c by adding (pause_end - pause_start) days to nepa_fra_statutory_deadline__c.</description>
+        <inlineHelpText>Date the clock suspension ended. Triggers automatic adjusted deadline recalculation.</inlineHelpText>
+        <label>Clock Pause End</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </CustomField>

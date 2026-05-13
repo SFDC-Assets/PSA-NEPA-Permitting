@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_tribal_plaintiff_flag__c</fullName>
+        <description>Set to true by NEPA_Plaintiff_Intelligence Flow when the matched plaintiff profile has Is_Tribal_Nation__c = true. Tribal Nation challengers achieve 87.5% win rate in NEPA litigation (PermitTEC Stage 10) — the highest of any plaintiff category. Triggers an additional +10 risk score bonus beyond the standard plaintiff bonus.</description>
+        <inlineHelpText>A federally recognized Tribal Nation has submitted a comment on this process. Tribal plaintiffs have the highest win rate in federal NEPA litigation. Immediate legal review and consultation documentation audit required.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Tribal Plaintiff Flag</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <type>Checkbox</type>
+    </CustomField>

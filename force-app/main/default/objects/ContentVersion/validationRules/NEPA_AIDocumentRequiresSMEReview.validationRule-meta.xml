@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>NEPA_AIDocumentRequiresSMEReview</fullName>
+        <active>true</active>
+        <description>OMB M-24-10: AI-generated documents require a named reviewer and review date before Approved/Published/Complete status. Blocks unreviewed AI content from the administrative record.</description>
+        <errorConditionFormula>AND(
+  ISPICKVAL(nepa_draft_source__c, "AI-Generated"),
+  OR(
+    ISPICKVAL(nepa_status__c, "Approved"),
+    ISPICKVAL(nepa_status__c, "Published"),
+    ISPICKVAL(nepa_status__c, "Complete")
+  ),
+  OR(
+    ISBLANK(nepa_reviewer__c),
+    ISBLANK(nepa_reviewed_date__c)
+  )
+)</errorConditionFormula>
+        <errorMessage>AI-generated documents require a named reviewer and review date before approval. Set Reviewer and Reviewed Date fields before changing status to Approved, Published, or Complete.</errorMessage>
+    </ValidationRule>

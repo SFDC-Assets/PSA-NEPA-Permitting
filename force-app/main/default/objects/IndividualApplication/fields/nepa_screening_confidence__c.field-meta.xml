@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_screening_confidence__c</fullName>
+        <description>CE Screener confidence in the recommended review type classification. High = dominant pattern with ≥80% corpus support. Low = ambiguous or extraordinary circumstances present — requires SME review.</description>
+        <inlineHelpText>Screener confidence: High / Medium-High / Medium / Low. Low requires SME review before routing.</inlineHelpText>
+        <label>Screening Confidence</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>High</fullName><default>false</default><label>High</label></value>
+                <value><fullName>Medium-High</fullName><default>false</default><label>Medium-High</label></value>
+                <value><fullName>Medium</fullName><default>false</default><label>Medium</label></value>
+                <value><fullName>Low</fullName><default>false</default><label>Low</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </CustomField>

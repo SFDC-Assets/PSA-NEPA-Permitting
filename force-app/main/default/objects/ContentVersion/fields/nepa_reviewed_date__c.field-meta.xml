@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_reviewed_date__c</fullName>
+        <description>Date the document was reviewed and approved for publication or inclusion in the administrative record. Set by the reviewer when they approve the document.</description>
+        <inlineHelpText>Date this document was reviewed and approved.</inlineHelpText>
+        <label>Reviewed Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </CustomField>

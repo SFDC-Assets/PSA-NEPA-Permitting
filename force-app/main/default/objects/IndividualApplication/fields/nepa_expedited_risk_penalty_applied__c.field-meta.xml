@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_expedited_risk_penalty_applied__c</fullName>
+        <description>Set to true by NEPA_Litigation_Risk_Scorer when nepa_review_timeline_type__c is Expedited/Emergency AND nepa_record_completeness__c is below 100. Indicates that the 1.5x APA arbitrary-and-capricious risk multiplier was applied. Audit flag for legal review.</description>
+        <inlineHelpText>APA risk penalty applied: expedited procedure + incomplete administrative record. Review completeness score and fill gaps immediately.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Expedited Risk Penalty Applied</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </CustomField>

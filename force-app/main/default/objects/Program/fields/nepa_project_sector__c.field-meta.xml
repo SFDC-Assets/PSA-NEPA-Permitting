@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_project_sector__c</fullName>
+        <description>High-level project sector(s). Multiple values may apply; separate with semicolons (e.g., Energy Production and Management; Transportation and Infrastructure).</description>
+        <inlineHelpText>High-level project sector(s). Separate multiple values with semicolons.</inlineHelpText>
+        <label>Project Sector</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </CustomField>

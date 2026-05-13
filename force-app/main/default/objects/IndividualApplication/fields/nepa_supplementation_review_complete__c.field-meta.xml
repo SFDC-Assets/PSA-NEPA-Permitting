@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_supplementation_review_complete__c</fullName>
+        <description>True when a responsible official has documented a written supplementation determination per 40 CFR 1502.9(c). Required by VR-001 (new info post-ROD) and VR-006 (tiering to EIS older than 5 years) to unblock stage gate. Part of the administrative record.</description>
+        <inlineHelpText>Responsible official has documented a supplementation review determination. Required before tiering from a prior EIS older than 5 years.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Supplementation Review Complete</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <type>Checkbox</type>
+    </CustomField>

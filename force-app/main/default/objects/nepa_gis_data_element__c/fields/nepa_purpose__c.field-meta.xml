@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_purpose__c</fullName>
+        <description>Purpose classification for this GIS dataset per CEQ standard Purpose property.</description>
+        <inlineHelpText>How this dataset is used in the NEPA analysis.</inlineHelpText>
+        <label>Purpose</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Project Boundary</fullName>
+                    <default>false</default>
+                    <label>Project Boundary</label>
+                </value>
+                <value>
+                    <fullName>Analysis Area</fullName>
+                    <default>false</default>
+                    <label>Analysis Area</label>
+                </value>
+                <value>
+                    <fullName>Base Map</fullName>
+                    <default>false</default>
+                    <label>Base Map</label>
+                </value>
+                <value>
+                    <fullName>Resource Layer</fullName>
+                    <default>false</default>
+                    <label>Resource Layer</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </CustomField>

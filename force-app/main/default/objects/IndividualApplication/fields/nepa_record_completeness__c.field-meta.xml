@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_record_completeness__c</fullName>
+        <description>Percentage (0-100) of required documents present at Approved or Published status for this process's review type. Recalculated by NEPA_Administrative_Record_Checker Flow whenever a ContentVersion record is created or updated.</description>
+        <inlineHelpText>Administrative record completeness: percentage of required documents present. 100% required before final stage gates.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Record Completeness</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>1</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </CustomField>

@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_revision_number__c</fullName>
+        <description>Numeric revision sequence number of the document.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Numeric revision sequence number.</inlineHelpText>
+        <label>Revision Number</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </CustomField>

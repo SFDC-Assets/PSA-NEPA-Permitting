@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_clock_pause_start__c</fullName>
+        <description>Date the statutory clock was suspended. Together with nepa_clock_pause_end__c, used to calculate total suspended days and adjust the effective deadline. Null if clock is not paused.</description>
+        <inlineHelpText>Date the statutory clock suspension began. Required when nepa_clock_paused__c is true.</inlineHelpText>
+        <label>Clock Pause Start</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+    </CustomField>

@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_gis_proximity_complete__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Set to true by NEPA_GIS_Proximity_IP when the async GIS proximity check has completed and proximity results have been written to nepa_protection_areas__c, nepa_gis_last_checked__c, and nepa_extraordinary_circumstances__c. NEPA_CE_Screener reads this flag before evaluating extraordinary circumstances — if false, the screener defers the GIS stage and routes to manual review rather than assuming no proximity. Reset to false when nepa_location_lat__c or nepa_location_lon__c changes.</description>
+        <inlineHelpText>Checked automatically when the GIS proximity analysis is complete. Do not edit manually — managed by the GIS Proximity flow.</inlineHelpText>
+        <label>GIS Proximity Check Complete</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </CustomField>

@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_location__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Geographic area, including relationship to GIS Object, optionally also stored as a simple property here.</description>
+        <inlineHelpText>Geographic area, including relationship to GIS Object.</inlineHelpText>
+        <label>Location</label>
+        <referenceTo>Location</referenceTo>
+        <relationshipLabel>Projects</relationshipLabel>
+        <relationshipName>Projects</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </CustomField>

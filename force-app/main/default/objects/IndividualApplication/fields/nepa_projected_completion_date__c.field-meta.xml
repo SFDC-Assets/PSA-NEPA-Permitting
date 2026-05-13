@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_projected_completion_date__c</fullName>
+        <description>AI-projected completion date calculated by NEPA_Timeline_Risk_Assessor. Based on days-in-current-stage extrapolated against the review-type statutory baseline. Labeled as a projection to distinguish it from nepa_target_completion_date__c (statutory deadline set at intake). Do not use as an authoritative deadline — for coordinator situational awareness only. Required by OMB M-24-10: AI-derived dates must be clearly distinguished from official statutory dates.</description>
+        <inlineHelpText>AI projection only — not a statutory deadline. Set by Timeline Risk Assessor based on current pace.</inlineHelpText>
+        <label>Projected Completion Date (AI)</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </CustomField>

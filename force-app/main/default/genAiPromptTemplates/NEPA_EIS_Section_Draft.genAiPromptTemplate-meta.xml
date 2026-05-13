@@ -2,7 +2,7 @@
 <GenAiPromptTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
     <developerName>NEPA_EIS_Section_Draft</developerName>
     <masterLabel>NEPA EIS Section Draft</masterLabel>
-    <description>Drafts a single EIS section from project description, GIS context, and scoping inputs. Called by NEPA_EIS_Section_Assembler autolaunched flow when an ApplicationTimeline event (NOI or Scoping Complete) triggers real-time section assembly. OMB M-24-10 compliant: AI-Generated flag set on all ContentVersion output records. Mandate 4: enables 28-day EIS completion under federal energy emergency procedures.</description>
+    <description>Drafts a single EIS section from project description, GIS context, and scoping inputs. Mandate 4: enables 28-day EIS completion. OMB M-24-10 compliant: AI-Generated flag set on ContentVersion output.</description>
     <type>einstein_gpt__flex</type>
     <templateVersions>
         <content>You are a NEPA (National Environmental Policy Act) document specialist drafting a section of an Environmental Impact Statement for a federal permitting process.
@@ -29,6 +29,13 @@ Instructions:
 
 Return only the section body text with subsection headers. No preamble, no closing remarks.</content>
         <inputs>
+            <apiName>SectionType</apiName>
+            <definition>primitive://String</definition>
+            <masterLabel>Section Type</masterLabel>
+            <referenceName>Input:SectionType</referenceName>
+            <required>true</required>
+        </inputs>
+        <inputs>
             <apiName>ProjectDescription</apiName>
             <definition>primitive://String</definition>
             <masterLabel>Project Description</masterLabel>
@@ -51,6 +58,5 @@ Return only the section body text with subsection headers. No preamble, no closi
         </inputs>
         <primaryModel>sfdc_ai__DefaultAnthropic</primaryModel>
         <status>Draft</status>
-        <templateVersionNumber>1</templateVersionNumber>
     </templateVersions>
 </GenAiPromptTemplate>

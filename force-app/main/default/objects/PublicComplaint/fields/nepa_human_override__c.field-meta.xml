@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_human_override__c</fullName>
+        <description>Set to true by a human reviewer when they override the AI's substantive/sentiment classification. Enables systematic measurement of AI bias patterns by zip code, commenter type, or project.</description>
+        <inlineHelpText>Check if a human reviewer has overridden the AI classification.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Human Override Applied</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </CustomField>

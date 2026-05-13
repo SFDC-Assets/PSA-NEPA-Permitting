@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_esa_consultation_status__c</fullName>
+        <description>Status of ESA Section 7 consultation for this process. VR-004 (implemented as a Stage Gate extension) blocks FONSI/ROD stage advancement until this field is set to a terminal status. Required for EA/EIS processes where the project area intersects listed species range.</description>
+        <inlineHelpText>ESA Section 7 consultation status. Must reach a terminal status before FONSI or ROD can be issued.</inlineHelpText>
+        <label>ESA Section 7 Consultation Status</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Not Required</fullName><default>false</default><label>Not Required (documented)</label></value>
+                <value><fullName>No Effect</fullName><default>false</default><label>No Effect (documented)</label></value>
+                <value><fullName>May Affect - Initiated</fullName><default>false</default><label>May Affect — Consultation Initiated</label></value>
+                <value><fullName>Concurrence Received</fullName><default>false</default><label>Concurrence Received (informal)</label></value>
+                <value><fullName>Biological Opinion Issued</fullName><default>false</default><label>Biological Opinion Issued (formal)</label></value>
+                <value><fullName>Reinitiated</fullName><default>false</default><label>Reinitiated</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </CustomField>

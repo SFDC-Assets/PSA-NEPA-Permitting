@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_document_type__c</fullName>
+        <description>Type of document (e.g., NOI, Draft EIS, Final EIS, ROD).</description>
+        <inlineHelpText>Type of NEPA document.</inlineHelpText>
+        <label>Document Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>NOI</fullName>
+                    <default>false</default>
+                    <label>NOI</label>
+                </value>
+                <value>
+                    <fullName>Draft EIS</fullName>
+                    <default>false</default>
+                    <label>Draft EIS</label>
+                </value>
+                <value>
+                    <fullName>Supplemental EIS</fullName>
+                    <default>false</default>
+                    <label>Supplemental EIS</label>
+                </value>
+                <value>
+                    <fullName>Programmatic EIS</fullName>
+                    <default>false</default>
+                    <label>Programmatic EIS</label>
+                </value>
+                <value>
+                    <fullName>Final EIS</fullName>
+                    <default>false</default>
+                    <label>Final EIS</label>
+                </value>
+                <value>
+                    <fullName>ROD</fullName>
+                    <default>false</default>
+                    <label>ROD</label>
+                </value>
+                <value>
+                    <fullName>Environmental Assessment</fullName>
+                    <default>false</default>
+                    <label>Environmental Assessment</label>
+                </value>
+                <value>
+                    <fullName>FONSI</fullName>
+                    <default>false</default>
+                    <label>FONSI</label>
+                </value>
+                <value>
+                    <fullName>CE Determination</fullName>
+                    <default>false</default>
+                    <label>CE Determination</label>
+                </value>
+                <value>
+                    <fullName>Memorandum to File</fullName>
+                    <default>false</default>
+                    <label>Memorandum to File</label>
+                </value>
+                <value>
+                    <fullName>Permit</fullName>
+                    <default>false</default>
+                    <label>Permit</label>
+                </value>
+                <value>
+                    <fullName>Comment Response</fullName>
+                    <default>false</default>
+                    <label>Comment Response</label>
+                </value>
+                <value>
+                    <fullName>Alternatives Analysis</fullName>
+                    <default>false</default>
+                    <label>Alternatives Analysis</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </CustomField>

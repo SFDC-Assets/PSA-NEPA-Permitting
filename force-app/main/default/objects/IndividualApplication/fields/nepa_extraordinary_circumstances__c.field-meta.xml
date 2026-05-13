@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_extraordinary_circumstances__c</fullName>
+        <description>Semicolon-delimited list of GIS-flagged extraordinary circumstances present at the project site (e.g., ESA Critical Habitat; Wetlands; Tribal Lands; Floodplain). Any value disqualifies CE and downgrades to EA per CEQ regulations.</description>
+        <inlineHelpText>GIS-flagged extraordinary circumstances (e.g., ESA Critical Habitat; Wetlands). Any flag disqualifies CE.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Extraordinary Circumstances</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </CustomField>

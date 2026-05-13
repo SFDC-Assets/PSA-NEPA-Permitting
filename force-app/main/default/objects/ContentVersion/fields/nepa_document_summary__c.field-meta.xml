@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_document_summary__c</fullName>
+        <description>Machine-readable summary of the document structure, including table of contents and short descriptions of sections. Include at minimum: project, process, high-level case events, and associated GIS data.</description>
+        <inlineHelpText>Document table of contents and section summaries (structured data per CEQ Document Structures guidance).</inlineHelpText>
+        <label>Document Summary / TOC</label>
+        <length>131072</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </CustomField>

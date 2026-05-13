@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_scoping_overrun_flag__c</fullName>
+        <description>Set to true by NEPA_Timeline_Risk_Assessor when the time spent in the Scoping stage exceeds the agency-specific Scoping_Cap_Months__c from NEPA_Agency_Scoping_Baseline__mdt. Elevates timeline risk tier and triggers early warning.</description>
+        <inlineHelpText>Scoping phase has exceeded the agency-specific baseline duration. Review scoping scope and resource allocation.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Scoping Overrun Flag</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <type>Checkbox</type>
+    </CustomField>

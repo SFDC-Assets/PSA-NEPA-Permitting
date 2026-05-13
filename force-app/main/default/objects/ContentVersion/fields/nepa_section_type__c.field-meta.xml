@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_section_type__c</fullName>
+        <description>Single-select EIS section type for AI-generated drafts. Distinct from nepa_section_tags__c (multi-select taxonomy) — this identifies the primary section being drafted by NEPA_EIS_Section_Assembler. Required for OMB M-24-10 AI disclosure and 40 CFR 1502 section traceability.</description>
+        <inlineHelpText>EIS section this document represents. Set automatically by AI draft generation; editable by SME reviewer.</inlineHelpText>
+        <label>EIS Section Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Purpose and Need</fullName><default>false</default><label>Purpose and Need</label></value>
+                <value><fullName>Affected Environment</fullName><default>false</default><label>Affected Environment</label></value>
+                <value><fullName>Alternatives</fullName><default>false</default><label>Alternatives</label></value>
+                <value><fullName>Environmental Consequences</fullName><default>false</default><label>Environmental Consequences</label></value>
+                <value><fullName>Mitigation Measures</fullName><default>false</default><label>Mitigation Measures</label></value>
+                <value><fullName>Cumulative Impacts</fullName><default>false</default><label>Cumulative Impacts</label></value>
+                <value><fullName>Index</fullName><default>false</default><label>Index</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </CustomField>

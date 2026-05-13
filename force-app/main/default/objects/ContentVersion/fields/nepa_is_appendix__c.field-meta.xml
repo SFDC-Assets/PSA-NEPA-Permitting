@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_is_appendix__c</fullName>
+        <description>True when this file is an appendix, attachment, or citation supplement rather than core NEPA document text. FRA page limits (EA = 75, Draft EIS = 150, Final EIS = 300) explicitly exclude appendices. This flag is the basis for the FRA Page Limit Compliance Report: core text files count against the limit; appendices do not.</description>
+        <inlineHelpText>Appendices and citation supplements are excluded from FRA page limits. Check this for any file that is not core document text.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Is Appendix / Supplement</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </CustomField>

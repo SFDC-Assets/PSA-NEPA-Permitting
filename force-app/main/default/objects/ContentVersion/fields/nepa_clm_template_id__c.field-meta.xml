@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_clm_template_id__c</fullName>
+        <description>ID of the CLM template used to generate this document. Enables traceability from document back to the template version and clause library. Populated by Agentforce document generation action.</description>
+        <inlineHelpText>CLM template ID used to generate this document (populated automatically for AI-generated documents).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>CLM Template ID</label>
+        <length>36</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </CustomField>

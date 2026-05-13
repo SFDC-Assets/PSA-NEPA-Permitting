@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_public_comment_period_end_date__c</fullName>
+        <description>End date and time of public comment period.</description>
+        <inlineHelpText>End date and time of public comment period.</inlineHelpText>
+        <label>Public Comment Period End Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </CustomField>

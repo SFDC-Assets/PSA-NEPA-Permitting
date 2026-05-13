@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_process__c</fullName>
+        <description>Direct Lookup to the IndividualApplication (NEPA process) this document belongs to. Set on upload or by the NEPA_AdminRecord_AutoCreate flow. Provides a stable, queryable parent reference that survives ContentDocumentLink traversal limitations in OmniScript Integration Procedures (Phase 2). Enables SOQL FROM ContentVersion WHERE nepa_process__c = :processId without going through ContentDocumentLink.</description>
+        <inlineHelpText>The NEPA permitting process this document belongs to.</inlineHelpText>
+        <label>NEPA Process</label>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <referenceTo>IndividualApplication</referenceTo>
+        <relationshipLabel>NEPA Documents</relationshipLabel>
+        <relationshipName>NEPA_Documents</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </CustomField>

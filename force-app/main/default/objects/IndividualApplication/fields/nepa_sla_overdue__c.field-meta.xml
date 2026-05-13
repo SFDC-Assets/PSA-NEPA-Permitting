@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_sla_overdue__c</fullName>
+        <description>Set to true by NEPA_SLA_Escalation_Monitor when TODAY &gt; nepa_sla_due_date__c and the process is not yet completed or cancelled. Drives list views, dashboard tiles, and secondary escalation notifications.</description>
+        <inlineHelpText>Process has passed its SLA due date without reaching a terminal status.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>SLA Overdue</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </CustomField>

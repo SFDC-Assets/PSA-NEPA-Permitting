@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_redacted_body__c</fullName>
+        <description>Portal-safe version of the comment body with PII removed. Displayed to Experience Cloud public portal users. Populated by staff after PII review. Left blank until nepa_pii_redacted__c is set to true.</description>
+        <inlineHelpText>Enter the PII-redacted version of the comment body for public portal display.</inlineHelpText>
+        <label>Redacted Comment Body</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>8</visibleLines>
+    </CustomField>

@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_parent_case_event__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Reference to the parent case event, if this is a sub-event.</description>
+        <inlineHelpText>Parent case event (for hierarchical milestone tracking).</inlineHelpText>
+        <label>Parent Case Event</label>
+        <referenceTo>ApplicationTimeline</referenceTo>
+        <relationshipLabel>Child Case Events</relationshipLabel>
+        <relationshipName>Child_Case_Events</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </CustomField>

@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_category__c</fullName>
+        <description>Optional category to organize types of comments or to tag comments based on the topics addressed in the comment. Supports AI-assisted comment analysis.</description>
+        <inlineHelpText>Topic category or tag for this comment (supports automated comment analysis).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Comment Category</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </CustomField>

@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_litigation_risk_cell_label__c</fullName>
+        <description>Risk classification for the sector-circuit cell from NEPA_Sector_Circuit_Risk__mdt. HIGH = agency win rate below 45%; MODERATE = 45–70%; LOW = above 70%. Set alongside nepa_sector_circuit_win_rate__c.</description>
+        <inlineHelpText>Risk level for this project's sector and circuit combination based on historical litigation outcomes.</inlineHelpText>
+        <label>Litigation Risk Cell Label</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>HIGH</fullName>
+                    <default>false</default>
+                    <label>HIGH</label>
+                </value>
+                <value>
+                    <fullName>MODERATE</fullName>
+                    <default>false</default>
+                    <label>MODERATE</label>
+                </value>
+                <value>
+                    <fullName>LOW</fullName>
+                    <default>false</default>
+                    <label>LOW</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </CustomField>

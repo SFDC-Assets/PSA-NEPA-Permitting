@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_litigation_threat_basis__c</fullName>
+        <description>AI-generated explanation of why this comment was flagged as a potential Vermont Yankee issue exhaustion comment. Should identify: the specific legal or technical standard cited, the specific inadequacy alleged, and why this rises to the level of a legally specific objection rather than a general substantive concern. Written by the NEPA_Comment_Triage Agent alongside the flag.</description>
+        <inlineHelpText>AI explanation of the litigation threat: what legal/technical standard was cited, what inadequacy was alleged, and why this may set up a future APA challenge.</inlineHelpText>
+        <label>Litigation Threat Basis</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </CustomField>

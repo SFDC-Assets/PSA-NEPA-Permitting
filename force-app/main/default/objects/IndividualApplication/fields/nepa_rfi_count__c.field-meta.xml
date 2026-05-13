@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_rfi_count__c</fullName>
+        <description>Count of open RFI tasks against this application. Populated by record-triggered flow when nepa_submission_complete__c is false. Used by the intake completeness score and portal display.</description>
+        <inlineHelpText>Number of open requests for information on this application.</inlineHelpText>
+        <label>Open RFI Count</label>
+        <precision>4</precision>
+        <scale>0</scale>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </CustomField>

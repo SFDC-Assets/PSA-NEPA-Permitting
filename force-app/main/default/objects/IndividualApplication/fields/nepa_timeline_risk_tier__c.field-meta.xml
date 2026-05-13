@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_timeline_risk_tier__c</fullName>
+        <description>Current timeline risk tier derived from days in current stage vs. review-type baseline. On Track: within expected range; At Risk: 10-25% over baseline; Stalled: 25-50% over baseline; Overdue: 50%+ over baseline. Written by NEPA_Timeline_Risk_Assessor Flow.</description>
+        <inlineHelpText>Timeline risk classification for this process. Updated automatically by Flow when stage or status changes.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Timeline Risk Tier</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>On Track</fullName>
+                    <default>false</default>
+                    <label>On Track</label>
+                </value>
+                <value>
+                    <fullName>At Risk</fullName>
+                    <default>false</default>
+                    <label>At Risk</label>
+                </value>
+                <value>
+                    <fullName>Stalled</fullName>
+                    <default>false</default>
+                    <label>Stalled</label>
+                </value>
+                <value>
+                    <fullName>Overdue</fullName>
+                    <default>false</default>
+                    <label>Overdue</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </CustomField>

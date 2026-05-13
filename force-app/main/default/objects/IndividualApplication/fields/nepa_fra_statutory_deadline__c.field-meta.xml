@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_fra_statutory_deadline__c</fullName>
+        <description>Hard FRA statutory deadline: nepa_start_date__c + 365 days for EA, + 730 days for EIS, per 42 U.S.C. 4336a. This is a legal constraint, not a project management guideline. Set by NEPA_SLA_Due_Date_Setter alongside nepa_sla_due_date__c. Stored separately from the SLA due date so that clock-pause extensions are visible without overwriting the original statutory date.</description>
+        <inlineHelpText>FRA hard deadline: 1 year (EA) or 2 years (EIS) from start date. Cannot be extended without project sponsor agreement per 42 U.S.C. 4336a(b).</inlineHelpText>
+        <label>FRA Statutory Deadline</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <type>Date</type>
+    </CustomField>

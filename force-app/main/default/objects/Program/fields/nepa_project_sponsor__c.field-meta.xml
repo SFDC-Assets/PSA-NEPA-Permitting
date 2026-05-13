@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_project_sponsor__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Name of responsible entity, organization, or person and contact card information.</description>
+        <inlineHelpText>Name of responsible entity, organization, or person. Blank if led by the lead agency.</inlineHelpText>
+        <label>Project Sponsor</label>
+        <referenceTo>Contact</referenceTo>
+        <relationshipLabel>Projects</relationshipLabel>
+        <relationshipName>Projects</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </CustomField>

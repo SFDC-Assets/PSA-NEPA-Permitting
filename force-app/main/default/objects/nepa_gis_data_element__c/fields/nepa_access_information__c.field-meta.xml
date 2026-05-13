@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_access_information__c</fullName>
+        <description>URL, API endpoint, or instructions for accessing this GIS dataset externally.</description>
+        <inlineHelpText>URL, API endpoint, or access instructions for this dataset.</inlineHelpText>
+        <label>Access Information</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Url</type>
+    </CustomField>

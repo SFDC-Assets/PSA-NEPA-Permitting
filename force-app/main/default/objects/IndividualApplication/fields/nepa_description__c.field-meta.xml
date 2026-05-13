@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_description__c</fullName>
+        <description>Optional description of the process, distinct from the project description.</description>
+        <inlineHelpText>Optional description of the process (distinct from project description).</inlineHelpText>
+        <label>Process Description</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </CustomField>

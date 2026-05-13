@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_ce_pathway_recommendation__c</fullName>
+        <description>AI-recommended NEPA pathway set by NEPA_CE_Screener. Human NEPA Coordinator must confirm and set nepa_review_type__c before the pathway is official. Satisfies Salesforce AI AUP and OMB M-24-10 human-in-the-loop requirement: AI recommends, human decides.</description>
+        <inlineHelpText>AI screening recommendation. Not official until a NEPA Coordinator reviews and confirms by setting the Review Type field.</inlineHelpText>
+        <label>CE Pathway Recommendation (AI)</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Pending</fullName><default>false</default><label>Pending</label></value>
+                <value><fullName>CE-Recommended</fullName><default>false</default><label>CE Recommended</label></value>
+                <value><fullName>EA-Required</fullName><default>false</default><label>EA Required</label></value>
+                <value><fullName>EIS-Required</fullName><default>false</default><label>EIS Required</label></value>
+                <value><fullName>Escalated-Senior-Review</fullName><default>false</default><label>Escalated — Senior Review Required</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </CustomField>

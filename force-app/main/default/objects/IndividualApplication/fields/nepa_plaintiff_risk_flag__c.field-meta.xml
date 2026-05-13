@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_plaintiff_risk_flag__c</fullName>
+        <description>Set to true by NEPA_Plaintiff_Intelligence Flow when a PublicComplaint linked to this application is submitted by an organization matching a HIGH or VERY_HIGH record in NEPA_Plaintiff_Profile__mdt. Triggers a Legal Defensibility Review task and increases the litigation risk score by 25 points (PLAINTIFF_RISK_BONUS).</description>
+        <inlineHelpText>Known high-risk plaintiff organization has submitted a comment on this process. See Legal Defensibility Review task for details.</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Plaintiff Risk Flag</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <type>Checkbox</type>
+    </CustomField>

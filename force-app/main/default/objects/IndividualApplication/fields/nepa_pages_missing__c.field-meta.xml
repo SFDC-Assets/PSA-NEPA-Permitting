@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_pages_missing__c</fullName>
+        <description>True when nepa_total_pages__c is blank. Surfaced on record page and in list views as a data-quality checklist flag. Auto-populating from ContentVersion attachment count is a future enhancement.</description>
+        <inlineHelpText>Page count not yet entered. Enter total pages to improve CE screening accuracy.</inlineHelpText>
+        <externalId>false</externalId>
+        <formula>ISBLANK(nepa_total_pages__c)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Page Count Missing</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </CustomField>

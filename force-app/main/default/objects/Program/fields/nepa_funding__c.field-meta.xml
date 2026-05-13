@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_funding__c</fullName>
+        <description>Link to federal, state, local, or other funding source(s) by reference (e.g., grant program, loan guarantee, appropriated funds).</description>
+        <inlineHelpText>Funding source(s) or other project reference (e.g., grant program, loan guarantee).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Funding Source(s)</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </CustomField>

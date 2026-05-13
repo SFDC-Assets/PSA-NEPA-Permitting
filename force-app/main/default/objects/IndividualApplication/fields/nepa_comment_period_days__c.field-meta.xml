@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_comment_period_days__c</fullName>
+        <description>Number of calendar days between the public comment period start and end dates. Used by the Defensibility Gap Checker to verify the 30-day minimum required by 40 CFR 1503.1.</description>
+        <inlineHelpText>Calculated days for the public comment period. Must be 30 or more for EIS processes.</inlineHelpText>
+        <externalId>false</externalId>
+        <formula>nepa_public_comment_period_end_date__c - nepa_public_comment_period_start__c</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Comment Period Days</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </CustomField>

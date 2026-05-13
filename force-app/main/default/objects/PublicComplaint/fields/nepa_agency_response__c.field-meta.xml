@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_agency_response__c</fullName>
+        <description>Formal reply from the agency, if applicable.</description>
+        <inlineHelpText>Formal agency reply to this comment, if applicable.</inlineHelpText>
+        <label>Agency Response</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </CustomField>

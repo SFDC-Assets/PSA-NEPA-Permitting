@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_ai_triage_timestamp__c</fullName>
+        <description>Date and time the Agentforce Comment Triage Agent completed its analysis. Used for audit trail and performance monitoring.</description>
+        <inlineHelpText>When AI triage was completed.</inlineHelpText>
+        <label>AI Triage Timestamp</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </CustomField>

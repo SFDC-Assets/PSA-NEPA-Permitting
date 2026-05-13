@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_flow_error_count__c</fullName>
+        <description>Rollup count of NEPA_Flow_Error__c records whose nepa_record_id__c matches this application's Id. Increments automatically via a rollup summary flow (or Apex trigger in future) whenever a flow fault is logged. When this count exceeds a threshold, the SLA escalation flow fires a case and notifies the integration team. Text match rollup is not natively supported — this field is populated by NEPA_Error_Logger subflow incrementing it via a before-save flow on NEPA_Flow_Error__c insert.</description>
+        <inlineHelpText>Count of flow errors logged against this application. High counts trigger escalation.</inlineHelpText>
+        <label>Flow Error Count</label>
+        <precision>6</precision>
+        <scale>0</scale>
+        <defaultValue>0</defaultValue>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </CustomField>

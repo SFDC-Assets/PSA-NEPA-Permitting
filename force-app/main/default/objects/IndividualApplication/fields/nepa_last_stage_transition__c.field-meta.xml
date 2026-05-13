@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_last_stage_transition__c</fullName>
+        <description>Timestamp of the most recent nepa_process_stage__c change. Set by the NEPA_Stage_Gate Flow on every stage transition. Used by the Timeline Risk Scorer (Priority 4) to compute days-in-stage.</description>
+        <inlineHelpText>When the process last advanced to a new stage. Updated automatically by Flow.</inlineHelpText>
+        <label>Last Stage Transition</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </CustomField>

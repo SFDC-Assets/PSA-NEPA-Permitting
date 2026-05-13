@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_legal_review_status__c</fullName>
+        <description>Legal counsel review status for litigation-threat-flagged comments. Pending Legal Review: flagged, not yet assigned. Assigned to Counsel: routed to a specific attorney. Legal Response Drafted: attorney has drafted a response for inclusion in the Final EIS comment response chapter. Response Finalized: response included in the published Final EIS. No Action Required: counsel determined this does not require a specific response.</description>
+        <inlineHelpText>Legal review status for litigation-threat-flagged comments. Required response workflow — flagged comments must reach Response Finalized before Final EIS publication.</inlineHelpText>
+        <label>Legal Review Status</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Pending Legal Review</fullName><default>false</default><label>Pending Legal Review</label></value>
+                <value><fullName>Assigned to Counsel</fullName><default>false</default><label>Assigned to Counsel</label></value>
+                <value><fullName>Legal Response Drafted</fullName><default>false</default><label>Legal Response Drafted</label></value>
+                <value><fullName>Response Finalized</fullName><default>false</default><label>Response Finalized</label></value>
+                <value><fullName>No Action Required</fullName><default>false</default><label>No Action Required</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </CustomField>

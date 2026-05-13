@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <validationRules>
+        <fullName>VR_Description_Minimum_Length</fullName>
+        <active>true</active>
+        <description>Enforces minimum 200-character description when nepa_description__c is populated. Truncated descriptions degrade CE classification accuracy (NEPATEC feature lift 0.71). Does not fire on blank descriptions.</description>
+        <errorConditionFormula>AND(
+  NOT(ISBLANK(nepa_description__c)),
+  LEN(nepa_description__c) &lt; 200
+)</errorConditionFormula>
+        <errorMessage>Process Description must be at least 200 characters. Include: purpose, location summary, disturbance type (new/existing/renewal), and estimated acreage. This improves CE screening accuracy.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>VR_FONSI_ROD_On_CE</fullName>
+        <active>true</active>
+        <description>Blocks FONSI or ROD as decision document type when review type is CE. Addresses NEPATEC doc_type conflation where ROD/FONSI appeared in the CE stratum. CE decisions use DR or CE Determination.</description>
+        <errorConditionFormula>AND(
+  ISPICKVAL(nepa_review_type__c, "CE"),
+  OR(
+    ISPICKVAL(nepa_decision_document_type__c, "FONSI"),
+    ISPICKVAL(nepa_decision_document_type__c, "ROD")
+  )
+)</errorConditionFormula>
+        <errorMessage>FONSI and ROD are not valid decision document types for a Categorical Exclusion (CE) process. Use "CE Determination" or "DR" for CE decision documents.</errorMessage>
+    </validationRules>
+
+    
+    <validationRules>
+        <fullName>VR_003_NEPA_Waiver_Legal_Sufficiency</fullName>
+        <active>true</active>
+        <description>VR-003: Blocks save when NEPA waiver is invoked without a statutory citation. Agencies lose cases by asserting waivers without valid legal authority. OGC memo must be in the administrative record.</description>
+        <errorConditionFormula>AND(
+  nepa_waiver_invoked__c = true,
+  ISBLANK(nepa_waiver_statute_cite__c)
+)</errorConditionFormula>
+        <errorMessage>NEPA waiver is checked but no statutory citation is provided. Enter the specific statutory provision authorizing the waiver (e.g., IIRIRA Section 102(c); EPAct 2005 Section 390). Attach an OGC legal sufficiency memo before advancing.</errorMessage>
+    </validationRules>
+    <validationRules>
+        <fullName>VR_006_Tiering_Age_Check</fullName>
+        <active>true</active>
+        <description>VR-006: Blocks save when tiering to a prior EIS older than 5 years without supplementation review. Addresses failure_to_supplement challenge type (100% agency loss rate in PermitTEC). Requires both tiering checkbox and prior NEPA date to be set.</description>
+        <errorConditionFormula>AND(
+  ISPICKVAL(nepa_review_type__c, "EIS"),
+  nepa_tiering_to_prior_eis__c = true,
+  NOT(ISBLANK(nepa_prior_nepa_date__c)),
+  nepa_prior_nepa_date__c &lt; (TODAY() - 1825),
+  nepa_supplementation_review_complete__c = false
+)</errorConditionFormula>
+        <errorMessage>The prior EIS is more than 5 years old. A supplementation review is required under 40 CFR 1502.9(c). Check "Supplementation Review Complete" after the responsible official makes a written determination.</errorMessage>
+    </validationRules>
+
+    <validationRules>
+        <fullName>VR_007_Clock_Pause_Date_Sequence</fullName>
+        <active>true</active>
+        <description>VR-007: Blocks save when clock pause end is before start. Prevents negative nepa_clock_pause_days__c, which would shorten nepa_fra_statutory_deadline__c — an FRA compliance violation.</description>
+        <errorConditionFormula>AND(
+  NOT(ISBLANK(nepa_clock_pause_start__c)),
+  NOT(ISBLANK(nepa_clock_pause_end__c)),
+  nepa_clock_pause_end__c &lt; nepa_clock_pause_start__c
+)</errorConditionFormula>
+        <errorMessage>Clock resume date cannot be before the clock pause start date. Correct the dates to ensure the statutory deadline calculation is accurate.</errorMessage>
+    </validationRules>
+
+    
+    </CustomObject>

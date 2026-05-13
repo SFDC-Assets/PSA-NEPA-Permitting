@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_page_count__c</fullName>
+        <description>Page count of this document's core text, excluding citations and appendices per FRA 42 U.S.C. 4336a. For files where nepa_is_appendix__c = false, this rolls up to the FRA compliance report. Populated manually by the uploader or automatically by an Apex PDFPageCount action on insert.</description>
+        <inlineHelpText>Page count of core document text only. Do not include appendix or citation pages — those are excluded from FRA page limits.</inlineHelpText>
+        <label>Page Count</label>
+        <precision>6</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </CustomField>

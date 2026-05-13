@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_fra_overlimit__c</fullName>
+        <description>Formula checkbox: true when nepa_page_count__c exceeds nepa_fra_page_limit__c for a core text file (nepa_is_appendix__c = false). Drives the FRA Page Limit Compliance Report filter and the NEPA_SLA_Escalation_Monitor warning. False/null for appendices, CE documents, and files without page counts.</description>
+        <inlineHelpText>True when this document exceeds its FRA statutory page limit. Appendices are excluded from this calculation.</inlineHelpText>
+        <formula>AND(
+  NOT(nepa_is_appendix__c),
+  NOT(ISBLANK(nepa_page_count__c)),
+  NOT(ISBLANK(nepa_fra_page_limit__c)),
+  nepa_page_count__c &gt; nepa_fra_page_limit__c
+)</formula>
+        <label>FRA Page Limit Exceeded</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+    </CustomField>

@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_clock_pause_reason__c</fullName>
+        <description>Required documentation of the project sponsor's written agreement to the clock suspension, per 42 U.S.C. 4336a(b). Must reference the specific communication (letter, email, form) in which the sponsor consented. Part of the administrative record.</description>
+        <inlineHelpText>Document the sponsor's written agreement to this clock suspension. Required for FRA compliance — cite the letter, email, or form.</inlineHelpText>
+        <label>Clock Pause / Sponsor Agreement</label>
+        <length>1000</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </CustomField>

@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_agency_scoping_baseline_months__c</fullName>
+        <description>Agency-specific median NOI-to-DEIS duration in months, sourced from NEPA_Agency_Scoping_Baseline__mdt. Set by NEPA_Timeline_Risk_Assessor for EIS processes. Used as the denominator for scoping overrun calculations.</description>
+        <inlineHelpText>Median months from NOI to DEIS for the lead agency, based on CEQ EIS Timeline data 2010–2024.</inlineHelpText>
+        <label>Agency Scoping Baseline (Months)</label>
+        <precision>5</precision>
+        <scale>1</scale>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+    </CustomField>
