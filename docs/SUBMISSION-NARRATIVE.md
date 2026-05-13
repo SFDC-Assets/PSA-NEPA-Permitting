@@ -44,23 +44,21 @@ Each of these numbers corresponds to a deployed, deterministic feature — not a
 
 **Delay 1: CE Misclassification (9 months to 2.8 years per incorrectly escalated project)**
 
-Analysis of NETATEC v2.0 — 54,668 CE projects from PNNL's federal NEPA registry — found that 23% of Categorical Exclusion records lack a recorded CE category, concentrated in BLM oil/gas and Agriculture/Rangeland projects. When an agency coordinator cannot quickly identify the applicable CE authority, the default outcome is unnecessary EA escalation. Each incorrect CE→EA escalation adds a median 11 months to project delivery. Each incorrect CE→EIS escalation adds a median 2.8 years. Across high-volume agencies, this misclassification tax accumulates into years of deferred infrastructure.
+- **The Data:** NETATEC v2.0 (54,668 CE projects, PNNL) found that 23% of Categorical Exclusion records lack a recorded CE category, concentrated in BLM oil/gas and Agriculture/Rangeland projects. When an agency coordinator cannot quickly identify the applicable CE authority, the default outcome is unnecessary EA escalation. Each incorrect CE→EA escalation adds a median 11 months to project delivery. Each incorrect CE→EIS escalation adds a median 2.8 years. At scale, this misclassification tax accumulates into years of deferred infrastructure and real economic cost: construction material inflation, deferred job creation, and stalled clean energy deployment compound with every month of unnecessary review.
 
-The accelerator's CE Screener applies a three-tier deterministic Business Rules Engine: NAICS code routing narrows the applicable CE namespace; an agency-sector Decision Matrix identifies the high-confidence CE code; an agency-action-type layer resolves ambiguous cases where the action verb — construct versus modify versus renew — is the critical discriminating variable. Every determination is auditable to the specific rule row that fired. No generative AI is involved. The same federal CE library (2,105 exclusions across 79 agencies, sourced from CEQ CE Explorer v2.0) is available to every agency on the platform.
+- **The Accelerator:** The CE Screener applies a three-tier deterministic Business Rules Engine — NAICS code routing narrows the applicable CE namespace; an agency-sector Decision Matrix identifies the high-confidence CE code; an agency-action-type layer resolves ambiguous cases where the action verb (construct vs. modify vs. renew) is the critical discriminating variable. Every determination is auditable to the specific rule row that fired. No generative AI is involved. The same federal CE library (2,105 exclusions across 79 agencies, sourced from CEQ CE Explorer v2.0) is available to every agency on the platform.
 
 **Delay 2: Public Comment Bottleneck (4 weeks → ~4 hours on the critical path)**
 
-Public comment compilation and individual response is on the critical path for every EA and EIS. The NAEP 2025 Workshop documented a federal case in which AI-assisted comment triage reduced a 2,600-comment workload from approximately 4 staff-weeks to approximately 4 hours. This is not a theoretical capability — it is a documented operational result from a federal NEPA process. The critical path savings from compressing comment response cycles are direct schedule reductions for every EA and EIS in the system.
+- **The Data:** Public comment compilation and individual response is on the critical path for every EA and EIS. The NAEP 2025 Workshop documented a federal case in which AI-assisted comment triage reduced a 2,600-comment workload from approximately 4 staff-weeks to approximately 4 hours. This is a documented operational result from a federal NEPA process — not a theoretical projection.
 
-The accelerator's comment triage infrastructure establishes the data foundation for this compression: Agentforce-ready field design for AI sentiment and substantive classification, a non-negotiable EJ/tribal routing gate (AI does not classify these comments under any circumstances), and an audit-complete comment-to-response record structure that satisfies the administrative record requirements a court would examine in a challenge.
+- **The Accelerator:** The comment triage infrastructure establishes the data foundation for this compression: Agentforce-ready field design for AI sentiment and substantive classification, a non-negotiable EJ/tribal routing gate (AI does not classify these comments under any circumstances), and an audit-complete comment-to-response record structure that satisfies the administrative record requirements a court would examine in a challenge.
 
 **Delay 3: Late-Stage Litigation (2–5 years from a court-ordered remand, preventable with early detection)**
 
-Analysis of PermitTEC v0.1 — 761 federal NEPA litigation cases from PNNL, analyzed through a 13-stage calibration pipeline — reveals that the conditions that produce successful NEPA challenges are predictable well before a court filing. Tribal Nation plaintiffs win 87.5% of NEPA cases — the highest success rate of any plaintiff category in the corpus. Energy projects in the 4th Circuit face a 28.6% agency win rate — the highest-risk sector-circuit cell in 761 cases, driven by hostile GHG and alternatives-analysis precedent from the Mountain Valley Pipeline and Atlantic Coast Pipeline decisions. Incomplete administrative records are among the most common bases for successful challenges at any agency.
+- **The Data:** Analysis of PermitTEC v0.1 — 761 federal NEPA litigation cases from PNNL, calibrated through a 13-stage analysis pipeline — reveals that the conditions producing successful NEPA challenges are predictable well before a court filing. Tribal Nation plaintiffs win 87.5% of NEPA cases — the highest of any plaintiff category. Energy projects in the 4th Circuit face a 28.6% agency win rate — the highest-risk sector-circuit cell in the corpus, driven by hostile GHG and alternatives-analysis precedent from the Mountain Valley Pipeline and Atlantic Coast Pipeline decisions. When a project is vacated, the agency returns to the point of the procedural failure and restarts — typically 2–5 years of delay on a project that had detectable warning signs months before the ROD.
 
-When a project is vacated by a court, the agency returns to the point of the procedural failure and restarts. In complex EIS cases that typically means 2–5 years of delay — not to a project that had no warning signs, but to one where the warning signs were present in the administrative record months before the ROD and were not acted on.
-
-The accelerator's risk intelligence layer — a composite 0–100 litigation risk score produced by a deterministic BRE Expression Set — evaluates seven risk dimensions at every record save: review type, lead agency loss rate, circuit multiplier, adjacent statute involvement, sector-circuit interaction, scoping overrun status, and accumulated challenge prediction deltas. Scores ≥58 (the empirically calibrated Very High threshold from Stage 7 analysis) auto-create a legal review task. Tribal nation challenger detection sets a dual flag on the IndividualApplication and adds a +20-point delta. Energy × 4th Circuit projects receive an additional +12-point delta from the Challenge Prediction Rules engine. Every signal is surfaced while the gap is still correctable.
+- **The Accelerator:** The risk intelligence layer evaluates seven dimensions at every record save: review type, lead agency loss rate, circuit multiplier, adjacent statute involvement, sector-circuit interaction, scoping overrun status, and accumulated challenge prediction deltas. Scores ≥58 auto-create a legal review task. Tribal nation challenger detection sets a dual flag and adds a +20-point delta. Energy × 4th Circuit projects receive an additional +12-point delta. Every signal is surfaced while the gap is still correctable.
 
 ### The Agency Scoping Problem No Generic Baseline Can Solve
 
@@ -162,6 +160,20 @@ Tribal Nation plaintiffs win at an 87.5% rate in the PermitTEC corpus — the hi
 - **OmniScript CE Intake Wizard** (7 steps with real-time CE pre-screening) collects structured data at submission time, eliminating the request-for-information cycles that each add 2–4 weeks per round.
 - **CEQ-compliant data export** (`NEPA/CEQExport` Integration Procedure) satisfies MFR #2 (Data Sharing) at Emerging maturity immediately upon activation — no additional development required.
 
+### The Economic Cost of Timeline Delay
+
+Timeline delays in federal permitting are not scheduling inconveniences — they are measurable financial penalties with consequences that compound over time.
+
+**Construction cost inflation:** A 2.8-year CE→EIS escalation delays the project's start date by the same interval. ENR Construction Cost Index data shows sustained inflation in the 4–8% annual range for heavy civil and energy infrastructure materials. A $500 million EIS project delayed 2.8 years faces an effective cost escalation of $56–112 million before a single shovel enters the ground.
+
+**Deferred clean energy capacity:** Offshore wind, utility-scale solar, and transmission projects are among the highest-frequency EIS categories in the PermitTEC corpus. Each year of delay on clean energy infrastructure defers nameplate capacity from the grid, extends dependence on dispatchable generation, and increases the cost of meeting statutory clean energy targets.
+
+**Job creation deferral:** Infrastructure construction projects employ a predictable multiplier of direct and indirect jobs per $1M of construction spend. A 2.8-year delay does not merely defer those jobs — it defers them into a future labor market with higher prevailing wages, further escalating project cost.
+
+**Court-ordered remand cost:** When a project is vacated and remanded, the agency does not simply resume from where it stopped. It reconvenes scoping, re-issues draft EIS for additional comment, responds to supplemental comments, and re-executes the ROD process. The direct agency cost of this cycle — staff time, contractor costs, consultation fees — routinely runs into the millions of dollars per remand, in addition to the 2–5 years of project delay.
+
+The accelerator's value is not measured against the cost of the software. It is measured against the cost of the delay it prevents.
+
 ---
 
 ## Criterion 2: User-Centered Design
@@ -208,11 +220,13 @@ Federal software deployments routinely fail not because the technology is wrong 
 
 **Low-friction configuration by agency staff:** Custom metadata records — CE screening rules, risk weights, scoping baselines — can be created and updated through standard Salesforce Setup screens by agency administrators with the `Customize Application` permission. No developer access, no deployment pipeline required. The parameters an agency is most likely to need to adjust (CE code coverage, agency-specific SLA targets) are the ones that are most accessible to non-technical staff.
 
-### Transparency and Audit Trail
+### Transparency, Audit Trail, and Sensitive Data Protection
 
 **Every AI output is labeled and traceable.** All AI-assisted content is flagged with `nepa_ai_generated__c`. Risk score outputs carry a full disclosure in `nepa_risk_score_factors__c` — including the exact formula, the number of cases the weights were derived from, and the statistical confidence level — so coordinators and auditors can evaluate the basis of any score without consulting external documentation.
 
 **The EJ/tribal gate is unconditional.** Comments containing tribal sovereignty, sacred sites, environmental justice, or civil rights keywords route directly to the EJ/Tribal Liaison coordinator queue. This bypasses AI classification entirely and cannot be disabled by any automated process or configuration change. This is a design constraint, not a policy preference — the gate is enforced at the flow level with no override path.
+
+**CUI protection is inherent to the platform.** NEPA documents regularly contain Controlled Unclassified Information (CUI) — precise GPS coordinates of endangered species habitats, archaeological site locations, tribal sacred site boundaries, and critical energy grid infrastructure details. The accelerator runs on Salesforce Gov Cloud, which carries a FedRAMP Moderate Authorization to Operate. This means CUI in GIS data records (`nepa_gis_data__c`), document attachments (ContentVersion), and public engagement records is handled within an already-authorized data boundary — without requiring agencies to evaluate a new system for CUI handling capability. The GIS data object includes `nepa_sensitivity_classification__c` and `nepa_data_access_restriction__c` fields that allow CUI-bearing records to be tagged for access restriction independent of the record's public-facing content.
 
 ---
 
@@ -252,6 +266,17 @@ All agency-specific parameters — CE codes, risk weights, SLA configurations, a
 - Weight updates (e.g., when a new PermitTEC corpus release is available) require only a metadata deployment, not an Apex compilation or test-class update
 - Agency administrators with the `Customize Application` permission can audit and update parameters without developer access
 - The audit trail for weight changes is preserved through the `Effective_Date__c` and `Update_Notes__c` fields on screening rule records — the pattern creates new records with new dates rather than overwriting existing ones
+
+### Designed to Stay Current
+
+**When PNNL releases PermitTEC v2.0 or NETATEC v3.0, updating the accelerator does not require a code release.** The update lifecycle is:
+
+1. Run the calibration pipeline against the new corpus (the 13-stage methodology is documented in the repository and reproducible).
+2. Update the affected Custom Metadata records (`NEPA_Agency_Risk_Rate__mdt`, `NEPA_Circuit_Risk_Weight__mdt`, `NEPA_Statute_Risk_Weight__mdt`, `NEPA_Sector_Circuit_Risk__mdt`) via `sf project deploy start` — a standard metadata deploy with no Apex compilation.
+3. Update the BRE Decision Matrix rows by importing updated CSV files through the Salesforce Setup UI (a documented, repeatable process covered in `decision_matrix_rows/README.md`).
+4. The new weights are live immediately after deployment — no flow reactivation, no test class changes, no downtime.
+
+For CE Library updates — when CEQ CE Explorer adds new exclusions or agencies add new CFR authorities — new `nepa_ce_library__c` records can be bulk-loaded via the Salesforce Bulk API from a CSV export of the agency's existing CE documentation. No schema changes required. The accelerator is built to absorb dataset updates as routine operations, not one-time migration events.
 
 ### Clear Adoption Path
 
