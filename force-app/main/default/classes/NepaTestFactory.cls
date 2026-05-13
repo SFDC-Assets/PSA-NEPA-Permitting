@@ -355,7 +355,7 @@ public class NepaTestFactory {
     public static Boolean runBulkReviewTypeUpdate(Id projId, Integer n, String fromReviewType, String toReviewType) {
         List<IndividualApplication> ias = new List<IndividualApplication>();
         for (Integer i = 0; i < n; i++) {
-            ias.add(makeProcess(projId, fromReviewType));
+            ias.add(makeProcess(projId, fromReviewType, null, null));
         }
         insert ias;
         List<IndividualApplication> updates = new List<IndividualApplication>();
