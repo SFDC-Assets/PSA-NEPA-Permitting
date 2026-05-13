@@ -77,7 +77,7 @@ The Contractor shall deliver a configured, integrated, and operational NEPA perm
 3. **Document management and required document registry** — stage-gated document tracking with configurable required document rules by review type and stage
 4. **Public comment intake and management** — structured comment submission, triage, routing, and response tracking
 5. **Applicant self-service portal** — authenticated portal for permit status, document delivery, and action items
-6. **Risk intelligence** — litigation risk scoring, challenge prediction, and defensibility gap detection using agency-configurable rules and historical data
+6. **Risk intelligence** — composite litigation risk scoring, challenge prediction rules with accumulable risk deltas, tribal plaintiff intelligence, sector-circuit risk matrix, per-agency EIS scoping performance tiers, and defensibility gap detection using agency-configurable rules calibrated from empirical federal NEPA litigation data
 7. **Parallel permit coordination** — automated task creation and SLA tracking for co-permits and interagency consultations
 8. **Tribal and agency consultation tracking** — structured tracking of government-to-government and cooperating agency consultation with stage gate enforcement
 9. **GIS integration** — proximity checking against federal spatial datasets (protected areas, critical habitat, wetlands, cultural resources) with configurable layer registry
@@ -127,7 +127,7 @@ Requirements are designated Priority 1 (mandatory at contract award), Priority 2
 | DM-001 | 1 | The system shall maintain document records conforming to CEQ Entity 3 properties including document type, status, publish date, public access flag, and all five CEQ provenance fields. |
 | DM-002 | 1 | The system shall enforce a configurable required document registry: for each review type and stage, a defined list of required document types must be present and in an approved status before the stage gate can fire. |
 | DM-003 | 1 | The system shall support document versioning with a clear latest-version designation and version history. |
-| DM-004 | 1 | The system shall enforce page limit rules per 40 CFR 1502.7 (EIS page limits) with configurable thresholds by document type and review pathway. |
+| DM-004 | 1 | The system shall enforce page limit rules per 40 CFR 1502.7 (EIS page limits) with configurable thresholds by document type and review pathway. The system shall additionally detect page count outliers (documents anomalously large relative to empirical norms) as a separate risk indicator; outlier thresholds shall be configurable by document type without code changes. |
 | DM-005 | 2 | The system shall support AI-assisted generation of EIS section drafts from structured process data, with mandatory human review before any draft is designated as a work product. |
 | DM-006 | 2 | The system shall maintain a complete administrative record export function producing a date-stamped, indexed archive of all documents, comments, and correspondence associated with a process. |
 
@@ -142,6 +142,7 @@ Requirements are designated Priority 1 (mandatory at contract award), Priority 2
 | PC-005 | 2 | The system shall check commenter organizations against a configurable litigation history registry and flag prior plaintiffs for elevated legal review, with the flag and rationale recorded in the administrative record. |
 | PC-006 | 2 | The system shall route substantive comments as work orders to the appropriate resource specialist with SLA tracking and response status visible on the process record. |
 | PC-007 | 1 | The system shall maintain a complete comment response log linking each substantive comment to its final agency response and the document section in which it was addressed. |
+| PC-008 | 1 | The system shall identify commenter organizations known to be Tribal Nations in the plaintiff registry and set a separate tribal plaintiff flag on the process record. When this flag is set, the system shall create an escalation task for government-to-government consultation review and block EA/EIS stage advancement until consultation is certified complete. The tribal flag shall be recorded in the administrative record separately from the general plaintiff flag. |
 
 ### 3.5 Public Engagement Events (CEQ Entity 5)
 
@@ -157,9 +158,23 @@ Requirements are designated Priority 1 (mandatory at contract award), Priority 2
 |---|---|---|
 | TL-001 | 1 | The system shall maintain a structured case event timeline per process, conforming to CEQ Entity 6 properties including event type, status, tier, source, start/end dates, and public access designation. |
 | TL-002 | 1 | The system shall display the timeline in chronological order with completed, in-progress, and planned events visually distinguished. |
-| TL-003 | 2 | The system shall calculate and display projected completion dates based on remaining required events and historical stage duration data. |
+| TL-003 | 2 | The system shall calculate and display projected completion dates based on remaining required events and per-agency historical stage duration data. For EIS reviews, the baseline shall be derived from the lead agency's empirical median scoping timeline (NOI-to-DEIS and DEIS-to-FEIS months) rather than a single government-wide average. |
+| TL-004 | 2 | The system shall detect and flag scoping overruns when the elapsed time in a scoping stage exceeds the lead agency's historical scoping cap. The flag, overrun magnitude (months), and agency performance tier (Fast and Defensible / Slow Scoping Bottleneck / Legally Vulnerable) shall be written to the process record and shall feed into the litigation risk score. |
+| TL-005 | 2 | The system shall flag anomalous document page counts as a risk indicator: CE documents exceeding 17 pages (empirical p95 threshold) and EA documents exceeding 200 pages shall be flagged with a risk note on the process record without blocking document upload. |
 
-### 3.7 GIS Data (CEQ Entity 7)
+### 3.7 Risk Intelligence
+
+| ID | Priority | Requirement |
+|---|---|---|
+| RI-001 | 1 | The system shall compute a composite litigation risk score on each NEPA process using configurable weight tables derived from federal NEPA litigation data. Input factors shall include at minimum: review type, lead agency litigation loss rate, judicial circuit, adjacent statutes implicated, and review completeness. The score shall be recalculated automatically when any input factor changes. |
+| RI-002 | 1 | Risk weight tables (agency points, circuit points, statute points) shall be stored as configurable metadata records and decision matrix rows editable by authorized administrators without code changes. The calibration source (training corpus, case count per input value, formula) shall be documented in the system's configuration management plan. |
+| RI-003 | 1 | The system shall classify each NEPA process into a risk tier (e.g., Low / Moderate / High / Very High) based on configurable score thresholds. Tier boundaries shall be editable in metadata without code changes. |
+| RI-004 | 2 | The system shall evaluate configurable challenge prediction rules against the process record and accumulate risk delta points when trigger conditions are met (e.g., energy sector project in high-risk judicial circuit, tribal plaintiff flag set). Each triggered rule shall produce an explanation recorded on the process record. |
+| RI-005 | 2 | The system shall maintain a sector-circuit risk matrix — configurable combinations of project sector and judicial circuit with empirical agency win rates and risk cell labels — and incorporate sector-circuit risk into the composite score when a matching cell exists with sufficient case count. |
+| RI-006 | 2 | The system shall assign an agency performance tier to each project based on the lead agency's historical EIS scoping performance. The tier and the per-agency scoping baseline (median months from NOI to DEIS, median DEIS to FEIS, scoping cap) shall be configurable in a dedicated metadata type. When the agency assignment on a project changes, the tier shall be updated automatically. |
+| RI-007 | 1 | All risk intelligence outputs (score, tier, score factors summary, triggered rules, tribal flag, agency performance tier) shall be stored on the process record and included in the administrative record export. No risk score, tier, or flag shall trigger an automated adverse action; all outputs are advisory and require human review before any workflow-affecting decision is made. |
+
+### 3.8 GIS Data (CEQ Entity 7)
 
 | ID | Priority | Requirement |
 |---|---|---|
@@ -169,7 +184,7 @@ Requirements are designated Priority 1 (mandatory at contract award), Priority 2
 | GIS-004 | 2 | Proximity check results shall be written back to the project record and shall flag extraordinary circumstances for CE eligibility screening. |
 | GIS-005 | 2 | The GIS layer registry shall be configurable by administrators without code changes, supporting addition of new ArcGIS FeatureServer endpoints or other OGC-compliant services. |
 
-### 3.8 User Role Management (CEQ Entity 8)
+### 3.9 User Role Management (CEQ Entity 8)
 
 | ID | Priority | Requirement |
 |---|---|---|
@@ -177,7 +192,7 @@ Requirements are designated Priority 1 (mandatory at contract award), Priority 2
 | UR-002 | 1 | The system shall maintain an active/inactive flag on assignments to support audit trail preservation without deletion when an assignment ends. |
 | UR-003 | 1 | Role assignments shall be exportable as part of the CEQ-standard process data payload. |
 
-### 3.9 Legal Structure (CEQ Entity 9)
+### 3.10 Legal Structure (CEQ Entity 9)
 
 | ID | Priority | Requirement |
 |---|---|---|
@@ -185,7 +200,7 @@ Requirements are designated Priority 1 (mandatory at contract award), Priority 2
 | LS-002 | 1 | Regulatory citations shall be linkable to configurable decision elements (CE criteria, threshold values, extraordinary circumstance conditions) that drive automated screening logic. |
 | LS-003 | 2 | The citation registry shall be configurable by administrators and shall support EffectiveTo dating to mark superseded regulations without deletion. |
 
-### 3.10 Applicant Self-Service Portal
+### 3.11 Applicant Self-Service Portal
 
 | ID | Priority | Requirement |
 |---|---|---|
@@ -298,6 +313,7 @@ Proposals will be evaluated on a Best Value basis using the following factors, l
 - Approach to AI-assisted capabilities, human-in-the-loop controls, and OMB M-24-10 compliance
 - Configurability of business rules, stage gates, and document registries without code changes
 - Quality of CEQ-standard data export implementation
+- Maturity and empirical grounding of the risk intelligence layer: litigation risk scoring, tribal plaintiff intelligence, challenge prediction rules, sector-circuit risk matrix, and per-agency EIS scoping performance tiers. Offerors shall describe the training corpus (case count, jurisdiction coverage, time period) and calibration methodology underlying the risk weight tables shipped with the platform.
 
 ### Factor 2 — Past Performance (25%)
 
@@ -327,7 +343,7 @@ Proposals shall be submitted electronically to [Contracting Officer email] no la
 Proposals shall consist of two volumes submitted as separate files:
 
 **Volume I — Technical and Management Proposal** (page limit: 50 pages)
-- Section 1: Technical Approach — address each functional requirement category in Section 3 and technical requirements in Section 4. For each requirement, state whether the capability is: (a) available in current COTS/GOTS product without configuration, (b) achievable through configuration, or (c) requires custom development.
+- Section 1: Technical Approach — address each functional requirement category in Section 3 and technical requirements in Section 4. For each requirement, state whether the capability is: (a) available in current COTS/GOTS product without configuration, (b) achievable through configuration, or (c) requires custom development. For Section 3.7 Risk Intelligence requirements, additionally describe the empirical corpus, calibration methodology, and mechanism for updating risk weights as new litigation data becomes available.
 - Section 2: Data and Interoperability Approach — demonstrate CEQ standard v1.2 conformance with a sample data model mapping
 - Section 3: Security and AI Governance Approach
 - Section 4: Implementation Plan with milestone schedule
