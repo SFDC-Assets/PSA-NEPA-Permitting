@@ -17,6 +17,52 @@ The solution is deployable from the command line in approximately 15 minutes, re
 
 ---
 
+## Data and Analysis Foundation
+
+Every feature in this accelerator was derived from analysis of two federal datasets before any code was written. The datasets, findings, and resulting features are documented below.
+
+### Dataset 1: NEPATEC v2.0 (Pacific Northwest National Laboratory, 2025)
+
+NEPATEC v2.0 is a structured registry of 61,881 federal NEPA projects compiled by PNNL. The subset used in this analysis covers 54,668 Categorical Exclusion projects across BLM, DOE, and USDA, with 73,521 associated documents including CE determination memos, EAs, and supporting studies.
+
+**Key findings from NETATEC v2.0 analysis:**
+
+| Finding | Implication | Feature Built |
+|---|---|---|
+| 23% of CE records have no `ce_category` recorded — concentrated in BLM oil/gas and Agriculture/Rangeland projects | Classification ambiguity in high-volume sectors drives unnecessary EA escalation | **CE Screener BRE** (3-tier logic: NAICS routing → agency/sector → agency/action type) |
+| 4,783 distinct `ce_category` strings resolve to three authority systems: DOE 10 CFR 1021 Appendix B, BLM 516 DM citations, EPA Section 390 | Applicants cannot be expected to navigate authority-specific CE codes without structured guidance | **CE Library** (2,105 records from CEQ CE Explorer v2.0; SOSL full-text searchable) |
+| CE classification is sector + action-type dependent, not sector alone — renewing an existing permit and constructing new infrastructure in the same sector map to different CE authorities | Single-dimension CE matching produces incorrect results; the action verb is the critical discriminating variable | **CE Screener Tier 2 rules** (action-type discriminator layer in BRE Expression Set) |
+| Tier 1 (sector + project type → CE code, >80% confidence): 22 high-confidence mappings identified | A majority of CE determinations can be made with high confidence from just 2 fields | **CE Screener NAICS Decision Matrix** (22 high-confidence rows; Medium-High to High confidence output) |
+| Tier 3 (ambiguous, ~23% of corpus): clusters in conventional oil/gas development and mixed agriculture/rangeland | These require GIS overlay and extraordinary circumstances review before a determination can be made | **GIS Proximity Integration** (FWS ECOS critical habitat + EPA EJScreen at intake) |
+| FAST-41 process duration data: CE median completion 47 days, EA median 11 months, EIS median 2.8 years (NETATEC v2.0 + CEQ EIS Timeline Report, January 2025) | Timeline variance is predictable by review type and stage; real-time variance tracking requires pre-seeded baselines, not manual configuration | **FAST-41 Timeline Tracking** (stage baseline durations pre-seeded; `nepa_milestone_variance_days__c` provides real-time variance) |
+| NEPATEC v2.0 structured schema (project_sector, project_type, location coordinates, project_description) defines exactly what a complete record requires | Incomplete applications cause RFI cycles of 2–4 weeks each; structured intake prevents them | **OmniScript CE Intake Wizard** (7-step structured intake; completeness check before submission) |
+
+### Dataset 2: PermitTEC v0.1 (Pacific Northwest National Laboratory, 2025)
+
+PermitTEC v0.1 is a dataset of 761 federal NEPA litigation cases compiled by PNNL, covering 1970–2025 with classification by review type, agency, circuit, challenge ground, disposition, and adjacent statute involvement. 223 cases are directly linked to NETATEC v2.0 project records.
+
+**Key findings from PermitTEC analysis:**
+
+| Finding | Implication | Feature Built |
+|---|---|---|
+| 98.2% of litigation involves EIS processes; EA litigation is lower-frequency; CE challenges are exceptional | Review type is the dominant risk predictor — risk scoring must weight it heavily | **Litigation Risk Scorer** (BRE Expression Set: review type is the primary input; EIS base score = 40/100) |
+| 9th Circuit: 369 cases (48.5%); D.C. Circuit: 175 cases (23%); other circuits: 1–33 cases each | Circuit geography is highly predictive; same agency + 9th/D.C. Circuit = multiplicative risk | **Circuit Risk Weight** (`NEPA_Circuit_Risk_Weight__mdt`: 13 records; 9th Circuit = highest weight) |
+| Lead agency distribution: Forest Service 37 cases, BLM 35 cases, FERC 15 cases at highest rates | Agency-specific baseline rates are available and should be applied rather than a single federal average | **Agency Risk Rate** (`NEPA_Agency_Risk_Rate__mdt`: 6 records; agency-specific priors) |
+| Five challenge grounds account for >95% of cases: failure to prepare, EIS/EA inadequacy, improper CE reliance, failure to supplement, adjacent statute violation | Challenge type is predictable from process attributes before litigation; early routing is feasible | **Challenge Predictor** (5-ground prediction model; rule weights derived from PermitTEC distribution stats) |
+| ESA, CWA, and NHPA are the most frequently involved adjacent statutes in multi-claim cases | Adjacent statute involvement is a distinct risk multiplier beyond NEPA compliance alone | **Statute Risk Weight** (`NEPA_Statute_Risk_Weight__mdt`: ESA, CWA, NHPA weighted inputs to Risk Scorer) |
+| Incomplete administrative records are among the most common bases for successful challenges | Record completeness must be tracked continuously, not evaluated after filing | **Defensibility Gap Checker** (real-time completeness scoring; flags missing required docs before record close) |
+| Cases filed within 60 days of ROD/FONSI with injunctive relief outcomes tend to involve inadequate public engagement records | Engagement documentation gaps are disproportionately costly | **Defensibility Trigger Flows** (after-save triggers on ContentVersion and nepa_engagement__c update defensibility scores in real time) |
+
+### What the Analysis Did Not Produce
+
+The PermitTEC circuit weights are derived from as few as 3–33 cases per circuit, below statistical threshold for circuit-specific predictions. The accelerator's AI Use Policy discloses this explicitly:
+
+> `[AI-GENERATED — PermitTEC v0.1, PNNL 2025, 761 cases; circuit weights based on small sample, treat as directional]`
+
+This disclosure is embedded in every risk score output (`nepa_risk_score_factors__c`) and is repeated in the AI Use Policy documentation included with the repository. Agencies are informed of model confidence limitations before relying on any output — this is a design requirement, not a disclaimer added after the fact.
+
+---
+
 ## Criterion 1: Impact
 
 ### Quantified Time-to-Permit Reductions
