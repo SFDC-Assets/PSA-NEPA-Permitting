@@ -818,6 +818,7 @@
         <members>NepaCommentTriageParser</members>
         <members>NepaCommentTriageParserTest</members>
         <members>NepaApiComplianceTest</members>
+        <members>NepaBREConfigTest</members>
         <name>ApexClass</name>
     </types>
     <types>
