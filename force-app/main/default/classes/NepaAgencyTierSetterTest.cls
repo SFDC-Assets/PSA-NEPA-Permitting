@@ -84,10 +84,8 @@ private class NepaAgencyTierSetterTest {
         String firstTier = getTier(proj.Id);
 
         // Then change to FAA (Slow_Scoping_Bottleneck) in a second DML
-        Test.startTest();
         proj.nepa_record_owner_agency__c = 'FAA';
         update proj;
-        Test.stopTest();
 
         String secondTier = getTier(proj.Id);
 

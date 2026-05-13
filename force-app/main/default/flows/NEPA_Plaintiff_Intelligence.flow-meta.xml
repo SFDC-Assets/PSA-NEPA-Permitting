@@ -279,6 +279,9 @@
                 <elementReference>var_ParentApp.OwnerId</elementReference>
             </value>
         </inputAssignments>
+        <faultConnector>
+            <targetReference>End_NoMatch</targetReference>
+        </faultConnector>
         <object>Task</object>
     </recordCreates>
 

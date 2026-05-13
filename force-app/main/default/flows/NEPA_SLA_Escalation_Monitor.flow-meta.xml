@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>Scheduled flow — runs daily. Queries active IndividualApplication records with a populated nepa_sla_due_date__c that have not yet reached a terminal process status (completed or cancelled). Before querying processes, iterates col_SLAConfigs to compute var_MaxWarningDays (the widest warning window across all review types) for the query bound, and reuses col_SLAConfigs per outer-loop iteration to look up the per-review-type warning window (var_SpecificWarningDays). For each record, evaluates: (1) overdue — TODAY > due date; (2) in warning window — due date &lt;= TODAY + review-type-specific warning days AND warning not yet sent. FeedItem records are collected in col_FeedItemsToCreate and bulk-created in a single DML call after the loop (no DML-in-loop). Record flag updates are also bulk operations. Fault paths log to NEPA_Error_Logger. Schedule must be configured at activation time in Flow Builder.</description>
+    <description>Scheduled flow — runs daily. Queries active IndividualApplication records with a populated nepa_sla_due_date__c that have not yet reached a terminal process status (completed or cancelled). Before querying processes, iterates col_SLAConfigs to compute var_MaxWarningDays (the widest warning window across all review types) for the query bound, and reuses col_SLAConfigs per outer-loop iteration to look up the per-review-type warning window (var_SpecificWarningDays). For each record, evaluates: (1) overdue — TODAY &gt; due date; (2) in warning window — due date &lt;= TODAY + review-type-specific warning days AND warning not yet sent. Record flag updates are bulk operations (no DML-in-loop). Fault paths log to NEPA_Error_Logger. Schedule must be configured at activation time in Flow Builder.</description>
     <label>NEPA SLA Escalation Monitor</label>
     <processType>AutoLaunchedFlow</processType>
     <status>Active</status>
@@ -10,7 +10,7 @@
          ASSIGNMENTS
     ============================================================ -->
 
-    <!-- Stage overdue record for bulk update collection; connector → FeedItem staging -->
+    <!-- Stage overdue record for bulk update collection -->
     <assignments>
         <name>Build_OverdueUpdate</name>
         <label>Stage Overdue Flag Update</label>
@@ -38,11 +38,11 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Stage_Overdue_FeedItem</targetReference>
+            <targetReference>Loop_Processes</targetReference>
         </connector>
     </assignments>
 
-    <!-- Stage warning record for bulk update collection; connector → FeedItem staging -->
+    <!-- Stage warning record for bulk update collection -->
     <assignments>
         <name>Build_WarningUpdate</name>
         <label>Stage Warning Flag Update</label>
@@ -70,82 +70,8 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Stage_Warning_FeedItem</targetReference>
+            <targetReference>Loop_Processes</targetReference>
         </connector>
-    </assignments>
-
-    <!-- Build and collect overdue FeedItem — no DML here, bulk create after loop (M5 fix) -->
-    <assignments>
-        <name>Stage_Overdue_FeedItem</name>
-        <label>Collect Overdue Chatter Notification</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_FeedItem.ParentId</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Loop_Processes.Id</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_FeedItem.Body</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>⚠️ SLA OVERDUE: This {!Loop_Processes.nepa_review_type__c} review passed its SLA deadline of {!Loop_Processes.nepa_sla_due_date__c}. Immediate action required to document the cause and update the project timeline.</stringValue>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_FeedItem.Type</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>TextPost</stringValue>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>col_FeedItemsToCreate</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>var_FeedItem</elementReference>
-            </value>
-        </assignmentItems>
-        <!-- No connector — returns control to loop for next iteration -->
-    </assignments>
-
-    <!-- Build and collect warning FeedItem — no DML here, bulk create after loop (M5 fix) -->
-    <assignments>
-        <name>Stage_Warning_FeedItem</name>
-        <label>Collect Warning Chatter Notification</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_FeedItem.ParentId</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Loop_Processes.Id</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_FeedItem.Body</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>📅 SLA WARNING: This {!Loop_Processes.nepa_review_type__c} review is approaching its SLA deadline of {!Loop_Processes.nepa_sla_due_date__c}. Please review the project schedule and confirm the process is on track.</stringValue>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_FeedItem.Type</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>TextPost</stringValue>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>col_FeedItemsToCreate</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>var_FeedItem</elementReference>
-            </value>
-        </assignmentItems>
-        <!-- No connector — returns control to loop for next iteration -->
     </assignments>
 
     <!-- Update var_MaxWarningDays when current CMT config is wider (M4 fix) -->
@@ -161,7 +87,9 @@
                 <elementReference>Loop_ComputeMaxWarning.Warning_Days_Before_Due__c</elementReference>
             </value>
         </assignmentItems>
-        <!-- No connector — inner loop resumes to next CMT record -->
+        <connector>
+            <targetReference>Loop_ComputeMaxWarning</targetReference>
+        </connector>
     </assignments>
 
     <!-- Reset specific warning days to max fallback before inner lookup loop (M4 fix) -->
@@ -195,7 +123,9 @@
                 <elementReference>Loop_FindConfigForProcess.Warning_Days_Before_Due__c</elementReference>
             </value>
         </assignmentItems>
-        <!-- No connector — inner loop resumes to next CMT record -->
+        <connector>
+            <targetReference>Loop_FindConfigForProcess</targetReference>
+        </connector>
     </assignments>
 
     <!-- Error handlers -->
@@ -297,6 +227,9 @@
         <label>Config Warning Days Exceeds Current Max?</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Loop_ComputeMaxWarning</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Not higher — skip</defaultConnectorLabel>
         <rules>
             <name>Is_New_Max</name>
@@ -321,6 +254,9 @@
         <label>Config Review Type Matches Process?</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Loop_FindConfigForProcess</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>No match — continue inner loop</defaultConnectorLabel>
         <rules>
             <name>Config_Matches</name>
@@ -346,6 +282,9 @@
         <label>Overdue or In Warning Window?</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Loop_Processes</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Neither — skip</defaultConnectorLabel>
         <rules>
             <name>Is_Overdue</name>
@@ -391,33 +330,6 @@
                 <targetReference>Build_WarningUpdate</targetReference>
             </connector>
             <label>In Warning Window (warning not yet sent)</label>
-        </rules>
-    </decisions>
-
-    <!-- After main loop: check if any FeedItems were collected before bulk create (M5 fix) -->
-    <decisions>
-        <name>Decision_HasFeedItems</name>
-        <label>Any Chatter Notifications to Post?</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <defaultConnectorLabel>No Feed Items — proceed to record updates</defaultConnectorLabel>
-        <defaultConnector>
-            <targetReference>Decision_HasWarningUpdates</targetReference>
-        </defaultConnector>
-        <rules>
-            <name>Has_Feed_Items</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>col_FeedItemsToCreate</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Post_Chatter_Bulk</targetReference>
-            </connector>
-            <label>Has Feed Items</label>
         </rules>
     </decisions>
 
@@ -537,9 +449,8 @@
         <nextValueConnector>
             <targetReference>Init_SpecificWarningDays</targetReference>
         </nextValueConnector>
-        <!-- Bulk create FeedItems after all iterations complete (M5 fix) -->
         <noMoreValuesConnector>
-            <targetReference>Decision_HasFeedItems</targetReference>
+            <targetReference>Decision_HasWarningUpdates</targetReference>
         </noMoreValuesConnector>
     </loops>
 
@@ -654,24 +565,6 @@
     </recordLookups>
 
     <!-- ============================================================
-         POST-LOOP: Bulk create all collected FeedItems in one DML call (M5 fix).
-         Eliminates the original DML-in-loop anti-pattern.
-    ============================================================ -->
-    <recordCreates>
-        <name>Post_Chatter_Bulk</name>
-        <label>Post All Chatter Notifications (Bulk)</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <faultConnector>
-            <targetReference>Handle_UpdateError</targetReference>
-        </faultConnector>
-        <inputReference>col_FeedItemsToCreate</inputReference>
-        <connector>
-            <targetReference>Decision_HasWarningUpdates</targetReference>
-        </connector>
-    </recordCreates>
-
-    <!-- ============================================================
          POST-LOOP: Bulk update record flags
     ============================================================ -->
     <recordUpdates>
@@ -779,16 +672,6 @@
         <objectType>IndividualApplication</objectType>
     </variables>
 
-    <!-- Collection of FeedItems staged during loop, bulk-created after loop exits (M5 fix) -->
-    <variables>
-        <name>col_FeedItemsToCreate</name>
-        <dataType>SObject</dataType>
-        <isCollection>true</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>FeedItem</objectType>
-    </variables>
-
     <variables>
         <name>var_UpdateRecord</name>
         <dataType>SObject</dataType>
@@ -796,16 +679,6 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
         <objectType>IndividualApplication</objectType>
-    </variables>
-
-    <!-- Staging variable for building FeedItem before adding to collection (M5 fix) -->
-    <variables>
-        <name>var_FeedItem</name>
-        <dataType>SObject</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>FeedItem</objectType>
     </variables>
 
     <!-- Maximum warning days across all active SLA configs — computed before query (M4 fix) -->
