@@ -288,4 +288,72 @@ private class NepaSlaEscalationMonitorTest {
 
         System.assertEquals(false, threw, 'SLA escalation monitor must not throw on bulk overdue records');
     }
+
+    // ── SLA Due Date Setter: review type + start date auto-populates due date ─
+
+    @IsTest
+    static void slaDueDateSetter_eisWithStartDate_populatesDueDate() {
+        // NEPA_SLA_Due_Date_Setter is a before-save flow on IndividualApplication.
+        // When nepa_review_type__c and nepa_start_date__c are set, it computes
+        // nepa_sla_due_date__c = nepa_start_date__c + NEPA_SLA_Config__mdt.Total_Days__c.
+        // EIS SLA = 730 days.
+        Program proj = NepaTestFactory.insertProgram('SLA-SETTER-001', 'SLA Setter Test', 'BLM');
+        IndividualApplication ia = new IndividualApplication();
+        ia.Category                = 'Permit';
+        ia.LicenseTypeId           = getLicenseTypeId();
+        ia.nepa_related_project__c = proj.Id;
+        ia.nepa_review_type__c     = 'EIS';
+        ia.nepa_process_status__c  = 'in progress';
+        ia.nepa_process_stage__c   = 'Scoping';
+        ia.nepa_start_date__c      = Date.today();
+
+        Test.startTest();
+        insert ia;
+        Test.stopTest();
+
+        IndividualApplication result = [
+            SELECT nepa_sla_due_date__c, nepa_start_date__c
+            FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+
+        System.assertNotEquals(null, result.nepa_sla_due_date__c,
+            'nepa_sla_due_date__c must be auto-populated by NEPA_SLA_Due_Date_Setter on insert');
+        System.assertEquals(Date.today().addDays(730), result.nepa_sla_due_date__c,
+            'EIS SLA due date must be start date + 730 days (NEPA_SLA_Config.EIS.Total_Days__c); got: ' +
+            result.nepa_sla_due_date__c);
+    }
+
+    @IsTest
+    static void slaDueDateSetter_ceWithStartDate_populatesShortDueDate() {
+        // CE SLA should be shorter than EIS — verify it is set and differs from EIS (730d)
+        List<NEPA_SLA_Config__mdt> ceCfg = [
+            SELECT Total_Days__c FROM NEPA_SLA_Config__mdt
+            WHERE Review_Type__c = 'CE' AND Active__c = true LIMIT 1
+        ];
+        if (ceCfg.isEmpty()) { return; } // CE config not present; skip
+
+        Program proj = NepaTestFactory.insertProgram('SLA-SETTER-CE-001', 'SLA Setter CE Test', 'BLM');
+        IndividualApplication ia = new IndividualApplication();
+        ia.Category                = 'Permit';
+        ia.LicenseTypeId           = getLicenseTypeId();
+        ia.nepa_related_project__c = proj.Id;
+        ia.nepa_review_type__c     = 'CE';
+        ia.nepa_process_status__c  = 'in progress';
+        ia.nepa_process_stage__c   = 'Scoping';
+        ia.nepa_start_date__c      = Date.today();
+
+        Test.startTest();
+        insert ia;
+        Test.stopTest();
+
+        IndividualApplication result = [
+            SELECT nepa_sla_due_date__c FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+
+        System.assertNotEquals(null, result.nepa_sla_due_date__c,
+            'nepa_sla_due_date__c must be auto-populated for CE review type');
+        Integer ceDays = ceCfg[0].Total_Days__c.intValue();
+        System.assertEquals(Date.today().addDays(ceDays), result.nepa_sla_due_date__c,
+            'CE SLA due date must equal start date + ' + ceDays + ' days; got: ' + result.nepa_sla_due_date__c);
+    }
 }

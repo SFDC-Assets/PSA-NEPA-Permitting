@@ -221,6 +221,45 @@ private class NepaCeqExportServiceTest {
         System.assertEquals(200, (Integer) body.get('pageSize'));
     }
 
+    // ── CEQ Export payload fields ─────────────────────────────────────────────
+
+    @IsTest
+    static void getList_payload_containsExpectedDtoFields() {
+        // Verify the DTO includes federalUniqueId, reviewType, processStatus, agencyId, riskScore, riskTier,
+        // recordCompleteness — the fields driving MFR compliance reporting.
+        RestContext.request  = buildRequest('GET', '/services/apexrest/nepa/v1/processes/', null);
+        RestContext.response = new RestResponse();
+
+        Test.startTest();
+        NepaCeqExportService.doGet();
+        Test.stopTest();
+
+        System.assertEquals(200, RestContext.response.statusCode);
+        Map<String, Object> body = parseBody();
+        List<Object> records = (List<Object>) body.get('data');
+        System.assert(!records.isEmpty(), 'Export list must return at least one record');
+
+        Map<String, Object> dto = (Map<String, Object>) records[0];
+        System.assert(dto.containsKey('federalUniqueId'),
+            'DTO must contain federalUniqueId key');
+        System.assert(dto.containsKey('reviewType'),
+            'DTO must contain reviewType key');
+        System.assert(dto.containsKey('processStatus'),
+            'DTO must contain processStatus key');
+        System.assert(dto.containsKey('agencyId'),
+            'DTO must contain agencyId key');
+        System.assert(dto.containsKey('riskScore'),
+            'DTO must contain riskScore key (may be null if BRE has not run)');
+        System.assert(dto.containsKey('riskTier'),
+            'DTO must contain riskTier key');
+        System.assert(dto.containsKey('recordCompleteness'),
+            'DTO must contain recordCompleteness key');
+        System.assert(dto.containsKey('slaDueDate'),
+            'DTO must contain slaDueDate key');
+        System.assert(dto.containsKey('lastModified'),
+            'DTO must contain lastModified key');
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private static RestRequest buildRequest(String method, String uri, Map<String, String> params) {

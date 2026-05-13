@@ -786,4 +786,39 @@ private class NepaBREConfigTest {
                 'Extraordinary circumstances must block CE-Recommended');
         }
     }
+
+    // ── Statute risk weight calibration values (Phase 1 PermitTEC corpus) ────
+
+    @IsTest
+    static void statuteRiskWeights_pointValuesMatchCorpusCalibration() {
+        // PermitTEC v0.1 calibration formula: statute_pts = round((multiplier - 1.00) * 20, 0), min 1
+        // ESA=10 (mult 1.48), CWA=4 (mult 1.20), NFMA=5 (mult 1.27), NGA=1 (mult 1.02), NHPA=2 (~1.10)
+        List<NEPA_Statute_Risk_Weight__mdt> records = [
+            SELECT Statute_Key__c, Risk_Points__c
+            FROM NEPA_Statute_Risk_Weight__mdt
+            WHERE Active__c = true
+        ];
+
+        Map<String, Decimal> pointsByKey = new Map<String, Decimal>();
+        for (NEPA_Statute_Risk_Weight__mdt r : records) {
+            pointsByKey.put(r.Statute_Key__c, r.Risk_Points__c);
+        }
+
+        System.assert(pointsByKey.containsKey('ESA'),   'NEPA_Statute_Risk_Weight__mdt must have active ESA record');
+        System.assert(pointsByKey.containsKey('CWA'),   'NEPA_Statute_Risk_Weight__mdt must have active CWA record');
+        System.assert(pointsByKey.containsKey('NFMA'),  'NEPA_Statute_Risk_Weight__mdt must have active NFMA record');
+        System.assert(pointsByKey.containsKey('NGA'),   'NEPA_Statute_Risk_Weight__mdt must have active NGA record');
+        System.assert(pointsByKey.containsKey('NHPA'),  'NEPA_Statute_Risk_Weight__mdt must have active NHPA record');
+
+        System.assertEquals(10, pointsByKey.get('ESA'),
+            'ESA Risk_Points__c must be 10 (PermitTEC Stage 7: multiplier 1.48, 72 cases); got: ' + pointsByKey.get('ESA'));
+        System.assertEquals(4, pointsByKey.get('CWA'),
+            'CWA Risk_Points__c must be 4 (PermitTEC Stage 7: multiplier 1.20, 48 cases); got: ' + pointsByKey.get('CWA'));
+        System.assertEquals(5, pointsByKey.get('NFMA'),
+            'NFMA Risk_Points__c must be 5 (PermitTEC Stage 7: multiplier 1.27, 58 cases); got: ' + pointsByKey.get('NFMA'));
+        System.assertEquals(1, pointsByKey.get('NGA'),
+            'NGA Risk_Points__c must be 1 (PermitTEC Stage 7: multiplier 1.02, 36 cases); got: ' + pointsByKey.get('NGA'));
+        System.assert(pointsByKey.get('NHPA') >= 1,
+            'NHPA Risk_Points__c must be >= 1; got: ' + pointsByKey.get('NHPA'));
+    }
 }

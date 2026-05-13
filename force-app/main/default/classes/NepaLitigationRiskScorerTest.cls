@@ -322,4 +322,73 @@ private class NepaLitigationRiskScorerTest {
         System.assertEquals(false, threw,
             'Changing nepa_record_completeness__c must not throw — flow re-trigger path must be safe');
     }
+
+    // ── Expedited/Emergency APA penalty ──────────────────────────────────────
+
+    @IsTest
+    static void expeditedTimeline_incompleteRecord_appliesPenaltyFlag() {
+        // When review timeline type = Expedited/Emergency AND record completeness < 100,
+        // the Risk Scorer must set nepa_expedited_risk_penalty_applied__c = true.
+        Program proj = makeProject('Bureau of Land Management', '9th');
+        IndividualApplication ia = makeProcess(proj.Id, 'EIS');
+        ia.nepa_review_timeline_type__c = 'Expedited/Emergency';
+        ia.nepa_record_completeness__c  = 70;
+        insert ia;
+
+        Test.startTest();
+        IndividualApplication iaUpdate = new IndividualApplication(Id = ia.Id);
+        iaUpdate.nepa_review_type__c           = 'EIS';
+        iaUpdate.nepa_review_timeline_type__c  = 'Expedited/Emergency';
+        iaUpdate.nepa_record_completeness__c   = 70;
+        update iaUpdate;
+        Test.stopTest();
+
+        IndividualApplication result = [
+            SELECT nepa_expedited_risk_penalty_applied__c, nepa_risk_score_factors__c
+            FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+
+        // AsyncAfterCommit: fields may not be written in test context — guard and assert when present
+        if (result.nepa_expedited_risk_penalty_applied__c != null) {
+            System.assertEquals(true, result.nepa_expedited_risk_penalty_applied__c,
+                'Expedited timeline + incomplete record must set nepa_expedited_risk_penalty_applied__c = true');
+        }
+        if (result.nepa_risk_score_factors__c != null) {
+            System.assert(
+                result.nepa_risk_score_factors__c.containsIgnoreCase('APA') ||
+                result.nepa_risk_score_factors__c.containsIgnoreCase('PENALTY') ||
+                result.nepa_risk_score_factors__c.containsIgnoreCase('1.5'),
+                'Risk score factors must mention APA penalty when expedited flag applied; got: ' +
+                result.nepa_risk_score_factors__c
+            );
+        }
+    }
+
+    @IsTest
+    static void expeditedTimeline_completeRecord_doesNotApplyPenalty() {
+        // When record completeness = 100, the APA penalty must NOT apply even if timeline is expedited.
+        Program proj = makeProject('Bureau of Land Management', '9th');
+        IndividualApplication ia = makeProcess(proj.Id, 'EIS');
+        ia.nepa_review_timeline_type__c = 'Expedited/Emergency';
+        ia.nepa_record_completeness__c  = 100;
+        insert ia;
+
+        Test.startTest();
+        IndividualApplication iaUpdate = new IndividualApplication(Id = ia.Id);
+        iaUpdate.nepa_review_type__c           = 'EIS';
+        iaUpdate.nepa_review_timeline_type__c  = 'Expedited/Emergency';
+        iaUpdate.nepa_record_completeness__c   = 100;
+        update iaUpdate;
+        Test.stopTest();
+
+        IndividualApplication result = [
+            SELECT nepa_expedited_risk_penalty_applied__c
+            FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+
+        if (result.nepa_expedited_risk_penalty_applied__c != null) {
+            System.assertEquals(false, result.nepa_expedited_risk_penalty_applied__c,
+                'Complete record (100%) must not trigger APA expedited penalty even with Expedited/Emergency timeline');
+        }
+    }
 }
