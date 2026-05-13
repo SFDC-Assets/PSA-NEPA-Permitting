@@ -261,23 +261,7 @@ The Integration Procedure `NEPA/CEQExport` accepts a `projectId` (the Salesforce
 
 ## PSS Dependency
 
-This Accelerator is built on **Salesforce Public Sector Solutions (PSS)** and depends on three PSS standard objects that are not available in a standard Salesforce org:
-
-| PSS Object | CEQ Entity | Dependency |
-|---|---|---|
-| `IndividualApplication` | Entity 2: Process | All 11 automation flows, permission set FLS, OmniStudio DataRaptor |
-| `Program` | Entity 1: Project | Litigation risk scoring, CE screener, DataRaptor extract |
-| `ApplicationTimeline` | Entity 6: Case Events | CE Determination Router, Timeline Risk Assessor, Admin Record Checker |
-
-**If your org does not have PSS installed**, you will need to substitute these objects before deploying:
-
-1. **`IndividualApplication`** — replace with a custom object (e.g., `NEPA_Process__c`) or a standard object such as `Case`. Update every flow's `Get_IndividualApplication` recordLookup, all `inputAssignments` writing to `IndividualApplicationId`, and all `fieldPermissions` referencing `IndividualApplication.*` in the permission set.
-2. **`Program`** — replace with a custom object or `Account`. Update the Litigation Risk Scorer's `Get_RelatedProject` lookup and the `nepa_related_project__c` lookup field on `IndividualApplication`.
-3. **`ApplicationTimeline`** — replace with a custom child object. Update the `IndividualApplicationId` master-detail field name and the `nepa_related_case_event__c` lookup on `ContentVersion`.
-
-The three custom objects (`nepa_engagement__c`, `nepa_litigation__c`, `nepa_process_related_agencies__c`) and all custom metadata types are PSS-independent and deploy without modification.
-
-**Installing PSS**: A free PSS developer org is available at the [PSS trial link](https://developer.salesforce.com/free-trials/comparison/public-sector) listed in Before You Install below. This is the recommended path — substituting the PSS objects removes access to PSS-native features such as Action Plans, OmniStudio, and the Application and Authorization data model relationships that the CEQ export relies on.
+This Accelerator requires **Salesforce Public Sector Solutions (PSS)**. If your org does not have PSS installed, see [QUICKSTART.md — PSS Substitution](docs/QUICKSTART.md#pss-substitution) for object replacement guidance.
 
 
 ## Data Model Notes

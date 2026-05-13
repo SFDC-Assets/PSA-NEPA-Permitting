@@ -30,6 +30,28 @@ The BRE import is the most common failure point. If you skip it, CE Screener and
 
 ---
 
+## PSS Substitution
+
+This Accelerator depends on three PSS standard objects that are not available in a standard Salesforce org:
+
+| PSS Object | CEQ Entity | Dependency |
+|---|---|---|
+| `IndividualApplication` | Entity 2: Process | All automation flows, permission set FLS, OmniStudio DataRaptors |
+| `Program` | Entity 1: Project | Litigation risk scoring, CE screener, DataRaptor extract |
+| `ApplicationTimeline` | Entity 6: Case Events | CE Determination Router, Timeline Risk Assessor, Admin Record Checker |
+
+**If your org does not have PSS installed**, substitute these objects before deploying:
+
+1. **`IndividualApplication`** — replace with a custom object (e.g., `NEPA_Process__c`) or `Case`. Update every flow's `Get_IndividualApplication` recordLookup, all `inputAssignments` writing to `IndividualApplicationId`, and all `fieldPermissions` referencing `IndividualApplication.*` in the permission set.
+2. **`Program`** — replace with a custom object or `Account`. Update the Litigation Risk Scorer's `Get_RelatedProject` lookup and the `nepa_related_project__c` lookup field on `IndividualApplication`.
+3. **`ApplicationTimeline`** — replace with a custom child object. Update the `IndividualApplicationId` master-detail field name and the `nepa_related_case_event__c` lookup on `ContentVersion`.
+
+The custom objects (`nepa_engagement__c`, `nepa_litigation__c`, `nepa_process_related_agencies__c`, `nepa_ce_library__c`, `nepa_gis_data__c`) and all custom metadata types are PSS-independent and deploy without modification.
+
+A free PSS developer org is available at the [PSS trial org signup](https://developer.salesforce.com/free-trials/comparison/public-sector). This is the recommended path — substituting the PSS objects removes access to PSS-native features such as Action Plans, OmniStudio, and the Application data model relationships the CEQ export relies on.
+
+---
+
 ## Step 1 — Clone the Repository and Authenticate
 
 ```bash
@@ -132,7 +154,12 @@ After importing, go to **Setup → BRE → Expression Sets → NEPA CE Screener*
 
 ### 4c. Activate Flows
 
-Deploy sets all flows to **Draft**. You must activate them in order to avoid trigger dependency errors.
+Deploy sets all **30 flows** to Draft. Activate the 26 listed below in order to avoid trigger dependency errors. The remaining 4 are conditional or deferred:
+
+- `NEPA_Comment_Triage_Save` — activate only when deploying the Comment Triage Agentforce agent
+- `NEPA_EIS_Section_Assembler` — requires Einstein Generative AI; activate when enabling AI document drafting
+- `NEPA_Work_Order_Generator` — stub placeholder; not yet implemented
+- `NEPA_CE_Intake` (screen flow) — OmniScript CEIntake is the preferred path for OmniStudio orgs; retain as fallback
 
 Go to **Setup → Flows** in your org and activate in this order:
 

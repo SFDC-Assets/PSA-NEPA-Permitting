@@ -40,16 +40,9 @@ Two PSS objects were candidates for the Process entity: `IndividualApplication` 
 
 ### Decision
 
-Map CEQ entities to PSS objects as follows:
+Map CEQ entities to PSS objects as follows. See README.md "CEQ Standard Coverage" for the complete entity-to-object mapping table, including all 13 CEQ entities and their custom object supplements.
 
-| CEQ Entity | Salesforce Object | Notes |
-|---|---|---|
-| Project | `Program` | Standard PSS object |
-| Process | `IndividualApplication` | Standard PSS object |
-| Documents | `ContentVersion` | Standard platform object |
-| Comments | `PublicComplaint` | Standard PSS object |
-| Public Engagement Events | `nepa_engagement__c` | Custom object (MasterDetail on IndividualApplication) |
-| Case Events | `ApplicationTimeline` | Standard PSS object |
+The key architectural decision was choosing `IndividualApplication` over `BusinessLicenseApplication` for CEQ Entity 2 (Process):
 
 `IndividualApplication` was selected over `BusinessLicenseApplication` because:
 
@@ -81,7 +74,7 @@ The implementation could use Apex classes, declarative Flows, or a hybrid approa
 
 ### Decision
 
-All risk intelligence automation is implemented as declarative Flows with no Apex dependencies. All after-save flows that write back to the triggering record use `AsyncAfterCommit` scheduled paths.
+All risk intelligence automation is implemented as declarative components — Flows, Business Rules Engine Decision Matrices, and Flow-invoked Apex bridges — with no custom business logic Apex. All after-save flows that write back to the triggering record use `AsyncAfterCommit` scheduled paths.
 
 **Rationale:**
 
@@ -199,6 +192,8 @@ These flows accept record IDs as inputs and return structured outputs. Their inp
 
 **What to freeze:** `NEPA_CE_Intake` screen flow is the Phase 2 OmniScript replacement target. No new business logic should be added to it. New intake fields belong in the autolaunched scoring flows, not the screen flow.
 
+> **Update (ADR 011, 2026-05-12):** The OmniScript-based CE intake (`CEIntake` OmniScript backed by `CEScreeningIP` and `CESaveIP`) shipped in Phase 1.1, not Phase 2. The screen flow (`NEPA_CE_Intake`) is retained as a fallback for orgs without OmniStudio. See ADR 011 for the full implementation rationale and OmniStudio activation requirements.
+
 **ContentDocumentLink avoidance:** `nepa_process__c` (Lookup to `IndividualApplication`) was added directly to `ContentVersion` to provide a direct query path. OmniScript Integration Procedures cannot traverse `ContentDocumentLink` junction records the same way Flow `Get Records` can. All queries that previously resolved process context from `ContentDocumentLink` have been rewritten to use `nepa_process__c`.
 
 **CMT to Expression Sets migration path:** `NEPA_CE_Screening_Rule__mdt` maps to a Business Rules Engine Decision Matrix in Phase 2. The `EqualTo` agency matching established in ADR 004 satisfies BRE row-matching semantics directly.
@@ -297,13 +292,13 @@ Phase 2 introduces Agentforce agents for comment triage, document generation ass
 
 ### Decision
 
-Phase 1 structures comment and document metadata fields specifically for Phase 2 RAG retrieval. The following field decisions are made now to avoid Phase 2 refactoring:
+Phase 1 (v1.1) implemented comment and document metadata fields for Agentforce/RAG readiness. The following field decisions were made to avoid Phase 2 refactoring:
 
 **Sentiment standardization:** `nepa_sentiment__c` on `PublicComplaint` is a restricted picklist with exactly four values: `Supportive`, `Opposed`, `Neutral`, `Mixed`. The Agentforce triage action writes to this field; no free-text sentiment values are permitted. Consistent enumerated values enable reliable downstream filtering, aggregation, and RAG context window management.
 
 **Section-level document tagging:** `nepa_section_tags__c` on `ContentVersion` is a multi-select picklist with values: `Purpose and Need`, `Alternatives`, `Affected Environment`, `Environmental Consequences`, `Mitigation`, `Appendix`, `Full Document`. This enables section-level RAG retrieval where the Agentforce document generation agent retrieves only the relevant section from prior documents rather than ingesting full documents into the context window.
 
-**Human-in-the-loop for AI-generated content:** `nepa_ai_generated__c` (Checkbox) on `ContentVersion` flags AI-generated content. `nepa_reviewer__c` (Lookup to User) and `nepa_reviewed_date__c` (DateTime) close the human-in-the-loop requirement. A Phase 2 validation rule will enforce that AI-generated documents must have `nepa_reviewer__c` set and `nepa_reviewed_date__c` populated before `nepa_status__c` can be set to `Approved`.
+**Human-in-the-loop for AI-generated content:** `nepa_ai_generated__c` (Checkbox) on `ContentVersion` flags AI-generated content. `nepa_reviewer__c` (Lookup to User) and `nepa_reviewed_date__c` (DateTime) close the human-in-the-loop requirement. A Phase 2 validation rule will enforce that AI-generated documents must have `nepa_reviewer__c` set and `nepa_reviewed_date__c` populated before `nepa_status__c` can be set to `Approved`. (Fields deployed; validation rule deferred to Phase 2.)
 
 **Comment body hygiene:** Before Phase 2, a before-save validation rule on `PublicComplaint` should reject body text containing embedded HTML tags and normalize whitespace on save. Malformed large comment bodies with HTML markup cause LLM token limit overruns and degrade RAG retrieval quality.
 
@@ -451,6 +446,7 @@ Replace `NEPA_CE_Code__mdt` as the primary CE catalog with `nepa_ce_library__c` 
 - **Experience Cloud accessible.** Portal users can query `nepa_ce_library__c` directly via standard object permissions. FLS and object-level sharing are configured in the permission set, not in application logic.
 - **`NEPA_CE_Code__mdt` retained for backward compatibility.** The existing CMT is not deleted. BRE expression set rows that reference CE code values by string still work. The CMT will be deprecated in a future release once all BRE reference patterns are migrated to the custom object.
 - **Load script must be idempotent.** Any bulk load operation against `nepa_ce_library__c` must use upsert with the external ID, not insert. Duplicate CE records with the same agency + code combination would produce incorrect screener results and confusing search output.
+- **Migration complete as of Phase 1.1 (2026-05-12).** All deployments use `nepa_ce_library__c`. `NEPA_CE_Code__mdt` is deprecated but retained for BRE row backward compatibility.
 
 ---
 
