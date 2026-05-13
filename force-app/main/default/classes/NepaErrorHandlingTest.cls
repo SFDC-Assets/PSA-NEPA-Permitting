@@ -38,10 +38,10 @@ private class NepaErrorHandlingTest {
     static void errorLogger_platformEvent_createsFlowErrorRecord() {
         // Publish the error event directly and deliver via Test.getEventBus()
         NEPA_Error_Event__e evt = new NEPA_Error_Event__e();
-        evt.nepa_flow_name__c     = 'NepaErrorHandlingTest_PlatformEvent';
-        evt.nepa_error_message__c = 'Platform event delivery test';
-        evt.nepa_failed_step__c   = 'DeliveryTest';
-        evt.nepa_error_context__c = 'Test:true';
+        evt.Flow_Name__c     = 'NepaErrorHandlingTest_PlatformEvent';
+        evt.Error_Message__c = 'Platform event delivery test';
+        evt.Failed_Step__c   = 'DeliveryTest';
+        evt.Error_Context__c = 'Test:true';
 
         Test.startTest();
         Database.SaveResult sr = EventBus.publish(evt);
@@ -53,9 +53,9 @@ private class NepaErrorHandlingTest {
 
         // After Test.stopTest(), the NEPA_Error_Event_Handler flow should have fired
         List<NEPA_Flow_Error__c> errors = [
-            SELECT nepa_flow_name__c, nepa_error_message__c
+            SELECT nepa_flow_api_name__c, nepa_error_message__c
             FROM NEPA_Flow_Error__c
-            WHERE nepa_flow_name__c = 'NepaErrorHandlingTest_PlatformEvent'
+            WHERE nepa_flow_api_name__c = 'NepaErrorHandlingTest_PlatformEvent'
             ORDER BY CreatedDate DESC
             LIMIT 1
         ];
@@ -75,16 +75,16 @@ private class NepaErrorHandlingTest {
     static void errorEvent_schema_hasRequiredFields() {
         // Verify the platform event object and its fields are accessible
         NEPA_Error_Event__e evt = new NEPA_Error_Event__e();
-        evt.nepa_flow_name__c     = 'SchemaTest';
-        evt.nepa_error_message__c = 'Schema verification';
-        evt.nepa_failed_step__c   = 'Schema_Step';
-        evt.nepa_record_id__c     = null;
-        evt.nepa_error_context__c = 'Test:true';
+        evt.Flow_Name__c     = 'SchemaTest';
+        evt.Error_Message__c = 'Schema verification';
+        evt.Failed_Step__c   = 'Schema_Step';
+        evt.Record_Id__c     = null;
+        evt.Error_Context__c = 'Test:true';
 
         // If any field is missing, the field reference above would cause a compile error.
         // Runtime check: event object is constructable.
         System.assertNotEquals(null, evt, 'NEPA_Error_Event__e must be constructable with all required fields');
-        System.assertEquals('SchemaTest', evt.nepa_flow_name__c,
-            'nepa_flow_name__c must be writable on NEPA_Error_Event__e');
+        System.assertEquals('SchemaTest', evt.Flow_Name__c,
+            'Flow_Name__c must be writable on NEPA_Error_Event__e');
     }
 }
