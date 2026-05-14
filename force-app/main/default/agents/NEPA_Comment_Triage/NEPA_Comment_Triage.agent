@@ -45,6 +45,20 @@ variables:
   ai_litigation_threat_basis: mutable string = ""
     label: "AI Litigation Threat Basis"
 
+  # ── Duplicate check outputs ──────────────────────────────────────────────────
+  is_duplicate: mutable boolean = False
+    label: "Is Duplicate Comment"
+  original_comment_id: mutable string = ""
+    label: "Original Comment Id (if duplicate)"
+  similarity_basis: mutable string = ""
+    label: "Similarity Detection Basis"
+
+  # ── Response task outputs ────────────────────────────────────────────────────
+  response_task_created: mutable boolean = False
+    label: "Response Task Created"
+  response_task_id: mutable string = ""
+    label: "Response Task Id"
+
   # ── Save result ─────────────────────────────────────────────────────────────
   save_success: mutable boolean = False
     label: "Save Success"
@@ -330,8 +344,49 @@ topic low_confidence_review:
       transition to @topic.save_triage
 
 topic save_triage:
-  description: "Saves the final triage result to the PublicComplaint record via the NEPA_Comment_Triage_Save flow. Writes all AI audit trail fields. Transitions to result summary."
+  description: "Saves the final triage result to the PublicComplaint record. Runs duplicate check and (for substantive comments) creates a response task before saving the AI audit trail. Transitions to result summary."
   actions:
+    check_duplicate:
+      description: "Check whether this comment is substantially similar to an existing comment on the same NEPA process within the past 30 days."
+      inputs:
+        inp_CommentId: string
+          description: "PublicComplaint record Id"
+        inp_CommentBody: string
+          description: "Comment body text for similarity comparison"
+        inp_RelatedProcessId: string
+          description: "Related IndividualApplication (NEPA process) Id"
+      outputs:
+        out_IsDuplicate: boolean
+          description: "True if a near-duplicate was detected"
+          filter_from_agent: True
+        out_OriginalCommentId: string
+          description: "Id of the original comment this duplicates"
+          filter_from_agent: True
+        out_SimilarityBasis: string
+          description: "Description of how similarity was determined"
+          filter_from_agent: True
+      target: "flow://NEPA_Comment_Duplicate_Check"
+      include_in_progress_indicator: True
+      progress_indicator_message: "Checking for duplicate submissions..."
+
+    create_response_task:
+      description: "For substantive, non-duplicate comments: create a high-priority response task assigned to the NEPA Coordinator queue with a 30-day due date."
+      inputs:
+        inp_CommentId: string
+          description: "PublicComplaint record Id"
+        inp_IsSubstantive: boolean
+          description: "Whether the comment was classified as substantive"
+      outputs:
+        out_Created: boolean
+          description: "True if a response Task was created"
+          filter_from_agent: True
+        out_TaskId: string
+          description: "Id of the created Task"
+          filter_from_agent: True
+      target: "flow://NEPA_Comment_ResponseTask_Creator"
+      include_in_progress_indicator: True
+      progress_indicator_message: "Creating response task..."
+
     save_result:
       description: "Persist the triage classification and full audit trail to the PublicComplaint record."
       inputs:
@@ -370,6 +425,24 @@ topic save_triage:
 
   reasoning:
     instructions: ->
+      # Step 1: Run duplicate check
+      run @actions.check_duplicate
+        with inp_CommentId = @variables.comment_id
+        with inp_CommentBody = @variables.comment_body
+        with inp_RelatedProcessId = @variables.process_context
+        set @variables.is_duplicate = @outputs.out_IsDuplicate
+        set @variables.original_comment_id = @outputs.out_OriginalCommentId
+        set @variables.similarity_basis = @outputs.out_SimilarityBasis
+
+      # Step 2: Create response task for substantive, non-duplicate comments only
+      if @variables.ai_is_substantive == True and @variables.is_duplicate == False:
+        run @actions.create_response_task
+          with inp_CommentId = @variables.comment_id
+          with inp_IsSubstantive = @variables.ai_is_substantive
+          set @variables.response_task_created = @outputs.out_Created
+          set @variables.response_task_id = @outputs.out_TaskId
+
+      # Step 3: Save triage result and AI audit trail
       run @actions.save_result
         with inp_CommentId = @variables.comment_id
         with inp_Sentiment = @variables.ai_sentiment
@@ -399,8 +472,18 @@ topic triage_summary:
       | **Confidence:** {!@variables.ai_confidence_score}/100
       | **Rationale:** {!@variables.ai_triage_rationale}
 
+      if @variables.is_duplicate == True:
+        | **Duplicate Detected** — This comment is substantially similar to
+          Comment {!@variables.original_comment_id} submitted for this process
+          within the past 30 days. It has been flagged for response consolidation.
+          Basis: {!@variables.similarity_basis}
+
       if @variables.ai_cluster_hint != "":
         | **Cluster Hint:** {!@variables.ai_cluster_hint}
+
+      if @variables.response_task_created == True:
+        | **Response Task Created** — Task {!@variables.response_task_id} assigned
+          to the NEPA Coordinator queue with a 30-day due date.
 
       if @variables.ai_litigation_threat == True:
         | **⚠ Litigation Threat Detected (Vermont Yankee / Issue Exhaustion)**

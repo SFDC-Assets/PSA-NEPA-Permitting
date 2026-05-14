@@ -194,6 +194,46 @@
                 <identifier>ia_ce_disturbance_acres</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_nhd_proximity_flag__c</fieldItem>
+                <identifier>ia_ce_nhd_flag</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_tribal_lands_flag__c</fieldItem>
+                <identifier>ia_ce_tribal_lands_flag</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_plss_flag__c</fieldItem>
+                <identifier>ia_ce_plss_flag</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_screener_last_run__c</fieldItem>
+                <identifier>ia_ce_screener_last_run</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>ia-ce-c1</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -238,6 +278,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_connected_actions_identified__c</fieldItem>
                 <identifier>ia_ce_connected_actions</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_ce_rationale_supplemental__c</fieldItem>
+                <identifier>ia_ce_rationale_supplemental</identifier>
             </fieldInstance>
         </itemInstances>
         <name>ia-ce-c2</name>
@@ -478,6 +528,36 @@
                 <identifier>ia_fra_adjusted_deadline</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_clock_pause_start__c</fieldItem>
+                <identifier>ia_fra_clock_pause_start</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_clock_pause_end__c</fieldItem>
+                <identifier>ia_fra_clock_pause_end</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_clock_pause_days__c</fieldItem>
+                <identifier>ia_fra_clock_pause_days</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>ia-fra-c1</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -560,6 +640,26 @@
                 <identifier>ia_details_review_timeline_type</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_ar_locked__c</fieldItem>
+                <identifier>ia_details_ar_locked</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_record_completeness__c</fieldItem>
+                <identifier>ia_details_record_completeness</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>ia-details-c1</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -624,6 +724,26 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_waiver_statute_cite__c</fieldItem>
                 <identifier>ia_details_waiver_cite</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_portal_comment_intake_open__c</fieldItem>
+                <identifier>ia_details_portal_intake_open</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_projected_completion_date__c</fieldItem>
+                <identifier>ia_details_projected_completion</identifier>
             </fieldInstance>
         </itemInstances>
         <name>ia-details-c2</name>
@@ -922,6 +1042,36 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_expedited_risk_penalty_applied__c</fieldItem>
                 <identifier>ia_risk_expedited_penalty</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_litigation_ai_confidence__c</fieldItem>
+                <identifier>ia_risk_litigation_ai_confidence</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_litigation_risk_cell_label__c</fieldItem>
+                <identifier>ia_risk_litigation_risk_cell_label</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_sector_circuit_win_rate__c</fieldItem>
+                <identifier>ia_risk_sector_circuit_win_rate</identifier>
             </fieldInstance>
         </itemInstances>
         <name>ia-risk-c2</name>

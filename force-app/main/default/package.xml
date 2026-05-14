@@ -58,6 +58,12 @@
         <members>IndividualApplication.nepa_screening_confidence__c</members>
         <members>IndividualApplication.nepa_extraordinary_circumstances__c</members>
         <members>IndividualApplication.nepa_classification_basis__c</members>
+        <!-- GIS proximity flag fields (MFR 6) -->
+        <members>IndividualApplication.nepa_nhd_proximity_flag__c</members>
+        <members>IndividualApplication.nepa_tribal_lands_flag__c</members>
+        <members>IndividualApplication.nepa_plss_flag__c</members>
+        <!-- Administrative record lock field (MFR 9) -->
+        <members>IndividualApplication.nepa_ar_locked__c</members>
         <!-- Tier 3 CEQ wiring fields -->
         <members>IndividualApplication.nepa_polygon__c</members>
         <!-- Program (Entity 1: Project) -->
@@ -137,6 +143,11 @@
         <members>PublicComplaint.nepa_requires_human_review__c</members>
         <members>PublicComplaint.nepa_human_override__c</members>
         <members>PublicComplaint.nepa_ai_triage_timestamp__c</members>
+        <!-- MFR 8: Comment AI Router fields -->
+        <members>PublicComplaint.nepa_ai_triage_status__c</members>
+        <members>PublicComplaint.nepa_is_ej_comment__c</members>
+        <members>PublicComplaint.nepa_is_duplicate__c</members>
+        <members>PublicComplaint.nepa_duplicate_of__c</members>
         <!-- nepa_engagement__c (Entity 5: Public Engagement Events) -->
         <members>nepa_engagement__c.nepa_process__c</members>
         <members>nepa_engagement__c.nepa_engagement_type__c</members>
@@ -694,6 +705,13 @@
         <members>NEPA_Administrative_Record_Checker</members>
         <members>NEPA_AdminRecord_AutoCreate</members>
         <members>NEPA_Record_Completeness_Scorer</members>
+        <!-- MFR 9: Close Administrative Record -->
+        <members>NEPA_Close_Administrative_Record</members>
+        <!-- MFR 8: Comment Classifier supporting flows + auto-router -->
+        <members>NEPA_Comment_AI_Router</members>
+        <members>NEPA_Comment_Duplicate_Check</members>
+        <members>NEPA_EJTribal_Router</members>
+        <members>NEPA_Comment_ResponseTask_Creator</members>
         <!-- SLA Flows -->
         <members>NEPA_SLA_Due_Date_Setter</members>
         <members>NEPA_SLA_Escalation_Monitor</members>
@@ -783,6 +801,24 @@
         <!-- CE Intake: DataRaptor Load and CE Library lookup -->
         <members>DR_Load_NEPA_Process</members>
         <members>DR_Extract_CE_LibraryByAgency</members>
+        <!-- MFR 9: Administrative Record Manifest Extract -->
+        <members>DR_Extract_AR_Manifest</members>
+        <!-- Legacy metadata-format DataRaptors (rpt-meta.xml) — parallel to JSON versions -->
+        <members>DRExtractCELibraryByAgency_1</members>
+        <members>DRExtractGISLayers_1</members>
+        <members>DRExtractNEPACaseEvent_1</members>
+        <members>DRExtractNEPAComment_1</members>
+        <members>DRExtractNEPADocument_1</members>
+        <members>DRExtractNEPAEngagementEvent_1</members>
+        <members>DRExtractNEPAGISData_1</members>
+        <members>DRExtractNEPAGISDataByProcess_1</members>
+        <members>DRExtractNEPALegalStructure_1</members>
+        <members>DRExtractNEPAProcess_1</members>
+        <members>DRExtractNEPAProject_1</members>
+        <members>DRExtractNEPATeamMember_1</members>
+        <members>DRLoadGISResults_1</members>
+        <members>DRLoadNEPAProcess_1</members>
+        <members>DRUpsertDetectedLayer_1</members>
         <name>OmniDataTransform</name>
     </types>
     <types>
@@ -819,6 +855,11 @@
         <members>NepaCommentEJDetectorTest</members>
         <members>NepaCommentTriageParser</members>
         <members>NepaCommentTriageParserTest</members>
+        <!-- MFR 8: Comment Classifier test classes -->
+        <members>NepaCommentDuplicateCheckTest</members>
+        <members>NepaEJTribalRouterTest</members>
+        <members>NepaCommentResponseTaskTest</members>
+        <members>NepaCommentAIRouterTest</members>
         <members>NepaApiComplianceTest</members>
         <members>NepaBREConfigTest</members>
         <name>ApexClass</name>
@@ -839,6 +880,19 @@
         <!-- Comment Triage Agentforce Agent -->
         <members>NEPA_Comment_Triage</members>
         <name>BotVersion</name>
+    </types>
+    <types>
+        <!-- GIS Named Credentials (MFR 6 expansion) -->
+        <members>NEPA_GIS_FWS</members>
+        <members>NEPA_GIS_EJScreen</members>
+        <members>NEPA_GIS_EPA_GeoPub</members>
+        <members>NEPA_GIS_NWI</members>
+        <members>NEPA_GIS_FEMA</members>
+        <members>NEPA_GIS_USGS</members>
+        <members>NEPA_GIS_USGS_NHD</members>
+        <members>NEPA_GIS_BLM_Tribal</members>
+        <members>NEPA_GIS_BLM_PLSS</members>
+        <name>NamedCredential</name>
     </types>
     <version>62.0</version>
 </Package>

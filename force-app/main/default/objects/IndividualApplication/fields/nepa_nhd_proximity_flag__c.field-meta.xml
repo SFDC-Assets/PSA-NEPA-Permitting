@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_nhd_proximity_flag__c</fullName>
+    <description>Set to true by NEPA_GISProximityCheck when a USGS National Hydrography Dataset waterway intersects the project buffer (0.5 miles). Triggers CWA Section 404/401 permitting requirement. NEPA_CE_Screener routes to set nepa_extraordinary_circumstances__c when this flag is active.</description>
+    <inlineHelpText>USGS NHD waterway within 0.5 miles of project. CWA Section 404/401 permit may be required. Review ordinary high water mark and scope of fill activities.</inlineHelpText>
+    <defaultValue>false</defaultValue>
+    <label>NHD Waterway Proximity Flag</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

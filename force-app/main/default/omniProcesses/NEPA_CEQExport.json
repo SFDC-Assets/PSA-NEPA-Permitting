@@ -256,6 +256,26 @@
             "failOnStepError": false,
             "postTransformBundle": ""
           }
+        },
+        {
+          "Name": "GetARManifest",
+          "Type": "DataRaptor Extract Action",
+          "SequenceNumber": 9,
+          "Level": 1,
+          "IsActive": true,
+          "PropertySetConfig": {
+            "bundleName": "DR_Extract_AR_Manifest",
+            "inputMap": [
+              {
+                "name": "processId",
+                "value": "%currentProcess:id%",
+                "valueType": "reference"
+              }
+            ],
+            "outputPath": "currentProcess:administrativeRecord",
+            "failOnStepError": false,
+            "postTransformBundle": ""
+          }
         }
       ]
     },

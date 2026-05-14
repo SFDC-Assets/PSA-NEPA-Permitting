@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>CE screening orchestrator for IndividualApplication. Invokes NEPA_CE_Screener BRE Expression Set which routes through three Decision Matrices (NAICS, Tier1 Agency+Sector, Tier2 Agency+ActionType) with acreage override and no-match fallback. Writes recommendation to nepa_ce_pathway_recommendation__c per Salesforce AI AUP / OMB M-24-10 (AI recommends, human decides). Fires async after-commit when screening input fields change.</description>
+    <description>CE screening orchestrator for IndividualApplication. Invokes NEPA_CE_Screener BRE Expression Set which routes through three Decision Matrices (NAICS, Tier1 Agency+Sector, Tier2 Agency+ActionType) with acreage override and no-match fallback. Writes recommendation to nepa_ce_pathway_recommendation__c per Salesforce AI AUP / OMB M-24-10 (AI recommends, human decides). Also evaluates GIS proximity flags (NHD, Tribal, PLSS) and routes to set nepa_extraordinary_circumstances__c when any flag is active. Fires async after-commit when screening input fields or GIS flag fields change.</description>
     <label>NEPA CE Screener</label>
     <processType>AutoLaunchedFlow</processType>
     <status>Active</status>
@@ -113,7 +113,24 @@
     </formulas>
 
     <!-- ============================================================
-         ELEMENT 4: WRITE BACK
+         ELEMENT 4: GIS EC TEXT FORMULA
+         Builds semicolon-delimited EC text from active GIS proximity
+         flags. Used by Update_EC_From_GIS when any flag is true.
+    ============================================================ -->
+    <formulas>
+        <name>var_GIS_EC_Formula</name>
+        <dataType>String</dataType>
+        <expression>TRIM(
+  IF({!$Record.nepa_nhd_proximity_flag__c}, "NHD Waterway Proximity", "") &amp;
+  IF(AND({!$Record.nepa_nhd_proximity_flag__c}, OR({!$Record.nepa_tribal_lands_flag__c}, {!$Record.nepa_plss_flag__c})), "; ", "") &amp;
+  IF({!$Record.nepa_tribal_lands_flag__c}, "Tribal Lands Proximity", "") &amp;
+  IF(AND({!$Record.nepa_tribal_lands_flag__c}, {!$Record.nepa_plss_flag__c}), "; ", "") &amp;
+  IF({!$Record.nepa_plss_flag__c}, "PLSS Public Land", "")
+)</expression>
+    </formulas>
+
+    <!-- ============================================================
+         ELEMENT 5: WRITE BRE RESULTS BACK
          AI AUP compliance: writes nepa_ce_pathway_recommendation__c
          (the AI recommendation), NOT nepa_review_type__c (the official
          determination). A NEPA Coordinator must review the recommendation
@@ -125,6 +142,9 @@
         <label>Update CE Screening Fields</label>
         <locationX>176</locationX>
         <locationY>431</locationY>
+        <connector>
+            <targetReference>Check_NHD_Flag</targetReference>
+        </connector>
         <faultConnector>
             <targetReference>Handle_Error</targetReference>
         </faultConnector>
@@ -168,14 +188,163 @@
         </filters>
     </recordUpdates>
 
+    <!-- code-analyzer-suppress flow:SameRecordUpdate — intentional async after-save write-back; GIS flags set by prior IP run trigger this path -->
+    <recordUpdates>
+        <name>Update_EC_From_GIS</name>
+        <label>Update EC from GIS Flags</label>
+        <locationX>176</locationX>
+        <locationY>971</locationY>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>nepa_extraordinary_circumstances__c</field>
+            <value>
+                <elementReference>var_GIS_EC_Formula</elementReference>
+            </value>
+        </inputAssignments>
+        <object>IndividualApplication</object>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+    </recordUpdates>
+
     <!-- ============================================================
-         ELEMENT 4: ERROR HANDLER
+         ELEMENT 6: DECISION — NHD WATERWAY PROXIMITY FLAG (MFR 6)
+         First of three GIS flag decisions. Checks if USGS NHD
+         proximity flag is set. Chains to Tribal check regardless.
+    ============================================================ -->
+    <decisions>
+        <name>Check_NHD_Flag</name>
+        <label>NHD Waterway Proximity Flag Set?</label>
+        <locationX>176</locationX>
+        <locationY>539</locationY>
+        <defaultConnector>
+            <targetReference>Check_Tribal_Flag</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No NHD flag</defaultConnectorLabel>
+        <rules>
+            <name>NHD_Flag_Active</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_nhd_proximity_flag__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><booleanValue>true</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_Tribal_Flag</targetReference>
+            </connector>
+            <label>NHD flag active</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         ELEMENT 7: DECISION — TRIBAL LANDS PROXIMITY FLAG (MFR 6)
+         Checks if BLM tribal boundary proximity flag is set.
+         Chains to PLSS check regardless.
+    ============================================================ -->
+    <decisions>
+        <name>Check_Tribal_Flag</name>
+        <label>Tribal Lands Proximity Flag Set?</label>
+        <locationX>176</locationX>
+        <locationY>647</locationY>
+        <defaultConnector>
+            <targetReference>Check_PLSS_Flag</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Tribal flag</defaultConnectorLabel>
+        <rules>
+            <name>Tribal_Flag_Active</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_tribal_lands_flag__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><booleanValue>true</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_PLSS_Flag</targetReference>
+            </connector>
+            <label>Tribal flag active</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         ELEMENT 8: DECISION — PLSS PUBLIC LAND FLAG (MFR 6)
+         Checks if BLM PLSS surface ownership flag is set.
+         After all three checks, routes to combined EC update
+         if any flag was active.
+    ============================================================ -->
+    <decisions>
+        <name>Check_PLSS_Flag</name>
+        <label>PLSS Public Land Flag Set?</label>
+        <locationX>176</locationX>
+        <locationY>755</locationY>
+        <defaultConnector>
+            <targetReference>Check_Any_GIS_Active</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No PLSS flag</defaultConnectorLabel>
+        <rules>
+            <name>PLSS_Flag_Active</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_plss_flag__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><booleanValue>true</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_Any_GIS_Active</targetReference>
+            </connector>
+            <label>PLSS flag active</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         ELEMENT 9: DECISION — ANY GIS FLAG ACTIVE?
+         After traversing all three flag checks, determines whether
+         to write the combined EC text to nepa_extraordinary_circumstances__c.
+    ============================================================ -->
+    <decisions>
+        <name>Check_Any_GIS_Active</name>
+        <label>Any GIS Proximity Flag Active?</label>
+        <locationX>176</locationX>
+        <locationY>863</locationY>
+        <defaultConnectorLabel>No GIS flags — skip EC update</defaultConnectorLabel>
+        <rules>
+            <name>Any_GIS_Flag_Active</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_nhd_proximity_flag__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><booleanValue>true</booleanValue></rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.nepa_tribal_lands_flag__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><booleanValue>true</booleanValue></rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.nepa_plss_flag__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><booleanValue>true</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_EC_From_GIS</targetReference>
+            </connector>
+            <label>GIS flag(s) active — write EC text</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         ELEMENT 11: ERROR HANDLER
          Captures fault message and routes to error logger subflow.
     ============================================================ -->
     <assignments>
         <name>Handle_Error</name>
         <label>Capture Error</label>
-        <locationX>352</locationX>
+        <locationX>440</locationX>
         <locationY>431</locationY>
         <assignmentItems>
             <assignToReference>var_ErrorMessage</assignToReference>
@@ -190,12 +359,12 @@
     </assignments>
 
     <!-- ============================================================
-         ELEMENT 5: ERROR LOGGER SUBFLOW
+         ELEMENT 12: ERROR LOGGER SUBFLOW
     ============================================================ -->
     <subflows>
         <name>Call_ErrorLogger</name>
         <label>Log Flow Error</label>
-        <locationX>352</locationX>
+        <locationX>440</locationX>
         <locationY>539</locationY>
         <flowName>NEPA_Error_Logger</flowName>
         <inputAssignments>
@@ -216,14 +385,17 @@
         </inputAssignments>
         <inputAssignments>
             <name>inp_FailedStep</name>
-            <value><stringValue>BRE_Evaluation</stringValue></value>
+            <value><stringValue>BRE_Evaluation_or_GIS_EC_Update</stringValue></value>
         </inputAssignments>
     </subflows>
 
     <!-- ============================================================
          TRIGGER / START
-         Fires async after-commit when any CE screening input changes.
+         Fires async after-commit when any CE screening input changes
+         OR when any GIS proximity flag changes (MFR 6 addition).
          Excludes records already confirmed as EIS or EA (human decided).
+         Filter logic: (1 OR 2 OR 3 OR 4 OR 5 OR 6 OR 7) AND 8 AND 9
+         Where 1-4 are original screening inputs, 5-7 are new GIS flags.
     ============================================================ -->
     <start>
         <locationX>50</locationX>
@@ -237,7 +409,7 @@
             </connector>
             <pathType>AsyncAfterCommit</pathType>
         </scheduledPaths>
-        <filterLogic>(1 OR 2 OR 3 OR 4) AND 5 AND 6</filterLogic>
+        <filterLogic>(1 OR 2 OR 3 OR 4 OR 5 OR 6 OR 7) AND 8 AND 9</filterLogic>
         <filters>
             <field>nepa_action_type__c</field>
             <operator>IsChanged</operator>
@@ -255,6 +427,21 @@
         </filters>
         <filters>
             <field>nepa_related_project__c</field>
+            <operator>IsChanged</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </filters>
+        <filters>
+            <field>nepa_nhd_proximity_flag__c</field>
+            <operator>IsChanged</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </filters>
+        <filters>
+            <field>nepa_tribal_lands_flag__c</field>
+            <operator>IsChanged</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </filters>
+        <filters>
+            <field>nepa_plss_flag__c</field>
             <operator>IsChanged</operator>
             <value><booleanValue>true</booleanValue></value>
         </filters>

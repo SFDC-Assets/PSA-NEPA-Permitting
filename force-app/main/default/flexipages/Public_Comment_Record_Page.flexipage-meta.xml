@@ -141,6 +141,16 @@
                 <identifier>Recordnepa_public_access_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_public_source__c</fieldItem>
+                <identifier>Recordnepa_public_source_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>cmt-commenter-c2</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -285,6 +295,26 @@
                 <identifier>Recordnepa_ai_triage_timestamp_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_ai_triage_status__c</fieldItem>
+                <identifier>Recordnepa_ai_triage_status_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_ai_substantive_recommendation__c</fieldItem>
+                <identifier>Recordnepa_ai_substantive_recommendation_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>cmt-ai-c1</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -341,6 +371,36 @@
                 <identifier>Recordnepa_litigation_threat_flag_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_is_ej_comment__c</fieldItem>
+                <identifier>Recordnepa_is_ej_comment_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_is_duplicate__c</fieldItem>
+                <identifier>Recordnepa_is_duplicate_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_duplicate_of__c</fieldItem>
+                <identifier>Recordnepa_duplicate_of_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>cmt-ai-c2</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -391,6 +451,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_agency_response__c</fieldItem>
                 <identifier>Recordnepa_agency_response_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_document_location_ref__c</fieldItem>
+                <identifier>Recordnepa_document_location_ref_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>cmt-response-c1</name>
@@ -501,6 +571,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_data_source_system__c</fieldItem>
                 <identifier>Recordnepa_data_source_system_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_parent_document__c</fieldItem>
+                <identifier>Recordnepa_parent_document_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>cmt-prov-c1</name>

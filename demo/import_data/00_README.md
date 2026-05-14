@@ -37,19 +37,22 @@ Load files strictly in number order. Each file's parent records must exist befor
 | 08 | `08_Program.csv` | Program | 1 | `nepa_project_id__c` | Account (02) |
 | 09 | *(skipped — Apex step 18)* | IndividualApplication | 1 | — | `LicenseTypeId` requires runtime RegulatoryAuthorizationType ID |
 | 10 | *(skipped — Apex step 18)* | ContentVersion | 6 | — | `VersionData` (Blob) cannot be set via Bulk API v2 CSV |
-| 11 | `11_nepa_engagement__c.csv` | nepa_engagement__c | 5 | insert (no ext ID) | `nepa_process__c` wired by Apex step 18 |
-| 12 | `12_ApplicationTimeline.csv` | ApplicationTimeline | 125 | insert (no ext ID) | `nepa_related_process__c` wired by Apex step 18 |
+| 11 | `11_nepa_engagement__c.csv` | nepa_engagement__c | 5 | `External_ID__c` | `nepa_process__c` wired by Apex step 18 |
+| 12 | `12_ApplicationTimeline.csv` | ApplicationTimeline | 25 | `External_ID__c` | `nepa_related_process__c` wired by Apex step 18 |
 | 13 | `13_WorkOrder.csv` | WorkOrder | 10 | `External_ID__c` | Account (02), ServiceTerritory (04), WorkType (05) |
 | 14 | *(skipped — Apex step 18)* | ServiceAppointment | 10 | — | `ParentRecordId` polymorphic; Bulk API v2 cannot resolve via external ID |
 | 15 | *(skipped — Apex step 18)* | AssignedResource | 10 | — | Depends on ServiceAppointments created in step 18 |
-| 16 | `16_PublicComplaint.csv` | PublicComplaint | 2 | insert (no ext ID) | Account (02), IndividualApplication (09) |
-| 17 | `17_nepa_litigation__c.csv` | nepa_litigation__c | 2 | insert (no ext ID) | Program (08) |
+| 16 | `16_PublicComplaint.csv` | PublicComplaint | 3 | `External_ID__c` | Account (02), IndividualApplication (09) |
+| 17 | `17_nepa_litigation__c.csv` | nepa_litigation__c | 2 | `External_ID__c` | Program (08) |
 | 18 | `18_postload_polymorphic.apex` | **Apex script** | — | — | Run after all CSVs; wires polymorphic lookups |
 | 19 | `19_Task.csv` | Task | 8 | `External_ID__c` | Loaded before or after Apex; WhatId/WhoId wired by step 18 |
 | 20 | `20_entities789_demo_data.apex` | **Apex script** | — | — | Run after step 18; creates RegulatoryAuthority (4), RegulatoryCode (7 standalone Entity 9), nepa_process_team_member__c (7), nepa_gis_data__c (1 GIS container), Polygon (1), nepa_gis_data_element__c (5); wires Program lat/lon/polygon |
 | 21 | `21_postload_discipline.apex` | **Apex script** | — | — | Run after step 18; sets ServiceResource.nepa_discipline__c = 'NEPA Specialist' on DEMO_SR_001 (demo constraint: all 7 specialists share one SR) |
 | 22 | `22_postload_gis_team_assembly.apex` | **Apex script** | — | — | Run after steps 20–21; pre-seeds GIS proximity results (nepa_detected_protection_layer__c × 4), auto-assembled team members (× 3, GIS_Auto_Assembly), and auto-generated WorkOrders (× 3, nepa_auto_generated__c = true) for the Carrie Placer Mine; sets Program nepa_extraordinary_circumstances__c = true and nepa_gis_proximity_complete__c = true |
 | 23 | `23_postload_flow_refresh.apex` | **Apex script** | — | — | Run last; re-fires all IsChanged-gated flows (Risk Scorer, CE Screener, SLA Setter, Timeline Risk, Defensibility Checker) by toggling then restoring nepa_review_type__c. Populates nepa_risk_score_factors__c, nepa_screening_confidence__c, nepa_sla_due_date__c, nepa_timeline_risk_tier__c, nepa_defensibility_gaps__c, nepa_missing_documents__c, and related computed fields. |
+| 24 | `24_decision_payload.csv` | nepa_decision_payload__c | 1 | upsert via `nepa_process__r.nepa_federal_unique_id__c` | IndividualApplication (09) — load after step 23 |
+| 25 | `25_ar_export.csv` | nepa_ar_export__c | 1 | upsert via `nepa_process__r.nepa_federal_unique_id__c` | IndividualApplication (09) — load after step 24 |
+| 26 | `26_backfill_external_ids.apex` | **Apex script** | — | — | Run once against an org that has existing demo data without External_ID__c values. Deduplicates ApplicationTimeline (keeps oldest 25), deletes stale nepa_engagement__c records, backfills External_ID__c on PublicComplaint (2) and nepa_litigation__c (2). Safe to re-run (all DML is conditional on null). After running, re-upsert steps 11–12, 16–17 normally. |
 
 ---
 
@@ -59,10 +62,14 @@ Load files strictly in number order. Each file's parent records must exist befor
 - OperatingHours, Account, Contact, ServiceTerritory, WorkType, ServiceResource,
   ServiceTerritoryMember, WorkOrder, ServiceAppointment, AssignedResource, Task
 
-**APS / custom objects** — no `External_ID__c` field; use the domain natural ID:
-- `Program` → upsert on `nepa_project_id__c`  
-- `IndividualApplication` → upsert on `nepa_federal_unique_id__c`  
-- `ApplicationTimeline`, `PublicComplaint`, `nepa_engagement__c`, `nepa_litigation__c`, `ContentVersion` → **insert only** (no external ID); re-running the load script inserts duplicates for these objects
+**APS / custom objects** — use the domain natural ID or `External_ID__c`:
+- `Program` → upsert on `nepa_project_id__c`
+- `IndividualApplication` → upsert on `nepa_federal_unique_id__c`
+- `ApplicationTimeline` → upsert on `External_ID__c` (`DEMO_AT_001`–`025`)
+- `PublicComplaint` → upsert on `External_ID__c` (`DEMO_PC_001`–`003`)
+- `nepa_engagement__c` → upsert on `External_ID__c` (`DEMO_ENG_001`–`005`)
+- `nepa_litigation__c` → upsert on `External_ID__c` (`DEMO_LIT_001`–`002`)
+- `ContentVersion` → **insert only** (no external ID); `VersionData` blob cannot be set via CSV
 
 ---
 
@@ -190,6 +197,8 @@ ServiceAppointment (14)
 | OSC comment routed as work order | `DEMO_PC_002`; `DEMO_WO_010`; `DEMO_TASK_005` |
 | Required Document Registry all five green | Documents in ContentVersion load; `DEMO_TASK_007` |
 | Field Manager issues Decision Record; applicant notified | ApplicationTimeline Decision Record event; `DEMO_TASK_008` |
+| Decision payload shows FONSI, Alt B, 3 alternatives, 5 mitigations | `nepa_decision_payload__c` (step 24) |
+| Administrative record package auto-generated at decision — 6 docs, 3 comments, status Completed | `nepa_ar_export__c` (step 25) |
 
 ---
 
@@ -224,6 +233,12 @@ sf data query --target-org $TARGET \
 
 sf data query --target-org $TARGET \
   --query "SELECT Name, nepa_centroid_lat__c, nepa_centroid_lon__c, nepa_extent__c, nepa_data_source_system__c FROM nepa_gis_data__c WHERE nepa_parent_process__r.nepa_federal_unique_id__c = 'IDI-38709'"
+
+sf data query --target-org $TARGET \
+  --query "SELECT nepa_decision_type__c, nepa_decision_date__c, nepa_selected_alternative__c, nepa_alternatives_considered__c, nepa_significant_impacts__c FROM nepa_decision_payload__c WHERE nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'"
+
+sf data query --target-org $TARGET \
+  --query "SELECT nepa_export_status__c, nepa_export_type__c, nepa_document_count__c, nepa_comment_count__c, nepa_completed_date__c FROM nepa_ar_export__c WHERE nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'"
 ```
 
 ---
@@ -267,10 +282,10 @@ sf data delete bulk --sobject Task                   --where "External_ID__c LIK
 sf data delete bulk --sobject AssignedResource        --where "External_ID__c LIKE 'DEMO_AR_%'"    --target-org $TARGET --async
 sf data delete bulk --sobject ServiceAppointment      --where "External_ID__c LIKE 'DEMO_SA_%'"    --target-org $TARGET --async
 sf data delete bulk --sobject WorkOrder               --where "External_ID__c LIKE 'DEMO_WO_%'"    --target-org $TARGET --async
-sf data delete bulk --sobject PublicComplaint         --where "Subject LIKE 'ICL Comment%' OR Subject LIKE 'OSC Comment%'" --target-org $TARGET --async
-sf data delete bulk --sobject nepa_litigation__c      --where "nepa_citation__c LIKE '%9th Cir%'"  --target-org $TARGET --async
-sf data delete bulk --sobject ApplicationTimeline     --where "nepa_related_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
-sf data delete bulk --sobject nepa_engagement__c      --where "nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
+sf data delete bulk --sobject PublicComplaint         --where "External_ID__c LIKE 'DEMO_PC_%'"   --target-org $TARGET --async
+sf data delete bulk --sobject nepa_litigation__c      --where "External_ID__c LIKE 'DEMO_LIT_%'"  --target-org $TARGET --async
+sf data delete bulk --sobject ApplicationTimeline     --where "External_ID__c LIKE 'DEMO_AT_%'"   --target-org $TARGET --async
+sf data delete bulk --sobject nepa_engagement__c      --where "External_ID__c LIKE 'DEMO_ENG_%'"  --target-org $TARGET --async
 sf data delete bulk --sobject ContentVersion          --where "nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
 sf data delete bulk --sobject IndividualApplication   --where "nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
 sf data delete bulk --sobject Program                 --where "nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'" --target-org $TARGET --async
@@ -294,4 +309,8 @@ sf data delete bulk --sobject nepa_process_team_member__c --where "nepa_data_sou
 sf data delete bulk --sobject Polygon                 --where "Name = 'Carrie Placer Mine Claim Boundary — IDI-38709'" --target-org $TARGET --async
 sf data delete bulk --sobject RegulatoryCode          --where "Name IN ('42 U.S.C. § 4321','40 CFR § 1501.5','40 CFR § 1501.9','43 CFR § 3809.11','16 U.S.C. § 1536(a)','54 U.S.C. § 306108','33 U.S.C. § 1342')" --target-org $TARGET --async
 sf data delete bulk --sobject RegulatoryAuthority     --where "Name IN ('CEQ','DOI-BLM','Congress','EPA')" --target-org $TARGET --async
+
+# Steps 24–25 cleanup
+sf data delete bulk --sobject nepa_ar_export__c       --where "nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
+sf data delete bulk --sobject nepa_decision_payload__c --where "nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
 ```

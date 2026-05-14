@@ -30,6 +30,16 @@
                     <default>false</default>
                     <label>Other Authorization</label>
                 </value>
+                <value>
+                    <fullName>ROD</fullName>
+                    <default>false</default>
+                    <label>ROD</label>
+                </value>
+                <value>
+                    <fullName>FONSI</fullName>
+                    <default>false</default>
+                    <label>FONSI</label>
+                </value>
             </valueSetDefinition>
         </valueSet>
     </CustomField>

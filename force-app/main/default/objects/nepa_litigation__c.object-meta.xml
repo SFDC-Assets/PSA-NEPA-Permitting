@@ -305,6 +305,17 @@
         <trackTrending>false</trackTrending>
         <type>Lookup</type>
     </fields>
+    <fields>
+        <fullName>External_ID__c</fullName>
+        <description>Stable external identifier for upsert operations. Format: DEMO_LIT_NNN.</description>
+        <externalId>true</externalId>
+        <label>External ID</label>
+        <length>80</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>true</unique>
+    </fields>
     <!-- Provenance fields (CEQ Standard v1.2 — all 5 required) -->
     <fields>
         <fullName>nepa_data_source_system__c</fullName>

@@ -29,6 +29,13 @@
 #   17  nepa_litigation__c      — no dependencies
 #   18  Post-load Apex          — creates SA/AR/SR/CV/IA; wires all relationships
 #   19  Task                    — depends on nothing; WhatId/WhoId wired by step 18
+#   20  Entity 9/8/7 Apex       — RegulatoryCode, team members, GIS container + polygon
+#   21  ServiceResource disc.   — nepa_discipline__c on ServiceResources
+#   22  GIS team assembly       — proximity results, auto-assembled team, auto-generated WOs
+#   23  Flow refresh Apex       — risk scorer + permit coordinator recalc
+#   24  nepa_decision_payload__c — upsert via nepa_process__r.nepa_federal_unique_id__c
+#   25  nepa_ar_export__c       — upsert via nepa_process__r.nepa_federal_unique_id__c
+#   27  Post-load Apex          — nepa_engagement__c, PublicComplaint PC_003, decision_payload, ar_export
 
 set -euo pipefail
 
@@ -221,11 +228,11 @@ echo "    Skipping CSV — ContentVersion created in step 18 (VersionData requir
 
 # ── step 11: nepa_engagement__c ──────────────────────────────────────────────
 step_header "Step 11: nepa_engagement__c (Public Engagement Events)"
-insert_csv "nepa_engagement__c" "nepa_engagement__c" "11_nepa_engagement__c.csv"
+upsert_csv "nepa_engagement__c" "nepa_engagement__c" "11_nepa_engagement__c.csv" "External_ID__c"
 
 # ── step 12: ApplicationTimeline ─────────────────────────────────────────────
 step_header "Step 12: ApplicationTimeline (Case Events)"
-insert_csv "ApplicationTimeline" "ApplicationTimeline" "12_ApplicationTimeline.csv"
+upsert_csv "ApplicationTimeline" "ApplicationTimeline" "12_ApplicationTimeline.csv" "External_ID__c"
 
 # ── step 13: WorkOrder ────────────────────────────────────────────────────────
 step_header "Step 13: WorkOrder"
@@ -244,11 +251,11 @@ echo "    Skipping CSV — AssignedResource created in step 18 (depends on Servi
 
 # ── step 16: PublicComplaint ──────────────────────────────────────────────────
 step_header "Step 16: PublicComplaint (Public Comments)"
-insert_csv "PublicComplaint" "PublicComplaint" "16_PublicComplaint.csv"
+upsert_csv "PublicComplaint" "PublicComplaint" "16_PublicComplaint.csv" "External_ID__c"
 
 # ── step 17: nepa_litigation__c ───────────────────────────────────────────────
 step_header "Step 17: nepa_litigation__c (Litigation Cases)"
-insert_csv "nepa_litigation__c" "nepa_litigation__c" "17_nepa_litigation__c.csv"
+upsert_csv "nepa_litigation__c" "nepa_litigation__c" "17_nepa_litigation__c.csv" "External_ID__c"
 
 # ── step 18: post-load Apex (polymorphic wiring) ─────────────────────────────
 step_header "Step 18: Post-load Apex (IA, ContentVersion, SR, STM, SA, AR + wire all relationships)"
@@ -273,6 +280,22 @@ run_apex "ServiceResource discipline" "demo/import_data/21_postload_discipline.a
 # ── step 22: GIS proximity results + auto-assembled team + auto-generated WOs ─
 step_header "Step 22: GIS proximity results, auto-assembled team, and auto-generated Work Orders"
 run_apex "GIS team assembly" "demo/import_data/22_postload_gis_team_assembly.apex"
+
+# ── step 23: Flow refresh (risk scorer + permit coordinator recalc) ───────────
+step_header "Step 23: Flow refresh (risk scorer + permit coordinator recalc)"
+run_apex "flow refresh" "demo/import_data/23_postload_flow_refresh.apex"
+
+# ── step 24: nepa_decision_payload__c ─────────────────────────────────────────
+step_header "Step 24: nepa_decision_payload__c (Decision Payload)"
+upsert_csv "nepa_decision_payload__c" "nepa_decision_payload__c" "24_decision_payload.csv" "nepa_process__r.nepa_federal_unique_id__c"
+
+# ── step 25: nepa_ar_export__c ────────────────────────────────────────────────
+step_header "Step 25: nepa_ar_export__c (Administrative Record Export)"
+upsert_csv "nepa_ar_export__c" "nepa_ar_export__c" "25_ar_export.csv" "nepa_process__r.nepa_federal_unique_id__c"
+
+# ── step 27: records requiring Apex insert (nepa_engagement__c, PC_003, decision_payload, ar_export) ─
+step_header "Step 27: Apex insert for objects blocked from CSV upsert (engagement, PublicComplaint PC_003, decision_payload, ar_export)"
+run_apex "missing records insert" "demo/import_data/27_postload_missing_records.apex"
 
 # ── post-load summary ─────────────────────────────────────────────────────────
 echo ""

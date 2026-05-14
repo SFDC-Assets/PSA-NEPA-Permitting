@@ -10,9 +10,6 @@
         <isConsumerSecretOptional>false</isConsumerSecretOptional>
         <isIntrospectAllTokens>false</isIntrospectAllTokens>
         <isSecretRequiredForRefreshToken>true</isSecretRequiredForRefreshToken>
-        <oauthFlows>
-            <oauthFlow>ClientCredentials</oauthFlow>
-        </oauthFlows>
         <scopes>
             <scope>Api</scope>
         </scopes>

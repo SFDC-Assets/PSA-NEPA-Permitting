@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>MFR 9 — Administrative Record Management. Fires after-save on IndividualApplication when nepa_review_type__c changes to ROD or FONSI and nepa_ar_locked__c is false. Assembles a JSON manifest from record fields using formula_ManifestEnvelope, creates a ContentVersion manifest tagged nepa_ar_manifest__c = true, then locks the application record. The manifest is available via the NEPA/CEQExport Integration Procedure. Fulfills CEQ Permitting Technology Action Plan MFR #9 (Administrative Record Management) at Emerging maturity.</description>
+    <label>NEPA Close Administrative Record</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Active</status>
+
+    <!-- All formulas together — Metadata API requires same-type elements be contiguous -->
+    <formulas>
+        <name>var_ManifestTitle</name>
+        <dataType>String</dataType>
+        <expression>"Administrative Record Manifest — " &amp; {!$Record.Name} &amp; " — " &amp; TEXT(TODAY())</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_ManifestFilename</name>
+        <dataType>String</dataType>
+        <expression>"ar_manifest_" &amp; {!$Record.Id} &amp; "_" &amp; TEXT(TODAY()) &amp; ".json"</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_ManifestEnvelope</name>
+        <dataType>String</dataType>
+        <expression>"{\"schema_version\":\"1.0\",\"standard\":\"CEQ NEPA and Permitting Data and Technology Standard v1.2\",\"mfr\":\"MFR 9\",\"generated\":\"" &amp; TEXT(NOW()) &amp; "\",\"process_id\":\"" &amp; {!$Record.Id} &amp; "\",\"process_name\":\"" &amp; SUBSTITUTE({!$Record.Name}, "\"", "'") &amp; "\",\"review_type\":\"" &amp; TEXT({!$Record.nepa_review_type__c}) &amp; "\",\"outcome\":\"" &amp; {!$Record.nepa_process_outcome__c} &amp; "\",\"risk_score\":" &amp; TEXT({!$Record.nepa_risk_score__c}) &amp; ",\"risk_tier\":\"" &amp; TEXT({!$Record.nepa_risk_tier__c}) &amp; "\",\"record_complete\":true}"</expression>
+    </formulas>
+
+    <!-- All assignments together -->
+    <assignments>
+        <name>Build_JSON_Manifest</name>
+        <label>Build JSON Manifest String</label>
+        <locationX>176</locationX>
+        <locationY>107</locationY>
+        <assignmentItems>
+            <assignToReference>var_ManifestJSON</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula_ManifestEnvelope</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Create_Manifest_ContentVersion</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Handle_Error</name>
+        <label>Capture Error</label>
+        <locationX>440</locationX>
+        <locationY>215</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
+    </assignments>
+
+    <recordCreates>
+        <name>Create_Manifest_ContentVersion</name>
+        <label>Create AR Manifest ContentVersion</label>
+        <locationX>176</locationX>
+        <locationY>215</locationY>
+        <connector>
+            <targetReference>Lock_Application_Record</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>Title</field>
+            <value>
+                <elementReference>var_ManifestTitle</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>PathOnClient</field>
+            <value>
+                <elementReference>formula_ManifestFilename</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>VersionData</field>
+            <value>
+                <elementReference>var_ManifestJSON</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>FirstPublishLocationId</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_document_type__c</field>
+            <value>
+                <stringValue>Administrative Record Manifest</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_ar_included__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <object>ContentVersion</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+
+    <!-- code-analyzer-suppress flow:SameRecordUpdate — intentional after-save write-back; nepa_ar_locked__c prevents re-entry loop -->
+    <recordUpdates>
+        <name>Lock_Application_Record</name>
+        <label>Lock AR on Application</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>nepa_ar_locked__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <object>IndividualApplication</object>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+    </recordUpdates>
+
+    <subflows>
+        <name>Call_ErrorLogger</name>
+        <label>Log Flow Error</label>
+        <locationX>440</locationX>
+        <locationY>323</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value><stringValue>NEPA_Close_Administrative_Record</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value><elementReference>var_ErrorMessage</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value><elementReference>$Record.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RunningUserId</name>
+            <value><elementReference>$User.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_FailedStep</name>
+            <value><elementReference>var_CurrentStep</elementReference></value>
+        </inputAssignments>
+    </subflows>
+
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <object>IndividualApplication</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+        <scheduledPaths>
+            <connector>
+                <targetReference>Build_JSON_Manifest</targetReference>
+            </connector>
+            <pathType>AsyncAfterCommit</pathType>
+        </scheduledPaths>
+        <filterLogic>(1 AND (2 OR 3) AND 4)</filterLogic>
+        <filters>
+            <field>nepa_review_type__c</field>
+            <operator>IsChanged</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </filters>
+        <filters>
+            <field>nepa_review_type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>ROD</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_review_type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>FONSI</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_ar_locked__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+    </start>
+
+    <variables>
+        <name>var_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <variables>
+        <name>var_CurrentStep</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <stringValue>Build_and_Create_Manifest</stringValue>
+        </value>
+    </variables>
+
+    <variables>
+        <name>var_ManifestJSON</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+</Flow>

@@ -377,7 +377,7 @@ deploy "custom metadata" \
 # This is a Salesforce platform limitation — there is no CLI workaround.
 # See decision_matrix_rows/README.md for the full activation + import sequence.
 phase_header "Phase 5b: BRE Decision Matrix definitions"
-deploy "decision matrices" \
+deploy "decision matrices" allow-failure \
     --source-dir force-app/main/default/decisionMatrixDefinition \
     --target-org "$TARGET_ORG"
 
@@ -469,6 +469,11 @@ FLOWS=(
     NEPA_Team_Assembly_Orchestrator
     NEPA_WO_Milestone_Setter
     NEPA_Agency_Tier_Setter
+    NEPA_Close_Administrative_Record
+    NEPA_Comment_AI_Router
+    NEPA_Comment_Duplicate_Check
+    NEPA_EJTribal_Router
+    NEPA_Comment_ResponseTask_Creator
 )
 
 # NEPA_EIS_Section_Assembler uses generateText (Einstein AI) — skipped unless
@@ -703,6 +708,11 @@ else
     echo "       NEPA_Agency_Tier_Setter"
     echo "       (NEPA_EIS_Section_Assembler + NEPA_EIS_Section_Draft_Trigger require Einstein AI — deploy separately if available)"
     echo "       NEPA_AdminRecord_AutoCreate"
+    echo "       NEPA_Close_Administrative_Record"
+    echo "       NEPA_Comment_AI_Router"
+    echo "       NEPA_Comment_Duplicate_Check"
+    echo "       NEPA_EJTribal_Router"
+    echo "       NEPA_Comment_ResponseTask_Creator"
     echo "       NEPA_Error_Logger"
     echo "       NEPA_Error_Event_Handler"
     echo "       NEPA_FlowError_CountIncrementer"

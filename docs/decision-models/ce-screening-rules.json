@@ -1,0 +1,194 @@
+{
+  "schema_version": "1.0",
+  "standard": "CEQ NEPA and Permitting Data and Technology Standard v1.2 (August 18, 2025)",
+  "mfr": "MFR 4 — Decision-logic export for CE screening rules",
+  "source": "NEPA_CE_Screening_Rule__mdt — 71 active rules derived from NEPATEC v2.0 corpus (61,881 NEPA project records, PNNL 2025)",
+  "generated": "2026-05-14",
+  "description": "Categorical Exclusion screening rules used by the NEPA_CE_Screener BRE Expression Set to classify NEPA applications into CE, EA, or EIS review pathways. Rules are organized in two tiers: Tier 1 are direct agency+sector+type rules calibrated from the NEPATEC corpus; Tier 2 are override or fallback rules that handle extraordinary-circumstances flags, adjacent statute triggers, and cross-agency defaults.",
+  "rule_tiers": {
+    "tier_1": {
+      "description": "Direct match rules: agency + sector + project type → CE code + review type",
+      "evaluation_order": "Priority descending; first match wins",
+      "rules": [
+        {
+          "rule_id": "T1_BLM_13",
+          "tier": "1",
+          "agency": "BLM",
+          "sector": "Energy Production",
+          "project_type": "Land-based Oil",
+          "ce_code": "Energy Policy Act 2005 Sec.390(b)(3)",
+          "regulatory_citation": "42 U.S.C. § 15942(b)(3) — oil and gas exploration and production activities on previously disturbed lands",
+          "review_type": "CE",
+          "confidence": "Medium-High",
+          "corpus_record_count": 41,
+          "disqualifiers": ["New surface disturbance exceeding acreage threshold", "Located in designated Wilderness or Wilderness Study Area", "ESA Critical Habitat intersects project footprint"],
+          "extraordinary_circumstances_check_required": false
+        },
+        {
+          "rule_id": "T1_BLM_17",
+          "tier": "1",
+          "agency": "BLM",
+          "sector": "Energy Production",
+          "project_type": "Electricity Transmission",
+          "ce_code": "Energy Policy Act 2005 Sec.390(b)(3)",
+          "regulatory_citation": "42 U.S.C. § 15942(b)(3) — transmission line activities on previously disturbed lands",
+          "review_type": "CE",
+          "confidence": "Medium-High",
+          "corpus_record_count": 24,
+          "disqualifiers": ["New right-of-way through roadless area", "Crosses navigable waters requiring Section 404 permit"],
+          "extraordinary_circumstances_check_required": true
+        },
+        {
+          "rule_id": "T1_BLM_22",
+          "tier": "1",
+          "agency": "BLM",
+          "sector": "Agriculture and Natural Resource Management",
+          "project_type": "Ecosystem Management",
+          "ce_code": "516 DM 11.9",
+          "regulatory_citation": "516 DM 11.9 — routine management actions with no or minimal disturbance",
+          "review_type": "CE",
+          "confidence": "Medium-High",
+          "corpus_record_count": 20,
+          "disqualifiers": ["Disturbance exceeds 5 acres", "Located adjacent to Wilderness"],
+          "extraordinary_circumstances_check_required": false
+        },
+        {
+          "rule_id": "T1_DOE_01",
+          "tier": "1",
+          "agency": "DOE",
+          "sector": "Emerging Technologies",
+          "project_type": "Nuclear Technology",
+          "ce_code": "B3.6",
+          "regulatory_citation": "10 C.F.R. Part 1021 Subpart D, B3.6 — small-scale R&D activities",
+          "review_type": "CE",
+          "confidence": "Medium-High",
+          "corpus_record_count": 1079,
+          "disqualifiers": ["Involves radioactive waste disposal", "Generates hazardous materials requiring RCRA permit"],
+          "extraordinary_circumstances_check_required": true
+        },
+        {
+          "rule_id": "T1_DOE_02",
+          "tier": "1",
+          "agency": "DOE",
+          "sector": "Emerging Technologies",
+          "project_type": "Routine Maintenance",
+          "ce_code": "B1.3",
+          "regulatory_citation": "10 C.F.R. Part 1021 Subpart D, B1.3 — operation and maintenance of existing facilities",
+          "review_type": "CE",
+          "confidence": "High",
+          "corpus_record_count": 926,
+          "disqualifiers": ["Maintenance involves hazardous materials release", "Expands facility beyond existing footprint"],
+          "extraordinary_circumstances_check_required": false
+        },
+        {
+          "rule_id": "T1_DOE_03",
+          "tier": "1",
+          "agency": "DOE",
+          "sector": "Water and Waste",
+          "project_type": "Water Resources",
+          "ce_code": "B1.3",
+          "regulatory_citation": "10 C.F.R. Part 1021 Subpart D, B1.3 — operation and maintenance of existing facilities",
+          "review_type": "CE",
+          "confidence": "Medium-High",
+          "corpus_record_count": 178,
+          "disqualifiers": ["Involves Section 404/401 waters of the US", "Affects sole-source aquifer"],
+          "extraordinary_circumstances_check_required": true
+        },
+        {
+          "rule_id": "T1_DOE_05",
+          "tier": "1",
+          "agency": "DOE",
+          "sector": "Agriculture and Natural Resource Management",
+          "project_type": "Habitat Conservation",
+          "ce_code": "B1.25",
+          "regulatory_citation": "10 C.F.R. Part 1021 Subpart D, B1.25 — site characterization studies",
+          "review_type": "CE",
+          "confidence": "High",
+          "corpus_record_count": 63,
+          "disqualifiers": ["Area includes listed species critical habitat", "Involves ground disturbance in riparian zone"],
+          "extraordinary_circumstances_check_required": true
+        },
+        {
+          "rule_id": "T1_USFS_01",
+          "tier": "1",
+          "agency": "USFS",
+          "sector": "Agriculture and Natural Resource Management",
+          "project_type": "Special Use Authorization",
+          "ce_code": "36 CFR 220.6(e)(15)",
+          "regulatory_citation": "36 C.F.R. § 220.6(e)(15) — reissuance of existing special use permits with no or minor changes",
+          "review_type": "CE",
+          "confidence": "High",
+          "corpus_record_count": 0,
+          "disqualifiers": ["Renewal includes substantial modification of terms", "Original permit was issued without NEPA review"],
+          "extraordinary_circumstances_check_required": false
+        }
+      ]
+    },
+    "tier_2": {
+      "description": "Override and fallback rules applied after Tier 1: extraordinary-circumstances flags, adjacent statute triggers, cross-agency defaults",
+      "evaluation_order": "Evaluated in order after Tier 1 match; override wins if condition met",
+      "rules": [
+        {
+          "rule_id": "T2_EC_ESA_Override",
+          "tier": "2",
+          "agency": "ALL",
+          "sector": "ALL",
+          "project_type": "ALL",
+          "ce_code": null,
+          "review_type": "EA",
+          "confidence": "Low",
+          "trigger_condition": "nepa_extraordinary_circumstances__c = true AND (ESA Critical Habitat OR Tribal Sacred Sites flag set)",
+          "description": "Any project triggering ESA Critical Habitat or Tribal Sacred Sites extraordinary circumstances requires minimum EA regardless of Tier 1 CE recommendation",
+          "regulatory_basis": "40 C.F.R. § 1501.4(b) — extraordinary circumstances preclude CE use; CEQ 2022 regulations"
+        },
+        {
+          "rule_id": "T2_BLM_OilGas_Decommission",
+          "tier": "2",
+          "agency": "BLM",
+          "sector": "Energy Production",
+          "project_type": "Oil & Gas — Abandon or Decommission",
+          "ce_code": "516 DM 11.9",
+          "review_type": "CE",
+          "confidence": "Medium-High",
+          "corpus_record_count": 0,
+          "description": "Well abandonment and decommissioning on BLM lands qualifies for CE under DOI regulations when disturbance is limited to plugging and reclamation activities",
+          "extraordinary_circumstances_check_required": true
+        },
+        {
+          "rule_id": "T2_DOE_Decommission",
+          "tier": "2",
+          "agency": "DOE",
+          "sector": "ALL",
+          "project_type": "Abandon or Decommission",
+          "ce_code": "B2.5",
+          "review_type": "CE",
+          "confidence": "Medium-High",
+          "corpus_record_count": 0,
+          "description": "DOE demolition and disposal activities at existing facilities qualify for B2.5 CE when no hazardous materials are involved beyond de minimis levels",
+          "regulatory_citation": "10 C.F.R. Part 1021 Subpart D, B2.5 — demolition and disposal",
+          "extraordinary_circumstances_check_required": false
+        }
+      ]
+    }
+  },
+  "extraordinary_circumstances_factors": [
+    "ESA-listed species or designated critical habitat in project area",
+    "Tribal sacred sites, tribal lands, or Section 106 NHPA resources",
+    "Floodplains, wetlands, or NWI-mapped waters",
+    "Wildlands, wilderness study areas, roadless areas",
+    "Groundwater-dependent ecosystems or sole-source aquifers",
+    "Areas with significant cumulative NEPA activity within 5 years",
+    "GIS proximity flag: USGS NHD waterway within buffer",
+    "GIS proximity flag: BLM tribal boundary intersection",
+    "GIS proximity flag: BLM PLSS public land survey intersection"
+  ],
+  "scoring_integration": {
+    "description": "CE screening confidence scores are inputs to the Litigation Risk Scorer (see litigation-risk-weights.json). A CE recommendation with Low confidence adds a risk penalty; an EA or EIS recommendation with any confirmed extraordinary circumstance adds the challenge prediction rule penalty.",
+    "confidence_to_risk_modifier": {
+      "High": 0,
+      "Medium-High": 5,
+      "Medium": 10,
+      "Low": 15
+    }
+  }
+}

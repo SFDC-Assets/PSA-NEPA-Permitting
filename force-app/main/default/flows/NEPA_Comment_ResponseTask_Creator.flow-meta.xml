@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>MFR 8 — Response task creation for substantive public comments. Invocable autolaunched flow. When inp_IsSubstantive is true, creates a high-priority Task assigned to the responsible NEPA Coordinator with a 30-day response due date, and sets nepa_response_status__c = Pending on the PublicComplaint. Coordinates with NEPA_EJTribal_Router — for EJ/tribal comments, the EJ router creates the task; this flow handles non-EJ substantive comments. Called by NEPA_Comment_Triage agent save_triage topic after AI classification is confirmed.</description>
+    <label>NEPA Comment Response Task Creator</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Active</status>
+
+    <!-- ============================================================
+         ELEMENT 1: DECISION — IS SUBSTANTIVE?
+         Only creates a task for substantive comments.
+    ============================================================ -->
+    <decisions>
+        <name>Decision_IsSubstantive</name>
+        <label>Is Substantive Comment?</label>
+        <locationX>176</locationX>
+        <locationY>107</locationY>
+        <defaultConnector>
+            <targetReference>Set_Not_Created</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Not substantive — no task</defaultConnectorLabel>
+        <rules>
+            <name>Is_Substantive</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>inp_IsSubstantive</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><booleanValue>true</booleanValue></rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>inp_CommentId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_NEPA_Coordinator_Queue</targetReference>
+            </connector>
+            <label>Substantive comment</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         ELEMENT 2: GET NEPA COORDINATOR QUEUE
+    ============================================================ -->
+    <recordLookups>
+        <name>Get_NEPA_Coordinator_Queue</name>
+        <label>Get NEPA Coordinator Queue</label>
+        <locationX>176</locationX>
+        <locationY>215</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Create_Response_Task</targetReference>
+        </connector>
+        <filterLogic>1 OR 2</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value><stringValue>NEPA_Coordinator</stringValue></value>
+        </filters>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value><stringValue>NEPA_Comment_Triage</stringValue></value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Group</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Name</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+
+    <!-- ============================================================
+         ELEMENT 3: CREATE RESPONSE TASK
+         30-day due date from today or from inp_ResponseDue if provided.
+    ============================================================ -->
+    <recordCreates>
+        <name>Create_Response_Task</name>
+        <label>Create Response Task</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <connector>
+            <targetReference>Update_Response_Status</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <elementReference>formula_TaskSubject</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Description</field>
+            <value>
+                <stringValue>Substantive public comment requires coordinated response. Review comment body, confirm classification, and draft agency response within the required timeframe. Document the response in the administrative record.</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhatId</field>
+            <value>
+                <elementReference>inp_CommentId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>Get_NEPA_Coordinator_Queue.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ActivityDate</field>
+            <value>
+                <elementReference>formula_EffectiveDueDate</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Priority</field>
+            <value><stringValue>High</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value><stringValue>Not Started</stringValue></value>
+        </inputAssignments>
+        <object>Task</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+
+    <!-- ============================================================
+         ELEMENT 4: UPDATE COMMENT RESPONSE STATUS
+    ============================================================ -->
+    <recordUpdates>
+        <name>Update_Response_Status</name>
+        <label>Set Response Status Pending</label>
+        <locationX>176</locationX>
+        <locationY>431</locationY>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>nepa_response_status__c</field>
+            <value><stringValue>Pending</stringValue></value>
+        </inputAssignments>
+        <object>PublicComplaint</object>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>inp_CommentId</elementReference>
+            </value>
+        </filters>
+        <connector>
+            <targetReference>Set_Created</targetReference>
+        </connector>
+    </recordUpdates>
+
+    <!-- ============================================================
+         ELEMENT 5: SET OUTPUTS — TASK CREATED
+    ============================================================ -->
+    <assignments>
+        <name>Set_Created</name>
+        <label>Set Task Created Output</label>
+        <locationX>176</locationX>
+        <locationY>539</locationY>
+        <assignmentItems>
+            <assignToReference>out_Created</assignToReference>
+            <operator>Assign</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>out_TaskId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Create_Response_Task</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+
+    <!-- ============================================================
+         ELEMENT 6: SET OUTPUTS — NOT CREATED
+    ============================================================ -->
+    <assignments>
+        <name>Set_Not_Created</name>
+        <label>Set Not Created Output</label>
+        <locationX>440</locationX>
+        <locationY>107</locationY>
+        <assignmentItems>
+            <assignToReference>out_Created</assignToReference>
+            <operator>Assign</operator>
+            <value><booleanValue>false</booleanValue></value>
+        </assignmentItems>
+    </assignments>
+
+    <!-- ============================================================
+         ERROR HANDLING
+    ============================================================ -->
+    <assignments>
+        <name>Handle_Error</name>
+        <label>Capture Error</label>
+        <locationX>440</locationX>
+        <locationY>323</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
+    </assignments>
+
+    <subflows>
+        <name>Call_ErrorLogger</name>
+        <label>Log Flow Error</label>
+        <locationX>440</locationX>
+        <locationY>431</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value><stringValue>NEPA_Comment_ResponseTask_Creator</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value><elementReference>var_ErrorMessage</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value><elementReference>inp_CommentId</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RunningUserId</name>
+            <value><elementReference>$User.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_FailedStep</name>
+            <value><stringValue>Task_Create_or_Status_Update</stringValue></value>
+        </inputAssignments>
+    </subflows>
+
+    <!-- ============================================================
+         FORMULAS
+    ============================================================ -->
+    <formulas>
+        <name>formula_TaskSubject</name>
+        <dataType>String</dataType>
+        <expression>"Response Required — Substantive Public Comment " &amp; {!inp_CommentId}</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_EffectiveDueDate</name>
+        <dataType>Date</dataType>
+        <expression>IF(
+  ISBLANK({!inp_ResponseDue}),
+  TODAY() + 30,
+  {!inp_ResponseDue}
+)</expression>
+    </formulas>
+
+    <!-- ============================================================
+         INPUT/OUTPUT VARIABLES
+    ============================================================ -->
+    <variables>
+        <name>inp_CommentId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>inp_IsSubstantive</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <value><booleanValue>false</booleanValue></value>
+    </variables>
+    <variables>
+        <name>inp_ResponseDue</name>
+        <dataType>Date</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>out_TaskId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+    <variables>
+        <name>out_Created</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+        <value><booleanValue>false</booleanValue></value>
+    </variables>
+    <variables>
+        <name>var_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Decision_IsSubstantive</targetReference>
+        </connector>
+    </start>
+
+</Flow>

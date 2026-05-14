@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>MFR 8 — Comment triage auto-router. After-save AsyncAfterCommit record-triggered flow on PublicComplaint. Fires on create when nepa_ai_triage_status__c is null. Invokes NepaCommentEJDetector Apex action as the hard gate: if any EJ/tribal trigger matches, calls NEPA_EJTribal_Router subflow (sets flags, creates Task, routes to EJ queue); otherwise sets nepa_ai_triage_status__c = Queued for downstream AI classification by the NEPA_Comment_Triage agent. Per OMB M-24-10 and EO 12898: EJ/tribal comments are NEVER AI-classified — this flow enforces that deterministic hard gate on every new comment.</description>
+    <label>NEPA Comment AI Router</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Active</status>
+
+    <!-- ============================================================
+         ELEMENT 1: CALL EJ DETECTOR APEX
+         Deterministic keyword scan for EJ, tribal sovereignty,
+         sacred sites, low-income impact, and civil rights triggers.
+         Runs before any AI classification decision.
+    ============================================================ -->
+    <actionCalls>
+        <name>Call_EJ_Detector</name>
+        <label>Run EJ Detector</label>
+        <locationX>176</locationX>
+        <locationY>107</locationY>
+        <actionName>NepaCommentEJDetector</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Decision_EJ_Detected</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>commentBody</name>
+            <value>
+                <elementReference>$Record.nepa_comment_body__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>commentId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+
+    <!-- ============================================================
+         ELEMENT 2: DECISION — EJ TRIGGERS DETECTED?
+         Routes EJ/tribal comments to the deterministic router;
+         non-EJ comments are queued for AI classification.
+    ============================================================ -->
+    <decisions>
+        <name>Decision_EJ_Detected</name>
+        <label>EJ Triggers Detected?</label>
+        <locationX>176</locationX>
+        <locationY>215</locationY>
+        <defaultConnector>
+            <targetReference>Update_Status_Queued</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No EJ triggers — queue for AI</defaultConnectorLabel>
+        <rules>
+            <name>EJ_Detected</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Call_EJ_Detector.requiresHumanReview</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><booleanValue>true</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Call_EJTribal_Router</targetReference>
+            </connector>
+            <label>EJ triggers matched</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         ELEMENT 3: CALL EJ/TRIBAL ROUTER SUBFLOW
+         Handles all EJ/tribal-flagged comments:
+         - Assigns to EJ/Tribal Liaison queue
+         - Creates high-priority response Task (14-day due date)
+         - Sets nepa_is_ej_comment__c, nepa_requires_human_review__c,
+           nepa_ai_triage_status__c = EJ-Routed
+         AI classification is bypassed entirely.
+    ============================================================ -->
+    <subflows>
+        <name>Call_EJTribal_Router</name>
+        <label>Route to EJ Tribal Coordinator</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <flowName>NEPA_EJTribal_Router</flowName>
+        <inputAssignments>
+            <name>inp_CommentId</name>
+            <value><elementReference>$Record.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_EJTriggers</name>
+            <value><elementReference>Call_EJ_Detector.detectedTriggers</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_TriggerDetails</name>
+            <value><elementReference>Call_EJ_Detector.triggerDetails</elementReference></value>
+        </inputAssignments>
+    </subflows>
+
+    <subflows>
+        <name>Call_ErrorLogger</name>
+        <label>Log Flow Error</label>
+        <locationX>616</locationX>
+        <locationY>323</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value><stringValue>NEPA_Comment_AI_Router</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value><elementReference>var_ErrorMessage</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value><elementReference>$Record.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RunningUserId</name>
+            <value><elementReference>$User.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_FailedStep</name>
+            <value><stringValue>EJ_Detector_or_Router</stringValue></value>
+        </inputAssignments>
+    </subflows>
+
+    <!-- ============================================================
+         ELEMENT 4: UPDATE STATUS = QUEUED (non-EJ path)
+         Marks the comment for async AI classification by the
+         NEPA_Comment_Triage agent. No AI action is taken here;
+         status = Queued signals to the agent that triage is needed.
+    ============================================================ -->
+    <recordUpdates>
+        <name>Update_Status_Queued</name>
+        <label>Set Triage Status Queued</label>
+        <locationX>440</locationX>
+        <locationY>215</locationY>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>nepa_ai_triage_status__c</field>
+            <value><stringValue>Queued</stringValue></value>
+        </inputAssignments>
+        <object>PublicComplaint</object>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+    </recordUpdates>
+
+    <!-- ============================================================
+         ERROR HANDLING
+    ============================================================ -->
+    <assignments>
+        <name>Handle_Error</name>
+        <label>Capture Error</label>
+        <locationX>616</locationX>
+        <locationY>215</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- ============================================================
+         TRIGGER / START
+         After-save AsyncAfterCommit on PublicComplaint create.
+         Entry condition: nepa_ai_triage_status__c is null (new comments
+         only; prevents re-processing if a triage status is pre-set).
+    ============================================================ -->
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <object>PublicComplaint</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+        <scheduledPaths>
+            <connector>
+                <targetReference>Call_EJ_Detector</targetReference>
+            </connector>
+            <pathType>AsyncAfterCommit</pathType>
+        </scheduledPaths>
+        <filterLogic>1</filterLogic>
+        <filters>
+            <field>nepa_ai_triage_status__c</field>
+            <operator>IsNull</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </filters>
+    </start>
+
+    <!-- ============================================================
+         VARIABLES
+    ============================================================ -->
+    <variables>
+        <name>var_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+</Flow>

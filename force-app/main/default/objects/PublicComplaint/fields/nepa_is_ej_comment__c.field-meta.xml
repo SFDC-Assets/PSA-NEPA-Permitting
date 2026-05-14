@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_is_ej_comment__c</fullName>
+    <description>Set to true by NEPA_Comment_AI_Router when NepaCommentEJDetector identifies EJ/tribal keywords in the comment body. Triggers NEPA_EJTribal_Router flow to route the comment to the EJ/Tribal Liaison queue and block AI classification. Per OMB M-24-10 and EO 12898, EJ/tribal comments bypass AI and require human review.</description>
+    <inlineHelpText>EJ or tribal keywords detected. Comment bypassed AI classification and routed to EJ/Tribal Liaison queue. Human review required.</inlineHelpText>
+    <defaultValue>false</defaultValue>
+    <label>EJ/Tribal Comment Flag</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

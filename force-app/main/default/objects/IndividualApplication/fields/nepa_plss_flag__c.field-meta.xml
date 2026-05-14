@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_plss_flag__c</fullName>
+    <description>Set to true by NEPA_GISProximityCheck when the project footprint intersects a BLM Public Land Survey System (PLSS) parcel (0.25-mile buffer). Confirms BLM surface management authority and federal nexus. Informs agency routing and required permit matrix for FLPMA right-of-way grants.</description>
+    <inlineHelpText>Project footprint intersects BLM public land (PLSS). BLM surface management authority confirmed. Right-of-way grant and bonding requirements apply under FLPMA.</inlineHelpText>
+    <defaultValue>false</defaultValue>
+    <label>PLSS Public Land Flag</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

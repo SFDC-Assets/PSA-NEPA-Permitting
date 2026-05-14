@@ -16,6 +16,11 @@
     <label>NEPA Permitting</label>
     <fieldPermissions>
         <editable>true</editable>
+        <field>ApplicationTimeline.External_ID__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>ApplicationTimeline.nepa_assigned_entity__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -514,6 +519,26 @@
         <field>IndividualApplication.nepa_tribal_plaintiff_flag__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_nhd_proximity_flag__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_ar_locked__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_tribal_lands_flag__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_plss_flag__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
 
     <fieldPermissions>
         <editable>true</editable>
@@ -972,6 +997,11 @@
     
     <fieldPermissions>
         <editable>true</editable>
+        <field>PublicComplaint.External_ID__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>PublicComplaint.Method_of_Submission__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -994,6 +1024,26 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>PublicComplaint.nepa_ai_triage_rationale__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>PublicComplaint.nepa_ai_triage_status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>PublicComplaint.nepa_duplicate_of__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>PublicComplaint.nepa_is_duplicate__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>PublicComplaint.nepa_is_ej_comment__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1520,6 +1570,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>nepa_engagement__c.External_ID__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>nepa_engagement__c.nepa_ada_accessible__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1810,6 +1865,11 @@
         <readable>true</readable>
     </fieldPermissions>
 
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_litigation__c.External_ID__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_litigation__c.nepa_case_title__c</field>

@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>MFR 8 — EJ/Tribal comment routing. Invocable autolaunched flow that handles routing of EJ/tribal-flagged PublicComplaint records. Assigns the comment to the EJ/Tribal Liaison queue, creates a response Task for the designated coordinator, and sets nepa_requires_human_review__c = true and nepa_is_ej_comment__c = true. Called by NEPA_Comment_AI_Router (before-save, related-record path) and the NEPA_Comment_Triage agent ej_gate topic. Per OMB M-24-10 and EO 12898: EJ/tribal comments are NEVER AI-classified; this flow is the deterministic hard gate.</description>
+    <label>NEPA EJ Tribal Router</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Active</status>
+
+    <!-- ============================================================
+         ELEMENT 1: GET EJ/TRIBAL LIAISON QUEUE
+         Looks up the EJ/Tribal queue. Falls back to Comment
+         Triage queue if the specific queue is not configured.
+    ============================================================ -->
+    <recordLookups>
+        <name>Get_EJ_Queue</name>
+        <label>Get EJ Tribal Liaison Queue</label>
+        <locationX>176</locationX>
+        <locationY>107</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_QueueFound</targetReference>
+        </connector>
+        <filterLogic>1 OR 2</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value><stringValue>NEPA_EJ_Tribal_Liaison</stringValue></value>
+        </filters>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value><stringValue>NEPA_Comment_Triage</stringValue></value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Group</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Name</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+
+    <!-- ============================================================
+         ELEMENT 2: DECISION — QUEUE FOUND?
+    ============================================================ -->
+    <decisions>
+        <name>Decision_QueueFound</name>
+        <label>EJ Queue Found?</label>
+        <locationX>176</locationX>
+        <locationY>215</locationY>
+        <defaultConnector>
+            <targetReference>Update_Comment_EJ_Flags</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No queue — still update comment</defaultConnectorLabel>
+        <rules>
+            <name>Queue_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_EJ_Queue</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_Response_Task</targetReference>
+            </connector>
+            <label>Queue found</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         ELEMENT 3: CREATE EJ RESPONSE TASK
+         Creates a high-priority task assigned to the EJ/Tribal queue.
+         Due date: 10 business days (14 calendar days from today).
+    ============================================================ -->
+    <recordCreates>
+        <name>Create_Response_Task</name>
+        <label>Create EJ Response Task</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <connector>
+            <targetReference>Update_Comment_EJ_Flags</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <elementReference>formula_TaskSubject</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Description</field>
+            <value>
+                <elementReference>formula_TaskDescription</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhatId</field>
+            <value>
+                <elementReference>inp_CommentId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>Get_EJ_Queue.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ActivityDate</field>
+            <value>
+                <elementReference>formula_TaskDueDate</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Priority</field>
+            <value><stringValue>High</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value><stringValue>Not Started</stringValue></value>
+        </inputAssignments>
+        <object>Task</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+
+    <!-- ============================================================
+         ELEMENT 4: UPDATE COMMENT — EJ FLAGS
+         Sets nepa_is_ej_comment__c, nepa_requires_human_review__c,
+         nepa_ai_triage_status__c = EJ-Routed,
+         and nepa_legal_review_status__c for tribal comments.
+    ============================================================ -->
+    <recordUpdates>
+        <name>Update_Comment_EJ_Flags</name>
+        <label>Update Comment EJ Flags</label>
+        <locationX>176</locationX>
+        <locationY>431</locationY>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>nepa_is_ej_comment__c</field>
+            <value><booleanValue>true</booleanValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_requires_human_review__c</field>
+            <value><booleanValue>true</booleanValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_ai_triage_status__c</field>
+            <value><stringValue>EJ-Routed</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_ai_triage_rationale__c</field>
+            <value>
+                <elementReference>formula_EJRationale</elementReference>
+            </value>
+        </inputAssignments>
+        <object>PublicComplaint</object>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>inp_CommentId</elementReference>
+            </value>
+        </filters>
+        <connector>
+            <targetReference>Assign_Outputs</targetReference>
+        </connector>
+    </recordUpdates>
+
+    <!-- ============================================================
+         ELEMENT 5: ASSIGN OUTPUTS
+    ============================================================ -->
+    <assignments>
+        <name>Assign_Outputs</name>
+        <label>Set Output Variables</label>
+        <locationX>176</locationX>
+        <locationY>539</locationY>
+        <assignmentItems>
+            <assignToReference>out_Routed</assignToReference>
+            <operator>Assign</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>out_QueueName</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_EJ_Queue.Name</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+
+    <!-- ============================================================
+         ERROR HANDLING
+    ============================================================ -->
+    <assignments>
+        <name>Handle_Error</name>
+        <label>Capture Error</label>
+        <locationX>440</locationX>
+        <locationY>323</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
+    </assignments>
+
+    <subflows>
+        <name>Call_ErrorLogger</name>
+        <label>Log Flow Error</label>
+        <locationX>440</locationX>
+        <locationY>431</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value><stringValue>NEPA_EJTribal_Router</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value><elementReference>var_ErrorMessage</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value><elementReference>inp_CommentId</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RunningUserId</name>
+            <value><elementReference>$User.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_FailedStep</name>
+            <value><stringValue>EJ_Task_Create_or_Comment_Update</stringValue></value>
+        </inputAssignments>
+    </subflows>
+
+    <!-- ============================================================
+         FORMULAS
+    ============================================================ -->
+    <formulas>
+        <name>formula_TaskSubject</name>
+        <dataType>String</dataType>
+        <expression>"EJ/Tribal Comment Requires Review — " &amp; {!inp_CommentId}</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_TaskDescription</name>
+        <dataType>String</dataType>
+        <expression>"EJ/Tribal keywords detected in this public comment. AI classification bypassed per OMB M-24-10 and EO 12898. Triggers: " &amp; IF(ISBLANK({!inp_EJTriggers}), "See comment body", {!inp_EJTriggers}) &amp; ". Details: " &amp; IF(ISBLANK({!inp_TriggerDetails}), "See comment body", {!inp_TriggerDetails})</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_TaskDueDate</name>
+        <dataType>Date</dataType>
+        <expression>TODAY() + 14</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_EJRationale</name>
+        <dataType>String</dataType>
+        <expression>"EJ/Tribal gate triggered — AI classification bypassed. Triggers: " &amp; IF(ISBLANK({!inp_EJTriggers}), "(none specified)", {!inp_EJTriggers})</expression>
+    </formulas>
+
+    <!-- ============================================================
+         INPUT/OUTPUT VARIABLES
+    ============================================================ -->
+    <variables>
+        <name>inp_CommentId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>inp_EJTriggers</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>inp_TriggerDetails</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>out_Routed</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+        <value><booleanValue>false</booleanValue></value>
+    </variables>
+    <variables>
+        <name>out_QueueName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+    <variables>
+        <name>var_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_EJ_Queue</targetReference>
+        </connector>
+    </start>
+
+</Flow>

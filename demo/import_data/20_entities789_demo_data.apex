@@ -258,7 +258,7 @@ for (nepa_process_team_member__c tm : [
     FROM nepa_process_team_member__c
     WHERE nepa_process__c = :appId
 ]) {
-    existingRoles.add(tm.nepa_role_type__c + '|' + (tm.nepa_user__c != null ? tm.nepa_user__c : ''));
+    existingRoles.add(tm.nepa_role_type__c + '|' + (tm.nepa_user__c != null ? String.valueOf(tm.nepa_user__c) : ''));
 }
 
 List<nepa_process_team_member__c> tmsToInsert = new List<nepa_process_team_member__c>();
@@ -268,7 +268,7 @@ for (Map<String, Object> def : tmDefs) {
     Id     userId     = contactIdByExt.get(contactExt);
 
     // Use running user as fallback if contact not yet a User; keyed by role+userId
-    String key = role + '|' + (userId != null ? userId : '');
+    String key = role + '|' + (userId != null ? String.valueOf(userId) : '');
     if (!existingRoles.contains(key)) {
         nepa_process_team_member__c tm = new nepa_process_team_member__c();
         tm.nepa_process__c            = appId;

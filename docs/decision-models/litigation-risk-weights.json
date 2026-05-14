@@ -1,0 +1,166 @@
+{
+  "schema_version": "1.0",
+  "standard": "CEQ NEPA and Permitting Data and Technology Standard v1.2 (August 18, 2025)",
+  "mfr": "MFR 4 — Decision-logic export for litigation risk scoring weights",
+  "source": "NEPA_Agency_Risk_Rate__mdt, NEPA_Circuit_Risk_Weight__mdt, NEPA_Statute_Risk_Weight__mdt, NEPA_Challenge_Prediction_Rule__mdt — calibrated from PermitTEC v0.1 corpus (761 NEPA litigation cases, PNNL 2025)",
+  "generated": "2026-05-14",
+  "description": "Additive risk weights used by the NEPA_Litigation_Risk_Scorer Flow + BRE Expression Set to compute a per-project litigation risk score (0–100+). Weights are summed across agency, circuit, adjacent statutes, review type, and active challenge prediction rules. Score drives risk tier (Low/Moderate/High/Very High) and triggers the NEPA_Defensibility_Gap_Checker.",
+  "scoring_model": {
+    "algorithm": "Additive weighted sum",
+    "formula": "risk_score = agency_risk + circuit_risk + sum(statute_risks) + sum(challenge_prediction_deltas) + confidence_modifier",
+    "tier_thresholds": {
+      "Low": { "min": 0, "max": 39 },
+      "Moderate": { "min": 40, "max": 59 },
+      "High": { "min": 60, "max": 79 },
+      "Very_High": { "min": 80, "max": 999 }
+    },
+    "example_scores": [
+      { "scenario": "EA + BLM + 9th Circuit", "agency_pts": 39, "circuit_pts": 36, "total": 63, "tier": "High" },
+      { "scenario": "EIS + BLM + 9th Circuit", "agency_pts": 39, "circuit_pts": 36, "eis_modifier": 8, "total": 83, "tier": "Very High" },
+      { "scenario": "CE + DOE + DC Circuit", "agency_pts": 24, "circuit_pts": 28, "total": 52, "tier": "Moderate" }
+    ]
+  },
+  "agency_risk_rates": {
+    "description": "Risk points assigned per agency based on historical litigation frequency and plaintiff win rate from PermitTEC corpus",
+    "metadata_type": "NEPA_Agency_Risk_Rate__mdt",
+    "field_mapping": {
+      "agency_key": "Agency_Abbreviation__c",
+      "risk_points": "Risk_Points__c",
+      "corpus_case_count": "Case_Count__c"
+    },
+    "weights": [
+      { "agency_key": "BLM",  "agency_name": "Bureau of Land Management",      "risk_points": 39, "corpus_case_count": 89,  "note": "Highest agency risk — public lands energy/mining dominates litigation" },
+      { "agency_key": "USFS", "agency_name": "U.S. Forest Service",             "risk_points": 28, "corpus_case_count": 148, "note": "High volume; timber and road projects most challenged" },
+      { "agency_key": "USACE","agency_name": "Army Corps of Engineers",         "risk_points": 24, "corpus_case_count": 62,  "note": "Section 404/401 CWA nexus elevates challenge rate" },
+      { "agency_key": "FERC", "agency_name": "Federal Energy Regulatory Commission","risk_points": 24, "corpus_case_count": 42, "note": "Pipeline certificate cases; 4th Circuit high-risk cell" },
+      { "agency_key": "FWS",  "agency_name": "U.S. Fish and Wildlife Service",  "risk_points": 24, "corpus_case_count": 44,  "note": "ESA-adjacent; critical habitat determinations vulnerable" },
+      { "agency_key": "FHWA", "agency_name": "Federal Highway Administration",  "risk_points": 18, "corpus_case_count": 38,  "note": "Moderate risk; transportation EAs frequently challenged" },
+      { "agency_key": "DEFAULT","agency_name": "Default (unknown agency)",      "risk_points": 24, "corpus_case_count": 0,   "note": "Conservative default applied when agency not identified" }
+    ]
+  },
+  "circuit_risk_weights": {
+    "description": "Risk points by federal circuit court of appeals based on NEPA plaintiff win rate in PermitTEC corpus. Circuits with low case count flagged as low-data; default applied.",
+    "metadata_type": "NEPA_Circuit_Risk_Weight__mdt",
+    "field_mapping": {
+      "circuit_key": "Circuit_Key__c",
+      "risk_points": "Risk_Points__c",
+      "corpus_case_count": "Case_Count__c",
+      "low_data_flag": "Low_Data_Confidence__c"
+    },
+    "weights": [
+      { "circuit_key": "10th",    "label": "10th Circuit",   "risk_points": 43, "corpus_case_count": 68,  "low_data": false, "note": "Rocky Mountain energy and mining — highest risk circuit in corpus" },
+      { "circuit_key": "9th",     "label": "9th Circuit",    "risk_points": 36, "corpus_case_count": 268, "low_data": false, "note": "Largest NEPA caseload; Northwest forests and public lands" },
+      { "circuit_key": "4th",     "label": "4th Circuit",    "risk_points": 39, "corpus_case_count": 42,  "low_data": false, "note": "Energy infrastructure pipeline cases; low agency win rate" },
+      { "circuit_key": "DC",      "label": "D.C. Circuit",   "risk_points": 28, "corpus_case_count": 148, "low_data": false, "note": "FERC certificate and federal energy policy disputes" },
+      { "circuit_key": "7th",     "label": "7th Circuit",    "risk_points": 17, "corpus_case_count": 22,  "low_data": false, "note": "Moderate volume; Great Lakes and agriculture" },
+      { "circuit_key": "1st",     "label": "1st Circuit",    "risk_points": 17, "corpus_case_count": 0,   "low_data": true,  "note": "Low corpus coverage — default conservative weight applied" },
+      { "circuit_key": "2nd",     "label": "2nd Circuit",    "risk_points": 17, "corpus_case_count": 0,   "low_data": true,  "note": "Low corpus coverage — default conservative weight applied" },
+      { "circuit_key": "3rd",     "label": "3rd Circuit",    "risk_points": 17, "corpus_case_count": 0,   "low_data": true,  "note": "Low corpus coverage — default conservative weight applied" },
+      { "circuit_key": "5th",     "label": "5th Circuit",    "risk_points": 17, "corpus_case_count": 0,   "low_data": true,  "note": "Low corpus coverage — default conservative weight applied" },
+      { "circuit_key": "6th",     "label": "6th Circuit",    "risk_points": 17, "corpus_case_count": 0,   "low_data": true,  "note": "Low corpus coverage — default conservative weight applied" },
+      { "circuit_key": "8th",     "label": "8th Circuit",    "risk_points": 17, "corpus_case_count": 0,   "low_data": true,  "note": "Low corpus coverage — default conservative weight applied" },
+      { "circuit_key": "11th",    "label": "11th Circuit",   "risk_points": 17, "corpus_case_count": 0,   "low_data": true,  "note": "Low corpus coverage — default conservative weight applied" },
+      { "circuit_key": "DEFAULT", "label": "Default circuit","risk_points": 24, "corpus_case_count": 0,   "low_data": true,  "note": "Conservative default when circuit not identified" }
+    ]
+  },
+  "adjacent_statute_risk_weights": {
+    "description": "Additive risk points for each adjacent statute implicated by the project. Multiple statutes stack. Source: PermitTEC challenge-ground frequency analysis.",
+    "metadata_type": "NEPA_Statute_Risk_Weight__mdt",
+    "field_mapping": {
+      "statute_key": "Statute_Key__c",
+      "risk_points": "Risk_Points__c",
+      "corpus_case_count": "Case_Count__c"
+    },
+    "weights": [
+      { "statute_key": "ESA",   "label": "Endangered Species Act",              "risk_points": 10, "corpus_case_count": 72, "note": "ESA Section 7 consultation failures are the top adjacent-statute challenge ground" },
+      { "statute_key": "NFMA",  "label": "National Forest Management Act",      "risk_points": 5,  "corpus_case_count": 58, "note": "Forest plan consistency challenges co-occur with NEPA inadequacy claims" },
+      { "statute_key": "CWA",   "label": "Clean Water Act",                     "risk_points": 4,  "corpus_case_count": 48, "note": "Section 404/401 nexus; dredge-and-fill permits frequently bundled with NEPA" },
+      { "statute_key": "NHPA",  "label": "National Historic Preservation Act",  "risk_points": 2,  "corpus_case_count": 0,  "note": "Section 106 tribal consultation; low corpus count but high win rate for tribal plaintiffs" },
+      { "statute_key": "NGA",   "label": "Natural Gas Act Section 7",           "risk_points": 1,  "corpus_case_count": 36, "note": "FERC certificate cases; NGA-NEPA nexus adds modest incremental risk" }
+    ]
+  },
+  "challenge_prediction_rules": {
+    "description": "Challenge ground patterns that predict litigation type given review type and adjacent statute. Applied as discrete risk flags that trigger defensibility gap checks.",
+    "metadata_type": "NEPA_Challenge_Prediction_Rule__mdt",
+    "rules": [
+      {
+        "rule_id": "EIS_Inadequacy",
+        "challenge_ground": "EIS/EA Inadequacy",
+        "trigger_review_type": "EIS",
+        "trigger_adjacent_statute": null,
+        "priority": 1,
+        "active": true,
+        "explanation": "EIS processes carry the highest inadequacy challenge rate in the PermitTEC corpus (98.2% of linked litigation). Courts review scope, range of alternatives, and mitigation commitments. Defensibility requires documented alternatives analysis, cumulative effects analysis, and complete administrative record.",
+        "defensibility_gaps_checked": ["alternatives_documented", "cumulative_effects_analysis", "administrative_record_complete"]
+      },
+      {
+        "rule_id": "Failure_to_Supplement",
+        "challenge_ground": "Failure to Supplement",
+        "trigger_review_type": "EIS",
+        "trigger_adjacent_statute": null,
+        "priority": 2,
+        "active": true,
+        "explanation": "EIS processes with long decision timelines (typically 3+ years from NOI to ROD) face supplemental EIS challenges when significant new information or changed circumstances arise post-NOI. NEPA regulations require supplementation when new information materially affects the analysis.",
+        "defensibility_gaps_checked": ["timeline_within_limits", "supplementation_triggers_reviewed"]
+      },
+      {
+        "rule_id": "Adjacent_Statute_ESA",
+        "challenge_ground": "Adjacent Statute Violation - ESA",
+        "trigger_review_type": null,
+        "trigger_adjacent_statute": "ESA",
+        "priority": 3,
+        "active": true,
+        "explanation": "ESA Section 7 consultation is required when a federal action may affect a listed species or critical habitat. Inadequate consultation is the most common adjacent-statute challenge ground. Document biological assessment scope, jeopardy analysis, and reinitiation triggers.",
+        "defensibility_gaps_checked": ["esa_consultation_complete", "biological_assessment_present"]
+      },
+      {
+        "rule_id": "Improper_CE_Reliance",
+        "challenge_ground": "Improper CE Reliance",
+        "trigger_review_type": "CE",
+        "trigger_adjacent_statute": null,
+        "priority": 4,
+        "active": true,
+        "explanation": "CE determinations for high-impact sectors (energy, mining, large-scale infrastructure) face extraordinary circumstances challenges. Courts look for documented analysis of cumulative effects and any triggered extraordinary circumstances. Ensure the CE determination memo addresses all applicable extraordinary circumstances factors for the project sector and geography.",
+        "defensibility_gaps_checked": ["extraordinary_circumstances_screened", "ce_determination_memo_present"]
+      },
+      {
+        "rule_id": "Failure_to_Prepare",
+        "challenge_ground": "Failure to Prepare EIS",
+        "trigger_review_type": "EA",
+        "trigger_adjacent_statute": null,
+        "priority": 5,
+        "active": true,
+        "explanation": "EA processes that result in a FONSI are vulnerable to challenge that the agency should have prepared a full EIS given the significance of the action. Hard look doctrine and FONSI documentation must demonstrate significance thresholds were properly evaluated.",
+        "defensibility_gaps_checked": ["fonsi_documented", "significance_thresholds_evaluated"]
+      },
+      {
+        "rule_id": "Tribal_Consultation_Failure",
+        "challenge_ground": "Tribal Consultation Failure; NHPA Section 106",
+        "trigger_review_type": null,
+        "trigger_adjacent_statute": "NHPA",
+        "priority": 5,
+        "active": true,
+        "explanation": "Tribal Nation challengers achieve 87.5% win rate — highest of any plaintiff category in PermitTEC corpus. Ensure government-to-government consultation is documented, Section 106 review is complete, and tribal sacred site surveys are included in the administrative record.",
+        "defensibility_gaps_checked": ["tribal_consultation_documented", "nhpa_section_106_complete"]
+      },
+      {
+        "rule_id": "Energy_4th_Circuit_Pipeline",
+        "challenge_ground": "GHG Cumulative Impact; Inadequate Alternatives Analysis",
+        "trigger_review_type": "EIS",
+        "trigger_adjacent_statute": null,
+        "priority": 10,
+        "active": true,
+        "explanation": "Energy projects in the 4th Circuit have a 28.6% agency win rate — highest-risk sector-circuit cell in PermitTEC corpus. MVP and ACP pipeline decisions inform this rule. Downstream GHG emissions, induced demand, and alternatives range are top challenge vectors.",
+        "defensibility_gaps_checked": ["ghg_analysis_present", "downstream_emissions_quantified", "alternatives_range_adequate"]
+      }
+    ]
+  },
+  "review_type_modifiers": {
+    "description": "Baseline score adjustments by NEPA review type before agency and circuit weights are added",
+    "modifiers": [
+      { "review_type": "CE",  "base_modifier": 0,  "note": "CE pathway starts with no base modifier; agency and circuit weights determine risk" },
+      { "review_type": "EA",  "base_modifier": 4,  "note": "EA pathway adds 4 points; FONSI challenge is the primary vector" },
+      { "review_type": "EIS", "base_modifier": 8,  "note": "EIS pathway adds 8 points; inadequacy challenge rate is highest of all review types" }
+    ]
+  }
+}

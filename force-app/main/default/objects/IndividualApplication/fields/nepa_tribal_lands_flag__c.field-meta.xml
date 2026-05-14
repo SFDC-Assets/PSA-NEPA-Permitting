@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_tribal_lands_flag__c</fullName>
+    <description>Set to true by NEPA_GISProximityCheck when a BLM tribal or trust land boundary intersects the project buffer (1.0 mile). Triggers EO 13175 government-to-government consultation and NHPA Section 106 review. NEPA_CE_Screener routes to set nepa_extraordinary_circumstances__c when this flag is active.</description>
+    <inlineHelpText>BLM tribal or trust land boundary within 1.0 mile of project. Government-to-government consultation required under EO 13175. NHPA Section 106 review required.</inlineHelpText>
+    <defaultValue>false</defaultValue>
+    <label>Tribal Lands Proximity Flag</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

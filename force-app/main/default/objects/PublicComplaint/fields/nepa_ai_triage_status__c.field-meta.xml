@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_ai_triage_status__c</fullName>
+    <description>Lifecycle status of AI triage processing for this comment. Set by NEPA_Comment_AI_Router flow on insert. Null = not yet evaluated; Queued = scheduled for async AI triage; EJ-Routed = EJ/tribal gate triggered and routed to specialist; Classified = AI triage complete; Human-Review = routed for human review.</description>
+    <inlineHelpText>AI triage status: Null = pending, Queued = awaiting AI, EJ-Routed = EJ/tribal specialist queue, Classified = AI complete, Human-Review = escalated.</inlineHelpText>
+    <label>AI Triage Status</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Queued</fullName>
+                <default>false</default>
+                <label>Queued</label>
+            </value>
+            <value>
+                <fullName>EJ-Routed</fullName>
+                <default>false</default>
+                <label>EJ-Routed</label>
+            </value>
+            <value>
+                <fullName>Classified</fullName>
+                <default>false</default>
+                <label>Classified</label>
+            </value>
+            <value>
+                <fullName>Human-Review</fullName>
+                <default>false</default>
+                <label>Human-Review</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

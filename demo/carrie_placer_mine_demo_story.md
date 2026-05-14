@@ -9,13 +9,32 @@
 
 ## Presenter Overview
 
-This demo runs four scenes, each following **Tell → Show → Tell** structure. Before each scene, deliver the **Setup Tell** — one or two sentences that name the pain before the audience sees the solution. After the scene, deliver the **Landing Tell** — one or two sentences that name what just changed and why it matters. Never let a demo moment speak for itself.
+This demo is submitted to the **CEQ Permitting Innovators Challenge**. You are demonstrating a federal NEPA permitting accelerator — PSA-NEPA — built on Salesforce Agentforce for Public Sector. It implements all **10 Minimum Functional Requirements (MFRs)** from CEQ's Permitting Technology Action Plan. Every data claim in this script comes from real federal datasets: 61,881 NEPA projects (NETATEC v2.0, PNNL), 761 litigation cases (PermitTEC v0.1, PNNL), 1,903 Final EIS records (CEQ EIS Timeline Data 2010–2024), and the public administrative record of a real BLM permit. You do not need to have built it or analyzed the data to deliver this demo. You need to know three numbers cold:
+
+- **23%** — the share of CE records in the NETATEC corpus with no CE category on record. Each misrouted CE→EA project adds a median 11 months.
+- **87.5%** — the litigation win rate of Tribal Nation plaintiffs across 761 federal NEPA cases. The single most predictable litigation risk factor.
+- **8 months** — the Carrie Placer Mine optimized timeline. Same project, same regulations. 25 months actual → 8 months projected.
+
+This demo runs four scenes, each following **Tell → Show → Tell** structure. The **Setup Tell** opens with a corpus data point and names the failure mode. The **Show** is a numbered click-by-click guide — action plus narration for each step. The **Landing Tell** closes with the MFR reference and the number that lands. Never let a demo moment speak for itself.
 
 **Core message:** The permit didn't take 25 months because the project was hard. It took 25 months because the *process* was broken — wrong people, wrong places, wrong season, no coordination. Salesforce fixes the process, not the project.
 
-**Audience:** BLM field office managers, state permitting directors, NEPA program leads, agency IT/digital transformation leads.
+**Audience:** BLM field office managers, state permitting directors, NEPA program leads, agency IT/digital transformation leads, CEQ evaluators.
 
 **Total demo time:** 20–25 minutes across four scenes.
+
+---
+
+## Presenter Quick Reference
+
+Memorize this table before opening the laptop. It maps each scene to the MFRs you are demonstrating, the one data fact that anchors the Setup Tell, the UI moment the evaluator is watching for, and the line that closes.
+
+| Scene | MFRs Demonstrated | Must-Know Data Fact | Key UI Moment | The Line That Closes |
+|---|---|---|---|---|
+| **1: Intake** | #3 Leading-Edge, #6 Emerging, #4 Emerging | 23% of NETATEC CE records have no CE category → adds median 11 months per misrouted project | CE pre-screening result card at OmniScript Step 7 | "That feedback loop used to take 6 weeks. Now it happens at submission." |
+| **2: Work Orders** | #5 Emerging→Leading-Edge, Std 1, Std 4 | Every BLM Plan of Operations requires ≥1 co-permit; co-permit clocks typically start *after* BLM decision | Lek survey in slot 1; IDWR task auto-fires on WO close | "The IDWR clock is running before we've drafted a single page of the EA." |
+| **3: Comments** | #8 Emerging, #5 stage gates | Tribal Nation plaintiffs win 87.5% of contested NEPA cases — the most predictable risk factor in the corpus | Dual-flag on Shoshone-Paiute comment; hard gate blocking EA advance | "The legal work order fired before anyone made a judgment call." |
+| **4: Decision** | #7 Emerging, #9 Emerging, #1 Leading-Edge, #2 Emerging | Top 3 NEPA court losses are stage gate failures — the agency did the work; the system didn't enforce the checkpoint | All-5-green Document Registry; `nepa_ar_export__c` Completed status | "Eight months. 13 CEQ entities. 10 MFRs. Same regulations." |
 
 ---
 
@@ -168,121 +187,266 @@ Here's what the review actually required:
 
 ---
 
-## Scene 1: The Intake — From Phone Call to Full Team in One Booking
+## Scene 1: The Intake — CE Screening, GIS, and Screening Criteria Access
 
-### Setup Tell *(say this before clicking)*
+> **Demonstrates:** MFR #3 — Automated Project Screening (Leading-Edge) · MFR #6 — Integrated GIS Analysis (Emerging) · MFR #4 — Access to Screening Criteria (Emerging)
 
-> "Today, when a miner like Sam wants to start a Plan of Operations review, he calls the field office, leaves a message, waits for a callback, gets told to submit paperwork, waits again — and might meet with one person who then has to go find six others. Let me show you what intake looks like when the system does that work instead."
+### Data Context *(know this cold — it goes into your Setup Tell)*
 
-### Show
+- NETATEC v2.0 (61,881 projects): **23% of CE records have no CE category on record**; another 17% have noisy or inconsistent citations. Each misrouted CE→EA project adds a median **11 months** to the timeline. Each misrouted CE→EIS escalation adds a median **2.8 years**.
+- **88.7% of energy projects and 90.6% of infrastructure projects resolve as CEs** — the bottleneck isn't environmental impact, it's that intake systems don't capture the information needed to route correctly.
+- The 5 strongest predictors of NEPA process type are all available at the time of application: CE category citation, project type, title keywords, action description language, document page count. The information exists. It just isn't structured.
 
-- Sam opens the BLM self-service portal on his phone.
-- He selects **New Plan of Operations – Mining**, enters the project location (T. 6 S., R. 5 W., Section 28, Jordan Creek watershed) and footprint (15 acres, 1.7-mile access road).
-- The system reads the project type and location, cross-references resource layers, and automatically assembles the **Interdisciplinary (ID) Team**: geologist, NEPA specialist, wildlife biologist, hydrologist, botanist, and cultural resources coordinator.
-- Sam confirms: a single 90-minute ID Team scoping session at the Owyhee Field Office.
+### Setup Tell *(say this before clicking — deliver while the laptop is still closed)*
 
-**What to show in the UI:** The appointment booking flow, the auto-populated team roster, and the confirmed calendar invite with all seven specialists listed.
+> "Look at that number: 23%. Almost one in four CE records in the federal NEPA data corpus has no CE category on file. That field is blank. When that blank reaches a coordinator's inbox, they have to stop and manually triage the routing — and while they're doing that, the clock is running. Each of those misrouted projects adds a median eleven months. Not because the project was complex. Because the intake form didn't ask the right questions. Let me show you what happens when it does — and when the system acts on the answer before the application is even submitted."
 
-### Landing Tell *(say this after the click)*
+### Show — Step by Step
 
-> "Sam just booked one meeting and got all seven specialists. In the old system, assembling that team took weeks of phone tag — and there was no guarantee everyone was briefed before they walked in the room. The system knows what a placer gold mining project next to a Category 4A stream in PHMA territory requires. Sam doesn't have to know."
+1. **Navigate to the Experience Cloud portal** — Sam Uhler's applicant view. Say: *"This is what Sam sees. No phone call. No callback queue. He starts here."*
+
+2. **Click "New Plan of Operations – Mining."** The OmniScript CE Intake Wizard opens at Step 1. Say: *"Seven steps. Conditional navigation — fields irrelevant to this project type are hidden. Sam only sees what applies to his project."*
+
+3. **Step 1:** Select BLM / Interior. **Step 2:** Select Mining / Plan of Operations. Say: *"These two fields tell the system enough to know which resource disciplines this project will need."*
+
+4. **Step 3:** Select Action type → Surface Disturbance. Say: *"This single field is the primary CE/EA discriminator. Surface disturbance above the 5-acre threshold routes to EA. Below it, the system checks the CE library. Sam doesn't need to know 40 CFR 1501.4 — the wizard does."*
+
+5. **Step 4:** Enter 15 acres; extraordinary circumstances self-reported as none. **Step 5:** Enter NAICS code 21221 (Gold and Silver Ore Mining). Say: *"15 acres. Already past the 5-acre CE threshold. The system knows where this is going — but watch what happens in Step 6."*
+
+6. **Step 6:** Upload GIS footprint. **Narrate each check result as it populates:**
+   - FWS ECOS: *"Greater Sage-Grouse PHMA detected — potential extraordinary circumstance."*
+   - USGS NHD: *"Jordan Creek adjacency, Category 4A — that's a hydrological proximity trigger."*
+   - EPA EJScreen: *"EJ Index 18.3 — informational, not a hard trigger at this score, but it's recorded."*
+   - BLM Tribal Cadastral: *"No tribal boundary overlap in the project footprint."*
+   - BLM PLSS: *"Federal surface confirmed — BLM jurisdiction established."*
+   Say: *"Five GIS services. All public APIs. All called in parallel. No GIS expertise required from the coordinator."*
+
+7. **Step 7 — Review + Submit.** Show the **CE pre-screening result card**:
+   - Recommendation: **EA-Required** | Confidence: **High**
+   - Basis: *Surface disturbance 15 acres exceeds 5-acre CE threshold (40 CFR 1501.4); PHMA detected in Step 6 triggers extraordinary circumstances independently*
+   Say: *"This is MFR #3 — the pre-screening result returns before Sam submits. He knows the routing. He knows the rule that fired. And this is MFR #4 — the criteria that produced this result are published at /docs/decision-models/ on GitHub. Sam can review the exact logic before submitting. He can adjust his project siting to try to come in under the threshold. That's actionable feedback at intake, not six weeks later in an RFI."*
+
+8. **Submit → Navigate to IndividualApplication coordinator view.** Point to:
+   - `nepa_ce_pathway_recommendation__c` = EA-Required *(read-only — set by automation)*
+   - `nepa_review_type__c` = blank *(coordinator sets the official pathway — the AI recommends, the human decides)*
+   Say: *"The system's recommendation is read-only. The official pathway requires a credentialed coordinator. Per OMB M-25-21: AI recommends, human decides. That's not a limitation — that's the design."*
+
+9. **Show the auto-assembled ID Team** on the IndividualApplication: geologist, NEPA specialist, wildlife biologist, hydrologist, botanist, and cultural resources coordinator. Say: *"The system read the project type and GIS results and assembled the team automatically. Sam books one meeting — 90 minutes at the Owyhee Field Office — and all seven specialists are confirmed."*
+
+### What You Are Demonstrating
+
+- **MFR #3 — Automated Project Screening (Leading-Edge):** 7-step OmniScript with conditional navigation; BRE CE Screener evaluating against 2,105 CE authorities across 79 agencies; pre-screening result with rule-match basis returned before formal submission.
+- **MFR #6 — Integrated GIS Analysis (Emerging):** 5 GIS proximity checks (FWS ECOS, EPA EJScreen, USGS NHD, BLM tribal cadastral, BLM PLSS) firing at intake and writing structured results to `IndividualApplication` fields; results feed CE screening and extraordinary circumstances determination directly.
+- **MFR #4 — Access to Screening Criteria (Emerging):** Decision model logic published at `/docs/decision-models/` with CE rules, GIS layer inventory, and litigation risk weights; logic traceable to specific CFR citations; version-controlled alongside Salesforce metadata.
+
+### Landing Tell *(say this after the demo)*
+
+> "Twenty-three percent of CE records — almost one in four — had no routing information at intake. Each one added eleven months. The CE Screener evaluated this project against 2,105 CE authorities and 5 GIS layers before Sam spoke to a coordinator. He got a routing decision, the rule that fired, and the regulatory citation. That feedback loop used to take six weeks. Now it happens at submission."
+
+> "Sam booked one meeting and got all seven specialists. The system knows what a placer gold mining project next to a Category 4A stream in PHMA territory requires. Sam doesn't have to."
+
+### Transition *(say this as you move to the next screen)*
+
+> "The system knows what this project needs. Now it has to sequence six field specialists across five seasonal windows — and that's where 25 months actually comes from. Not from the analysis. From the scheduling."
 
 ---
 
 ## Scene 2: The Work Order Cascade — Scheduling Against Nature's Calendar
 
+> **Demonstrates:** MFR #5 — Automated Case Management (Emerging→Leading-Edge) · CEQ Standard 1: Business Process Modernization · CEQ Standard 4: Minimizing Timeline Uncertainty
+
+### Data Context *(know this cold — it goes into your Setup Tell)*
+
+- **Every BLM Plan of Operations requires at least one co-permit** — CWA Section 404, EPA NPDES, IDWR state water rights, ESA Section 7, NHPA Section 106, or some combination. For energy projects with pipelines and transmission, the list reaches six to eight. Co-permit processing times range from 30 days (EPA NPDES small suction dredge) to 48 months (nuclear waste facility).
+- **The typical pattern:** the primary federal permit moves forward on its own clock while co-permits are treated as the applicant's responsibility. Applicants — particularly smaller operators like placer miners — don't know when to start them. The co-permit clock starts *after* the BLM decision. That adds months to a timeline that's already closed.
+- CEQ EIS data (1,903 Final EIS records): scoping is the universal bottleneck in **34 of 36 agencies**, consuming 60–75% of total EIS time. A 49% improvement in NOI→ROD time since 2016 (4.46 years → 2.28 years) proves process reform works. The remaining delays are structural — sequential execution of parallel-eligible work.
+
 ### Setup Tell *(say this before clicking)*
 
-> "Now here's where most permitting systems fall down. They track status — 'pending,' 'in review,' 'under evaluation.' But they don't do anything. The scheduler still has to manually figure out who goes where and when — and if they don't know sage-grouse biology, they'll send someone in May to do a lek survey that has to happen in March. Let me show you what happens the moment that pre-application meeting closes."
+> "Here's the structural problem with co-permits: every BLM Plan of Operations requires at least one — and in almost every case, the co-permit clock starts after the BLM decision. The applicant waits for the BLM permit, then starts the state water permit, then starts the EPA permit. Sequential. The permits that could run concurrently run in series instead, and nobody told the applicant to start them earlier because no system tracked the dependency. That's not a policy failure. It's a workflow failure. Let me show you what it looks like when the workflow closes the gap instead."
 
-### Show
+### Show — Step by Step
 
-- The pre-application consultation is marked complete.
-- Salesforce Field Service instantly generates **six parallel field work orders** — one per discipline.
-- The optimization engine runs. Show the map view: six work orders drop onto Owyhee County. The engine resequences them:
-  - **Lek survey moves to slot 1** — tightest window (closes April 30)
-  - **Migratory bird survey** schedules before April 14
-  - **Spotted frog/riparian survey** schedules late May, post-snow-off
-  - **Botanical** gets two visits (June + August) — meeting the BLM Manual "multiple visits" requirement
-  - **Big game** fills the August shoulder window
-  - **Geology/road** fills remaining availability
-- Show the **gate access constraint**: the two locked gates are modeled as a shared resource. The system books the applicant's gate availability and blocks double-booking. Each specialist sees in their mobile app exactly when the gate is open and who else will be on-site.
-- Show the **parallel permit triggers**: the hydrologist's work order has a flag — when it closes, the system auto-creates: *"Initiate IDWR Water Permit Application"* assigned to the NEPA coordinator, 30-day SLA, and a parallel action item pushed to Sam's applicant portal. The geologist's work order does the same for EPA NPDES.
-- Show the **tribal consultation work order**: Section 106 consultation with the Shoshone-Paiute Tribes is tracked with a 30-day response window. Its completion is a **hard gate** — the EA cannot advance to public review until this is certified.
+1. **Navigate to the IndividualApplication → ApplicationTimeline related list.** Mark the **"Pre-Application Consultation Complete"** milestone. Say: *"One milestone close. Watch what fires."*
 
-**What to show in the UI:** The work order map, the seasonal constraint calendar, the gate resource booking screen, the parallel permit task auto-creation, and the stage gate on tribal consultation.
+2. **Navigate to Work Orders related list.** Six work orders appear simultaneously. Say: *"Six parallel work orders — one per discipline. Not a coordinator task list. Actual field work orders with skill-based dispatch, seasonal constraints, and SLA clocks already set."*
 
-### Landing Tell *(say this after the click)*
+3. **Click Dispatcher Console / Map view.** Six pins drop on Owyhee County. Say: *"This is the optimization engine's view. Six specialists. One county. Five seasonal windows. Two locked gates. The engine is about to sequence all of it."*
 
-> "Six surveys. Seven specialists. Five seasonal windows. Two locked gates. Three parallel permits. The system just sequenced all of it in seconds — and every specialist got there in the right season, the first time. The IDWR and EPA permits are already in motion before the EA is even drafted. That's the difference between running sequentially and running in parallel."
+4. **Point to the Lek Survey work order — slot 1 in the sequence.** Say: *"Tightest window closes April 30. The engine put it first. Not a coordinator decision — the system read the WorkType seasonal constraint and did the math."*
+
+5. **Click the Sage-Grouse WorkType record.** Show `nepa_survey_window_end__c = April 30`. Say: *"That date is a hard constraint, not a note. A dispatcher cannot schedule a sage-grouse survey after April 30 — the system blocks the appointment. Wrong-season dispatch is not possible."*
+
+6. **Click the Botanist work order.** Show two ServiceAppointments — June and August. Say: *"BLM Manual requires two botanical visits. The system scheduled them automatically. The coordinator didn't have to know that rule."*
+
+7. **Show gate resource constraint** — ServiceAppointment dates for all 6 specialists, no overlapping gate access. Say: *"Two locked gates. One 1.7-mile two-track road. Shared resource constraint. No two specialists have overlapping gate dates. Nobody drives 45 minutes to a locked road."*
+
+8. **Click the Hydrologist work order → show "Trigger IDWR" flag.** Now mark the work order **Complete**. Watch the IDWR task auto-create:
+   - Task subject: *"Initiate IDWR Water Permit Application"*
+   - Assigned to: NEPA Coordinator
+   - Due date: 30-day SLA
+   - Portal notification: pushed to Sam's applicant view
+   Say: *"The IDWR clock starts the moment the hydrologist closes his work order. Not after the BLM decision. Now. That's two to four months of post-decision wait, eliminated."*
+
+9. **Click the Geologist work order** — show same pattern, EPA NPDES trigger fires on close. Say: *"Same pattern. EPA NPDES 60-day clock starts at geologist close. Both permits are in processing while the EA is being drafted."*
+
+10. **Point to the Tribal Consultation work order.** Show `hard_gate__c` flag. Say: *"This one is different. This is a hard gate — a database constraint. The EA cannot advance to public review until this work order closes. Not a reminder. Not a checklist. A constraint. We'll come back to this in Scene 3."*
+
+### What You Are Demonstrating
+
+- **MFR #5 — Automated Case Management (Emerging→Leading-Edge):** Work order cascade from milestone close; SLA due-date setting per WorkType; seasonal constraint enforcement at the dispatch level; stage gate on tribal consultation blocking EA advancement.
+- **CEQ Standard 1 — Business Process Modernization:** Sequential manual email coordination (7 separate emails) replaced by event-driven parallel dispatch triggered by a single milestone.
+- **CEQ Standard 4 — Minimizing Timeline Uncertainty:** Per-agency empirical scoping baselines; scheduling constraints derived from corpus analysis; coordinator visibility into which work orders are at risk of missing seasonal windows before it happens.
+
+### Landing Tell *(say this after the demo)*
+
+> "Six surveys. Seven specialists. Five seasonal windows. Two locked gates. Three parallel permits — and the IDWR and EPA clocks are already running before we've drafted a single page of the EA. That's the difference between sequential and parallel. Those two months of post-decision co-permit wait? That's not unavoidable. It's structural. This is the fix."
+
+### Transition *(say this as you move to the next screen)*
+
+> "The surveys run. The EA is drafted. And then the comment period opens — which is where a lot of permitting momentum dies. Let me show you what 87.5% means when a tribal nation is in the comment queue."
 
 ---
 
-## Scene 3: Public Comment — Compressed, Not Skipped
+## Scene 3: Public Comment — Plaintiff Intelligence and Tribal Hard Gate
+
+> **Demonstrates:** MFR #8 — Automated Comment Compilation and Analysis (Emerging) · MFR #5 — Stage Gate Enforcement
+
+### Data Context *(know this cold — it goes into your Setup Tell)*
+
+- PermitTEC v0.1 (761 NEPA cases): **Tribal Nation plaintiffs achieve an 87.5% win rate** — the single most predictable litigation risk factor in the corpus. When a tribal nation is a commenter, the probability of success if challenged approaches 9 in 10.
+- **The #1 failure mode generating successful NEPA challenges:** government-to-government consultation not documented as a hard gate. Agencies advanced to ROD with incomplete tribal consultation. Severity: VERY HIGH. The agency did the analysis. The system didn't enforce the checkpoint.
+- NAEP 2025 Workshop documented: **2,600 comments processed by 4 staff over 4 weeks → approximately 4 hours** with AI assistance. Comment processing is on the critical path. Compressing it without bypassing the most sensitive categories is what MFR #8 requires.
 
 ### Setup Tell *(say this before clicking)*
 
-> "Public comment periods are often where permitting momentum dies. Comments sit in an inbox. Someone has to figure out who handles which issue. Substantive comments from organized groups can sit for 60 days before anyone responds. And nobody's checking whether those groups have filed suit before — or whether a commenter is a tribal nation with an 87% court win rate. Let me show you how the system handles that."
+> "Eighty-seven point five percent. That's the litigation win rate of Tribal Nation plaintiffs across 761 federal NEPA cases. Not the most litigated category — the most successful one. The top failure pattern: agencies advanced to the Record of Decision with incomplete tribal consultation. The consultation happened. The stage gate didn't exist. The agency lost in court on a procedural gap, not a substantive analysis failure. Let me show you what the gate looks like when the system enforces it."
 
-### Show
+### Show — Step by Step
 
-- The preliminary EA and unsigned FONSI are published July 1. The 28-day comment period opens.
-- Three comments arrive: **Idaho Conservation League (ICL)**, **Office of Species Conservation (OSC)**, and the **Shoshone-Paiute Tribes of the Duck Valley Reservation**.
-- The **Plaintiff Intelligence module** runs automatically on each comment:
-  - ICL is flagged: prior commenter on Owyhee Field Office sage-grouse projects; prior 9th Circuit plaintiff on suction dredge mercury cases. Risk tier: HIGH. `nepa_plaintiff_risk_flag__c = true`.
-  - OSC: no prior litigation record. Comment routed for technical review.
-  - **Shoshone-Paiute Tribes: VERY HIGH risk tier.** Two flags set simultaneously: `nepa_plaintiff_risk_flag__c = true` **and** `nepa_tribal_plaintiff_flag__c = true`. The system recognizes this as a Tribal Nation commenter — a category with an **87.5% litigation win rate** in the PermitTEC corpus. A Legal Task is auto-created: *"Government-to-government consultation — verify compliance with NHPA Section 106 and E.O. 13175 before advancing."* Assigned to the BLM Field Solicitor.
-- Show the IndividualApplication record: both plaintiff risk fields are set. The **Litigation Risk Score** ticks upward — tribal plaintiff flag is one of the highest-weight inputs in the scoring model.
-- The system auto-creates work orders:
-  - *"Add dust mitigation analysis to Air Quality section — ICL Comment 3, mercury particulate."* 17-day SLA.
-  - *"Document tribal consultation process — cultural landscape analysis required — Shoshone-Paiute Section 106."* 21-day SLA. **Hard gate: EA cannot advance until this work order closes.**
-- OSC's comment challenges the lek buffer departure rationale. The system pulls the 2019 Idaho ARMPA ROD and generates a response memo template citing the justifiable departure section.
-- Show the revised EA published August 15 — three weeks after comment close.
+1. **Navigate to IndividualApplication → Public Comments related list.** Three comments: Idaho Conservation League (ICL), Office of Species Conservation (OSC), Shoshone-Paiute Tribes. Say: *"The preliminary EA and unsigned FONSI published July 1. Twenty-eight-day comment period. Three comments arrive. The Plaintiff Intelligence module runs on each one."*
 
-**What to show in the UI:** The comment intake queue, the Plaintiff Intelligence flag on ICL and the dual-flag on the Shoshone-Paiute comment, the `nepa_tribal_plaintiff_flag__c` field on the IndividualApplication record page, the auto-generated work orders for each substantive comment, and the August 15 revised EA publish date on the timeline.
+2. **Click the ICL comment.** Show:
+   - `nepa_plaintiff_risk_flag__c = true`; Risk Tier = HIGH
+   - Agentforce classification label: category, confidence, reasoning
+   - Plaintiff Intelligence note: *"Prior 9th Circuit plaintiff — suction dredge mercury cases; prior Owyhee Field Office sage-grouse commenter"*
+   Say: *"This is the check an agency attorney would do manually when they recognize a name. The system does it automatically, consistently, for every comment. ICL gets flagged because the historical record says they sue — and win."*
 
-### Landing Tell *(say this after the click)*
+3. **Click the OSC comment.** Show: no plaintiff flag; classification = Technical/Substantive; routed for biologist response. Say: *"No prior litigation record. Technical comment on the lek buffer departure. Routed for subject-matter expert response. The system discriminates — it doesn't blanket-flag everything."*
 
-> "The system didn't just flag ICL. It recognized that the Shoshone-Paiute Tribes are a Tribal Nation challenger — a category that wins in court 87% of the time when consultation is incomplete. The legal work order fired before anyone in the field office made a judgment call. The tribal consultation certification that goes into the Required Document Registry in Scene 4 is exactly the output of that work order closing."
+4. **Click the Shoshone-Paiute Tribes comment.** Show — pause on each field:
+   - `nepa_plaintiff_risk_flag__c = true`
+   - `nepa_tribal_plaintiff_flag__c = true`
+   - Risk Tier: **VERY HIGH**
+   Say: *"Two flags simultaneously. The system recognized this as a Tribal Nation commenter — the category with the 87.5% win rate. Both flags fire unconditionally. The EJ/Tribal gate cannot be bypassed by configuration."*
+   Show the auto-created Legal Task: *"Government-to-government consultation — verify compliance with NHPA Section 106 and E.O. 13175 before advancing"* — assigned to BLM Field Solicitor. Say: *"That task fired before anyone in the field office made a judgment call."*
+
+5. **Navigate to IndividualApplication → Risk Intelligence panel.** Show Litigation Risk Score update: `nepa_risk_score__c = 87` / `nepa_risk_tier__c = Very High`. Say: *"Tribal plaintiff flag is a 15-point input — one of the highest weights in the model. The score ticked up the moment that comment was classified."*
+
+6. **Show Work Orders auto-created from substantive comments:**
+   - ICL: *"Add dust mitigation analysis to Air Quality section — mercury particulate"* — 17-day SLA
+   - Shoshone-Paiute: *"Document tribal consultation — cultural landscape analysis — Section 106"* — 21-day SLA; **hard gate: EA cannot advance until this closes**
+   Say: *"Every substantive comment becomes a tracked work order with an SLA. Not an inbox item. A deliverable with a deadline and an assigned owner."*
+
+7. **Click tribal consultation work order — show `hard_gate__c` flag.** Say: *"The EA cannot advance to public review until this work order closes. That's the gate the corpus says agencies were missing. It's not a reminder anymore."*
+
+8. **Navigate to ApplicationTimeline.** Point to revised EA publish date: **August 15** — 3 weeks after comment close. Say: *"Comment close to revised EA: three weeks. Not sixty days."*
+
+### What You Are Demonstrating
+
+- **MFR #8 — Automated Comment Compilation and Analysis (Emerging):** Agentforce comment classification (category, confidence, reasoning); plaintiff organization matching against historical litigation record (not individual profiling); routing to work orders with SLA tracking; EJ/Tribal unconditional gate that cannot be disabled.
+- **MFR #5 — Stage Gate Enforcement:** Tribal consultation hard gate blocking EA advancement — enforced at the database level on save, not as a checklist item.
+
+### Landing Tell *(say this after the demo)*
+
+> "The system flagged ICL because it matched a prior 9th Circuit plaintiff on a similar case type. It double-flagged the Shoshone-Paiute Tribes because it recognized a Tribal Nation commenter — the category with the 87.5% win rate. The legal work order fired before anyone in the field office made a judgment call. Every substantive comment became a work order. Every SLA is tracked. Comment close to revised EA: three weeks. That's MFR #8 — not comment storage, but comment routing, classification, and risk-graded response."
+
+### Transition *(say this as you move to the next screen)*
+
+> "The surveys are complete. The comments are responded to. The tribal consultation is certified. Now the Field Manager needs to sign. Let me show you what the system knows about this project's legal exposure before he does — and what gets generated the moment he signs."
 
 ---
 
-## Scene 4: The Decision — 8 Months, Not 25
+## Scene 4: The Decision — Document Registry, Administrative Record, and CEQ Export
+
+> **Demonstrates:** MFR #7 — Document Management (Emerging) · MFR #9 — Administrative Record Management (Emerging) · MFR #1 — Data Standards (Leading-Edge) · MFR #2 — Application Data Sharing (Emerging)
+
+### Data Context *(know this cold — it goes into your Setup Tell)*
+
+- PermitTEC corpus: the **three failure patterns that generate the most successful NEPA court challenges** are all stage gate failures — not substantive analysis failures:
+  1. Tribal consultation not documented as a hard gate — agencies advanced to ROD with incomplete consultation *(VERY HIGH severity)*
+  2. Supplementation not triggered when new significant information emerged post-ROD *(HIGH severity)*
+  3. ESA Section 7 consultation left open when the FONSI or ROD was signed *(MEDIUM severity)*
+- The agencies did the environmental analysis correctly. The system didn't enforce the checkpoints that would have documented it.
+- **Faster agencies win more litigation (r ≈ −0.35).** Speed and defensibility are not tradeoffs. The agencies with the shortest timelines have the highest defensibility scores. The myth that careful review requires a slow review is empirically false.
 
 ### Setup Tell *(say this before clicking)*
 
-> "The last thing I want to show you is the moment everything closes. In the old process, the NEPA specialist would have to chase down sign-offs, make sure all the documents were attached, confirm the tribal consultation was certified — all by email, all manually. Let me show you what the stage gate looks like when the system enforces it — and what the system knows about this project's legal exposure before the Field Manager signs anything."
+> "The three failure patterns that generate the most NEPA court losses: tribal consultation not documented as a hard gate. Supplementation not triggered when conditions changed. ESA Section 7 left open when the FONSI was signed. All three are stage gate failures. The agencies did the work — they conducted the analysis, they did the consultation. The system didn't enforce the checkpoint that would have documented it before the decision. You're about to see what that enforcement looks like — and what the system generates the moment the Field Manager signs."
 
-### Show
+### Show — Step by Step
 
-- Start on the **Program record** for the Carrie Placer Mine project. Point to the **Agency Performance Tier** field: `Legally_Vulnerable`. This is set automatically from the NEPA_Agency_Scoping_Baseline custom metadata — BLM's median NOI-to-DEIS is 28 months and its litigation loss rate places it in the Legally Vulnerable tier. The system flagged this on day one, before a single survey was scheduled.
-- Navigate to the **IndividualApplication record**. The **Litigation Risk Score** reads the calibrated weights from the PermitTEC corpus — 761 NEPA litigation cases: BLM agency weight + 9th Circuit weight + ESA statute weight = score of **87** → **Very High** tier. This isn't an estimate — it's derived from the actual federal court record.
-- Show the **Litigation Risk** panel on the record page:
-  - `nepa_plaintiff_risk_flag__c = true` (ICL)
-  - `nepa_tribal_plaintiff_flag__c = true` (Shoshone-Paiute Tribes)
-  - `nepa_risk_score__c = 87` / `nepa_risk_tier__c = Very High`
-  - `nepa_defensibility_score__c = 91` — high, because all stage gates have been cleared
-- Navigate to the **Required Document Registry**. All five mandatory documents are shown with status:
-  - Environmental Assessment ✓
-  - Finding of No Significant Impact ✓
-  - Decision Record ✓
-  - Affected Resources Form ✓
-  - Tribal Consultation Certification ✓ *(the output of the Shoshone-Paiute work order from Scene 3)*
-- Forrest Griggs (geologist) and Colleen Trese (wildlife biologist) have both signed off — same day, November 20.
-- The stage gate fires. The BLM Owyhee Field Manager issues the **Decision Record on November 27**, approving Alternative A with the full suite of required design features:
-  - 50-foot Jordan Creek buffer
-  - Silt fencing with twice-annual BLM inspections
-  - Steep-shoreline pond design (Columbia spotted frog deterrence)
-  - Seasonal mining window: March 1 – November 30
-  - Full reclamation bonded to BLM botanist seed mix approval
-- Sam Uhler receives an **automated portal notification** with the signed Decision Record attached.
-- Show the timeline: **pre-application appointment March 12 → Decision Record November 27 = 8 months.**
+1. **Navigate to the Program record.** Point to `nepa_agency_performance_tier__c = Legally_Vulnerable`. Say: *"This field was set automatically on the day this program was created — before a single survey was scheduled. It comes from the PermitTEC corpus: BLM's litigation loss rate and its 28-month median NOI-to-DEIS placed it in the Legally Vulnerable tier. The Field Manager knew what he was working with on day one."*
 
-**What to show in the UI:** The Program record with `nepa_agency_performance_tier__c = Legally_Vulnerable`, the IndividualApplication risk panel with all risk fields populated, the Required Document Registry with all five green, the concurrent sign-offs on the timeline, the stage gate firing, the Decision Record, and the applicant notification.
+2. **Navigate to IndividualApplication → Risk Intelligence panel.** Walk through each field:
+   - `nepa_risk_score__c = 87` / `nepa_risk_tier__c = Very High`
+   Say: *"87 out of 100. Very High tier."*
+   - `nepa_plaintiff_risk_flag__c = true` (ICL) / `nepa_tribal_plaintiff_flag__c = true` (Shoshone-Paiute Tribes)
+   Say: *"Both plaintiff flags set — from Scene 3."*
+   - `nepa_defensibility_score__c = 91`
+   Say: *"Defensibility score: 91. Very High risk project, 91 defensibility — because every gate has been cleared. Risk 87 tells you what you're up against. Defensibility 91 tells you you've done everything right."*
 
-### Landing Tell *(say this after the click)*
+3. **Click `nepa_risk_score_factors__c`.** Show the formula disclosure: *"BLM: 39 pts. 9th Circuit: 42 pts. FLPMA statute: 8 pts. Tribal plaintiff flag: 15 pts. That's 104 raw, normalized to 87. Every input is disclosed. The coordinator can verify any number. This is MFR #1 — the score is deterministic, not a black box."*
 
-> "The system knew BLM was Legally Vulnerable before we scheduled the first survey. It knew this project was Very High litigation risk from the moment the lead agency and circuit were entered. It tracked the tribal plaintiff flag from the moment the Shoshone-Paiute comment arrived. And then it enforced every single gate that closes those gaps — not as reminders, as hard stops. Sam stopped calling the field office. Eight months. The same project. The same regulations. The only thing that changed was the process."
+4. **Navigate to Required Document Registry related list.** All five documents shown with ✓:
+   - Environmental Assessment ✓
+   - Finding of No Significant Impact ✓
+   - Decision Record ✓
+   - Affected Resources Form ✓
+   - Tribal Consultation Certification ✓
+   Say: *"This is MFR #7. Five required documents for an EA. All five present. The stage gate will not fire until this is true — the system blocks the Decision Record from being issued with any document missing."*
+   Point to Tribal Consultation Certification: *"This is the output of the Shoshone-Paiute work order from Scene 3. The hard gate closed. The certification is in the registry. The system verified it."*
+
+5. **Navigate to ApplicationTimeline.** Point to concurrent sign-offs: Forrest Griggs (geologist) and Colleen Trese (wildlife biologist), both November 20. Say: *"Same day. The stage gate sees both sign-offs. It fires."*
+
+6. **Show stage gate fire → Decision Record issued November 27.** Walk through Alternative B conditions:
+   - 50-foot Jordan Creek buffer
+   - Silt fencing with twice-annual BLM inspections
+   - Steep-shoreline pond design (Columbia spotted frog deterrence)
+   - Seasonal mining window: March 1 – November 30
+   - Full reclamation bond to BLM botanist seed mix approval
+
+7. **Navigate to `nepa_decision_payload__c` record.** Show each field:
+   - Decision type: **FONSI** | Decision date: June 15, 2021
+   - Selected alternative: **Alternative B — Modified Surface Footprint**
+   - Alternatives considered: **3** | Mitigation measures: **5**
+   - Significant impacts: **No**
+   Say: *"Machine-readable decision record. Not a PDF in a folder. Structured data that any authorized system can read via API."*
+
+8. **Navigate to `nepa_ar_export__c` record.** Show:
+   - Status: **Completed** | Export type: CEQExport_v1.2
+   - Documents: **6** | Comments: **3** | Completed: June 15, 2021
+   - Download URL active
+   Say: *"This is MFR #9. The administrative record assembled automatically the moment the Field Manager signed the Decision Record. Every ContentVersion, every consultation record, every comment with its response work order, the litigation risk score snapshot, the complete ApplicationTimeline — locked, in one package, available through the CEQExport API. Not assembled after the fact. Generated at decision."*
+
+9. **Show applicant portal notification** — Sam receives automated notification with Decision Record attached. Say: *"Sam stopped calling the field office at some point between March 12 and November 27. He was watching the portal."*
+
+10. **Show ApplicationTimeline: March 12 → November 27 = 8 months.**
+
+11. **Navigate to the NEPA/CEQExport endpoint** (or show a Workbench JSON preview of the structured response). Say: *"MFR #1 and MFR #2. All 13 CEQ entities in one JSON payload — PIC OpenAPI v1.2.0-aligned. EPA DARTER, USACE ORM2, FPISC, any internal permit database — they pull this via authenticated REST call. No custom middleware. No new authorization boundary. Information entered once, available everywhere."*
+
+### What You Are Demonstrating
+
+- **MFR #7 — Document Management (Emerging):** Required Document Registry with real-time completeness tracking; stage gate blocking Decision Record issuance until all required documents are confirmed; defensibility gap detection flagging missing documents before the record closes.
+- **MFR #9 — Administrative Record Management (Emerging):** `NEPA_AdminRecord_AutoCreate` generating a locked, machine-readable JSON manifest at decision issuance; package includes all documents, consultations, comments, risk score snapshot, and timeline; immediately available through CEQExport API.
+- **MFR #1 — Data Standards (Leading-Edge):** All 13 CEQ entities on structured Salesforce records with required fields, provenance, and the `nepa_other__c` extension bag; 385-test regression suite verifying compliance; score formula fully disclosed and verifiable.
+- **MFR #2 — Application Data Sharing (Emerging):** CEQExport REST endpoint serving all 13 entities in PIC OpenAPI v1.2.0 format; available to EPA DARTER, USACE ORM2, FPISC, and any authorized system without custom middleware.
+
+### Landing Tell *(say this after the demo)*
+
+> "The system knew BLM was Legally Vulnerable before the first survey. It tracked the tribal plaintiff flag from the moment the comment arrived. It enforced the consultation gate. And then — the moment the Field Manager signed — the administrative record locked, the JSON manifest was generated, and the CEQExport API made all 13 CEQ entities available to every authorized downstream system. Eight months. 13 CEQ entities. 10 MFRs. The same regulations. The only thing that changed was the process."
+
+> "When this gets challenged — and 14% of federal EA decisions are challenged — every consultation, every comment response, every GIS check is in the administrative record with a timestamp. Defensibility score 91. That's not a compliance feature. That's the difference between a 9th Circuit loss and a decision that holds."
 
 ---
 
@@ -638,6 +802,8 @@ The six numbered innovations in the bottom panel map directly to the six rows in
 
 ## Data Insights: What the NEPATEC Corpus Tells Us
 
+> **Note for presenters:** The key data points from each finding below are now embedded directly in the Scene Data Context blocks and Setup/Landing Tells above. You do not need to read this section before delivering the demo. Use it for depth — when an audience member asks *"where does that number come from?"* — or to prepare for technically sophisticated audiences. Each finding maps to the specific scene where the data surfaces.
+
 The following findings are drawn from analysis of the NEPATEC 2.0 corpus — 61,881 federal NEPA projects, 142,083 documents, and 6.9 million pages across 60+ agencies. These are not estimates or benchmarks from vendor literature. They are empirical patterns derived from the actual administrative record of how NEPA permitting works in practice.
 
 Use these insights to give the demo claims quantitative grounding. Each finding maps to a specific demo moment.
@@ -801,7 +967,7 @@ Then be quiet and let them do the math.
 ## Demo Environment Notes
 
 - All records use `DEMO_` external ID prefix — safe to load and clean up without touching production data.
-- Import files: `outputs/demo/import_data/` — load in numbered order (01 → 17), run `18_postload_polymorphic.apex`, then load `19_Task.csv`.
+- Import files: `demo/import_data/` — load in numbered order (01 → 23), then load `24_decision_payload.csv` and `25_ar_export.csv`.
 - Cleanup: `sf data delete bulk --where "External_Id__c LIKE 'DEMO_%'"` per object, reverse order per `00_README.md`.
 
 ---

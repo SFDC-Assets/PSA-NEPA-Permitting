@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_ar_locked__c</fullName>
+    <description>Set to true by NEPA_Close_Administrative_Record flow when a machine-readable administrative record manifest ContentVersion has been generated for this process. Prevents duplicate manifest generation on subsequent ROD/FONSI field changes. MFR 9 — Administrative Record Management.</description>
+    <inlineHelpText>Administrative record manifest has been generated and locked. The JSON manifest ContentVersion is available via the CEQExport API. Unlock only with NEPA Coordinator approval.</inlineHelpText>
+    <defaultValue>false</defaultValue>
+    <label>AR Manifest Locked</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <type>Checkbox</type>
+</CustomField>
