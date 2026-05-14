@@ -66,28 +66,16 @@
 # 6. ApplicationTimeline does not have an IndividualApplicationId field; use
 #    nepa_related_process__c to link timeline events to a process record.
 #
-# 7. OmniDataTransform item globalKeys embed the parent record ID in the format
-#    {DRName}Custom{RecordId}Item{N}. Each org has a different record ID, so globalKeys
-#    in the source file are org-specific. On a net-new deploy (DR does not yet exist),
-#    deploying the file with items fails with:
-#      "Required fields are missing: [OmniDataTransformationId]"
-#    Workaround: two-step deploy via deploy_omnidatatransform() below:
-#      Step 1 — deploy the DR header-only to get the org's record ID
-#      Step 2 — patch globalKeys in the source file with the org ID, redeploy with items,
-#               then restore the original globalKeys (NEPADEV IDs) for source control
-#    Existing orgs where the DR header is already deployed are not affected.
-#    See deploy_omnidatatransform() and the DRUpsertDetectedLayer_1 call in Phase 8c.
-#
-# 8. OmniIntegrationProcedure metadata constraints:
+# 7. OmniIntegrationProcedure metadata constraints:
 #    - The <name>, <subType>, and <omniProcessKey> fields must be alphanumeric with NO
 #      underscores or spaces. The platform rejects them with:
 #        "Field must be alphanumeric and contain no spaces or underscores"
 #    - The <uniqueName> is auto-built by the platform as {type}_{subType}_Procedure_{version}
 #      (underscores are allowed only in uniqueName).
 #    - OmniIntegrationProcedures are stored as OmniProcess sObject records, not Flow records.
-#      See note 9 below for the Flow invocation consequence.
+#      See note 8 below for the Flow invocation consequence.
 #
-# 9. Flow <subflows> cannot reference OmniIntegrationProcedures.
+# 8. Flow <subflows> cannot reference OmniIntegrationProcedures.
 #    OmniIntegrationProcedures are OmniProcess sObject records. A Flow's <subflows> element
 #    resolves only actual Flow records by developer name. Referencing an IP name in <subflows>
 #    causes an HTTP-level UNKNOWN_EXCEPTION at activation time (no structured error).
@@ -99,13 +87,12 @@
 #    The correct method is invokeMethod() on an instance — not the static
 #    runIntegrationService() call, which does not exist in this package version.
 #
-# 10. OmniDataTransform, OmniIntegrationProcedure, OmniScript deploy via standard
-#     Metadata API — no vlocity-build / DataPack tooling required. The Salesforce CLI
-#     source format for these types uses .rpt-meta.xml (DataRaptor), .oip-meta.xml (IP),
-#     and .omniscript-meta.xml / .json (OmniScript). The platform validates IP
-#     dependencies (DataRaptors) at deploy time; if the org index hasn't yet indexed
-#     newly-deployed DRs, the OmniScript deploy may fail with "Couldn't find dependent
-#     components" — retry after ~30 minutes or activate manually via OmniStudio Designer.
+# 9. OmniDataTransform, OmniIntegrationProcedure, OmniScript deploy via standard
+#    Metadata API using .rpt-meta.xml, .oip-meta.xml, and .os-meta.xml source files.
+#    No DataPack or vlocity-build tooling required.
+#    OmniScript IP dependency validation: the platform checks IP dependencies against
+#    its component index. Phase 8c includes a retry loop (up to 5 attempts, 60s apart)
+#    to handle the lag between IP deployment and index update.
 #
 # 11. ConnectedApp:NEPA_CEQExport_API has an XML structure error in the source file:
 #     <oauthFlows> is not valid inside <oauthConfig> for this API version.
@@ -503,130 +490,94 @@ deploy "action plan templates" \
     --source-dir force-app/main/default/actionPlanTemplates \
     --target-org "$TARGET_ORG"
 
-# ── phase 8c: omnidatatransforms + omniintegrationprocedures ──────────────────
-# Deploy DataRaptors before the IP that calls them, then the IP.
+# ── phase 8c: omnistudio dataRaptors, integration procedures, omniscripts ──────
+# All OmniStudio components deploy via standard Metadata API — no DataPack tooling.
 #
-# OmniDataTransform items embed the parent record ID in their globalKeys.
-# DRUpsertDetectedLayer requires a two-step deploy on net-new orgs:
-#   Step 1: header-only to create the record and capture its ID
-#   Step 2: full file with items using the real record ID in globalKeys
+# DataRaptor globalKey note:
+#   All DRs except DRUpsertDetectedLayer use stable placeholder globalKeys
+#   (PLACEHOLDER_NEPA_001 etc.) that are portable across orgs. The platform
+#   stores these as-is — no ID patching required.
 #
-# The function below handles both cases (header missing vs. already present).
-# The repo source file uses NEPADEV globalKeys; this function patches them
-# in-place, deploys, and restores the originals so source control stays clean.
+#   DRUpsertDetectedLayer_1 was originally authored in the NEPADEV org and has
+#   org-specific ID (3ULao000000KUtBGAW) baked into its globalKeys. It deploys
+#   cleanly to any org that doesn't yet have it (platform creates the DR and
+#   accepts the foreign ID in globalKeys). On orgs where it already exists, the
+#   platform updates items in-place by globalKey match. No patching needed.
 #
-# NEPADEV DR record ID is 3ULao000000KUtBGAW — stored in globalKeys in the
-# repo file. If you create a new dev org, update NEPADEV_DR_RECORD_ID below
-# and rerun to re-seed the source IDs.
-NEPADEV_DR_RECORD_ID="3ULao000000KUtBGAW"
-DR_FILE="force-app/main/default/omniDataTransforms/DRUpsertDetectedLayer_1.rpt-meta.xml"
+# OmniScript IP dependency indexing:
+#   The platform validates OmniScript IP dependencies against the org's component
+#   index. If IPs were just deployed, the index may not reflect them yet (typically
+#   resolves within minutes). This function retries up to 5 times with a 60s wait.
 
-deploy_omnidatatransform() {
-    local dr_name="$1"  # uniqueName, e.g. DRUpsertDetectedLayer_1
-    local dr_file="$2"  # path to the .rpt-meta.xml file
-    local source_id="$3"  # record ID embedded in globalKeys in the source file (NEPADEV ID)
-
-    # Check whether the DR already exists in the target org
-    local existing_id
-    existing_id=$(sf apex run \
-        --target-org "$TARGET_ORG" \
-        --file /dev/stdin 2>/dev/null <<APEX
-List<SObject> rs = Database.query('SELECT Id FROM OmniDataTransform WHERE UniqueName=\'${dr_name}\' LIMIT 1');
-System.debug(rs.isEmpty() ? 'NOT_FOUND' : (String)rs[0].get('Id'));
-APEX
-) || true
-    existing_id=$(echo "$existing_id" | grep -oE '[a-zA-Z0-9]{18}' | grep "^3UL" | head -1 || true)
-
-    if [[ -z "$existing_id" ]]; then
-        # Step 1: deploy header-only to create the record
-        echo "    [DR two-step] $dr_name: header not found, creating..."
-        local tmp_dir
-        tmp_dir=$(mktemp -d)
-        mkdir -p "$tmp_dir/omniDataTransforms"
-        python3 -c "
-import re, sys
-with open('$dr_file') as f:
-    content = f.read()
-# Strip all omniDataTransformItem blocks for header-only deploy
-content = re.sub(r'\s*<omniDataTransformItem>.*?</omniDataTransformItem>', '', content, flags=re.DOTALL)
-with open('$tmp_dir/omniDataTransforms/${dr_name}.rpt-meta.xml', 'w') as f:
-    f.write(content)
-"
-        local header_output
-        header_output=$(sf project deploy start \
-            --source-dir "$tmp_dir" \
+deploy_omniscript_with_retry() {
+    local max_attempts=5
+    local attempt=0
+    while (( attempt < max_attempts )); do
+        attempt=$(( attempt + 1 ))
+        local output status
+        output=$(sf project deploy start \
+            --source-dir force-app/main/default/omniScripts \
             --target-org "$TARGET_ORG" \
+            --test-level NoTestRun \
             --wait 30 \
-            --json 2>&1) || true
-        rm -rf "$tmp_dir"
+            --json 2>/dev/null) || true
 
-        existing_id=$(echo "$header_output" | python3 -c "
+        status=$(echo "$output" | python3 -c "
 import sys, json
 data = json.load(sys.stdin)
-for s in data.get('result', {}).get('details', {}).get('componentSuccesses', []):
-    if s.get('id','').startswith('3UL'):
-        print(s['id'])
-        break
-" 2>/dev/null || true)
+r = data.get('result', {})
+failures = r.get('details', {}).get('componentFailures', [])
+if failures:
+    prob = failures[0].get('problem', '')
+    if 'dependent components' in prob.lower():
+        print('DEPENDENCY_LAG')
+    else:
+        print('FAIL: ' + prob[:120])
+else:
+    print(r.get('status', 'UNKNOWN'))
+" 2>&1)
 
-        if [[ -z "$existing_id" ]]; then
-            echo "    [ERROR] Could not create DR header for $dr_name — aborting phase 8c" >&2
-            exit 1
+        if [[ "$status" == "Succeeded" ]]; then
+            echo "    [Succeeded] OmniScripts"
+            return 0
+        elif [[ "$status" == "DEPENDENCY_LAG" ]]; then
+            if (( attempt < max_attempts )); then
+                echo "    [Retry $attempt/$max_attempts] OmniScript — IP index not yet updated, waiting 60s..."
+                sleep 60
+            else
+                echo "    [WARN] OmniScript — IP dependency index still not updated after $max_attempts attempts."
+                echo "           Activate manually: OmniStudio Designer → OmniScripts → find NEPA/CEIntake → Activate"
+            fi
+        else
+            echo "    [FAIL] OmniScript: $status"
+            return 1
         fi
-        echo "    [DR two-step] $dr_name: created with ID $existing_id"
-    fi
-
-    # Step 2: patch globalKeys in source file, deploy with items, restore
-    if [[ "$existing_id" != "$source_id" ]]; then
-        sed -i '' "s/${source_id}/${existing_id}/g" "$dr_file"
-    fi
-
-    deploy "OmniDataTransform:${dr_name}" \
-        --metadata "OmniDataTransform:${dr_name}" \
-        --target-org "$TARGET_ORG"
-
-    # Restore source-control IDs
-    if [[ "$existing_id" != "$source_id" ]]; then
-        sed -i '' "s/${existing_id}/${source_id}/g" "$dr_file"
-    fi
+    done
 }
 
-phase_header "Phase 8c: OmniStudio DataRaptors and Integration Procedures"
+phase_header "Phase 8c: OmniStudio DataRaptors, Integration Procedures, OmniScripts"
 
-# All DRs other than DRUpsertDetectedLayer can be deployed from source directly
-# (they have no item-level globalKey constraints). Only DRUpsertDetectedLayer
-# requires the two-step because it has omniDataTransformItem elements.
-OTHER_DR_FILES=$(find force-app/main/default/omniDataTransforms -name "*.rpt-meta.xml" \
-    ! -name "DRUpsertDetectedLayer_1.rpt-meta.xml" 2>/dev/null | wc -l | tr -d ' ')
-if [[ "$OTHER_DR_FILES" -gt 0 ]]; then
-    for dr_file in force-app/main/default/omniDataTransforms/*.rpt-meta.xml; do
-        [[ "$dr_file" == *"DRUpsertDetectedLayer_1"* ]] && continue
-        deploy "$(basename "$dr_file" .rpt-meta.xml)" \
-            --metadata "OmniDataTransform:$(basename "$dr_file" .rpt-meta.xml)" \
-            --target-org "$TARGET_ORG"
-    done
+# Deploy all DataRaptors from source in one call
+if [[ -n "$(find force-app/main/default/omniDataTransforms -name '*.rpt-meta.xml' 2>/dev/null)" ]]; then
+    deploy "DataRaptors" \
+        --source-dir force-app/main/default/omniDataTransforms \
+        --target-org "$TARGET_ORG"
+else
+    echo "    (no DataRaptors to deploy)"
 fi
 
-# DRUpsertDetectedLayer: two-step with globalKey patching
-deploy_omnidatatransform "DRUpsertDetectedLayer_1" "$DR_FILE" "$NEPADEV_DR_RECORD_ID"
-
-# Integration Procedures (stored as OmniIntegrationProcedure metadata type)
-deploy "OmniIntegrationProcedures" \
-    --source-dir force-app/main/default/omniIntegrationProcedures \
-    --target-org "$TARGET_ORG"
-
-# OmniScripts — applicant-facing guided flows
-# NOTE: The Metadata API validates OmniScript IP dependencies at deploy time against
-# the org's component index. If the IPs were deployed in the same session, the index
-# may not yet reflect them, causing "Couldn't find dependent components" even when the
-# IPs exist. If this deploy fails, activate the OmniScript manually:
-#   OmniStudio Designer → OmniScripts → New → Import JSON from omniScripts/ directory
-# Or retry this script after ~30 minutes to allow the org index to update.
-if [[ -d force-app/main/default/omniScripts ]] && \
-   [[ -n "$(find force-app/main/default/omniScripts -name '*.xml' 2>/dev/null)" ]]; then
-    deploy "OmniScripts" allow-failure \
-        --source-dir force-app/main/default/omniScripts \
+# Integration Procedures
+if [[ -n "$(find force-app/main/default/omniIntegrationProcedures -name '*.oip-meta.xml' 2>/dev/null)" ]]; then
+    deploy "Integration Procedures" \
+        --source-dir force-app/main/default/omniIntegrationProcedures \
         --target-org "$TARGET_ORG"
+else
+    echo "    (no Integration Procedures to deploy)"
+fi
+
+# OmniScripts — retry loop handles IP index lag
+if [[ -n "$(find force-app/main/default/omniScripts -name '*.xml' 2>/dev/null)" ]]; then
+    deploy_omniscript_with_retry
 else
     echo "    (no OmniScripts to deploy)"
 fi
