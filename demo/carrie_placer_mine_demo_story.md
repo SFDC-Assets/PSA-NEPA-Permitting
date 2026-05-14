@@ -233,6 +233,129 @@ Here's what the review actually required:
 
 9. **Show the auto-assembled ID Team** on the IndividualApplication: geologist, NEPA specialist, wildlife biologist, hydrologist, botanist, and cultural resources coordinator. Say: *"The system read the project type and GIS results and assembled the team automatically. Sam books one meeting — 90 minutes at the Owyhee Field Office — and all seven specialists are confirmed."*
 
+### Screen Reference
+
+**Screen 1-A — Experience Cloud Portal (Sam Uhler's applicant view)**
+*(Show steps 1–2: navigate here, click "New Plan of Operations – Mining")*
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  BLM NEPA Permitting Portal                   [Sam Uhler ▾]  ≡  │
+│  ─────────────────────────────────────────────────────────────  │
+│  My Applications        Notifications (2)        Help & Docs    │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Good morning, Sam.  Your application IDI-38709 is in review.   │
+│                                                                  │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  + Start New Application                                │    │
+│  │  ─────────────────────────────────────────────────────  │    │
+│  │  ● Plan of Operations – Mining                    ◄──── │────── CLICK: Show step 2
+│  │  ○ Right-of-Way Grant                                   │    │
+│  │  ○ Special Recreation Permit                            │    │
+│  │  ○ Temporary Use Permit                                 │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+> **▲ Point to:** "Plan of Operations – Mining" selection. Say: *"This is what Sam sees — no phone call, no callback queue."*
+
+---
+
+**Screen 1-B — OmniScript CE Intake Wizard (Steps 1–6 with GIS results)**
+*(Show steps 3–6: agency, action type, acreage, NAICS, GIS footprint upload)*
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  New Plan of Operations — CE Intake Wizard         Step 6 of 7  │
+│  ● ── ● ── ● ── ● ── ● ── ●○── ○                               │
+│  ─────────────────────────────────────────────────────────────  │
+│  Agency/Bureau:         [BLM / Interior            ▾]           │
+│  Action Type:           [Surface Disturbance        ▾]  ◄── STEP 3: primary CE/EA field
+│  Project Type:          [Mining / Plan of Operations▾]           │
+│  Disturbance Acreage:   [15                          ]  ◄── STEP 4: > 5-ac threshold
+│  NAICS Code:            [21221 — Gold Ore Mining     ]  ◄── STEP 5                │
+│  ─────────────────────────────────────────────────────────────  │
+│  GIS Footprint                                         STEP 6 ▼ │
+│  [Upload shapefile or draw on map]   [✓ File loaded]             │
+│                                                                  │
+│  ┌──────── GIS Proximity Check Results ─────────────────────┐   │
+│  │  ✓  FWS ECOS      Greater Sage-Grouse PHMA detected  ◄── │───── NARRATE: extraordinary circ.
+│  │  ✓  USGS NHD      Jordan Creek Cat 4A adjacency      ◄── │───── NARRATE: hydro trigger
+│  │  ✓  EPA EJScreen  EJ Index 18.3 — informational      ◄── │───── NARRATE: recorded, not hard
+│  │  ✓  BLM Tribal    No tribal boundary overlap              │   │
+│  │  ✓  BLM PLSS      Federal surface confirmed               │   │
+│  └───────────────────────────────────────────────────────────┘   │
+│                                                     [Next →]    │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+> **▲ Point to:** FWS ECOS result line while narrating. Say: *"Five GIS services, all public APIs, called in parallel. No GIS expertise required."*
+
+---
+
+**Screen 1-C — OmniScript Step 7: CE Pre-Screening Result Card**
+*(Show step 7: result appears before Sam submits)*
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  New Plan of Operations — CE Intake Wizard         Step 7 of 7  │
+│  ● ── ● ── ● ── ● ── ● ── ● ── ●                               │
+│  ─────────────────────────────────────────────────────────────  │
+│  Review Your Application                                        │
+│                                                                  │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  ⚠  CE PATHWAY ASSESSMENT   (MFR #3 · MFR #4)      ◄─── │───── POINT HERE first
+│  │  ──────────────────────────────────────────────────────  │   │
+│  │  Recommendation:   EA-REQUIRED               ◄───────── │───── MFR #3: result
+│  │  Confidence:       HIGH                                  │   │
+│  │  ──────────────────────────────────────────────────────  │   │
+│  │  Basis:                                                  │   │
+│  │  • Surface disturbance 15 ac > 5-ac threshold            │   │
+│  │    40 CFR 1501.4 (b)(1)                      ◄───────── │───── MFR #4: CFR citation
+│  │  • PHMA detected — extraordinary circumstances           │   │
+│  │    independent trigger (43 CFR 3809 / BLM IM)            │   │
+│  │  ──────────────────────────────────────────────────────  │   │
+│  │  Criteria published: /docs/decision-models/   ◄───────── │───── MFR #4: public access
+│  └──────────────────────────────────────────────────────────┘   │
+│                                                                  │
+│                                               [Submit ▶]        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+> **▲ Point to:** "EA-REQUIRED" first, then the CFR citation line, then the `/docs/decision-models/` link. Deliver the Step 7 narration verbatim.
+
+---
+
+**Screen 1-D — IndividualApplication: Coordinator View**
+*(Show steps 8–9: post-submit record; read-only AI recommendation; auto-assembled team)*
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  IndividualApplication  IA-0000000432          [Edit]  [More ▾] │
+│  Carrie Placer Mine Plan of Operations                          │
+│  ─────────────────────────────────────────────────────────────  │
+│  Status: Submitted          Process Status: intake              │
+│                                                                  │
+│  ┌─── NEPA Screening ──────────────────────────────────────┐    │
+│  │  CE Pathway Recommendation:  EA-Required (automated) ◄── │────── READ-ONLY: point here
+│  │  Review Type:                [              ] (blank) ◄── │────── COORDINATOR sets this
+│  │  Screening Confidence:       High                        │    │
+│  │  Classification Basis:       GIS + CE Screener           │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                  │
+│  ┌─── ID Team (Auto-Assembled) ────────────────────────────┐    │
+│  │  ● NEPA Specialist           ● Hydrologist          ◄── │────── POINT: auto-assembled
+│  │  ● Wildlife — Sage-Grouse    ● Wildlife — Spotted Frog   │    │
+│  │  ● Botanist                  ● Geologist                 │    │
+│  │  ● Cultural Resources Coordinator                        │    │
+│  └─────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+> **▲ Point to:** `CE Pathway Recommendation` = "EA-Required (automated)" as read-only, then `Review Type` blank field, then ID Team panel. Say steps 8–9 narration.
+
 ### What You Are Demonstrating
 
 - **MFR #3 — Automated Project Screening (Leading-Edge):** 7-step OmniScript with conditional navigation; BRE CE Screener evaluating against 2,105 CE authorities across 79 agencies; pre-screening result with rule-match basis returned before formal submission.
@@ -291,6 +414,117 @@ Here's what the review actually required:
 9. **Click the Geologist work order** — show same pattern, EPA NPDES trigger fires on close. Say: *"Same pattern. EPA NPDES 60-day clock starts at geologist close. Both permits are in processing while the EA is being drafted."*
 
 10. **Point to the Tribal Consultation work order.** Show `hard_gate__c` flag. Say: *"This one is different. This is a hard gate — a database constraint. The EA cannot advance to public review until this work order closes. Not a reminder. Not a checklist. A constraint. We'll come back to this in Scene 3."*
+
+### Screen Reference
+
+**Screen 2-A — IndividualApplication: ApplicationTimeline Related List**
+*(Show step 1: mark "Pre-Application Consultation Complete" milestone)*
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  IndividualApplication  IA-0000000432          [Edit]  [More ▾] │
+│  Carrie Placer Mine Plan of Operations                          │
+├─────────────────────────────────────────────────────────────────┤
+│  Related  │  Details  │  Activity                               │
+├─────────────────────────────────────────────────────────────────┤
+│  ApplicationTimeline (25)                           [New Event] │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  ✓  Application Received                  Oct 18 2017    │   │
+│  │  ✓  Section 106 Tribal Consultation Init  Feb 16 2019    │   │
+│  │  ►  Pre-Application Consultation Complete Mar 12 2019 ◄──│───── MARK COMPLETE here
+│  │     Status: Open     [Mark Complete]                     │   │
+│  │  ○  Sage-Grouse Lek Survey Window Opens   Feb 1  2019    │   │
+│  │  ○  [24 more events...]                                   │   │
+│  └──────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+> **▲ Point to:** "Pre-Application Consultation Complete" row → [Mark Complete] button. Say: *"One milestone close. Watch what fires."*
+
+---
+
+**Screen 2-B — Work Orders Related List (6 WOs auto-generated)**
+*(Show step 2: 6 parallel work orders appear immediately after milestone close)*
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Work Orders (6)                              [New WO]  [Map ▾] │
+│  ─────────────────────────────────────────────────────────────  │
+│  #  │  Subject                        │  Priority  │  SLA Due   │
+│  ───┼─────────────────────────────────┼────────────┼──────────  │
+│  1  │  Sage-Grouse Lek Survey    ◄─── │  URGENT    │  Apr 30    │  ← slot 1: tightest window
+│  2  │  Migratory Bird Survey          │  HIGH      │  Apr 14    │
+│  3  │  Hydrology — Jordan Creek  ◄─── │  HIGH      │  May 31    │  ← IDWR trigger
+│  4  │  Columbia Spotted Frog          │  MEDIUM    │  May 31    │
+│  5  │  Geology — Access Road     ◄─── │  HIGH      │  May 31    │  ← EPA NPDES trigger
+│  6  │  Botanist — Two Site Visits     │  MEDIUM    │  Aug 31    │
+│  ─────────────────────────────────────────────────────────────  │
+│  Status: All Open   │  Assigned: 0 of 6   │  At Risk: 2        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+> **▲ Point to:** Row 1 (Lek Survey, URGENT, Apr 30). Say: *"Tightest window closes April 30 — the engine put it first."* Then point to rows 3 and 5 as the co-permit trigger WOs.
+
+---
+
+**Screen 2-C — FSL Dispatcher Console: Map View**
+*(Show step 3: 6 specialist pins on Owyhee County; show step 7: gate resource constraint)*
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Dispatcher Console — Field Service             [List] [Map ●]  │
+│  ─────────────────────────────────────────────────────────────  │
+│  Filter: Owyhee County  │  Date: Mar–Nov 2019  │  All resources  │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│      ╔══════════════════════════════════════════╗               │
+│      ║   Owyhee County, Idaho                   ║               │
+│      ║                                          ║               │
+│      ║    📍 [1-Lek Survey]                     ║   ← 6 pins    │
+│      ║         📍 [3-Hydro]  📍 [5-Geo]        ║               │
+│      ║    📍 [2-Bird]   ★ Jordan Creek          ║               │
+│      ║         📍 [4-Frog]                      ║               │
+│      ║              📍 [6-Botanist]             ║               │
+│      ║                   🔒 Gate A  🔒 Gate B   ║  ◄── point here
+│      ╚══════════════════════════════════════════╝               │
+│                                                                  │
+│  Selected: [Sage-Grouse Lek Survey]  Window: Feb 1 – Apr 30 ◄──┼── constraint visible
+└─────────────────────────────────────────────────────────────────┘
+```
+
+> **▲ Point to:** The two 🔒 gate pins. Say: *"Two locked gates. One 1.7-mile road. Shared resource constraint. No two specialists have overlapping gate dates — nobody drives 45 minutes to a locked road."*
+
+---
+
+**Screen 2-D — Work Order Record Page: Hydrologist WO (representative for steps 5–9)**
+*(Show steps 5–9: seasonal constraint, service appointments, IDWR trigger, mark complete)*
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Work Order  WO-00031  Hydrology — Jordan Creek    [Edit] [▾]   │
+│  Status: In Progress    Assigned: L. Gutierrez    SLA: May 2019 │
+│  ─────────────────────────────────────────────────────────────  │
+│  ┌─── WorkType Constraints ────────────────────────────────┐    │
+│  │  Survey Window Start:        Feb 1  2019                │    │
+│  │  Survey Window End:          May 31 2019  ◄──────────── │────── HARD constraint, not a note
+│  │  nepa_trigger_co_permit__c:  IDWR         ◄──────────── │────── POINT: co-permit trigger
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                  │
+│  Service Appointments (1)                                        │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  SA-00019   Apr 25 2019   L. Gutierrez   Confirmed  ✓    │   │
+│  └──────────────────────────────────────────────────────────┘   │
+│                                                                  │
+│  [Mark Complete ▶]  ◄──────────────────────────────────────────┼── CLICK: watch task fire
+│                                                                  │
+│  ─ Auto-Created (fires on Complete) ──────────────────────────  │
+│  ► Task: "Initiate IDWR Water Permit Application"               │
+│    Assigned: NEPA Coordinator   Due: 30-day SLA   ◄────────────┼── clock starts NOW
+│    Portal notification → Sam Uhler                              │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+> **▲ Point to:** `nepa_trigger_co_permit__c = IDWR`, then click [Mark Complete], then point to the auto-created task. Say: *"The IDWR clock starts the moment the hydrologist closes his work order. Not after the BLM decision. Now."*
 
 ### What You Are Demonstrating
 
@@ -351,6 +585,88 @@ Here's what the review actually required:
 7. **Click tribal consultation work order — show `hard_gate__c` flag.** Say: *"The EA cannot advance to public review until this work order closes. That's the gate the corpus says agencies were missing. It's not a reminder anymore."*
 
 8. **Navigate to ApplicationTimeline.** Point to revised EA publish date: **August 15** — 3 weeks after comment close. Say: *"Comment close to revised EA: three weeks. Not sixty days."*
+
+### Screen Reference
+
+**Screen 3-A — IndividualApplication: Public Comments Related List**
+*(Show step 1: 3 comments visible; risk tier column shows differentiated scoring)*
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  IndividualApplication  IA-0000000432          [Edit]  [More ▾] │
+│  Carrie Placer Mine Plan of Operations                          │
+├─────────────────────────────────────────────────────────────────┤
+│  Public Comments (3)                              [New Comment] │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  Organization               │ Risk Tier  │ Date  │ Status │   │
+│  │  ────────────────────────────────────────────────────    │   │
+│  │  Idaho Conservation League  │ HIGH   ◄── │ Jul 22│ Open   │───── plaintiff flag
+│  │  Office of Species Cons.    │ —          │ Jul 25│ Open   │   │  (no flag — note contrast)
+│  │  Shoshone-Paiute Tribes ◄── │ VERY HIGH  │ Jul 28│ Open   │───── dual flag: plaintiff + tribal
+│  └──────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+> **▲ Point to:** Risk Tier column. ICL = HIGH, OSC = blank, Shoshone-Paiute = VERY HIGH. Say: *"Three comments. Three different outcomes. The Plaintiff Intelligence module ran on each one."*
+
+---
+
+**Screen 3-B — PublicComplaint Record: Shoshone-Paiute Tribes**
+*(Show steps 3–4: dual flags, VERY HIGH tier, auto-created legal task, hard gate)*
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Public Comment  PC-00003  Shoshone-Paiute Tribes  [Edit] [▾]   │
+│  Submitted: Jul 28 2019   Status: Open   Method: Mail           │
+│  ─────────────────────────────────────────────────────────────  │
+│  ┌─── Risk Intelligence ───────────────────────────────────┐    │
+│  │  Plaintiff Risk Flag:    ✓ TRUE     ◄────────────────── │────── FLAG 1: prior litigation
+│  │  Tribal Plaintiff Flag:  ✓ TRUE     ◄────────────────── │────── FLAG 2: unconditional gate
+│  │  Risk Tier:              VERY HIGH  ◄────────────────── │────── 87.5% win rate category
+│  │  Litigation Threat Basis:                               │    │
+│  │    Tribal Nation plaintiff — 87.5% litigation win rate  │    │
+│  │    (PermitTEC corpus, 761 cases)                        │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                  │
+│  ┌─── Auto-Created Legal Task ─────────────────────────────┐    │
+│  │  Subject: Govt-to-govt consultation — verify NHPA §106  │    │
+│  │           and E.O. 13175 before advancing     ◄──────── │────── TASK auto-fired at intake
+│  │  Assigned To: BLM Field Solicitor                       │    │
+│  │  Due Date:    21-day SLA from comment date              │    │
+│  │  ⛔ hard_gate__c = TRUE — EA blocked until this closes  ◄─────── HARD GATE
+│  └─────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+> **▲ Point to:** Both flag fields (pause on each), then `Risk Tier = VERY HIGH`, then the `hard_gate__c` line. Say: *"Two flags simultaneously. The legal work order fired before anyone in the field office made a judgment call."*
+
+---
+
+**Screen 3-C — IndividualApplication: Risk Intelligence Panel**
+*(Show step 5: litigation score ticks up; show step 6: two auto-created WOs from substantive comments)*
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  IndividualApplication  IA-0000000432  — Risk Intelligence       │
+│  ─────────────────────────────────────────────────────────────  │
+│  ┌─── Litigation Risk Score ───────────────────────────────┐    │
+│  │  Risk Score:          87           ◄────────────────── │────── POINT: ticked up on save
+│  │  Risk Tier:           Very High                         │    │
+│  │  Plaintiff Flag:      ✓ TRUE  (ICL)              ◄──── │────── ICL plaintiff
+│  │  Tribal Flag:         ✓ TRUE  (Shoshone-Paiute)  ◄──── │────── tribal plaintiff
+│  │  Defensibility Score: 91                                │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                  │
+│  Work Orders Auto-Created from Comments (2)                      │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  WO-00045  ICL mercury/dust analysis    SLA: 17 days     │   │
+│  │  WO-00046  Tribal consultation §106     SLA: 21 days ◄── │───── HARD GATE WO
+│  │            ⛔ EA cannot advance until this closes         │   │
+│  └──────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+> **▲ Point to:** `Risk Score = 87`, then WO-00046 and the `⛔` line. Say: *"Every substantive comment became a tracked work order with an SLA. Not an inbox item — a deliverable with a deadline and an assigned owner."*
 
 ### What You Are Demonstrating
 
@@ -434,6 +750,135 @@ Here's what the review actually required:
 10. **Show ApplicationTimeline: March 12 → November 27 = 8 months.**
 
 11. **Navigate to the NEPA/CEQExport endpoint** (or show a Workbench JSON preview of the structured response). Say: *"MFR #1 and MFR #2. All 13 CEQ entities in one JSON payload — PIC OpenAPI v1.2.0-aligned. EPA DARTER, USACE ORM2, FPISC, any internal permit database — they pull this via authenticated REST call. No custom middleware. No new authorization boundary. Information entered once, available everywhere."*
+
+### Screen Reference
+
+**Screen 4-A — Program Record Page**
+*(Show step 1: agency performance tier set on day one from PermitTEC corpus)*
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Program  DOI-BLM-ID-B030-2019-0014-EA         [Edit]  [More ▾] │
+│  Carrie Placer Mine Plan of Operations — BLM Owyhee             │
+│  ─────────────────────────────────────────────────────────────  │
+│  ┌─── Agency Performance (auto-populated from PermitTEC) ──┐    │
+│  │  Agency Performance Tier:  Legally Vulnerable  ◄──────  │────── SET DAY ONE: point here
+│  │  Agency:                   Bureau of Land Management    │    │
+│  │  Circuit:                  9th Circuit Court of Appeals │    │
+│  │  Agency Litigation Rate:   BLM — above median           │    │
+│  │  Median NOI→DEIS:          28 months (BLM baseline)     │    │
+│  │  Source:                   PermitTEC v0.1 (761 cases)   │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                  │
+│  Extraordinary Circumstances:   ✓ TRUE (NWI Wetlands + PHMA) ◄─┼── from GIS Step 6, Scene 1
+│  GIS Proximity Check Complete:  ✓ TRUE                         │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+> **▲ Point to:** `Agency Performance Tier = Legally Vulnerable`. Say: *"Set automatically on day one from PermitTEC data. The Field Manager knew what circuit and agency combination he was working in before a single survey was scheduled."*
+
+---
+
+**Screen 4-B — IndividualApplication: Risk Intelligence Panel (full factor disclosure)**
+*(Show steps 2–3: risk score, defensibility score, raw factor breakdown)*
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  IndividualApplication  IA-0000000432  — Risk Intelligence       │
+│  ─────────────────────────────────────────────────────────────  │
+│  Risk Score:           87    Risk Tier:  Very High   ◄──────── │──── POINT: score
+│  Defensibility Score:  91               All gates cleared ◄─── │──── POINT: defensibility
+│  ─────────────────────────────────────────────────────────────  │
+│  ┌─── Risk Score Factors  (nepa_risk_score_factors__c) ────┐    │
+│  │  BLM agency litigation rate:          39 pts   ◄──────  │────── DISCLOSE each input
+│  │  9th Circuit — adverse ruling rate:   42 pts   ◄──────  │    │
+│  │  FLPMA statutory complexity:           8 pts            │    │
+│  │  Tribal plaintiff flag (Shoshone-P):  15 pts   ◄──────  │────── highest single weight
+│  │  ─────────────────────────────────────────────          │    │
+│  │  Raw total: 104  →  Normalized: 87                      │    │
+│  │  Every input disclosed — coordinator can verify any #   │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│  Plaintiff Risk Flag:   ✓ TRUE  (ICL)                           │
+│  Tribal Plaintiff Flag: ✓ TRUE  (Shoshone-Paiute)               │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+> **▲ Point to:** Factor breakdown line by line. Say: *"BLM: 39 pts. 9th Circuit: 42 pts. FLPMA: 8 pts. Tribal plaintiff: 15 pts. That's 104 raw, normalized to 87. Every input is disclosed. The coordinator can verify any number."*
+
+---
+
+**Screen 4-C — Required Document Registry Related List**
+*(Show step 4: all 5 documents present; stage gate cleared)*
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Required Document Registry  (5 of 5)  ✓ ALL PRESENT  ◄────────┼── STAGE GATE status
+│  ─────────────────────────────────────────────────────────────  │
+│  #  │  Document Type                     │  Status     │  Date  │
+│  ───┼────────────────────────────────────┼─────────────┼──────  │
+│  1  │  Environmental Assessment (EA)     │  ✓ Present  │ Nov 15 │
+│  2  │  Finding of No Significant Impact  │  ✓ Present  │ Nov 20 │
+│  3  │  Decision Record                   │  ✓ Present  │ Nov 27 │
+│  4  │  Affected Resources Form           │  ✓ Present  │ Nov 15 │
+│  5  │  Tribal Consultation Certification │  ✓ Present  │ Mar 16 │  ◄── output of Scene 3 gate
+│  ─────────────────────────────────────────────────────────────  │
+│  Stage Gate:        ✓ ALL 5 REQUIRED DOCUMENTS PRESENT         │
+│  EA Advancement:    ALLOWED — gate cleared                      │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+> **▲ Point to:** Row 5, Tribal Consultation Certification. Say: *"This is the output of the Shoshone-Paiute work order from Scene 3. The hard gate closed, the consultation was certified, and this document appeared in the registry."*
+
+---
+
+**Screen 4-D — nepa_decision_payload__c Record**
+*(Show step 7: structured, machine-readable decision fields)*
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Decision Payload  DP-00001  IDI-38709         [Edit]  [More ▾] │
+│  ─────────────────────────────────────────────────────────────  │
+│  Decision Type:           FONSI                  ◄──────────── │──── POINT: machine-readable
+│  Decision Date:           Nov 27 2019                           │
+│  Selected Alternative:    Alternative B — Modified Footprint ◄─┼──── structured Alt B
+│  Alternatives Considered: 3                                     │
+│  Significant Impacts:     FALSE                  ◄──────────── │──── structured boolean
+│  Mitigation Measures:     Seasonal survey windows enforced;     │
+│                           stormwater BMP; reclamation bond;     │
+│                           IDWR water permit; EPA NPDES permit   │
+│  Monitoring Requirements: Annual reclamation inspection;        │
+│                           stormwater report due Mar 1 annually  │
+│  Supplemental EA Needed:  FALSE                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+> **▲ Point to:** `Decision Type = FONSI` and `Significant Impacts = FALSE`. Say: *"Machine-readable decision record. Not a PDF in an email. Structured data — any authorized system can query this."*
+
+---
+
+**Screen 4-E — nepa_ar_export__c Record**
+*(Show step 8: administrative record auto-assembled at decision; CEQExport API available immediately)*
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  AR Export  AR-00001  IDI-38709               [Edit]  [More ▾]  │
+│  ─────────────────────────────────────────────────────────────  │
+│  ┌─── Administrative Record Export ────────────────────────┐    │
+│  │  Export Status:    Complete               ◄──────────── │────── MFR #9: auto-assembled
+│  │  Export Type:      Full Package           ◄──────────── │────── MFR #1/#2: standard pkg
+│  │  Requested Date:   Nov 27 2019  (auto: FONSI signed)    │    │
+│  │  Completed Date:   Nov 27 2019                          │    │
+│  │  Document Count:   6                      ◄──────────── │────── all 6 ContentVersions
+│  │  Comment Count:    3                      ◄──────────── │────── all 3 comments
+│  │  Download URL:     [ar-manifest/IDI-38709 ↗]        ◄── │────── MFR #2: available NOW
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                  │
+│  API Endpoint:  /services/apexrest/nepa/ceqexport/IDI-38709 ◄──┼── point to this last
+│  Consumers:     EPA DARTER · USACE ORM2 · FPISC · CEQ HPMS     │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+> **▲ Point to:** `Export Status = Complete` first, then `Download URL`, then API Endpoint line. Say: *"The administrative record assembled automatically the moment the Field Manager signed. Available through the CEQExport API right now — not assembled after the fact."*
 
 ### What You Are Demonstrating
 
