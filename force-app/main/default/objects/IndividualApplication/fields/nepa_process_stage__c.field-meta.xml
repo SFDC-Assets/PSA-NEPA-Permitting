@@ -1,12 +1,112 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_process_stage__c</fullName>
-        <description>Current stage of process narrative; may be derived from the last case event with this Process ID.</description>
-        <externalId>false</externalId>
-        <inlineHelpText>Current stage of process narrative; may be derived from the last case event with this Process ID.</inlineHelpText>
-        <label>Process Stage</label>
-        <length>255</length>
-        <required>false</required>
-        <trackHistory>false</trackHistory>
-        <type>Text</type>
-        <unique>false</unique>
-    </CustomField>
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_process_stage__c</fullName>
+    <description>Current stage of the NEPA review process. Drives Path component guidance, stage-gate validation, and timeline risk scoring. Values span CE, EA, and EIS pathways.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Current stage of the NEPA review process. Set automatically by stage-gate automation or manually by the coordinator.</inlineHelpText>
+    <label>Process Stage</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>false</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <!-- Shared / early stages -->
+            <value>
+                <fullName>Intake and Screening</fullName>
+                <default>false</default>
+                <label>Intake and Screening</label>
+            </value>
+            <value>
+                <fullName>Scoping</fullName>
+                <default>false</default>
+                <label>Scoping</label>
+            </value>
+            <!-- CE pathway -->
+            <value>
+                <fullName>CE Determination</fullName>
+                <default>false</default>
+                <label>CE Determination</label>
+            </value>
+            <!-- EA pathway -->
+            <value>
+                <fullName>Environmental Assessment</fullName>
+                <default>false</default>
+                <label>Environmental Assessment</label>
+            </value>
+            <value>
+                <fullName>Draft EA Preparation</fullName>
+                <default>false</default>
+                <label>Draft EA Preparation</label>
+            </value>
+            <value>
+                <fullName>Comment Period</fullName>
+                <default>false</default>
+                <label>Comment Period</label>
+            </value>
+            <value>
+                <fullName>FONSI and Decision</fullName>
+                <default>false</default>
+                <label>FONSI and Decision</label>
+            </value>
+            <!-- EIS pathway -->
+            <value>
+                <fullName>Inter-Agency Coordination</fullName>
+                <default>false</default>
+                <label>Inter-Agency Coordination</label>
+            </value>
+            <value>
+                <fullName>Draft EIS Preparation</fullName>
+                <default>false</default>
+                <label>Draft EIS Preparation</label>
+            </value>
+            <value>
+                <fullName>Draft EIS Comment Period</fullName>
+                <default>false</default>
+                <label>Draft EIS Comment Period</label>
+            </value>
+            <value>
+                <fullName>Final EIS Preparation</fullName>
+                <default>false</default>
+                <label>Final EIS Preparation</label>
+            </value>
+            <value>
+                <fullName>Record of Decision</fullName>
+                <default>false</default>
+                <label>Record of Decision</label>
+            </value>
+            <!-- Shared late / cross-pathway stages used by flows -->
+            <value>
+                <fullName>Analysis</fullName>
+                <default>false</default>
+                <label>Analysis</label>
+            </value>
+            <value>
+                <fullName>Review</fullName>
+                <default>false</default>
+                <label>Review</label>
+            </value>
+            <value>
+                <fullName>Coordination</fullName>
+                <default>false</default>
+                <label>Coordination</label>
+            </value>
+            <value>
+                <fullName>Determination</fullName>
+                <default>false</default>
+                <label>Determination</label>
+            </value>
+            <value>
+                <fullName>Decision</fullName>
+                <default>false</default>
+                <label>Decision</label>
+            </value>
+            <value>
+                <fullName>Decision Issued</fullName>
+                <default>false</default>
+                <label>Decision Issued</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

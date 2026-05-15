@@ -188,6 +188,27 @@
         <members>PublicComplaint.nepa_email__c</members>
         <!-- Mandate 1: Comment period gating -->
         <members>PublicComplaint.nepa_related_process__c</members>
+        <!-- Phase 3: CEQ Phase 2 compliance fields -->
+        <members>IndividualApplication.nepa_phase2_applicable__c</members>
+        <members>IndividualApplication.nepa_climate_assessment_required__c</members>
+        <members>IndividualApplication.nepa_climate_assessment_complete__c</members>
+        <members>IndividualApplication.nepa_ej_analysis_required__c</members>
+        <!-- Phase 2: v2 Risk Scorer fields -->
+        <members>IndividualApplication.nepa_project_sector__c</members>
+        <members>IndividualApplication.nepa_circuit_court__c</members>
+        <!-- Phase 7: Doc Count Threshold field -->
+        <members>IndividualApplication.nepa_elevated_doc_complexity__c</members>
+        <!-- Phase 2: Plaintiff / tribal risk flags -->
+        <members>IndividualApplication.nepa_plaintiff_risk_flag__c</members>
+        <members>IndividualApplication.nepa_tribal_plaintiff_flag__c</members>
+        <!-- Workflow: Action Plan launch tracking -->
+        <members>IndividualApplication.nepa_action_plan_launched__c</members>
+        <!-- Document page count -->
+        <members>IndividualApplication.nepa_total_pages__c</members>
+        <!-- Phase 5: AI Provenance fields on PublicComplaint -->
+        <members>PublicComplaint.nepa_ai_generated__c</members>
+        <members>PublicComplaint.nepa_human_validated_by__c</members>
+        <!-- Phase 3: Climate Gate validation rule -->
         <!-- Phase 5: FRA statutory clock fields (42 U.S.C. 4336a) -->
         <members>IndividualApplication.nepa_fra_statutory_deadline__c</members>
         <members>IndividualApplication.nepa_clock_paused__c</members>
@@ -738,6 +759,10 @@
         <name>ActionPlanTemplate</name>
     </types>
     <types>
+        <members>IndividualApplication_NEPA_Process_Path</members>
+        <name>PathAssistant</name>
+    </types>
+    <types>
         <members>IndividualApplication_Record_Page</members>
         <members>Program_Record_Page</members>
         <members>Public_Comment_Record_Page</members>
@@ -767,6 +792,8 @@
     <types>
         <!-- Mandate 1: Belt-and-suspenders validation rule -->
         <members>PublicComplaint.NEPA_Comment_Period_Closed</members>
+        <!-- Phase 3: CEQ Phase 2 Climate Gate -->
+        <members>IndividualApplication.NEPA_Phase2_Climate_Gate</members>
         <name>ValidationRule</name>
     </types>
     <types>
