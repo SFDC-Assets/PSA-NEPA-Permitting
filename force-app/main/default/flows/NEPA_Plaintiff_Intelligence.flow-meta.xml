@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>After-save trigger on PublicComplaint (insert only). Queries NEPA_Plaintiff_Profile__mdt for records whose Organization_Name__c matches the commenter organization via CONTAINS. When a HIGH or VERY_HIGH profile is found, sets nepa_plaintiff_risk_flag__c on the parent IndividualApplication and creates a Legal Defensibility Review task.</description>
+    <description>After-save trigger on PublicComplaint (insert only). Queries NEPA_Plaintiff_Profile__mdt for records whose Organization_Name__c matches the commenter organization via CONTAINS. When a HIGH or VERY_HIGH profile is found: (1) sets nepa_plaintiff_risk_flag__c, nepa_tribal_plaintiff_flag__c, and nepa_plaintiff_risk_tier__c on the comment record itself; (2) sets nepa_plaintiff_risk_flag__c and nepa_tribal_plaintiff_flag__c on the parent IndividualApplication; (3) creates a Legal Defensibility Review task.</description>
     <label>NEPA Plaintiff Intelligence</label>
     <processType>AutoLaunchedFlow</processType>
     <status>Active</status>
@@ -176,7 +176,7 @@
     <decisions>
         <name>Decision_MatchFound</name>
         <label>High-Risk Profile Matched?</label>
-        <description>Post-loop gate — routes to Get_ParentApplication only when var_MatchFound was set inside the loop. Keeps all DML outside the loop.</description>
+        <description>Post-loop gate — routes to Update_CommentRecord only when var_MatchFound was set inside the loop. Keeps all DML outside the loop.</description>
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnectorLabel>No Match — End</defaultConnectorLabel>
@@ -189,11 +189,21 @@
                 <rightValue><booleanValue>true</booleanValue></rightValue>
             </conditions>
             <connector>
-                <targetReference>Get_ParentApplication</targetReference>
+                <targetReference>Update_CommentRecord</targetReference>
             </connector>
             <label>Match Found</label>
         </rules>
     </decisions>
+
+    <formulas>
+        <name>formula_PlaintiffRiskBasis</name>
+        <description>Human-readable summary written to nepa_plaintiff_risk_tier__c — sourced by the Plaintiff Intelligence section on the comment page.</description>
+        <dataType>String</dataType>
+        <expression>{!var_MatchedRiskTier} &amp; " — " &amp; {!var_MatchedOrgName} &amp;
+IF({!var_MatchedIsTribalNation}, " (Tribal Nation)", "") &amp;
+" | " &amp; TEXT({!var_MatchedCaseCount}) &amp; " prior cases, " &amp;
+TEXT(ROUND({!var_MatchedSuccessRate} * 100, 0)) &amp; "% success rate"</expression>
+    </formulas>
 
     <formulas>
         <name>formula_OrgNameContainsProfile</name>
@@ -346,6 +356,45 @@
         <sortField>Risk_Tier__c</sortField>
         <sortOrder>Asc</sortOrder>
     </recordLookups>
+
+    <recordUpdates>
+        <name>Update_CommentRecord</name>
+        <label>Set Plaintiff Flags on Comment Record</label>
+        <description>Write the three new plaintiff intelligence fields directly onto the matched PublicComplaint record so the Plaintiff Intelligence section on the comment page shows without requiring a parent-app lookup.</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_ParentApplication</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>End_NoMatch</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>nepa_plaintiff_risk_flag__c</field>
+            <value><booleanValue>true</booleanValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_tribal_plaintiff_flag__c</field>
+            <value>
+                <elementReference>var_MatchedIsTribalNation</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_plaintiff_risk_tier__c</field>
+            <value>
+                <elementReference>formula_PlaintiffRiskBasis</elementReference>
+            </value>
+        </inputAssignments>
+        <object>PublicComplaint</object>
+    </recordUpdates>
 
     <recordUpdates>
         <name>Update_PlaintiffFlag</name>

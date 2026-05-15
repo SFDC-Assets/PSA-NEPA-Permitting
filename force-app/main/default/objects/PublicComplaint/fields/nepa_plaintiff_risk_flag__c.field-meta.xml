@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_plaintiff_risk_flag__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Set to true by NEPA_Plaintiff_Intelligence flow when the commenter organization matches a record in NEPA_Plaintiff_Profile__mdt. Triggers auto-creation of a Legal Defensibility Review task for HIGH and VERY_HIGH matches. Read-only after flow execution.</description>
+    <inlineHelpText>Plaintiff org matched against litigation history. Set automatically by Plaintiff Intelligence flow.</inlineHelpText>
+    <label>Plaintiff Risk Flag</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

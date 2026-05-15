@@ -483,8 +483,38 @@
         <type>Facet</type>
     </flexiPageRegions>
 
-    <!-- SECTION: Litigation Threat — Column 1 (visible when litigation_threat_flag = true) -->
+    <!-- SECTION: Plaintiff Intelligence — Column 1 (visible when plaintiff_risk_flag OR tribal_plaintiff_flag = true) -->
     <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_plaintiff_risk_flag__c</fieldItem>
+                <identifier>Recordnepa_plaintiff_risk_flag_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_tribal_plaintiff_flag__c</fieldItem>
+                <identifier>Recordnepa_tribal_plaintiff_flag_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_plaintiff_risk_tier__c</fieldItem>
+                <identifier>Recordnepa_plaintiff_risk_tier_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
@@ -499,7 +529,7 @@
         <type>Facet</type>
     </flexiPageRegions>
 
-    <!-- SECTION: Litigation Threat — Column 2 -->
+    <!-- SECTION: Plaintiff Intelligence — Column 2 -->
     <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
@@ -740,13 +770,18 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>label</name>
-                    <value>Litigation Threat</value>
+                    <value>Plaintiff Intelligence</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>cmt_section_litigation</identifier>
                 <visibilityRule>
                     <criteria>
                         <leftValue>{!Record.nepa_litigation_threat_flag__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.nepa_plaintiff_risk_flag__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>true</rightValue>
                     </criteria>

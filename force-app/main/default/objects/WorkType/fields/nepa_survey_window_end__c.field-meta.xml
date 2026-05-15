@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_survey_window_end__c</fullName>
+    <description>Latest calendar date on which a service appointment of this work type may be scheduled. The FSL optimization engine reads this constraint and blocks appointment creation after this date. Used to enforce seasonal survey windows (e.g., sage-grouse lek surveys must complete by April 30; botanical surveys must fall within June–August). Leave blank for work types with no seasonal constraint.</description>
+    <inlineHelpText>Seasonal window close date. FSL will not schedule appointments after this date for this work type.</inlineHelpText>
+    <label>Survey Window End</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Date</type>
+</CustomField>

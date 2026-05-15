@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_challenge_prediction_basis__c</fullName>
+    <description>Structured output from NEPA_Challenge_Predictor flow. Records each rule evaluated, its fired/not-fired status, cleared/open status, and risk delta contribution. Format: one rule per line — RuleLabel | Priority | Status (Fired/Not Fired) | Cleared/Open | +N pts. Populated on every run; overwritten on re-evaluation. Used by the Challenge Prediction Panel in the Risk Intelligence section.</description>
+    <inlineHelpText>Challenge Predictor rule evaluation results. Updated each time the flow runs.</inlineHelpText>
+    <label>Challenge Prediction Basis</label>
+    <length>5000</length>
+    <trackHistory>false</trackHistory>
+    <type>LongTextArea</type>
+    <visibleLines>6</visibleLines>
+</CustomField>

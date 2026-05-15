@@ -324,6 +324,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>IndividualApplication.nepa_challenge_prediction_basis__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>IndividualApplication.nepa_classification_basis__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1184,7 +1189,22 @@
         <field>PublicComplaint.nepa_sentiment__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>PublicComplaint.nepa_plaintiff_risk_flag__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>PublicComplaint.nepa_tribal_plaintiff_flag__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>PublicComplaint.nepa_plaintiff_risk_tier__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+
     <fieldPermissions>
         <editable>true</editable>
         <field>RegulatoryCode.nepa_compliance_requirements__c</field>
@@ -1245,6 +1265,16 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>WorkOrder.nepa_trigger_layer__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>WorkOrder.nepa_hard_gate__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>WorkType.nepa_survey_window_end__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -2116,7 +2146,17 @@
         <field>nepa_decision_element__c.nepa_other__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_ai_assisted_draft__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_decision_element__c.nepa_sme_validation_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_decision_log__c.nepa_decision_element__c</field>

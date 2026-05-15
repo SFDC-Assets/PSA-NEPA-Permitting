@@ -677,7 +677,7 @@ Here's what the review actually required:
 
 > "The system flagged ICL because it matched a prior 9th Circuit plaintiff on a similar case type. It double-flagged the Shoshone-Paiute Tribes because it recognized a Tribal Nation commenter — the category with the 87.5% win rate. The legal work order fired before anyone in the field office made a judgment call. Every substantive comment became a work order. Every SLA is tracked. Comment close to revised EA: three weeks. That's MFR #8 — not comment storage, but comment routing, classification, and risk-graded response."
 
-> "The Plaintiff Intelligence module now covers 14 organizations derived from the PermitTEC corpus — including Alliance for the Wild Rockies, the highest-volume plaintiff in BLM and Forest Service 9th Circuit cases with 18 prior filings, and two tribal nation profiles with 100% litigation win rates. When any of these organizations appears in the comment record, the flag fires before anyone opens the email."
+> "The Plaintiff Intelligence module now covers 16 organizations derived from the PermitTEC corpus — including Alliance for the Wild Rockies, the highest-volume plaintiff in BLM and Forest Service 9th Circuit cases with 18 prior filings, and three tribal nation profiles with 100% litigation win rates. When any of these organizations appears in the comment record, the flag fires before anyone opens the email."
 
 ### Transition *(say this as you move to the next screen)*
 
@@ -813,6 +813,35 @@ Here's what the review actually required:
 ```
 
 > **▲ Point to:** Factor breakdown line by line. Say: *"BLM: 39 pts. 9th Circuit: 42 pts. FLPMA: 8 pts. Tribal plaintiff: 15 pts. That's 104 raw, normalized to 87. Every input is disclosed. The coordinator can verify any number."*
+
+---
+
+**Screen 4-B' — IndividualApplication: Challenge Prediction Panel**
+*(Show step 3b: 10 rules evaluated; 2 fired; both cleared — explains defensibility 91)*
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  IndividualApplication  IA-0000000432  — Challenge Prediction     │
+│  ─────────────────────────────────────────────────────────────  │
+│  Challenge Predictor:   10 rules evaluated   ◄──────────────── │──── POINT: rule count
+│  Rules Fired:           2                    ◄──────────────── │──── both from this project
+│  Risk Delta:            +0 pts (all fired rules cleared) ◄──── │──── defensibility intact
+│  ─────────────────────────────────────────────────────────────  │
+│  ┌─── Fired Rules ─────────────────────────────────────────┐    │
+│  │  #  Priority  Rule                         Status        │    │
+│  │  ──────────────────────────────────────────────────────  │    │
+│  │  1     3     ESA Section 7 Open       ✓ Cleared   ◄──── │────── fired: PHMA at intake
+│  │              Basis: PHMA detected Step 6 (Scene 1)       │    │
+│  │              Resolution: consultation documented          │    │
+│  │  2     5     Tribal Consultation Open ✓ Cleared   ◄──── │────── fired: Shoshone-Paiute
+│  │              Basis: Shoshone-Paiute Tribes — VERY HIGH   │    │
+│  │              Resolution: hard gate closed (Scene 3)       │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│  8 rules not fired — not applicable to this project type        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+> **▲ Point to:** "Rules Fired: 2" and "Risk Delta: +0 pts" first, then each fired rule row. Say: *"The Challenge Predictor ran 10 rules derived from the PermitTEC corpus. Two fired for this project: ESA Section 7 — triggered by sage-grouse PHMA detected at intake in Scene 1 — and tribal consultation, triggered by the Shoshone-Paiute comment in Scene 3. Both cleared. Zero additional risk points. That's why the defensibility score is 91 even with a risk score of 87. The system distinguishes a dangerous project from a dangerous project that's been handled correctly."*
 
 ---
 
@@ -1049,7 +1078,7 @@ flowchart TB
 **Architecture notes:**
 - **Orange (Field Service):** The optimization engine is the scheduling brain — it reads WorkType seasonal constraints and gate availability, sequences all six work orders, and prevents double-booking.
 - **Purple (APS Case Management):** IndividualApplication is the central record. Every specialist survey, every document, every comment, every milestone hangs off it. Key risk intelligence fields include `nepa_risk_score__c`, `nepa_risk_tier__c`, `nepa_plaintiff_risk_flag__c`, `nepa_tribal_plaintiff_flag__c`, `nepa_challenge_risk_delta__c`, and `nepa_scoping_overrun_flag__c`.
-- **Pink (Intelligence):** All flows read from Custom Metadata Types — 9 types covering CE codes, **14 plaintiff profiles (including Navajo Nation and Pit River Tribe with 100% win rates)**, **16 agency risk rate records covering all 15 PermitTEC corpus agencies**, circuit weights, statute weights, **per-agency scoping baselines (365-day median Inter-Agency Coordination phase derived from CEQ EIS Timeline data)**, and **10 challenge prediction rules including Connected Actions at Priority 1 (42.7% of challenged decisions)**. Changing any weight, adding a plaintiff org, or updating an agency baseline requires zero code change.
+- **Pink (Intelligence):** All flows read from Custom Metadata Types — **15 types** covering: `NEPA_CE_Code`, `NEPA_CE_Screening_Rule` (71 records), `NEPA_Challenge_Prediction_Rule` (10 records), `NEPA_Circuit_Risk_Weight` (13 circuits), `NEPA_Sector_Circuit_Risk`, `NEPA_Agency_Risk_Rate` (16 agencies), `NEPA_Stage_Baseline_Duration`, `NEPA_Plaintiff_Profile` (**16 records** including Shoshone-Paiute Tribes and Navajo Nation with 100% win rates), `NEPA_Statute_Risk_Weight`, `NEPA_Required_Document`, `NEPA_Process_Model`, `NEPA_Permit_Matrix`, `NEPA_ActionPlan_Config` (36 records), `NEPA_Doc_Count_Threshold`, `NEPA_MFR_Assessment`. **10 challenge prediction rules including Connected Actions at Priority 1 (42.7% of challenged decisions)**. Changing any weight, adding a plaintiff org, or updating an agency baseline requires zero code change.
 - **Blue (Data Foundation):** The NEPATEC 2.0 corpus (61,881 projects) and PermitTEC v0.1 (761 litigation cases) are the empirical basis for every weight and threshold. The Litigation Risk Scorer uses PermitTEC-derived weights: agency points = loss_rate × 1.0, circuit points = (multiplier − 0.30) × 37.5, statute points = (multiplier − 1.00) × 20. The 10th Circuit (43 pts) is now the highest-risk circuit; BLM (39 pts) is the highest-risk agency.
 
 ---
