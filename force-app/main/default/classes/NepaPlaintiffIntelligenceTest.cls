@@ -235,6 +235,46 @@ private class NepaPlaintiffIntelligenceTest {
     }
 
     @IsTest
+    static void plaintiffIntelligence_allianceWildRockies_flagsAndCreatesTask() {
+        // Alliance for the Wild Rockies: HIGH, 18 cases — highest-volume USFS plaintiff in corpus
+        IndividualApplication ia = getParentApp();
+
+        Test.startTest();
+        insert buildComplaint(ia.Id, 'Alliance for the Wild Rockies');
+        Test.stopTest();
+
+        IndividualApplication updated = [
+            SELECT nepa_plaintiff_risk_flag__c FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+        System.assertEquals(true, updated.nepa_plaintiff_risk_flag__c,
+            'Alliance for the Wild Rockies (HIGH) should set nepa_plaintiff_risk_flag__c');
+
+        List<Task> tasks = [SELECT Id, Priority FROM Task WHERE WhatId = :ia.Id];
+        System.assertEquals(1, tasks.size(), 'One defensibility review task should be created');
+        System.assertEquals('High', tasks[0].Priority);
+    }
+
+    @IsTest
+    static void plaintiffIntelligence_pitRiverTribe_setsBothFlags() {
+        // Pit River Tribe: VERY_HIGH, Is_Tribal_Nation__c=true, 100% win rate (2/2)
+        // Second tribal nation entry — verifies tribal flag logic beyond Navajo Nation
+        IndividualApplication ia = getParentApp();
+
+        Test.startTest();
+        insert buildComplaint(ia.Id, 'Pit River Tribe');
+        Test.stopTest();
+
+        IndividualApplication updated = [
+            SELECT nepa_plaintiff_risk_flag__c, nepa_tribal_plaintiff_flag__c
+            FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+        System.assertEquals(true, updated.nepa_plaintiff_risk_flag__c,
+            'Pit River Tribe (VERY_HIGH) should set nepa_plaintiff_risk_flag__c');
+        System.assertEquals(true, updated.nepa_tribal_plaintiff_flag__c,
+            'Pit River Tribe (Is_Tribal_Nation__c=true) must set nepa_tribal_plaintiff_flag__c');
+    }
+
+    @IsTest
     static void plaintiffIntelligence_bulk_multipleRecords_noSoqlInLoop() {
         IndividualApplication ia = getParentApp();
 

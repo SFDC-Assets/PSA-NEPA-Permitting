@@ -308,8 +308,21 @@ private class NepaBREConfigTest {
         List<NEPA_Challenge_Prediction_Rule__mdt> rules = [
             SELECT Id FROM NEPA_Challenge_Prediction_Rule__mdt WHERE Active__c = true
         ];
-        System.assert(rules.size() >= 5,
-            'At least 5 active challenge prediction rules required (3 original + Energy_4th_Circuit_Pipeline + Tribal_Plaintiff_Override); found: ' + rules.size());
+        System.assert(rules.size() >= 10,
+            'At least 10 active challenge prediction rules required (7 original + Connected_Actions_Required + Supplementation_Required + ESA_Section7_Open); found: ' + rules.size());
+    }
+
+    @IsTest
+    static void challengePredictionRules_connectedActionsRuleExists() {
+        // Connected actions analysis is the #1 NEPA litigation failure mode (42.7% of corpus)
+        List<NEPA_Challenge_Prediction_Rule__mdt> rule = [
+            SELECT Explanation__c, Priority__c FROM NEPA_Challenge_Prediction_Rule__mdt
+            WHERE DeveloperName = 'Connected_Actions_Required' AND Active__c = true
+        ];
+        System.assertEquals(1, rule.size(),
+            'Connected_Actions_Required challenge prediction rule must be active');
+        System.assertEquals(1, rule[0].Priority__c,
+            'Connected_Actions_Required must be Priority 1 — highest-frequency litigation failure mode');
     }
 
     @IsTest
@@ -337,6 +350,44 @@ private class NepaBREConfigTest {
         System.assertEquals(0, bad.size(),
             'Active challenge prediction rules missing Explanation__c: '
                 + String.join(bad, '; '));
+    }
+
+    @IsTest
+    static void agencyRiskRates_allCorpusAgenciesCovered() {
+        // PermitTEC corpus covers 15 agencies with real case data (plus DEFAULT).
+        // All must be present so BRE risk scorer does not fall back to DEFAULT for known agencies.
+        Set<String> required = new Set<String>{
+            'BLM', 'USFS', 'USACE', 'FERC', 'FWS', 'FHWA',
+            'FAA', 'NMFS', 'NRC', 'DOI', 'FTA', 'TVA', 'DHS', 'BOEM', 'EPA'
+        };
+        Map<String, Decimal> found = new Map<String, Decimal>();
+        for (NEPA_Agency_Risk_Rate__mdt r : [
+            SELECT Agency_Abbreviation__c, Risk_Points__c FROM NEPA_Agency_Risk_Rate__mdt
+        ]) {
+            found.put(r.Agency_Abbreviation__c, r.Risk_Points__c);
+        }
+        Set<String> missing = required.clone();
+        missing.removeAll(found.keySet());
+        System.assertEquals(0, missing.size(),
+            'Missing agency risk rate records for PermitTEC corpus agencies: '
+                + String.join(new List<String>(missing), ', '));
+    }
+
+    @IsTest
+    static void plaintiffProfiles_minimumCoverageAndTribalPresent() {
+        // 14 profiles deployed: 7 original + 7 new (AFWR, FOA, ConsCongress, NEC, NPCA, PitRiver, IEN)
+        // At least 2 must be tribal nations (Navajo Nation + Pit River Tribe)
+        List<NEPA_Plaintiff_Profile__mdt> profiles = [
+            SELECT Is_Tribal_Nation__c FROM NEPA_Plaintiff_Profile__mdt WHERE Active__c = true
+        ];
+        System.assert(profiles.size() >= 14,
+            'Expected at least 14 active plaintiff profiles; found: ' + profiles.size());
+        Integer tribalCount = 0;
+        for (NEPA_Plaintiff_Profile__mdt p : profiles) {
+            if (p.Is_Tribal_Nation__c == true) { tribalCount++; }
+        }
+        System.assert(tribalCount >= 2,
+            'At least 2 tribal nation profiles required (Navajo Nation + Pit River Tribe); found: ' + tribalCount);
     }
 
     // ── Risk score ceiling (BRE Expression Set formula bound) ─────────────────

@@ -198,7 +198,7 @@ flowchart TD
 
     subgraph ChallengePredictor["Challenge Predictor (parallel flow)"]
         CP1["NEPA_Challenge_Predictor\n(after-save on IA)"]
-        CP2["Loop: NEPA_Challenge_Prediction_Rule__mdt\n7 rules — sector, circuit, tribal flag, etc."]
+        CP2["Loop: NEPA_Challenge_Prediction_Rule__mdt\n10 rules — sector, circuit, tribal flag, etc."]
         CP3["Accumulate Risk_Delta__c\n(e.g. Energy×4th=+12, Tribal=+20)"]
         CP4["Write nepa_challenge_risk_delta__c\nand nepa_challenge_prediction_basis__c"]
     end
@@ -405,7 +405,7 @@ flowchart TD
 
     subgraph PlaintiffIntel["Plaintiff Intelligence (after-save)"]
         P1["NEPA_Plaintiff_Intelligence\n(PublicComplaint insert)"]
-        P2["Query NEPA_Plaintiff_Profile__mdt\n(6 records incl. tribal profiles)"]
+        P2["Query NEPA_Plaintiff_Profile__mdt\n(14 records incl. tribal profiles)"]
         P3{Match found?}
         P4["nepa_plaintiff_risk_flag__c = true\nCreate legal review Task"]
         P5{Is_Tribal_Nation__c\n= true?}
@@ -461,8 +461,8 @@ flowchart TB
     subgraph CMT["Custom Metadata (BRE Inputs — not direct DM rows)"]
         C1["NEPA_Statute_Risk_Weight__mdt\n(5 statutes: ESA=10, CWA=4, NHPA=2, NFMA=5, NGA=1)"]
         C2["NEPA_Agency_Scoping_Baseline__mdt\n(11 agencies — NOI→DEIS median months)"]
-        C3["NEPA_Challenge_Prediction_Rule__mdt\n(7 rules — accumulable risk deltas)"]
-        C4["NEPA_Plaintiff_Profile__mdt\n(6 records — success rates, tribal flag)"]
+        C3["NEPA_Challenge_Prediction_Rule__mdt\n(10 rules — accumulable risk deltas)"]
+        C4["NEPA_Plaintiff_Profile__mdt\n(14 records — success rates, tribal flag)"]
     end
 
     subgraph Flows["Invoking Flows"]

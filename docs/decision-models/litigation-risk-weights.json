@@ -3,7 +3,7 @@
   "standard": "CEQ NEPA and Permitting Data and Technology Standard v1.2 (August 18, 2025)",
   "mfr": "MFR 4 — Decision-logic export for litigation risk scoring weights",
   "source": "NEPA_Agency_Risk_Rate__mdt, NEPA_Circuit_Risk_Weight__mdt, NEPA_Statute_Risk_Weight__mdt, NEPA_Challenge_Prediction_Rule__mdt — calibrated from PermitTEC v0.1 corpus (761 NEPA litigation cases, PNNL 2025)",
-  "generated": "2026-05-14",
+  "generated": "2026-05-15",
   "description": "Additive risk weights used by the NEPA_Litigation_Risk_Scorer Flow + BRE Expression Set to compute a per-project litigation risk score (0–100+). Weights are summed across agency, circuit, adjacent statutes, review type, and active challenge prediction rules. Score drives risk tier (Low/Moderate/High/Very High) and triggers the NEPA_Defensibility_Gap_Checker.",
   "scoring_model": {
     "algorithm": "Additive weighted sum",
@@ -35,7 +35,16 @@
       { "agency_key": "FERC", "agency_name": "Federal Energy Regulatory Commission","risk_points": 24, "corpus_case_count": 42, "note": "Pipeline certificate cases; 4th Circuit high-risk cell" },
       { "agency_key": "FWS",  "agency_name": "U.S. Fish and Wildlife Service",  "risk_points": 24, "corpus_case_count": 44,  "note": "ESA-adjacent; critical habitat determinations vulnerable" },
       { "agency_key": "FHWA", "agency_name": "Federal Highway Administration",  "risk_points": 18, "corpus_case_count": 38,  "note": "Moderate risk; transportation EAs frequently challenged" },
-      { "agency_key": "DEFAULT","agency_name": "Default (unknown agency)",      "risk_points": 24, "corpus_case_count": 0,   "note": "Conservative default applied when agency not identified" }
+      { "agency_key": "TVA",  "agency_name": "Tennessee Valley Authority",       "risk_points": 25, "corpus_case_count": 12,  "note": "Small corpus; failure-to-prepare dominant challenge type" },
+      { "agency_key": "NMFS", "agency_name": "National Marine Fisheries Service","risk_points": 29, "corpus_case_count": 28,  "note": "EIS inadequacy dominant; ESA Section 7 consultation nexus" },
+      { "agency_key": "DOI",  "agency_name": "Department of the Interior",       "risk_points": 29, "corpus_case_count": 35,  "note": "Umbrella agency; EIS inadequacy dominant across sub-agencies" },
+      { "agency_key": "BOEM", "agency_name": "Bureau of Ocean Energy Management","risk_points": 30, "corpus_case_count": 10,  "note": "Offshore leasing EIS; small corpus but consistent EIS inadequacy" },
+      { "agency_key": "EPA",  "agency_name": "Environmental Protection Agency",  "risk_points": 33, "corpus_case_count": 12,  "note": "Adjacent-statute violations dominant; CWA/CAA nexus" },
+      { "agency_key": "DHS",  "agency_name": "Department of Homeland Security",  "risk_points": 36, "corpus_case_count": 14,  "note": "Failure-to-prepare dominant; border infrastructure projects" },
+      { "agency_key": "NRC",  "agency_name": "U.S. Nuclear Regulatory Commission","risk_points": 14, "corpus_case_count": 14,  "note": "Low loss rate; highly structured EIS process reduces challenge surface" },
+      { "agency_key": "FAA",  "agency_name": "Federal Aviation Administration",  "risk_points": 12, "corpus_case_count": 26,  "note": "Low loss rate; improper CE reliance dominant challenge type" },
+      { "agency_key": "FTA",  "agency_name": "Federal Transit Administration",   "risk_points": 7,  "corpus_case_count": 14,  "note": "Lowest loss rate in corpus; structured transit NEPA process" },
+      { "agency_key": "DEFAULT","agency_name": "Default (unknown agency)",       "risk_points": 24, "corpus_case_count": 0,   "note": "Conservative default applied when agency not identified" }
     ]
   },
   "circuit_risk_weights": {
@@ -152,6 +161,36 @@
         "active": true,
         "explanation": "Energy projects in the 4th Circuit have a 28.6% agency win rate — highest-risk sector-circuit cell in PermitTEC corpus. MVP and ACP pipeline decisions inform this rule. Downstream GHG emissions, induced demand, and alternatives range are top challenge vectors.",
         "defensibility_gaps_checked": ["ghg_analysis_present", "downstream_emissions_quantified", "alternatives_range_adequate"]
+      },
+      {
+        "rule_id": "Connected_Actions_Required",
+        "challenge_ground": "EIS/EA Inadequacy",
+        "trigger_review_type": "EA;EIS",
+        "trigger_adjacent_statute": null,
+        "priority": 1,
+        "active": true,
+        "explanation": "The #1 NEPA litigation failure mode in the PermitTEC corpus — 42.7% of challenged EIS/EA decisions cite inadequate cumulative or connected actions analysis. When a project has a related federal approval within 10 miles or shares purpose/timeline, connected actions must be scoped together or independent utility documented. Cumulative impacts section (40 CFR 1508.7) required. Citation: 40 CFR 1508.25(a)(1); 40 CFR 1502.16.",
+        "defensibility_gaps_checked": ["connected_actions_analysis", "cumulative_impacts_section", "independent_utility_documented"]
+      },
+      {
+        "rule_id": "Supplementation_Required",
+        "challenge_ground": "Failure to Supplement EIS",
+        "trigger_review_type": "EIS",
+        "trigger_adjacent_statute": null,
+        "priority": 2,
+        "active": true,
+        "explanation": "Supplementation review required under 40 CFR 1502.9(c)(1) when: ROD issued and new species data received, connected action scope changed, or 5+ years elapsed since ROD. Must attach a written determination by responsible official before tiered decisions or permit reissuance. Failure to supplement is the third most common NEPA litigation failure mode. Citation: Marsh v. ONRC, 490 U.S. 360 (1989); 40 CFR 1502.9(c)(1).",
+        "defensibility_gaps_checked": ["supplementation_determination_memo", "new_information_review", "rod_age_within_limits"]
+      },
+      {
+        "rule_id": "ESA_Section7_Open",
+        "challenge_ground": "ESA Section 7 Consultation",
+        "trigger_review_type": "EA;EIS",
+        "trigger_adjacent_statute": "ESA",
+        "priority": 3,
+        "active": true,
+        "explanation": "FONSI or ROD cannot be signed until ESA Section 7 consultation status is one of: concurrence received, biological opinion issued, or no-effect determination documented. Project intersects listed species range and consultation remains open. This is a hard blocking condition — the NEPA decision document cannot be finalized while consultation is pending. Citation: 16 USC 1536(a)(2); 50 CFR 402.14; 40 CFR 1502.25(a).",
+        "defensibility_gaps_checked": ["esa_consultation_status", "biological_opinion_present", "no_effect_determination"]
       }
     ]
   },
