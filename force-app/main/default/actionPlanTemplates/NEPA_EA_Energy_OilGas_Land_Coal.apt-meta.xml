@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ActionPlanTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>EA Action Plan for Energy - Oil, Gas (Land) and Coal projects. Lead agencies: BLM, OSMRE. Cooperating agencies: USFWS, EPA, SHPO, BIA, OSMRE. EIS likelihood: 25–90%. Litigation guardrails embedded at Draft and Decision phases per outputs/4_litigation_g...</description>
+    <isAdHocItemCreationEnabled>false</isAdHocItemCreationEnabled>
+    <name>NEPA EA - Energy - Oil, Gas (Land) and Coal</name>
+    <targetEntityType>IndividualApplication</targetEntityType>
+    <uniqueName>NEPA_EA_Energy_OilGas_Land_Coal</uniqueName>
+    <actionPlanTemplateItem>
+        <displayOrder>1</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Classify Project and Confirm EA Pathway</name>
+        <uniqueName>NEPA_EA_Energy_OilGas_Land_Coal_Item_1</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Classify Project and Confirm EA Pathway</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Verify NEPA_Pathway__c = EA. Confirm project did not qualify for CE (extraordinary circumstance present or complexity flag elevated) and does not clearly require EIS. Document basis for EA determination. Reference: 40 CFR 1501.5.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>2</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Confirm EA Pathway and Significance Threshold</name>
+        <uniqueName>NEPA_EA_Energy_OilGas_Land_Coal_Item_2</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Confirm EA Pathway and Significance Threshold</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Document why this project does not clearly meet EIS significance threshold (40 CFR 1501.3(b)). If public controversy is HIGH or EIS likelihood exceeds 70%, recommend elevating to EIS now. Citation: 40 CFR 1501.3; 40 CFR 1501.5.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>3</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Notify Cooperating Agencies: USFWS, EPA, SHPO, BIA, OSMRE</name>
+        <uniqueName>NEPA_EA_Energy_OilGas_Land_Coal_Item_3</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Notify Cooperating Agencies: USFWS, EPA, SHPO, BIA, OSMRE</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Send formal notifications to cooperating agencies: USFWS, EPA, SHPO, BIA, OSMRE. Per 40 CFR 1501.8, establish cooperation agreement and confirm roles. Record in Cooperating_Agencies__c field.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>4</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Submit MLA Lease / Application for Permit to Drill Application</name>
+        <uniqueName>NEPA_EA_Energy_OilGas_Land_Coal_Item_4</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Submit MLA Lease / Application for Permit to Drill Application</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Submit MLA Lease / Application for Permit to Drill (APD). Citation: 30 USC 226; 43 CFR Part 3160. Record application number and submission date in Required_Permits__c. Do not allow permitting to bottleneck EA preparation — run concurrently.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>5</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Submit SMCRA Surface Mining Permit Application</name>
+        <uniqueName>NEPA_EA_Energy_OilGas_Land_Coal_Item_5</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Submit SMCRA Surface Mining Permit Application</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Submit SMCRA Surface Mining Permit (coal). Citation: 30 USC 1201; 30 CFR Parts 700-800. Record application number and submission date in Required_Permits__c. Do not allow permitting to bottleneck EA preparation — run concurrently.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>6</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Submit FLPMA Right-of-Way Grant Application</name>
+        <uniqueName>NEPA_EA_Energy_OilGas_Land_Coal_Item_6</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Submit FLPMA Right-of-Way Grant Application</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Submit FLPMA Right-of-Way Grant. Citation: 43 USC 1761. Record application number and submission date in Required_Permits__c. Do not allow permitting to bottleneck EA preparation — run concurrently.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>7</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Submit CWA Section 402 NPDES Construction Stormwater Permit Application</name>
+        <uniqueName>NEPA_EA_Energy_OilGas_Land_Coal_Item_7</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Submit CWA Section 402 NPDES Construction Stormwater Permit Application</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Submit CWA Section 402 NPDES Construction Stormwater Permit. Citation: 33 USC 1342. Record application number and submission date in Required_Permits__c. Do not allow permitting to bottleneck EA preparation — run concurrently.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>8</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Submit CWA Section 404 Permit Application</name>
+        <uniqueName>NEPA_EA_Energy_OilGas_Land_Coal_Item_8</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Submit CWA Section 404 Permit Application</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Submit CWA Section 404 Permit (if wetlands affected). Citation: 33 USC 1344. Record application number and submission date in Required_Permits__c. Do not allow permitting to bottleneck EA preparation — run concurrently.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>9</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Initiate NHPA Section 106 Consultation</name>
+        <uniqueName>NEPA_EA_Energy_OilGas_Land_Coal_Item_9</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Initiate NHPA Section 106 Consultation</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Begin NHPA Section 106 Consultation. Track status in Adjacent_Statutes__c field. ESA Section 7 consultation must be concluded before FONSI can be signed — do not delay initiation. Citation: applicable statute per consultation type.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>10</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Initiate ESA Section 7 Consultation</name>
+        <uniqueName>NEPA_EA_Energy_OilGas_Land_Coal_Item_10</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Initiate ESA Section 7 Consultation</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Begin ESA Section 7 Consultation. Track status in Adjacent_Statutes__c field. ESA Section 7 consultation must be concluded before FONSI can be signed — do not delay initiation. Citation: applicable statute per consultation type.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>11</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Initiate Clean Air Act PSD/NSR Review</name>
+        <uniqueName>NEPA_EA_Energy_OilGas_Land_Coal_Item_11</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Initiate Clean Air Act PSD/NSR Review</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Begin Clean Air Act PSD/NSR Review. Track status in Adjacent_Statutes__c field. ESA Section 7 consultation must be concluded before FONSI can be signed — do not delay initiation. Citation: applicable statute per consultation type.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>12</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Initiate MBTA and BGEPA Compliance</name>
+        <uniqueName>NEPA_EA_Energy_OilGas_Land_Coal_Item_12</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Initiate MBTA and BGEPA Compliance</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Begin MBTA and BGEPA Compliance. Track status in Adjacent_Statutes__c field. ESA Section 7 consultation must be concluded before FONSI can be signed — do not delay initiation. Citation: applicable statute per consultation type.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>13</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Prepare Draft EA</name>
+        <uniqueName>NEPA_EA_Energy_OilGas_Land_Coal_Item_13</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Prepare Draft EA</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Prepare Draft Environmental Assessment per 40 CFR 1501.5. EA must include: purpose and need, alternatives (including no-action), affected environment, environmental consequences, mitigation measures, agencies and persons consulted. Citation: 40 CFR 1501.5; 42 USC 4332(2)(C).</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>14</displayOrder>
+        <isRequired>true</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Complete Cumulative and Connected Actions Analysis [BLOCKING — Rank #1 Litigation Failure]</name>
+        <uniqueName>NEPA_EA_Energy_OilGas_Land_Coal_Item_14</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Complete Cumulative and Connected Actions Analysis [BLOCKING — Rank #1 Litigation Failure]</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>BLOCKING TASK — this is the #1 procedural failure in NEPA litigation. Analyze cumulative and connected actions for this project. Connected actions = other federal approvals that are closely related and must be discussed together per 40 CFR 1501.3(b)(1). Cumulative actions = impacts of this project combined with other past, present, and reasonably foreseeable actions. Set Cumulative_Analysis_Complete__c = TRUE only after independent review. FONSI cannot be signed until this field is TRUE. Case law: 250 F. Supp. 3d 773. Citations: 40 CFR 1501.3(b); 40 CFR 1508.1(g)(3); 40 CFR 1508.25.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>15</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Open 30-Day Public Comment Period on Draft EA</name>
+        <uniqueName>NEPA_EA_Energy_OilGas_Land_Coal_Item_15</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Open 30-Day Public Comment Period on Draft EA</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Circulate Draft EA for public review per 40 CFR 1506.6. While not statutorily required for all EAs, a 30-day public comment period significantly reduces litigation risk on significance determinations. Post to agency website and Federal Register if practicable. Create nepa_engagement__c record with Event_Type__c = Public_Hearing if scoping meeting held. Citation: 40 CFR 1501.5(e); 40 CFR 1506.6.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>16</displayOrder>
+        <isRequired>true</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Issue Final EA and Finding of No Significant Impact (FONSI) [BLOCKING]</name>
+        <uniqueName>NEPA_EA_Energy_OilGas_Land_Coal_Item_16</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Issue Final EA and Finding of No Significant Impact (FONSI) [BLOCKING]</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>BLOCKING TASK — FONSI is required to close the EA pathway without an EIS. Final EA must incorporate responses to all substantive public comments. FONSI must explain why the action will not have significant environmental effects (40 CFR 1501.6). Attach ContentVersion records: Doc_Type__c = EA (Final EA) and Doc_Type__c = FONSI. ESA Section 7 consultation must be concluded before signing. If public controversy or new information arises, consider supplemental EA or elevation to EIS. Citation: 40 CFR 1501.5; 40 CFR 1501.6; 42 USC 4332(2)(C).</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>17</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Solicitor Review if Statutory NEPA Waiver Cited (Conditional — Rank #2 Litigation Failure)</name>
+        <uniqueName>NEPA_EA_Energy_OilGas_Land_Coal_Item_17</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Solicitor Review if Statutory NEPA Waiver Cited (Conditional — Rank #2 Litigation Failure)</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>CONDITIONAL TASK — complete ONLY if Statutory_Waiver_Cited__c = TRUE. Obtain OGC/Solicitor legal sufficiency memo confirming: (a) valid underlying funding/authorization, (b) applicability of the cited waiver provision. Set Solicitor_Concurrence__c = true after Solicitor sign-off. Without this memo, the FONSI/decision is at HIGH litigation risk. Case law: 379 F. Supp. 3d 883. Citation: 42 USC 4332(2)(C); 40 CFR 1501.4.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>18</displayOrder>
+        <isRequired>true</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Index Administrative Record Documents [BLOCKING]</name>
+        <uniqueName>NEPA_EA_Energy_OilGas_Land_Coal_Item_18</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Index Administrative Record Documents [BLOCKING]</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>BLOCKING TASK — AR must be indexed before Stage__c can move to AR_Lock. Required EA AR documents: Draft EA (if circulated), Final EA, FONSI, Cumulative/Connected Actions Analysis memo, ESA consultation correspondence, NHPA Section 106 correspondence, permit applications and authorizations, and public comment responses. Set AR_Index_Position__c on each ContentVersion. Citation: 40 CFR 1505.2; APA 5 USC 706.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+</ActionPlanTemplate>

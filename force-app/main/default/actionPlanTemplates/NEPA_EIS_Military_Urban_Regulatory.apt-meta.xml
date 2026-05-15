@@ -1,0 +1,646 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ActionPlanTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>EIS Action Plan for Military, Urban Development, and Regulatory Actions projects. Lead agencies: DoD, GSA, DOE, NSF, NIH. Cooperating agencies: EPA, USFWS, NOAA-NMFS, USACE, SHPO, FEMA, State Environmental Agency. EIS likelihood: 25–80%. Litigation gua...</description>
+    <isAdHocItemCreationEnabled>false</isAdHocItemCreationEnabled>
+    <name>NEPA EIS - Military, Urban Development, and Regulatory Actions</name>
+    <targetEntityType>IndividualApplication</targetEntityType>
+    <uniqueName>NEPA_EIS_Military_Urban_Regulatory</uniqueName>
+    <actionPlanTemplateItem>
+        <displayOrder>1</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Classify Project and Confirm EIS Pathway</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_1</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Classify Project and Confirm EIS Pathway</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Verify NEPA_Pathway__c = EIS. Confirm that project clearly meets one or more significance factors under 40 CFR 1501.3(b) (controversial effects, precedent-setting, scientific uncertainty, significant effects on listed species or critical habitat, involvement of unique geographic areas). Document basis in project record. Reference: 40 CFR 1501.3.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>2</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Document EIS Significance Factors and Preliminary Project Description</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_2</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Document EIS Significance Factors and Preliminary Project Description</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Prepare preliminary project description documenting: proposed action, location, federal nexus, and specific significance factors requiring EIS. Identify alternatives to be evaluated including no-action. This document anchors the NOI and scoping process. Citation: 40 CFR 1501.9; 40 CFR 1502.4; 40 CFR 1502.13.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>3</displayOrder>
+        <isRequired>true</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Publish Notice of Intent (NOI) in Federal Register [BLOCKING]</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_3</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Publish Notice of Intent (NOI) in Federal Register [BLOCKING]</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>BLOCKING TASK — no DEIS may be issued until NOI is published. Prepare and submit NOI to Federal Register per 40 CFR 1501.9. NOI must describe: (1) proposed action, (2) possible alternatives, (3) agency scoping process, (4) point of contact. Record Federal Register publication date. Start scoping clock from NOI publication date. Citation: 40 CFR 1501.9; 40 CFR 1508.1(z).</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>4</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Issue Scoping Summary Report</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_4</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Issue Scoping Summary Report</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Compile scoping comments received and prepare Scoping Summary Report per 40 CFR 1501.9(e). Report must identify: significant issues to analyze, issues removed from further analysis, and alternatives to evaluate. Distribute to cooperating agencies. Set Scoping_Period_Completed__c = true. Citation: 40 CFR 1501.9(e).</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>5</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Notify and Engage Cooperating Agencies: EPA, USFWS, NOAA-NMFS, USACE, SHPO, FEMA, State Environmental Agency</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_5</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Notify and Engage Cooperating Agencies: EPA, USFWS, NOAA-NMFS, USACE, SHPO, FEMA, State Environmental Agency</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Send formal cooperating agency invitation letters to: EPA, USFWS, NOAA-NMFS, USACE, SHPO, FEMA, State Environmental Agency. Per 40 CFR 1501.8, invite cooperating agencies to participate in EIS preparation. Confirm roles and responsibilities in a Cooperating Agency Agreement (CAA). Record in Cooperating_Agencies__c field (semicolon-delimited). Citation: 40 CFR 1501.8.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>6</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Submit MMPA Letter of Authorization Application</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_6</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Submit MMPA Letter of Authorization Application</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Submit MMPA Letter of Authorization (military activities near marine mammals). Citation: 16 USC 1371; 50 CFR Part 216. Record permit application number and submission date in Required_Permits__c. Run permit applications concurrently with EIS preparation per One Federal Decision mandate.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>7</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Submit CWA Section 404 Permit Application</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_7</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Submit CWA Section 404 Permit Application</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Submit CWA Section 404 Permit (construction in wetlands). Citation: 33 USC 1344. Record permit application number and submission date in Required_Permits__c. Run permit applications concurrently with EIS preparation per One Federal Decision mandate.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>8</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Submit CWA Section 402 NPDES Construction Stormwater Permit Application</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_8</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Submit CWA Section 402 NPDES Construction Stormwater Permit Application</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Submit CWA Section 402 NPDES Construction Stormwater Permit. Citation: 33 USC 1342. Record permit application number and submission date in Required_Permits__c. Run permit applications concurrently with EIS preparation per One Federal Decision mandate.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>9</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Submit CAA Title V Operating Permit Application</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_9</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Submit CAA Title V Operating Permit Application</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Submit CAA Title V Operating Permit (manufacturing). Citation: 42 USC 7661; 40 CFR Part 70. Record permit application number and submission date in Required_Permits__c. Run permit applications concurrently with EIS preparation per One Federal Decision mandate.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>10</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Submit RCRA Part B Permit Application</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_10</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Submit RCRA Part B Permit Application</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Submit RCRA Part B Permit (hazardous waste). Citation: 42 USC 6925. Record permit application number and submission date in Required_Permits__c. Run permit applications concurrently with EIS preparation per One Federal Decision mandate.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>11</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Submit APA Rulemaking Compliance Application</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_11</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Submit APA Rulemaking Compliance Application</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Submit APA Rulemaking Compliance (regulatory actions). Citation: 5 USC 553. Record permit application number and submission date in Required_Permits__c. Run permit applications concurrently with EIS preparation per One Federal Decision mandate.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>12</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Submit ESA Section 7 Consultation Application</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_12</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Submit ESA Section 7 Consultation Application</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Submit ESA Section 7 Consultation. Citation: 16 USC 1536. Record permit application number and submission date in Required_Permits__c. Run permit applications concurrently with EIS preparation per One Federal Decision mandate.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>13</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Initiate NHPA Section 106 Consultation</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_13</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Initiate NHPA Section 106 Consultation</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Begin NHPA Section 106 Consultation. Track consultation status in Adjacent_Statutes__c. ESA Section 7 formal consultation must be concluded before ROD can be signed — initiate early. If NHPA Section 106 required and tribal lands involved, pre-stage nepa_engagement__c with Tribal_Consultation__c = true and Event_Type__c = Tribal_Consultation. Citation: applicable statute per consultation type.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>14</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Initiate Sikes Act INRMP Compliance (military)</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_14</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Initiate Sikes Act INRMP Compliance (military)</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Begin Sikes Act INRMP Compliance (military). Track consultation status in Adjacent_Statutes__c. ESA Section 7 formal consultation must be concluded before ROD can be signed — initiate early. If NHPA Section 106 required and tribal lands involved, pre-stage nepa_engagement__c with Tribal_Consultation__c = true and Event_Type__c = Tribal_Consultation. Citation: applicable statute per consultation type.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>15</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Initiate E.O. 12114 Overseas Effects Review (military)</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_15</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Initiate E.O. 12114 Overseas Effects Review (military)</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Begin E.O. 12114 Overseas Effects Review (military). Track consultation status in Adjacent_Statutes__c. ESA Section 7 formal consultation must be concluded before ROD can be signed — initiate early. If NHPA Section 106 required and tribal lands involved, pre-stage nepa_engagement__c with Tribal_Consultation__c = true and Event_Type__c = Tribal_Consultation. Citation: applicable statute per consultation type.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>16</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Initiate MSA Essential Fish Habitat Consultation</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_16</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Initiate MSA Essential Fish Habitat Consultation</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Begin MSA Essential Fish Habitat Consultation. Track consultation status in Adjacent_Statutes__c. ESA Section 7 formal consultation must be concluded before ROD can be signed — initiate early. If NHPA Section 106 required and tribal lands involved, pre-stage nepa_engagement__c with Tribal_Consultation__c = true and Event_Type__c = Tribal_Consultation. Citation: applicable statute per consultation type.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>17</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Initiate Environmental Justice Review (E.O. 14096)</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_17</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Initiate Environmental Justice Review (E.O. 14096)</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Begin Environmental Justice Review (E.O. 14096). Track consultation status in Adjacent_Statutes__c. ESA Section 7 formal consultation must be concluded before ROD can be signed — initiate early. If NHPA Section 106 required and tribal lands involved, pre-stage nepa_engagement__c with Tribal_Consultation__c = true and Event_Type__c = Tribal_Consultation. Citation: applicable statute per consultation type.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>18</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Initiate Floodplain Management Review (E.O. 11988)</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_18</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Initiate Floodplain Management Review (E.O. 11988)</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Begin Floodplain Management Review (E.O. 11988). Track consultation status in Adjacent_Statutes__c. ESA Section 7 formal consultation must be concluded before ROD can be signed — initiate early. If NHPA Section 106 required and tribal lands involved, pre-stage nepa_engagement__c with Tribal_Consultation__c = true and Event_Type__c = Tribal_Consultation. Citation: applicable statute per consultation type.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>19</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Initiate E.O. 12866 Regulatory Review (rulemaking)</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_19</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Initiate E.O. 12866 Regulatory Review (rulemaking)</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Begin E.O. 12866 Regulatory Review (rulemaking). Track consultation status in Adjacent_Statutes__c. ESA Section 7 formal consultation must be concluded before ROD can be signed — initiate early. If NHPA Section 106 required and tribal lands involved, pre-stage nepa_engagement__c with Tribal_Consultation__c = true and Event_Type__c = Tribal_Consultation. Citation: applicable statute per consultation type.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>20</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Initiate TSCA/Biosafety Compliance (R&amp;D)</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_20</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Initiate TSCA/Biosafety Compliance (R&amp;D)</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Begin TSCA/Biosafety Compliance (R&amp;D). Track consultation status in Adjacent_Statutes__c. ESA Section 7 formal consultation must be concluded before ROD can be signed — initiate early. If NHPA Section 106 required and tribal lands involved, pre-stage nepa_engagement__c with Tribal_Consultation__c = true and Event_Type__c = Tribal_Consultation. Citation: applicable statute per consultation type.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>21</displayOrder>
+        <isRequired>true</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Prepare Draft EIS (DEIS) [BLOCKING]</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_21</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Prepare Draft EIS (DEIS) [BLOCKING]</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>BLOCKING TASK — FEIS cannot begin until DEIS is issued and 45-day comment period closes. Prepare DEIS per 40 CFR 1502.9(a). DEIS must include: purpose and need, alternatives analysis (including no-action), affected environment, environmental consequences, mitigation measures. Mandatory alternatives analysis must evaluate reasonable alternatives even if outside agency jurisdiction (40 CFR 1502.14). Citation: 40 CFR 1502.9(a); 42 USC 4332(2)(C).</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>22</displayOrder>
+        <isRequired>true</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Complete Cumulative and Connected Actions Analysis [BLOCKING — Rank #1 Litigation Failure]</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_22</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Complete Cumulative and Connected Actions Analysis [BLOCKING — Rank #1 Litigation Failure]</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>BLOCKING TASK — this is the #1 procedural failure in NEPA litigation. Analyze all connected and cumulative actions for this project. Connected actions = other federal approvals closely related and dependent on this action (must be scoped together per 40 CFR 1508.25(a)(1)). Cumulative actions = combined impacts with other past, present, and reasonably foreseeable actions within the project area. Set Cumulative_Analysis_Complete__c = TRUE only after analysis is complete and independently reviewed. ROD cannot be issued until this field is TRUE. Case law: 250 F. Supp. 3d 773. Citations: 40 CFR 1508.25; 40 CFR 1508.7; 40 CFR 1502.16.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>23</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Complete Supplementation Assessment if Prior NEPA Exists (Rank #3 Litigation Guardrail)</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_23</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Complete Supplementation Assessment if Prior NEPA Exists (Rank #3 Litigation Guardrail)</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>If this EIS tiers to or relies on prior NEPA: assess whether supplementation is required. Check: (1) Is prior NEPA older than 3 years? (2) Is there new species data, habitat changes, or connected project scope changes? If YES to either, prepare Supplemental EIS Trigger Review memo. Set Supplementation_Assessed__c = TRUE after review regardless of outcome. This is Litigation Guardrail Rank #3 — failure to supplement when required is a top litigation loss driver. Case law: Marsh v. ONRC, 490 U.S. 360 (1989). Citations: 40 CFR 1502.9(c)(1)(i)-(ii); 40 CFR 1502.9(d).</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>24</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Open 45-Day Public Comment Period on DEIS</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_24</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Open 45-Day Public Comment Period on DEIS</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>File DEIS with EPA for publication in the Federal Register per 40 CFR 1503.1. Minimum public comment period is 45 days from Federal Register notice date per 40 CFR 1506.11. Do not close comments early. Create nepa_engagement__c record for any public hearings with Event_Type__c = Public_Hearing. Citation: 40 CFR 1503.1; 40 CFR 1506.11.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>25</displayOrder>
+        <isRequired>true</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Prepare Comment Response Matrix [BLOCKING]</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_25</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Prepare Comment Response Matrix [BLOCKING]</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>BLOCKING TASK — FEIS cannot be published until every substantive comment receives a written response. Prepare 40 CFR 1503.4 Comment Response Matrix. For each substantive comment: (1) state what the comment asserted, (2) explain how the EIS was revised or why no revision was needed, (3) cite regulatory basis. Attach to ContentVersion with Doc_Type__c = Comment_Response. Citation: 40 CFR 1503.4.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>26</displayOrder>
+        <isRequired>true</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Publish Final EIS (FEIS) [BLOCKING]</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_26</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Publish Final EIS (FEIS) [BLOCKING]</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>BLOCKING TASK — ROD cannot be issued until FEIS is published AND 30-day wait period has elapsed. FEIS must include responses to all substantive comments on DEIS per 40 CFR 1502.9(b). File FEIS with EPA for Federal Register notice. Record FEIS EPA notice date. 30-day clock for ROD issuance starts from EPA notice date. Set Wait_Period_30Day_Satisfied__c = true only after 30 days have elapsed. Attach ContentVersion with Doc_Type__c = FEIS. Citation: 40 CFR 1502.9(b); 40 CFR 1506.11.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>27</displayOrder>
+        <isRequired>true</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Issue Record of Decision (ROD) [BLOCKING]</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_27</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Issue Record of Decision (ROD) [BLOCKING]</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>BLOCKING TASK — ROD is required for every EIS per 40 CFR 1505.2. ROD must state: (1) decision made, (2) alternatives considered, (3) environmentally preferred alternative, (4) monitoring and enforcement program. ROD cannot be issued fewer than 30 days after Federal Register notice of FEIS filing. Set Cumulative_Analysis_Complete__c and Supplementation_Assessed__c must both be TRUE before signing. Attach ContentVersion with Doc_Type__c = ROD. Citation: 40 CFR 1505.2; 40 CFR 1508.1(ii).</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>28</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Solicitor Review if Statutory NEPA Waiver Cited (Conditional — Rank #2 Litigation Guardrail)</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_28</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Solicitor Review if Statutory NEPA Waiver Cited (Conditional — Rank #2 Litigation Guardrail)</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>CONDITIONAL TASK — complete ONLY if Statutory_Waiver_Cited__c = TRUE. Obtain OGC/Solicitor legal sufficiency memo confirming: (a) valid underlying funding/authorization, (b) applicability of the cited waiver provision. Set Solicitor_Concurrence__c = true after sign-off. Without this memo, ROD is at HIGH litigation risk. Case law: 379 F. Supp. 3d 883. Citation: 42 USC 4332(2)(C); IIRIRA Section 102(c).</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>29</displayOrder>
+        <isRequired>true</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Index All Administrative Record Documents [BLOCKING]</name>
+        <uniqueName>NEPA_EIS_Military_Urban_Regulatory_Item_29</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Index All Administrative Record Documents [BLOCKING]</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>BLOCKING TASK — AR cannot be locked until all required documents are indexed. Set AR_Index_Position__c on each ContentVersion record tied to this application. Required EIS AR documents: NOI, Scoping Summary Report, DEIS, all comment letters, Comment Response Matrix, FEIS, ROD, ESA Biological Opinion or concurrence, NHPA Section 106 MOA or concurrence, all permit applications and authorizations, cooperating agency agreements. All required docs must have non-null AR_Index_Position__c before Stage__c can move to AR_Lock. Citation: 40 CFR 1505.2; APA 5 USC 706.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+</ActionPlanTemplate>

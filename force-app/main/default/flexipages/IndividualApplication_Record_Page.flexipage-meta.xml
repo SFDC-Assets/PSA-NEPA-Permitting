@@ -234,6 +234,16 @@
                 <identifier>ia_ce_screener_last_run</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_project_type__c</fieldItem>
+                <identifier>ia_ce_project_type</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>ia-ce-c1</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -658,6 +668,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_record_completeness__c</fieldItem>
                 <identifier>ia_details_record_completeness</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_action_plan_launched__c</fieldItem>
+                <identifier>ia_details_action_plan_launched</identifier>
             </fieldInstance>
         </itemInstances>
         <name>ia-details-c1</name>

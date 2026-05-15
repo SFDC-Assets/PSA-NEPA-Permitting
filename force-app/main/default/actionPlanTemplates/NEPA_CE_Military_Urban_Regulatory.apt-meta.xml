@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ActionPlanTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>CE Action Plan for Military, Urban Development, and Regulatory Actions projects. Lead agencies: DoD, GSA, DOE, NSF, NIH. Cooperating agencies: EPA, USFWS, NOAA-NMFS, USACE, SHPO, FEMA, State Environmental Agency. EIS likelihood: 25–80%. Litigation guar...</description>
+    <isAdHocItemCreationEnabled>false</isAdHocItemCreationEnabled>
+    <name>NEPA CE - Military, Urban Development, and Regulatory Actions</name>
+    <targetEntityType>IndividualApplication</targetEntityType>
+    <uniqueName>NEPA_CE_Military_Urban_Regulatory</uniqueName>
+    <actionPlanTemplateItem>
+        <displayOrder>1</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Classify Project and Confirm CE Pathway</name>
+        <uniqueName>NEPA_CE_Military_Urban_Regulatory_Item_1</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Classify Project and Confirm CE Pathway</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Verify NEPA_Pathway__c = CE. Confirm project type matches this permit group. Document project type, lead agency, and sector in the case record. Reference: 40 CFR 1501.4.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>2</displayOrder>
+        <isRequired>true</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Complete CE Extraordinary Circumstances Screening Memo [BLOCKING]</name>
+        <uniqueName>NEPA_CE_Military_Urban_Regulatory_Item_2</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Complete CE Extraordinary Circumstances Screening Memo [BLOCKING]</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>BLOCKING TASK — CE determination cannot be issued if any extraordinary circumstance applies. Review all 43 CFR 46.215 extraordinary circumstances triggers: Wild and Scenic Rivers, Special Areas (ACEC, Wilderness, NCA), T&amp;E species habitat, Section 106 not concluded, tribal or ANCSA lands, riparian/wetland disturbance. Document findings on the screening memo. Set CE_Extraordinary_Circumstances_Reviewed__c = true after review. If ANY trigger is present, escalate to EA — do NOT issue CE. Citation: 40 CFR 1501.4(b); 43 CFR 46.215.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>3</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Assign CE Code with Regulatory Citation</name>
+        <uniqueName>NEPA_CE_Military_Urban_Regulatory_Item_3</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Assign CE Code with Regulatory Citation</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Assign CE_Code__c and CE_Regulatory_Cite__c from CE_Code_Catalog__mdt. Match to lead agency (DoD, GSA, DOE, NSF, NIH) and project type. Confirm acreage thresholds and tiering window are met (EPAct §390: &lt;5 acres, ≤150 lease acres, prior NEPA ≤5 years). Set CE_Complexity_Flag__c = ELEVATED if Program.Num_Sectors__c ≥ 3 (blocks CE — escalate to EA). Citation: 40 CFR 1501.4; CE_Code_Catalog__mdt records.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>4</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Notify Cooperating Agencies: EPA, USFWS, NOAA-NMFS, USACE, SHPO, FEMA, State Environmental Agency</name>
+        <uniqueName>NEPA_CE_Military_Urban_Regulatory_Item_4</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Notify Cooperating Agencies: EPA, USFWS, NOAA-NMFS, USACE, SHPO, FEMA, State Environmental Agency</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Send formal notifications to cooperating agencies: EPA, USFWS, NOAA-NMFS, USACE, SHPO, FEMA, State Environmental Agency. Per 40 CFR 1501.8, invite participation and confirm roles. Record confirmed cooperating agencies in Cooperating_Agencies__c field (semicolon-delimited).</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>5</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Submit MMPA Letter of Authorization Application</name>
+        <uniqueName>NEPA_CE_Military_Urban_Regulatory_Item_5</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Submit MMPA Letter of Authorization Application</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Submit MMPA Letter of Authorization (military activities near marine mammals) application. Citation: 16 USC 1371; 50 CFR Part 216. Record permit application number and submission date in Required_Permits__c field.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>6</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Submit CWA Section 404 Permit Application</name>
+        <uniqueName>NEPA_CE_Military_Urban_Regulatory_Item_6</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Submit CWA Section 404 Permit Application</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Submit CWA Section 404 Permit (construction in wetlands) application. Citation: 33 USC 1344. Record permit application number and submission date in Required_Permits__c field.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>7</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Submit CWA Section 402 NPDES Construction Stormwater Permit Application</name>
+        <uniqueName>NEPA_CE_Military_Urban_Regulatory_Item_7</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Submit CWA Section 402 NPDES Construction Stormwater Permit Application</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Submit CWA Section 402 NPDES Construction Stormwater Permit application. Citation: 33 USC 1342. Record permit application number and submission date in Required_Permits__c field.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>8</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Submit CAA Title V Operating Permit Application</name>
+        <uniqueName>NEPA_CE_Military_Urban_Regulatory_Item_8</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Submit CAA Title V Operating Permit Application</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>Submit CAA Title V Operating Permit (manufacturing) application. Citation: 42 USC 7661; 40 CFR Part 70. Record permit application number and submission date in Required_Permits__c field.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>9</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Initiate ESA Section 7 Informal Consultation (if listed species present)</name>
+        <uniqueName>NEPA_CE_Military_Urban_Regulatory_Item_9</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Initiate ESA Section 7 Informal Consultation (if listed species present)</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>If project area contains habitat for listed species: initiate informal ESA Section 7 consultation with USFWS/NOAA-NMFS. For CE actions, informal consultation (may affect, not likely to adversely affect) is typically sufficient. Obtain concurrence letter. Citation: 16 USC 1536(a)(2); 50 CFR 402.13.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>10</displayOrder>
+        <isRequired>false</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Initiate NHPA Section 106 Consultation with SHPO (if historic resources present)</name>
+        <uniqueName>NEPA_CE_Military_Urban_Regulatory_Item_10</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Initiate NHPA Section 106 Consultation with SHPO (if historic resources present)</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>Normal</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>If project has an Area of Potential Effect on historic properties: initiate Section 106 consultation with SHPO. For CE actions this is typically an abbreviated review. Set Section_106_Complete__c = true when concurrence received. Citation: 54 USC 306108; 36 CFR Part 800.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>11</displayOrder>
+        <isRequired>true</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Issue CE Determination Record (CE-DR) [BLOCKING]</name>
+        <uniqueName>NEPA_CE_Military_Urban_Regulatory_Item_11</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Issue CE Determination Record (CE-DR) [BLOCKING]</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>BLOCKING TASK — CE-DR is the formal decision document concluding the CE pathway. Create ContentVersion record with Doc_Type__c = CE_DR, and attach signed CE determination. CE-DR must cite: CE authority code, regulatory cite, extraordinary circumstances finding, and any extraordinary circumstances reviewed and found inapplicable. Citation: 40 CFR 1501.4; 40 CFR 1507.3(e)(2)(ii).</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+    <actionPlanTemplateItem>
+        <displayOrder>12</displayOrder>
+        <isRequired>true</isRequired>
+        <itemEntityType>Task</itemEntityType>
+        <name>Index Administrative Record Documents [BLOCKING]</name>
+        <uniqueName>NEPA_CE_Military_Urban_Regulatory_Item_12</uniqueName>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Subject</name>
+            <valueLiteral>Index Administrative Record Documents [BLOCKING]</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Priority</name>
+            <valueLiteral>High</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>Task</itemEntityType>
+            <name>Description</name>
+            <valueLiteral>BLOCKING TASK — AR must be indexed before the record is locked. Set AR_Index_Position__c on each ContentVersion record tied to this application. Required CE AR documents: CE Extraordinary Circumstances Memo, CE Determination Record (CE-DR), and any permit applications or consultation correspondence. Citation: 40 CFR 1505.2; APA 5 USC 706.</valueLiteral>
+        </actionPlanTemplateItemValue>
+    </actionPlanTemplateItem>
+</ActionPlanTemplate>

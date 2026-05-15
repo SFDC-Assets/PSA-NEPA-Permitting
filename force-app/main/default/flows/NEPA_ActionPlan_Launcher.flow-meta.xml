@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>After-save trigger on IndividualApplication. Launches the correct permit-type-specific NEPA Action Plan when nepa_process_stage__c transitions to Determination (CE) or Coordination (EA/EIS). Reads NEPA_ActionPlan_Config__mdt to match pathway + stage + project type, creates an ActionPlan, then sets nepa_action_plan_launched__c = true to prevent duplicate launches.</description>
+    <label>NEPA Action Plan Launcher</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Active</status>
+
+    <assignments>
+        <description>Assign the computed action plan name to the string variable for use in the Create element.</description>
+        <name>Build_ActionPlanName</name>
+        <label>Build Action Plan Name</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_ActionPlanNameText</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_ActionPlanName</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Create_ActionPlan</targetReference>
+        </connector>
+    </assignments>
+
+    <decisions>
+        <description>If nepa_action_plan_launched__c is already TRUE, exit immediately to prevent duplicate plans.</description>
+        <name>Decision_AlreadyLaunched</name>
+        <label>Already Launched?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Decision_StageCheck</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Not Yet Launched</defaultConnectorLabel>
+        <rules>
+            <name>AlreadyLaunched</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_action_plan_launched__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <label>Already Launched — Exit</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Only fire for nepa_process_stage__c = Determination (CE) or Coordination (EA/EIS). All other stage transitions are ignored.</description>
+        <name>Decision_StageCheck</name>
+        <label>Is Trigger Stage?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Not a Trigger Stage — Exit</defaultConnectorLabel>
+        <rules>
+            <name>IsTriggerStage</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_process_stage__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Determination</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.nepa_process_stage__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Coordination</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Lookup_CMT</targetReference>
+            </connector>
+            <label>Is Trigger Stage — Continue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>If no CMT record matched, exit gracefully without error.</description>
+        <name>Decision_CMTFound</name>
+        <label>CMT Record Found?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No Match — Exit Gracefully</defaultConnectorLabel>
+        <rules>
+            <name>CMTFound</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_CMTRecord</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Lookup_Template</targetReference>
+            </connector>
+            <label>CMT Found — Continue</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>If the ActionPlanTemplate was not found, exit gracefully.</description>
+        <name>Decision_TemplateFound</name>
+        <label>Template Found?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Template Not Found — Exit</defaultConnectorLabel>
+        <rules>
+            <name>TemplateFound</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_TemplateRecord</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Lookup_TemplateVersion</targetReference>
+            </connector>
+            <label>Template Found — Continue</label>
+        </rules>
+    </decisions>
+
+    <formulas>
+        <description>Builds a human-readable ActionPlan name: NEPA {Pathway} - {ProjectType} - {AppName}</description>
+        <name>var_ActionPlanName</name>
+        <dataType>String</dataType>
+        <expression>"NEPA " &amp; TEXT({!$Record.nepa_review_type__c}) &amp; " - " &amp; TEXT({!$Record.nepa_project_type__c}) &amp; " - " &amp; {!$Record.Name}</expression>
+    </formulas>
+
+    <recordCreates>
+        <description>Create the ActionPlan record linked to the IndividualApplication. StartDate = today so task dueDateOffset values calculate from the current date.</description>
+        <name>Create_ActionPlan</name>
+        <label>Create Action Plan</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_LaunchedFlag</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>ActionPlanTemplateVersionId</field>
+            <value>
+                <elementReference>var_TemplateVersionRecord.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Name</field>
+            <value>
+                <elementReference>var_ActionPlanNameText</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>TargetId</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>StartDate</field>
+            <value>
+                <elementReference>$Flow.CurrentDate</elementReference>
+            </value>
+        </inputAssignments>
+        <object>ActionPlan</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+
+    <recordLookups>
+        <description>Query NEPA_ActionPlan_Config__mdt to find the record matching pathway + stage + project type. Uses Contains operator for the semicolon-delimited Project_Type_Match__c field.</description>
+        <name>Lookup_CMT</name>
+        <label>Lookup CMT Config Record</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_CMTFound</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>NEPA_Pathway__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.nepa_review_type__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Trigger_Stage__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.nepa_process_stage__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Project_Type_Match__c</field>
+            <operator>Contains</operator>
+            <value>
+                <elementReference>$Record.nepa_project_type__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>NEPA_ActionPlan_Config__mdt</object>
+        <outputReference>var_CMTRecord</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Template_DeveloperName__c</queriedFields>
+    </recordLookups>
+    <recordLookups>
+        <description>Query ActionPlanTemplate to get its Id by uniqueName, then use the Id to find the ActionPlanTemplateVersion.</description>
+        <name>Lookup_Template</name>
+        <label>Lookup ActionPlanTemplate by uniqueName</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_TemplateFound</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>uniqueName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_CMTRecord.Template_DeveloperName__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ActionPlanTemplate</object>
+        <outputReference>var_TemplateRecord</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Name</queriedFields>
+    </recordLookups>
+    <recordLookups>
+        <description>Query ActionPlanTemplateVersion to get the version Id for ActionPlan creation. ActionPlan.ActionPlanTemplateVersionId requires the version record Id, not the template Id.</description>
+        <name>Lookup_TemplateVersion</name>
+        <label>Lookup ActionPlanTemplateVersion</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Build_ActionPlanName</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ActionPlanTemplateId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_TemplateRecord.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ActionPlanTemplateVersion</object>
+        <outputReference>var_TemplateVersionRecord</outputReference>
+        <queriedFields>Id</queriedFields>
+    </recordLookups>
+
+    <recordUpdates>
+        <description>Set guard field so subsequent stage updates do not create a second ActionPlan for this record.</description>
+        <name>Update_LaunchedFlag</name>
+        <label>Set Action Plan Launched Flag</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>nepa_action_plan_launched__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <object>IndividualApplication</object>
+    </recordUpdates>
+
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <object>IndividualApplication</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+        <scheduledPaths>
+            <connector>
+                <targetReference>Decision_AlreadyLaunched</targetReference>
+            </connector>
+            <pathType>AsyncAfterCommit</pathType>
+        </scheduledPaths>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>nepa_process_stage__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+    </start>
+
+    <variables>
+        <description>Holds the matched NEPA_ActionPlan_Config__mdt record</description>
+        <name>var_CMTRecord</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>NEPA_ActionPlan_Config__mdt</objectType>
+    </variables>
+    <variables>
+        <description>Holds the matched ActionPlanTemplate record</description>
+        <name>var_TemplateRecord</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ActionPlanTemplate</objectType>
+    </variables>
+    <variables>
+        <description>Holds the matched ActionPlanTemplateVersion record (version Id needed for ActionPlan creation)</description>
+        <name>var_TemplateVersionRecord</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ActionPlanTemplateVersion</objectType>
+    </variables>
+    <variables>
+        <description>Human-readable name for the ActionPlan record</description>
+        <name>var_ActionPlanNameText</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+</Flow>

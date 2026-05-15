@@ -2249,7 +2249,17 @@
         <field>nepa_decision_payload__c.nepa_other__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_project_type__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_action_plan_launched__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+
     <objectPermissions>
         <allowCreate>true</allowCreate>
         <allowDelete>false</allowDelete>

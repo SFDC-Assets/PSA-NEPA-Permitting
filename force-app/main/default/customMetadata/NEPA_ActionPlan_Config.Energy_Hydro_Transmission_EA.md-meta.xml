@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Energy - Hydro/Transmission - EA</label>
+    <protected>false</protected>
+    <values>
+        <field>NEPA_Pathway__c</field>
+        <value xsi:type="xsd:string">EA</value>
+    </values>
+    <values>
+        <field>Project_Type_Match__c</field>
+        <value xsi:type="xsd:string">Renewable Energy Production - Hydropower/Pumped Storage;Electricity Transmission;Utilities (electricity, gas, telecommunications)</value>
+    </values>
+    <values>
+        <field>Template_DeveloperName__c</field>
+        <value xsi:type="xsd:string">NEPA_EA_Energy_Hydro_Transmission</value>
+    </values>
+    <values>
+        <field>Trigger_Stage__c</field>
+        <value xsi:type="xsd:string">Coordination</value>
+    </values>
+</CustomMetadata>

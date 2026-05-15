@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Energy - Oil, Gas (Land) and Coal - CE</label>
+    <protected>false</protected>
+    <values>
+        <field>NEPA_Pathway__c</field>
+        <value xsi:type="xsd:string">CE</value>
+    </values>
+    <values>
+        <field>Project_Type_Match__c</field>
+        <value xsi:type="xsd:string">Conventional Energy Production - Land-based Oil &amp; Gas;Conventional Energy Production - Coal</value>
+    </values>
+    <values>
+        <field>Template_DeveloperName__c</field>
+        <value xsi:type="xsd:string">NEPA_CE_Energy_OilGas_Land_Coal</value>
+    </values>
+    <values>
+        <field>Trigger_Stage__c</field>
+        <value xsi:type="xsd:string">Determination</value>
+    </values>
+</CustomMetadata>

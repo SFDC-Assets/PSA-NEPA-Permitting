@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Trigger_Stage__c</fullName>
+    <description>Stage__c value that fires the launcher: Determination (CE) or Coordination (EA/EIS)</description>
+    <label>Trigger Stage</label>
+    <length>30</length>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

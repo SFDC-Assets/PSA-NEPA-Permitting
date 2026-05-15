@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_action_plan_launched__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Set to TRUE by NEPA_ActionPlan_Launcher flow when a permit-type-specific action plan is created for this process. Guards against duplicate launches on subsequent nepa_process_stage__c updates.</description>
+    <label>Action Plan Launched</label>
+    <type>Checkbox</type>
+</CustomField>

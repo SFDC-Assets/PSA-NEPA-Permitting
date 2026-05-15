@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Transportation - Land - EIS</label>
+    <protected>false</protected>
+    <values>
+        <field>NEPA_Pathway__c</field>
+        <value xsi:type="xsd:string">EIS</value>
+    </values>
+    <values>
+        <field>Project_Type_Match__c</field>
+        <value xsi:type="xsd:string">Surface Transportation - Highway/Other;Surface Transportation - Railroads;Aviation - Airports and Air Traffic</value>
+    </values>
+    <values>
+        <field>Template_DeveloperName__c</field>
+        <value xsi:type="xsd:string">NEPA_EIS_Transportation_Land</value>
+    </values>
+    <values>
+        <field>Trigger_Stage__c</field>
+        <value xsi:type="xsd:string">Coordination</value>
+    </values>
+</CustomMetadata>

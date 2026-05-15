@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Maps NEPA pathway and project type to the correct ActionPlanTemplate DeveloperName and trigger stage. Used by NEPA_ActionPlan_Launcher flow. Add a record here for every new permit group — no flow changes needed.</description>
+    <label>NEPA Action Plan Config</label>
+    <pluralLabel>NEPA Action Plan Configs</pluralLabel>
+</CustomObject>
