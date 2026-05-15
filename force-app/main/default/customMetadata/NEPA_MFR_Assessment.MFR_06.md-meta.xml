@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>MFR 6 - Integrated GIS Analysis</label>
+    <protected>false</protected>
+    <values>
+        <field>MFR_Number__c</field>
+        <value xsi:type="xsd:decimal">6</value>
+    </values>
+    <values>
+        <field>MFR_Name__c</field>
+        <value xsi:type="xsd:string">Integrated GIS Analysis</value>
+    </values>
+    <values>
+        <field>Current_Maturity__c</field>
+        <value xsi:type="xsd:string">Leading-Edge</value>
+    </values>
+    <values>
+        <field>Target_Maturity__c</field>
+        <value xsi:type="xsd:string">Leading-Edge</value>
+    </values>
+    <values>
+        <field>Platform_Feature__c</field>
+        <value xsi:type="xsd:string">5 GIS proximity checks (FWS ECOS, EPA EJScreen, USGS NHD, BLM tribal cadastral, BLM PLSS) at intake via NEPA_GISProximityIP; results write to IndividualApplication fields and nepa_detected_protection_layer__c; 10 Named Credentials. MFR #6.</value>
+    </values>
+</CustomMetadata>

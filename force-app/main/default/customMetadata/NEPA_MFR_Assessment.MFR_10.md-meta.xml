@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>MFR 10 - Common/Interoperable Services</label>
+    <protected>false</protected>
+    <values>
+        <field>MFR_Number__c</field>
+        <value xsi:type="xsd:decimal">10</value>
+    </values>
+    <values>
+        <field>MFR_Name__c</field>
+        <value xsi:type="xsd:string">Common/Interoperable Services</value>
+    </values>
+    <values>
+        <field>Current_Maturity__c</field>
+        <value xsi:type="xsd:string">Emerging</value>
+    </values>
+    <values>
+        <field>Target_Maturity__c</field>
+        <value xsi:type="xsd:string">Leading-Edge</value>
+    </values>
+    <values>
+        <field>Platform_Feature__c</field>
+        <value xsi:type="xsd:string">PIC OpenAPI v1.2.0 compliance across all 13 entities; CEQExport REST API; FedRAMP High authorized Salesforce Government Cloud; PIV/CAC authentication support; Experience Cloud tribal portal with scoped record access by role. MFR #10.</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_climate_assessment_complete__c</fullName>
+    <description>Set to true by coordinator when the climate change assessment section is complete and incorporated into the EA or EIS. Clears the NEPA_Phase2_Climate_Gate validation rule, allowing advancement to Decision stage. Required before FONSI or ROD issuance when Climate_Assessment_Required__c = true.</description>
+    <inlineHelpText>Check when climate assessment is complete and incorporated into the NEPA document. Required to advance to Decision when Phase 2 applies.</inlineHelpText>
+    <label>Climate Assessment Complete</label>
+    <defaultValue>false</defaultValue>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

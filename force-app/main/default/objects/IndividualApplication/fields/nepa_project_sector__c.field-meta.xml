@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_project_sector__c</fullName>
+    <description>Primary project sector used to look up the Sector x Circuit risk cell in NEPA_Sector_Circuit_Risk__mdt. Drives the sector-circuit penalty in the v2 Litigation Risk Scorer. Source: Stage 13 sector classification from PermitTEC v0.1 (761 cases).</description>
+    <inlineHelpText>Select the primary sector for this project. Used with Circuit to look up litigation risk cell.</inlineHelpText>
+    <label>Project Sector</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value><fullName>Energy</fullName><default>false</default><label>Energy</label></value>
+            <value><fullName>Transportation</fullName><default>false</default><label>Transportation</label></value>
+            <value><fullName>Agriculture</fullName><default>false</default><label>Agriculture</label></value>
+            <value><fullName>Mining</fullName><default>false</default><label>Mining</label></value>
+            <value><fullName>Water/Coastal</fullName><default>false</default><label>Water/Coastal</label></value>
+            <value><fullName>Public Lands</fullName><default>false</default><label>Public Lands</label></value>
+            <value><fullName>Wildlife</fullName><default>false</default><label>Wildlife</label></value>
+            <value><fullName>Military</fullName><default>false</default><label>Military</label></value>
+            <value><fullName>Other</fullName><default>false</default><label>Other</label></value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

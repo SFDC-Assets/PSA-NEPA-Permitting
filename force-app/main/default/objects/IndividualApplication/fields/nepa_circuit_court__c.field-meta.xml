@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_circuit_court__c</fullName>
+    <description>Federal appellate circuit for this project. Used with Project Sector to look up the Sector x Circuit risk cell in NEPA_Sector_Circuit_Risk__mdt. Typically derived from the lead agency's state jurisdiction. Source: Stage 13 circuit analysis from PermitTEC v0.1 (761 cases).</description>
+    <inlineHelpText>Federal circuit court with jurisdiction over this project. Used with Sector to look up litigation risk cell.</inlineHelpText>
+    <label>Circuit Court</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value><fullName>1st</fullName><default>false</default><label>1st Circuit</label></value>
+            <value><fullName>2nd</fullName><default>false</default><label>2nd Circuit</label></value>
+            <value><fullName>3rd</fullName><default>false</default><label>3rd Circuit</label></value>
+            <value><fullName>4th</fullName><default>false</default><label>4th Circuit</label></value>
+            <value><fullName>5th</fullName><default>false</default><label>5th Circuit</label></value>
+            <value><fullName>6th</fullName><default>false</default><label>6th Circuit</label></value>
+            <value><fullName>7th</fullName><default>false</default><label>7th Circuit</label></value>
+            <value><fullName>8th</fullName><default>false</default><label>8th Circuit</label></value>
+            <value><fullName>9th</fullName><default>false</default><label>9th Circuit</label></value>
+            <value><fullName>10th</fullName><default>false</default><label>10th Circuit</label></value>
+            <value><fullName>11th</fullName><default>false</default><label>11th Circuit</label></value>
+            <value><fullName>DC</fullName><default>false</default><label>DC Circuit</label></value>
+            <value><fullName>Federal</fullName><default>false</default><label>Federal Circuit</label></value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

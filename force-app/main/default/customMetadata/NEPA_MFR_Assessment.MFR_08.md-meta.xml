@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>MFR 8 - Automated Comment Compilation</label>
+    <protected>false</protected>
+    <values>
+        <field>MFR_Number__c</field>
+        <value xsi:type="xsd:decimal">8</value>
+    </values>
+    <values>
+        <field>MFR_Name__c</field>
+        <value xsi:type="xsd:string">Automated Comment Compilation</value>
+    </values>
+    <values>
+        <field>Current_Maturity__c</field>
+        <value xsi:type="xsd:string">Leading-Edge</value>
+    </values>
+    <values>
+        <field>Target_Maturity__c</field>
+        <value xsi:type="xsd:string">Leading-Edge</value>
+    </values>
+    <values>
+        <field>Platform_Feature__c</field>
+        <value xsi:type="xsd:string">Agentforce comment classification (category, confidence, rationale); plaintiff org matching against NEPA_Plaintiff_Profile__mdt (14 records); EJ/Tribal unconditional gate; comment routing to work orders with SLA; NAEP 2025: 2,600 comments in 4 hours. MFR #8.</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>MFR 5 - Automated Case Management</label>
+    <protected>false</protected>
+    <values>
+        <field>MFR_Number__c</field>
+        <value xsi:type="xsd:decimal">5</value>
+    </values>
+    <values>
+        <field>MFR_Name__c</field>
+        <value xsi:type="xsd:string">Automated Case Management</value>
+    </values>
+    <values>
+        <field>Current_Maturity__c</field>
+        <value xsi:type="xsd:string">Emerging</value>
+    </values>
+    <values>
+        <field>Target_Maturity__c</field>
+        <value xsi:type="xsd:string">Leading-Edge</value>
+    </values>
+    <values>
+        <field>Platform_Feature__c</field>
+        <value xsi:type="xsd:string">Work order cascade from milestone close; SLA due-date setting per WorkType; seasonal constraint enforcement; stage gates (tribal consultation, document registry) blocking EA advancement; 36 ActionPlanTemplate records + NEPA_ActionPlan_Launcher flow. MFR #5.</value>
+    </values>
+</CustomMetadata>

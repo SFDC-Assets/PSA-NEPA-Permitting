@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_phase2_applicable__c</fullName>
+    <description>True when the CEQ NEPA Phase 2 Final Rule (May 1 2024, 89 FR 35442) applies to this process — i.e., NOI or CE determination issued on or after May 1 2024. Drives Climate_Assessment_Required__c and EJ_Analysis_Required__c. Citation: 40 CFR 1501.3 applicability; 40 CFR 1502.17 (climate); 40 CFR 1508.1(m) (EJ).</description>
+    <inlineHelpText>CEQ NEPA Phase 2 rule (May 2024) applies to this process. Triggers climate and EJ analysis requirements.</inlineHelpText>
+    <label>NEPA Phase 2 Applicable</label>
+    <defaultValue>false</defaultValue>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

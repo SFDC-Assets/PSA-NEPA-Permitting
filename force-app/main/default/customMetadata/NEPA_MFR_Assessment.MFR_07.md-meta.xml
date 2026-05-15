@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>MFR 7 - Improved Document Management</label>
+    <protected>false</protected>
+    <values>
+        <field>MFR_Number__c</field>
+        <value xsi:type="xsd:decimal">7</value>
+    </values>
+    <values>
+        <field>MFR_Name__c</field>
+        <value xsi:type="xsd:string">Improved Document Management</value>
+    </values>
+    <values>
+        <field>Current_Maturity__c</field>
+        <value xsi:type="xsd:string">Emerging</value>
+    </values>
+    <values>
+        <field>Target_Maturity__c</field>
+        <value xsi:type="xsd:string">Leading-Edge</value>
+    </values>
+    <values>
+        <field>Platform_Feature__c</field>
+        <value xsi:type="xsd:string">Required Document Registry (ContentVersion + NEPA_Required_Document__mdt) with real-time completeness tracking; stage gate blocking Decision Record until all 5 required docs confirmed; nepa_elevated_doc_complexity__c flag from P90 document count thresholds. MFR #7.</value>
+    </values>
+</CustomMetadata>

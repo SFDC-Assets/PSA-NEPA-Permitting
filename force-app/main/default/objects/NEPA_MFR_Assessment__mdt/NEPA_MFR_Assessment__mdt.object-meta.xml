@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Tracks PSA-NEPA platform maturity against the 10 CEQ Minimum Functional Requirements (MFRs) from the Permitting Technology Action Plan (May 2025). One record per MFR. Agencies must self-assess and submit maturity plans by August 28, 2025. Using CMT rather than a transactional object because maturity is platform capability state — updateable without code change.</description>
+    <label>NEPA MFR Assessment</label>
+    <pluralLabel>NEPA MFR Assessments</pluralLabel>
+    <fields>
+        <fullName>MFR_Number__c</fullName>
+        <description>CEQ MFR number (1–10) from the Permitting Technology Action Plan.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>MFR Number</label>
+        <precision>3</precision>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>MFR_Name__c</fullName>
+        <description>Official MFR name as defined in the CEQ Permitting Technology Action Plan (May 2025).</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>MFR Name</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Current_Maturity__c</fullName>
+        <description>Current platform maturity level as defined by CEQ: Leading-Edge (fully implemented), Emerging (partially implemented), Not-Started.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
+        <label>Current Maturity</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Leading-Edge</fullName><default>false</default><label>Leading-Edge</label></value>
+                <value><fullName>Emerging</fullName><default>false</default><label>Emerging</label></value>
+                <value><fullName>Not-Started</fullName><default>false</default><label>Not-Started</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Target_Maturity__c</fullName>
+        <description>Target maturity level for the next planning period.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
+        <label>Target Maturity</label>
+        <required>false</required>
+        <type>Picklist</type>
+        <valueSet>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Leading-Edge</fullName><default>false</default><label>Leading-Edge</label></value>
+                <value><fullName>Emerging</fullName><default>false</default><label>Emerging</label></value>
+                <value><fullName>Not-Started</fullName><default>false</default><label>Not-Started</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>Platform_Feature__c</fullName>
+        <description>Description of the Salesforce platform feature(s) delivering this MFR, with MFR citation.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Platform Feature</label>
+        <length>2000</length>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+</CustomObject>

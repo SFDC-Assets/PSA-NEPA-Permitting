@@ -921,4 +921,82 @@ private class NepaBREConfigTest {
         System.assert(pointsByKey.get('NHPA') >= 1,
             'NHPA Risk_Points__c must be >= 1; got: ' + pointsByKey.get('NHPA'));
     }
+
+
+    // ══════════════════════════════════════════════════════════════════════════
+    // PART 9 — PHASE 3 DATA-DRIVEN ADDITIONS
+    // ══════════════════════════════════════════════════════════════════════════
+
+    @IsTest
+    static void sectorCircuitRisk_allSixNewCellsPresent() {
+        Map<String, NEPA_Sector_Circuit_Risk__mdt> byKey = new Map<String, NEPA_Sector_Circuit_Risk__mdt>();
+        for (NEPA_Sector_Circuit_Risk__mdt r : [
+            SELECT Composite_Key__c, Risk_Cell_Label__c, Case_Count__c
+            FROM NEPA_Sector_Circuit_Risk__mdt
+        ]) {
+            byKey.put(r.Composite_Key__c, r);
+        }
+        System.assert(byKey.size() >= 23,
+            'Expected at least 23 NEPA_Sector_Circuit_Risk__mdt records; found: ' + byKey.size());
+        System.assert(byKey.containsKey('Transportation|5th'),
+            'Missing Transportation|5th sector-circuit cell');
+        System.assert(byKey.containsKey('Transportation|10th'),
+            'Missing Transportation|10th sector-circuit cell');
+        System.assert(byKey.containsKey('Water/Coastal|9th'),
+            'Missing Water/Coastal|9th sector-circuit cell');
+        System.assert(byKey.containsKey('Wildlife|9th'),
+            'Missing Wildlife|9th sector-circuit cell');
+        System.assert(byKey.containsKey('Other|10th'),
+            'Missing Other|10th sector-circuit cell');
+        System.assert(byKey.containsKey('Other|9th'),
+            'Missing Other|9th sector-circuit cell');
+        System.assertEquals('HIGH', byKey.get('Transportation|5th').Risk_Cell_Label__c,
+            'Transportation|5th must be HIGH risk (50% win rate, N=4)');
+        System.assertEquals('HIGH', byKey.get('Other|10th').Risk_Cell_Label__c,
+            'Other|10th must be HIGH risk (47.6% win rate, N=21)');
+        System.assertEquals('MODERATE', byKey.get('Other|9th').Risk_Cell_Label__c,
+            'Other|9th must be MODERATE risk (63.4% win rate, N=82)');
+    }
+
+    @IsTest
+    static void docCountThresholds_allThreePathwaysPresent() {
+        Map<String, NEPA_Doc_Count_Threshold__mdt> byPath = new Map<String, NEPA_Doc_Count_Threshold__mdt>();
+        for (NEPA_Doc_Count_Threshold__mdt r : [
+            SELECT Pathway__c, P50_Count__c, P90_Count__c, Elevated_Flag_At__c
+            FROM NEPA_Doc_Count_Threshold__mdt
+        ]) {
+            byPath.put(r.Pathway__c, r);
+        }
+        System.assert(byPath.containsKey('CE'),  'Missing CE doc count threshold record');
+        System.assert(byPath.containsKey('EA'),  'Missing EA doc count threshold record');
+        System.assert(byPath.containsKey('EIS'), 'Missing EIS doc count threshold record');
+        System.assertEquals(4,  (Integer)byPath.get('CE').Elevated_Flag_At__c,
+            'CE Elevated_Flag_At__c must be 4 (P90=3, +1 buffer); got: ' + byPath.get('CE').Elevated_Flag_At__c);
+        System.assertEquals(7,  (Integer)byPath.get('EA').Elevated_Flag_At__c,
+            'EA Elevated_Flag_At__c must be 7 (P90=7); got: ' + byPath.get('EA').Elevated_Flag_At__c);
+        System.assertEquals(22, (Integer)byPath.get('EIS').Elevated_Flag_At__c,
+            'EIS Elevated_Flag_At__c must be 22 (operational trigger, P90=34); got: ' + byPath.get('EIS').Elevated_Flag_At__c);
+    }
+
+    @IsTest
+    static void phase2ClimateGate_blocksDecisionStageWhenAssessmentIncomplete() {
+        Program proj = makeProject('Climate Gate Test', 'Bureau of Land Management', '9th', 'Energy', 'EIS');
+        IndividualApplication ia = makeProcess(proj.Id, 'EIS');
+        ia.nepa_phase2_applicable__c          = true;
+        ia.nepa_climate_assessment_required__c = true;
+        ia.nepa_climate_assessment_complete__c = false;
+        insert ia;
+
+        ia.nepa_process_stage__c = 'Decision';
+        Boolean caughtError = false;
+        try {
+            update ia;
+        } catch (DmlException e) {
+            if (e.getMessage().contains('Climate assessment required')) {
+                caughtError = true;
+            }
+        }
+        System.assert(caughtError,
+            'NEPA_Phase2_Climate_Gate validation rule must block Decision stage when climate assessment is incomplete');
+    }
 }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_elevated_doc_complexity__c</fullName>
+    <description>Set to true when the document count for this process exceeds the P90 threshold for its review pathway (CE: 4+, EA: 7+, EIS: 22+). Derived from Stage 6 document count analysis of NEPATEC 2.0 (61,881 projects). High document counts indicate administrative complexity and often precede procedural completeness litigation. Set by NEPA_Stage_Gate flow.</description>
+    <inlineHelpText>Document count exceeds P90 threshold for this pathway — elevated complexity flag.</inlineHelpText>
+    <label>Elevated Document Complexity</label>
+    <defaultValue>false</defaultValue>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

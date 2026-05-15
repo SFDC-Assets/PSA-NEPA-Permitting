@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_climate_assessment_required__c</fullName>
+    <description>True when NEPA_Phase2_Applicable__c = true and the review pathway is EA or EIS. Requires a dedicated climate change assessment section per 40 CFR 1502.17 before the FONSI or ROD can be signed. Distinct from extraordinary circumstances — this is a Phase 2 documentation mandate, not a GIS proximity trigger.</description>
+    <inlineHelpText>Climate assessment required under CEQ Phase 2 rule (40 CFR 1502.17). Must complete before advancing to Decision stage.</inlineHelpText>
+    <label>Climate Assessment Required</label>
+    <defaultValue>false</defaultValue>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

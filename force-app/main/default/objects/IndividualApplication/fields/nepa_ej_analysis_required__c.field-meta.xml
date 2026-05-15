@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_ej_analysis_required__c</fullName>
+    <description>True when NEPA_Phase2_Applicable__c = true. Requires a standalone environmental justice analysis section per 40 CFR 1508.1(m). This is separate from nepa_is_ej_comment__c (comment-level EJ flag) and nepa_tribal_lands_flag__c (GIS proximity trigger) — it is the Phase 2 documentation mandate applicable to all EA/EIS processes on or after May 1 2024.</description>
+    <inlineHelpText>EJ analysis required under CEQ Phase 2 rule (40 CFR 1508.1(m)). Separate from the GIS EJ proximity gate.</inlineHelpText>
+    <label>EJ Analysis Required (Phase 2)</label>
+    <defaultValue>false</defaultValue>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

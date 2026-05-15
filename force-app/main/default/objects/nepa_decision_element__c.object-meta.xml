@@ -549,6 +549,24 @@
         <trackHistory>false</trackHistory>
         <type>Checkbox</type>
     </fields>
+    <fields>
+        <fullName>nepa_ai_assisted_draft__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Set to true when Element_Description__c was AI-generated or substantially AI-modified. When true and Selected__c = true, nepa_sme_validation_date__c is required before this element can be finalized in the administrative record. Satisfies OMB M-25-21 AI accountability for federal decision elements. Source: NAEP/PNNL 2025 AI Workshop.</description>
+        <inlineHelpText>This decision element content was AI-assisted. SME validation required before selection.</inlineHelpText>
+        <label>AI Assisted Draft</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_sme_validation_date__c</fullName>
+        <description>Date and time when a subject matter expert validated this AI-assisted decision element. Required when nepa_ai_assisted_draft__c = true and Selected__c = true. Provides the administrative record audit trail showing human review occurred before the AI-generated content was adopted into the NEPA decision. Citation: OMB M-25-21 Section 4(b).</description>
+        <inlineHelpText>Date/time SME validated this AI-assisted content. Required for selected AI-drafted elements.</inlineHelpText>
+        <label>SME Validation Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
     <label>NEPA Decision Element</label>
     <nameField>
         <label>Decision Element Name</label>

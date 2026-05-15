@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>NEPA_Phase2_Climate_Gate</fullName>
+    <active>true</active>
+    <description>Blocks Decision stage when Phase 2 climate assessment is unmet. Citation: 40 CFR 1502.17; CEQ NEPA Phase 2 Final Rule 89 FR 35442 (May 2024).</description>
+    <errorConditionFormula>AND(
+    nepa_phase2_applicable__c = TRUE,
+    nepa_climate_assessment_required__c = TRUE,
+    nepa_climate_assessment_complete__c = FALSE,
+    nepa_process_stage__c = 'Decision'
+)</errorConditionFormula>
+    <errorMessage>Climate assessment required under CEQ NEPA Phase 2 rule (May 2024, 40 CFR 1502.17). Complete the climate change assessment section and check Climate Assessment Complete before advancing to Decision stage.</errorMessage>
+</ValidationRule>

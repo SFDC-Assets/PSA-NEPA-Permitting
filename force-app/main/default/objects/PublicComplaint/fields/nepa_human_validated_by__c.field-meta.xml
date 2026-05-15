@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_human_validated_by__c</fullName>
+    <description>Lookup to the User who validated the AI-generated triage, classification, or response for this comment. Required before the comment can be set to Resolved when nepa_ai_generated__c = true. Provides administrative record audit trail per OMB M-25-21 AI accountability requirements. Human reviewer confirms the AI output is accurate before it becomes part of the administrative record.</description>
+    <inlineHelpText>User who validated the AI-generated content. Required when AI Generated = true.</inlineHelpText>
+    <label>Human Validated By</label>
+    <referenceTo>User</referenceTo>
+    <relationshipLabel>AI-Validated Comments</relationshipLabel>
+    <relationshipName>AI_Validated_Comments</relationshipName>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Lookup</type>
+</CustomField>
