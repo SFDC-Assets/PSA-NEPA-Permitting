@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>ESA Section 7 Consultation Open</label>
+    <protected>false</protected>
+    <values>
+        <field>Challenge_Ground__c</field>
+        <value xsi:type="xsd:string">ESA Section 7 Consultation</value>
+    </values>
+    <values>
+        <field>Trigger_Review_Type__c</field>
+        <value xsi:type="xsd:string">EA;EIS</value>
+    </values>
+    <values>
+        <field>Trigger_Adjacent_Statute__c</field>
+        <value xsi:type="xsd:string">ESA Section 7</value>
+    </values>
+    <values>
+        <field>Explanation__c</field>
+        <value xsi:type="xsd:string">FONSI or ROD cannot be signed until ESA Section 7 consultation status is one of: concurrence received, biological opinion issued, or no-effect determination documented. Project intersects listed species range and consultation remains open. Citation: 16 USC 1536(a)(2); 50 CFR 402.14; 40 CFR 1502.25(a).</value>
+    </values>
+    <values>
+        <field>Priority__c</field>
+        <value xsi:type="xsd:decimal">3</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Connected Actions Analysis Required</label>
+    <protected>false</protected>
+    <values>
+        <field>Challenge_Ground__c</field>
+        <value xsi:type="xsd:string">EIS/EA Inadequacy</value>
+    </values>
+    <values>
+        <field>Trigger_Review_Type__c</field>
+        <value xsi:type="xsd:string">EA;EIS</value>
+    </values>
+    <values>
+        <field>Trigger_Adjacent_Statute__c</field>
+        <value xsi:type="xsd:string"></value>
+    </values>
+    <values>
+        <field>Explanation__c</field>
+        <value xsi:type="xsd:string">Connected actions detected: project has a related federal approval within 10 miles or shares purpose/timeline. Must either scope connected actions together or document independent utility. Cumulative impacts section (40 CFR 1508.7) required. This is the #1 NEPA litigation failure mode in the PermitTEC corpus (42.7% of challenged EIS/EA decisions cite inadequate cumulative analysis). Citation: 40 CFR 1508.25(a)(1); 40 CFR 1502.16.</value>
+    </values>
+    <values>
+        <field>Priority__c</field>
+        <value xsi:type="xsd:decimal">1</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>
