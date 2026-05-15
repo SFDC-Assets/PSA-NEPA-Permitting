@@ -2,7 +2,7 @@
 
 **Program:** CEQ Permitting Innovators
 **Submission Deadline:** June 2, 2026
-**Entrant:** GPS Accelerators (Legal entity, U.S.-incorporated)
+**Entrant:** Shannon Schupbach (U.S.-incorporated)
 
 ---
 
@@ -60,9 +60,9 @@ This solution addresses the following minimum functional requirements from CEQ's
 
 ## Team Capacity
 
-This solution is built on **Salesforce** — the world's leading SaaS/PaaS provider — and submitted by **GPS Accelerators**, a Salesforce Public Sector partner. The accelerator was designed and built by **Shannon Schupbach**, Salesforce Public Sector solution architect, as sole developer. Salesforce's **Global Public Sector Solution Engineering organization** includes 400+ solution engineers who support public sector customers across federal, state, local, and international government; that platform depth is embedded in every design choice throughout this accelerator.
+This solution is built on **Salesforce** — the world's leading SaaS/PaaS provider — and submitted by **Shannon Schupbach**, Salesforce Public Sector solution architect and sole developer of this accelerator. Salesforce's **Global Public Sector Solution Engineering organization** includes 400+ solution engineers who support public sector customers across federal, state, local, and international government; that platform depth is embedded in every design choice throughout this accelerator.
 
-The environmental and policy disciplines required to build a defensible NEPA intelligence system were embedded through rigorous federal dataset analysis. GPS Accelerators built a 13-stage calibration pipeline over the same primary data sources that federal researchers use:
+The environmental and policy disciplines required to build a defensible NEPA intelligence system were embedded through rigorous federal dataset analysis. A 13-stage calibration pipeline was built over the same primary data sources that federal researchers use:
 
 - **NETATEC v2.0 (PNNL)** — 61,881 NEPA projects / 120,000+ documents: drove CE Screener logic, page-count risk thresholds, sector EIS probability matrices, and per-agency performance baselines
 - **PermitTEC v0.1 (PNNL)** — 761 federal litigation cases: drove all risk weight calibration, plaintiff intelligence profiles, circuit-specific multipliers, and procedural guardrails
@@ -72,7 +72,7 @@ Every CE screening rule traces to a specific CFR citation. Every risk weight tra
 
 **Evaluator access:** A persistent NEPADEMO sandbox org with the complete Carrie Placer Mine dataset is available for hands-on review — the closest operational reference available outside a live agency deployment. Access credentials are available on request.
 
-GPS Accelerators is incorporated in the United States.
+Shannon Schupbach is a U.S.-based Salesforce Public Sector architect.
 
 ---
 

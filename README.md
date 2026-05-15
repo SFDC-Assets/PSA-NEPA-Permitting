@@ -1,5 +1,3 @@
-![Public Sector Accelerators logo](/docs/Logo_GPSAccelerators_v01.png)
-
 # PSA-NEPA Permitting Accelerator
 
 **Open-source NEPA permitting data model, workflow automation, GIS proximity screening, Agentforce comment triage, and litigation risk intelligence — built on Salesforce Agentforce for Public Sector. Aligned to CEQ NEPA and Permitting Data and Technology Standard v1.2. All 10 MFRs addressed. Deployable from the CLI in ~15 minutes.**
@@ -11,8 +9,6 @@
 [![Section 508: WCAG 2.1 AA](https://img.shields.io/badge/Section%20508-WCAG%202.1%20AA-blue.svg)](https://www.salesforce.com/company/legal/508_accessibility/)
 
 > **CEQ Permitting Innovators submission (June 2, 2026):** See [docs/SUBMISSION-NARRATIVE.md](docs/SUBMISSION-NARRATIVE.md) for the full solution narrative structured around the 5 evaluation criteria.
-
-[GPS Accelerators Listing](https://gpsaccelerators.developer.salesforce.com/accelerator/a0wDo000000BBN7IAO/nepa-and-permitting-data-model)
 
 ---
 
@@ -394,4 +390,4 @@ This accelerator requires **Salesforce Agentforce for Public Sector (APS)**. If 
 
 MIT. See [LICENSE.txt](LICENSE.txt). Accelerators are provided as-is and are not supported by Salesforce.
 
-For more about the GPS Accelerators program, visit: [https://gpsaccelerators.developer.salesforce.com/](https://gpsaccelerators.developer.salesforce.com/)
+Built by Shannon Schupbach. MIT license — see [LICENSE.txt](LICENSE.txt).
