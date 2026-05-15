@@ -196,6 +196,72 @@ private class NepaAIGovernanceTest {
             'CE Screener must not fire on EA records — nepa_ce_pathway_recommendation__c must remain null');
     }
 
+    // ── OMB M-25-21: nepa_decision_element__c AI provenance fields ───────────
+    // nepa_ai_assisted_draft__c and nepa_sme_validation_date__c were added per
+    // OMB M-25-21 Section 4(b). These tests verify field persistence and document
+    // the expected co-dependency constraint (enforcement via VR pending).
+
+    @IsTest
+    static void decisionElement_aiAssistedDraft_fieldPersists() {
+        Program proj = NepaTestFactory.insertProgram('GOV-040', 'AI Provenance Field Test', 'BLM');
+        IndividualApplication ia = NepaTestFactory.insertOpenProcess(proj.Id, 'EIS');
+
+        nepa_decision_element__c de = new nepa_decision_element__c();
+        de.nepa_process__c             = ia.Id;
+        de.nepa_determination_type__c  = 'FONSI';
+        de.nepa_ai_assisted_draft__c   = true;
+        insert de;
+
+        nepa_decision_element__c result = [
+            SELECT nepa_ai_assisted_draft__c FROM nepa_decision_element__c WHERE Id = :de.Id
+        ];
+        System.assertEquals(true, result.nepa_ai_assisted_draft__c,
+            'nepa_ai_assisted_draft__c must persist as true after insert');
+    }
+
+    @IsTest
+    static void decisionElement_smeValidationDate_fieldPersists() {
+        Program proj = NepaTestFactory.insertProgram('GOV-041', 'AI SME Validation Date Test', 'BLM');
+        IndividualApplication ia = NepaTestFactory.insertOpenProcess(proj.Id, 'EIS');
+        Datetime validationTime = Datetime.now();
+
+        nepa_decision_element__c de = new nepa_decision_element__c();
+        de.nepa_process__c              = ia.Id;
+        de.nepa_determination_type__c   = 'FONSI';
+        de.nepa_ai_assisted_draft__c    = true;
+        de.nepa_sme_validation_date__c  = validationTime;
+        insert de;
+
+        nepa_decision_element__c result = [
+            SELECT nepa_ai_assisted_draft__c, nepa_sme_validation_date__c
+            FROM nepa_decision_element__c WHERE Id = :de.Id
+        ];
+        System.assertEquals(true, result.nepa_ai_assisted_draft__c,
+            'nepa_ai_assisted_draft__c must persist');
+        System.assertNotEquals(null, result.nepa_sme_validation_date__c,
+            'nepa_sme_validation_date__c must persist after insert');
+    }
+
+    @IsTest
+    static void decisionElement_humanAuthored_aiFieldsDefaultFalse() {
+        Program proj = NepaTestFactory.insertProgram('GOV-042', 'AI Default Fields Test', 'BLM');
+        IndividualApplication ia = NepaTestFactory.insertOpenProcess(proj.Id, 'EA');
+
+        nepa_decision_element__c de = new nepa_decision_element__c();
+        de.nepa_process__c             = ia.Id;
+        de.nepa_determination_type__c  = 'EA_Significance';
+        insert de;
+
+        nepa_decision_element__c result = [
+            SELECT nepa_ai_assisted_draft__c, nepa_sme_validation_date__c
+            FROM nepa_decision_element__c WHERE Id = :de.Id
+        ];
+        System.assertNotEquals(true, result.nepa_ai_assisted_draft__c,
+            'nepa_ai_assisted_draft__c must default to false for human-authored elements');
+        System.assertEquals(null, result.nepa_sme_validation_date__c,
+            'nepa_sme_validation_date__c must be null when AI assist was not used');
+    }
+
     @IsTest
     static void ceScreener_doesNotFireOnEISRecord() {
         Program proj = NepaTestFactory.insertProgram('GOV-031', 'Governance CE Guard EIS Test', 'BLM');

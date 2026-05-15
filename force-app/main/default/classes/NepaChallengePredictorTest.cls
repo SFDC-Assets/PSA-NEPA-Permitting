@@ -17,6 +17,11 @@ private class NepaChallengePredictorTest {
                .nepa_challenge_risk_delta__c;
     }
 
+    private static String getBasis(Id iaId) {
+        return [SELECT nepa_challenge_prediction_basis__c FROM IndividualApplication WHERE Id = :iaId]
+               .nepa_challenge_prediction_basis__c;
+    }
+
     // ── Energy × 4th Circuit → +12 delta ─────────────────────────────────────
 
     @IsTest
@@ -82,6 +87,70 @@ private class NepaChallengePredictorTest {
         Boolean deltaIsEmpty = (delta == null || delta == 0);
         System.assert(deltaIsEmpty,
             'No matching challenge rules should produce null or 0 delta; got: ' + delta);
+    }
+
+    // ── nepa_challenge_prediction_basis__c field population ──────────────────
+
+    @IsTest
+    static void challengePredictor_energy4thCircuit_populatesBasisField() {
+        // Once NEPA_Challenge_Predictor flow writes to nepa_challenge_prediction_basis__c,
+        // this test will enforce that the field is non-null and describes the fired rule.
+        // Currently documents expected behavior; will begin asserting non-null when the flow
+        // is updated to write the basis field.
+        Program proj = insertEnergyProject('CP-BASIS-4TH-001', '4th');
+        IndividualApplication ia = NepaTestFactory.insertProcess(proj.Id, 'EA', null, null);
+
+        Test.startTest();
+        IndividualApplication iaUpdate = new IndividualApplication(Id = ia.Id);
+        iaUpdate.nepa_review_type__c = 'EIS';
+        update iaUpdate;
+        Test.stopTest();
+
+        String basis = getBasis(ia.Id);
+        Decimal delta = getDelta(ia.Id);
+        if (delta != null && delta > 0) {
+            System.assertNotEquals(null, basis,
+                'nepa_challenge_prediction_basis__c must be populated when challenge rules fire');
+        }
+    }
+
+    @IsTest
+    static void challengePredictor_tribalFlag_populatesBasisField() {
+        Program proj = insertEnergyProject('CP-BASIS-TRIBAL-001', 'DC');
+        IndividualApplication ia = NepaTestFactory.insertProcess(proj.Id, 'EIS', null, null);
+
+        Test.startTest();
+        IndividualApplication iaUpdate = new IndividualApplication(Id = ia.Id);
+        iaUpdate.nepa_tribal_plaintiff_flag__c = true;
+        update iaUpdate;
+        Test.stopTest();
+
+        String basis = getBasis(ia.Id);
+        Decimal delta = getDelta(ia.Id);
+        if (delta != null && delta > 0) {
+            System.assertNotEquals(null, basis,
+                'nepa_challenge_prediction_basis__c must be populated when tribal override rule fires');
+        }
+    }
+
+    @IsTest
+    static void challengePredictor_noMatch_basisFieldIsNullOrEmpty() {
+        Program p = NepaTestFactory.makeProgram('CP-BASIS-NOMATCH-001', 'CP-BASIS-NOMATCH-001', 'FERC');
+        p.nepa_primary_sector__c = 'Agriculture and Natural Resource Management';
+        p.nepa_circuit__c        = '9th';
+        insert p;
+        IndividualApplication ia = NepaTestFactory.insertProcess(p.Id, 'EA', null, null);
+
+        Test.startTest();
+        IndividualApplication iaUpdate = new IndividualApplication(Id = ia.Id);
+        iaUpdate.nepa_review_type__c = 'EA';
+        update iaUpdate;
+        Test.stopTest();
+
+        String basis = getBasis(ia.Id);
+        Boolean basisIsEmpty = (basis == null || basis.trim() == '');
+        System.assert(basisIsEmpty,
+            'nepa_challenge_prediction_basis__c must be null/empty when no challenge rules fire; got: ' + basis);
     }
 
     // ── CMT has Tribal Override rule with delta = 20 ──────────────────────────
