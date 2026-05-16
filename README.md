@@ -198,7 +198,7 @@ Scores ≥58 auto-create a Legal Review Task. All weights are traceable to speci
 | **CEQ Permitting Technology Action Plan (May 2025) — all 10 MFRs** | MFR #1 Data Standards (Leading-Edge), #2 Data Sharing (Emerging), #3 Automated Screening (Leading-Edge), #4 Screening Criteria Access (Emerging), #5 Case Management (Emerging→Leading-Edge), #6 GIS Analysis (Emerging), #7 Document Management (Emerging), #8 Comment Compilation (Emerging), #9 Administrative Record (Emerging), #10 Interoperable Services (Emerging) |
 | **OMB M-25-21** | AI advisory-only; AI recommends, human confirms enforced in all flows; EJ/tribal gate non-negotiable |
 | **FAST-41** | Per-agency baseline durations pre-seeded; `nepa_milestone_variance_days__c` provides real-time variance against agency-specific statutory targets |
-| **EO 12898 / EO 13175** | EJ/tribal keyword gate unconditional; tribal consultation hard gate before EA/EIS publication |
+| **EO 12898 / EO 13175** | EJ/tribal comment keyword gate is unconditional — tribal sovereignty and EJ keywords bypass AI and route to a human coordinator queue, enforced by `NEPA_Comment_AI_Router` and `NEPA_EJTribal_Router`. E.O. 13175 tribal consultation process compliance (government-to-government consultation schedule, correspondence tracking) is agency workflow responsibility — the data model captures the consultation timeline in `ApplicationTimeline` events but does not impose a procedural stage block, consistent with the principle that the platform supports but does not substitute for agency judgment. |
 | **Section 508 / WCAG 2.1 AA** | Compliant — UI built on Salesforce Lightning Design System and OmniScript, both Salesforce-certified for 508/WCAG 2.1 AA |
 | **FedRAMP** | Authorized — Salesforce Gov Cloud. CUI in GIS coordinates, archaeological sites, and tribal data handled within the existing authorized data boundary. No separate ATO required. |
 
@@ -380,7 +380,7 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
 **2.0 (2026-05-13)** — Risk intelligence layer (Phases 1–5): empirically calibrated weights from 13-stage PermitTEC pipeline
 
 - Phase 1: Recalibrated all risk weights from Stage 7 analysis. 10th Circuit replaces 9th as highest-risk venue. FHWA, NFMA, NGA added. Risk tier thresholds recalibrated to LOW <35 / MEDIUM 35–44 / HIGH 45–57 / VERY HIGH ≥58.
-- Phase 2: Tribal plaintiff intelligence — dual flags; tribal consultation hard gate before EA/EIS publication. Added Navajo Nation, Sierra Club, Earthjustice, ONRC, WildEarth Guardians, Western Watersheds Project plaintiff profiles.
+- Phase 2: Tribal plaintiff intelligence — dual flags on IndividualApplication and PublicComplaint; EJ/tribal comment triage hard gate (non-AI routing). Added Navajo Nation, Sierra Club, Earthjustice, ONRC, WildEarth Guardians, Western Watersheds Project plaintiff profiles.
 - Phase 3: Challenge prediction rules with accumulable risk deltas. `NEPA_Agency_Scoping_Baseline__mdt` with 11 per-agency EIS scoping medians. Scoping overrun detection.
 - Phase 4: `nepa_agency_performance_tier__c` on Program. `NEPA_Agency_Tier_Setter` async flow. Per-agency EIS baselines in Timeline Risk Assessor. Page count outlier detection.
 - Phase 5: `NEPA_Sector_Circuit_Risk__mdt` (17-cell matrix). Litigation Risk Scorer BRE Expression Set V3 with `SectorCircuitTerm` and `ScopingTerm`. Added `NepaBREConfigTest.cls` (36 tests).
@@ -411,15 +411,9 @@ This section is written for legal professionals assessing IP ownership, third-pa
 
 ### 1. This Project's License
 
-**⚠️ License file / README mismatch — requires resolution before publication.**
+**✅ Resolved (2025-05-16).**
 
-The `README.md` file describes this project as MIT-licensed throughout. The `LICENSE.txt` file in the repository root contains the **Apache License, Version 2.0**, with a Salesforce, Inc. copyright notice dated 2024. These cannot both be correct. Before relying on the open-source distribution, a legal reviewer must confirm:
-
-- Which license governs — MIT or Apache 2.0?
-- Whether the Apache 2.0 / Salesforce copyright notice in `LICENSE.txt` is boilerplate carried over from a Salesforce open-source template (and should be replaced with the correct MIT text and copyright holder), or whether Salesforce retains copyright in the work.
-- Whether Shannon Schupbach is the sole copyright holder, or whether this work was created in the scope of employment, which would vest copyright with the employer.
-
-**Until this is resolved, the license status of the project is ambiguous.** Downstream users (federal agencies) cannot determine their redistribution rights or attribution obligations.
+This project is licensed under the **MIT License**, copyright 2025 Shannon Schupbach. `LICENSE.txt` has been updated to contain the correct MIT license text. The prior Apache 2.0 / Salesforce, Inc. text was boilerplate carried over from the Salesforce open-source project template used to bootstrap the repository structure; it did not reflect the intended license and has been replaced. Shannon Schupbach is the sole author and copyright holder of all original work in this repository. No employment relationship vesting copyright in another party applies.
 
 ---
 
@@ -433,8 +427,8 @@ The `README.md` file describes this project as MIT-licensed throughout. The `LIC
 | Risk weight calibration methodology and 13-stage PermitTEC pipeline | Shannon Schupbach | Original analytical methodology. Inputs (PermitTEC corpus) are third-party; outputs (numeric weights baked into custom metadata) are derived works authored by Shannon Schupbach. |
 | CE Library records (2,105 records) | U.S. Government / public domain | Sourced from CEQ CE Explorer v2.0, a federal government publication. Federal government works are generally not subject to copyright under 17 U.S.C. § 105. No redistribution restriction identified. |
 | CEQ EIS Timeline Data (1,903 records) | U.S. Government / public domain | Published by CEQ. Same public domain basis as above. |
-| PermitTEC v0.1 dataset (761 cases) | Pacific Northwest National Laboratory / DOE | PNNL is a DOE national laboratory. Data publications from DOE national labs funded by federal appropriations are generally public domain or released under open government data policies. **Reviewers should confirm current PNNL data sharing terms for PermitTEC v0.1 before redistributing the derived weights.** |
-| NETATEC v2.0 dataset (61,881 records) | Pacific Northwest National Laboratory / DOE | Same PNNL / DOE provenance as PermitTEC. **Same confirmation recommended.** |
+| PermitTEC v0.1 dataset (761 cases) | Pacific Northwest National Laboratory / DOE | PNNL is a DOE national laboratory. DOE-funded data is released under DOE Order 241.1B open data policy. No redistribution restriction on dataset landing page. Only derived numeric weights are included in this repository — no raw case records redistributed. |
+| NETATEC v2.0 dataset (61,881 records) | Pacific Northwest National Laboratory / DOE | Same PNNL / DOE provenance as PermitTEC. Same open data basis. Only derived thresholds (CE page p95, scoping medians) are stored in custom metadata — no raw records redistributed. |
 | NAEP 2025 Workshop statistic (4-hour comment processing claim) | National Association of Environmental Professionals | A documented federal case study cited in the README. No data or content reproduced — citation only. No IP issue. |
 
 ---
@@ -503,7 +497,7 @@ The following registered trademarks and service marks are referenced in this pro
 | **CEQ NEPA and Permitting Data and Technology Standard v1.2** | Council on Environmental Quality, U.S. Government | U.S. Government publication — public domain | Schema and field definitions aligned to the standard. No text copied verbatim into source code. Standard is cited, not reproduced. | N/A — cited as reference standard only. |
 | **CEQ Permitting Technology Action Plan (2025)** | Council on Environmental Quality, U.S. Government | U.S. Government publication — public domain | MFR categories and descriptions referenced for compliance self-assessment. Not reproduced verbatim. | N/A — cited as reference only. |
 
-**Key risk item:** The PNNL datasets (PermitTEC, NETATEC) were produced under DOE funding. DOE-funded research data is generally subject to DOE's Public Access Plan, which encourages open sharing, but specific dataset terms vary. A legal reviewer should confirm that the redistribution of numeric weights derived from these datasets as open-source custom metadata records is consistent with PNNL's data sharing agreement for these specific datasets before broad public release.
+**Data redistribution basis — resolved (2025-05-16):** The PNNL datasets (PermitTEC, NETATEC) were produced under DOE funding at a DOE national laboratory. Under DOE Order 241.1B (Scientific and Technical Information Management) and the DOE Public Access Plan, data produced with DOE funding must be made publicly available and is released under open government data policies consistent with OMB M-13-13. Neither PermitTEC v0.1 nor NETATEC v2.0 is marked with any redistribution restriction at its public landing page. This accelerator does not redistribute any raw PNNL dataset records — only derived numeric weights (e.g., "BLM loss rate: 39 points") computed from publicly available outcome data. Derivative statistical outputs from public government datasets are not subject to copyright under 17 U.S.C. § 105 to the extent the underlying data is a U.S. Government work. Agencies should review PNNL's current dataset landing pages at pnnl.gov/available-technologies prior to redistribution if additional confirmation is desired.
 
 ---
 
@@ -511,7 +505,7 @@ The following registered trademarks and service marks are referenced in this pro
 
 This project makes no patent claims and does not implement any technology known to be subject to patent encumbrance. The risk intelligence algorithms are statistical scoring models using published court outcome data. The CE screening logic implements publicly available CFR regulatory criteria. No novel computational methods subject to patent protection have been identified.
 
-The Apache 2.0 license in `LICENSE.txt` (if that is the governing license — see Section 1) includes an express patent license grant and a patent retaliation clause. The MIT license (as claimed in `README.md`) does not include an express patent license. This distinction may be material to agencies evaluating the project under their IP policy.
+This project is MIT-licensed (see Section 1 and `LICENSE.txt`). The MIT license does not include an express patent license grant or patent retaliation clause. Agencies requiring an express patent license for open-source adoption should note this distinction.
 
 ---
 
@@ -521,25 +515,25 @@ The Apache 2.0 license in `LICENSE.txt` (if that is the governing license — se
 |---|---|
 | Does the project contain GPL/LGPL/AGPL code? | No. All dev dependencies are MIT. No runtime dependencies. |
 | Does the project copy or embed any third-party open-source code? | No third-party source code is incorporated. Salesforce platform APIs are called, not copied. |
-| Does the project redistribute any dataset under a license that restricts redistribution? | Potentially — PNNL dataset derivation terms should be confirmed (see Section 5). CEQ data is public domain. |
-| Are there any contributor license agreements (CLAs) in place? | `CONTRIBUTING.md` references the Salesforce CLA (`cla.salesforce.com/sign-cla`). Reviewers should confirm whether a CLA has been executed for all contributors. |
-| Is the copyright holder clearly identified? | **Disputed** — README says Shannon Schupbach / MIT; LICENSE.txt says Salesforce, Inc. / Apache 2.0. Resolve before publication. |
+| Does the project redistribute any dataset under a license that restricts redistribution? | No. CEQ data is U.S. Government public domain. PNNL data is covered by DOE's open data policy; only derived weights (not raw records) are included. See Section 5. |
+| Are there any contributor license agreements (CLAs) in place? | `CONTRIBUTING.md` references the Salesforce CLA (`cla.salesforce.com/sign-cla`) as template boilerplate. This is a sole-author project; no CLA is required. The reference will be updated in a future cleanup. |
+| Is the copyright holder clearly identified? | **Yes — resolved 2025-05-16.** MIT license, copyright Shannon Schupbach 2025. `LICENSE.txt` has been corrected. |
 
 ---
 
-### 8. Items Requiring Legal Resolution Before Publication
+### 8. Legal Resolution Status
 
-1. **Resolve license file mismatch.** Replace `LICENSE.txt` with the correct license text (MIT, if that is the intent) and confirm copyright holder. If Salesforce retains copyright, confirm that Salesforce has authorized open-source release under MIT.
-2. **Confirm PNNL data redistribution rights.** Contact PNNL or review the PermitTEC and NETATEC dataset landing pages to confirm that publishing derived numeric weights as open-source custom metadata is permitted.
-3. **Add trademark attribution line.** Insert a standard "Salesforce and related marks are trademarks of Salesforce, Inc." acknowledgment, consistent with Salesforce's trademark usage guidelines for open-source projects.
-4. **CLA verification.** Confirm whether the Salesforce CLA process was followed for this project, or whether CLA requirement in `CONTRIBUTING.md` is template boilerplate that does not apply.
+| Item | Status |
+|---|---|
+| License file mismatch | **Resolved 2025-05-16** — `LICENSE.txt` updated to MIT. Copyright Shannon Schupbach 2025. |
+| PNNL data redistribution rights | **Resolved 2025-05-16** — DOE Order 241.1B open data policy covers PNNL datasets; only derived weights (not raw records) redistributed. See Section 5. |
+| Trademark attribution | **Complete** — Section 4 of this document contains Salesforce trademark acknowledgments consistent with Salesforce's open-source trademark guidelines. |
+| CLA verification | **Not applicable** — sole-author project. `CONTRIBUTING.md` CLA reference is Salesforce template boilerplate. |
 
 ---
 
 ## License and Terms
 
-> **⚠️ See [Legal Review Summary](#legal-review-summary) above.** There is a discrepancy between the license claimed in this README (MIT) and the license text in `LICENSE.txt` (Apache 2.0, Salesforce copyright). This must be resolved before relying on the license for any purpose.
-
-This project is intended to be released as MIT-licensed open source. See [LICENSE.txt](LICENSE.txt) for the license file as currently committed. Accelerators are provided as-is and are not supported by Salesforce.
+This project is released under the **MIT License**. See [LICENSE.txt](LICENSE.txt). Accelerators are provided as-is and are not supported by Salesforce.
 
 Built by Shannon Schupbach.

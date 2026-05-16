@@ -51,6 +51,14 @@ global with sharing class NepaCeqExportService {
             res.responseBody = Blob.valueOf(
                 JSON.serialize(errorResponse('SERVER_ERROR', 'An internal error occurred. Contact your administrator.'))
             );
+            NEPA_Error_Event__e evt = new NEPA_Error_Event__e(
+                Flow_Name__c      = 'NepaCeqExportService',
+                Error_Message__c  = e.getMessage() + '\n' + e.getStackTraceString(),
+                Running_User_Id__c = UserInfo.getUserId(),
+                Occurred_At__c    = Datetime.now(),
+                Error_Context__c  = 'URI:' + req.requestURI
+            );
+            EventBus.publish(evt);
         }
     }
 

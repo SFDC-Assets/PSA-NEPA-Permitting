@@ -1,0 +1,64 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'force-app/**'
+      - 'manifest/**'
+      - 'sfdx-project.json'
+
+jobs:
+  deploy:
+    name: Deploy to staging org
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Salesforce CLI
+        run: npm install --global @salesforce/cli@latest
+
+      - name: Authenticate to staging (JWT)
+        env:
+          SF_JWT_KEY: ${{ secrets.SF_JWT_KEY }}
+          SF_CLIENT_ID: ${{ secrets.SF_CLIENT_ID }}
+          SF_USERNAME: ${{ secrets.SF_USERNAME }}
+          SF_INSTANCE_URL: ${{ secrets.SF_INSTANCE_URL }}
+        run: |
+          printf '%s' "$SF_JWT_KEY" > server.key
+          sf org login jwt \
+            --client-id "$SF_CLIENT_ID" \
+            --jwt-key-file server.key \
+            --username "$SF_USERNAME" \
+            --instance-url "$SF_INSTANCE_URL" \
+            --alias staging \
+            --set-default
+          rm -f server.key
+
+      - name: Deploy to staging
+        run: |
+          sf project deploy start \
+            --source-dir force-app \
+            --target-org staging \
+            --test-level RunLocalTests \
+            --wait 30 \
+            --json | tee deploy-result.json
+          node -e "
+            const r = require('./deploy-result.json');
+            if (r.status !== 0) {
+              console.error('Deployment failed');
+              process.exit(1);
+            }
+            console.log('Deployment succeeded.');
+          "
+
+      - name: Upload deployment report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-staging-report
+          path: deploy-result.json
+          retention-days: 30

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>Before-save on IndividualApplication (create and update). When nepa_review_type__c is set to EA or EIS, automatically sets nepa_phase2_applicable__c = true and nepa_climate_assessment_required__c = true so the NEPA_Phase2_Climate_Gate validation rule is active. When review type changes away from EA/EIS (e.g., to CE), clears both flags. Runs before-save to avoid a separate DML call. Implements 40 CFR 1502.17 Phase 2 climate change assessment requirement enforcement.</description>
+    <label>NEPA Phase 2 Applicability Setter</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Active</status>
+
+    <!-- ============================================================
+         TRIGGER: IndividualApplication before-save, create + update
+         Entry: nepa_review_type__c is set or changed
+    ============================================================ -->
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <object>IndividualApplication</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>nepa_review_type__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_review_type__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <connector>
+            <targetReference>Decision_EAorEIS</targetReference>
+        </connector>
+    </start>
+
+    <!-- ============================================================
+         DECISION: Is this an EA or EIS?
+    ============================================================ -->
+    <decisions>
+        <name>Decision_EAorEIS</name>
+        <label>Review Type is EA or EIS?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Assign_ClearPhase2</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Not EA or EIS — Clear</defaultConnectorLabel>
+        <rules>
+            <name>Is_EA_or_EIS</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_review_type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>EA</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.nepa_review_type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>EIS</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_SetPhase2</targetReference>
+            </connector>
+            <label>EA or EIS</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         ASSIGNMENT: Set Phase 2 flags (EA or EIS path)
+    ============================================================ -->
+    <assignments>
+        <name>Assign_SetPhase2</name>
+        <label>Set Phase 2 Applicable and Required</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.nepa_phase2_applicable__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.nepa_climate_assessment_required__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+
+    <!-- ============================================================
+         ASSIGNMENT: Clear Phase 2 flags (CE or other path)
+    ============================================================ -->
+    <assignments>
+        <name>Assign_ClearPhase2</name>
+        <label>Clear Phase 2 Flags</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.nepa_phase2_applicable__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.nepa_climate_assessment_required__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+
+</Flow>

@@ -314,6 +314,13 @@
         <members>NEPA_Statute_Risk_Weight__mdt.Case_Count__c</members>
         <members>NEPA_Statute_Risk_Weight__mdt.Risk_Points__c</members>
         <members>NEPA_Statute_Risk_Weight__mdt.Active__c</members>
+        <!-- NEPA_Risk_Threshold__mdt fields -->
+        <members>NEPA_Risk_Threshold__mdt.Very_High_Floor__c</members>
+        <members>NEPA_Risk_Threshold__mdt.High_Floor__c</members>
+        <members>NEPA_Risk_Threshold__mdt.Moderate_Floor__c</members>
+        <members>NEPA_Risk_Threshold__mdt.Legal_Review_Floor__c</members>
+        <members>NEPA_Risk_Threshold__mdt.Active__c</members>
+        <members>NEPA_Risk_Threshold__mdt.Calibration_Source__c</members>
         <!-- NEPA_Process_Model__mdt fields -->
         <members>NEPA_Process_Model__mdt.Review_Type__c</members>
         <members>NEPA_Process_Model__mdt.Statutory_Authority__c</members>
@@ -553,6 +560,7 @@
         <members>NEPA_Statute_Risk_Weight__mdt</members>
         <members>NEPA_SLA_Config__mdt</members>
         <members>NEPA_Process_Model__mdt</members>
+        <members>NEPA_Risk_Threshold__mdt</members>
         <!-- Platform events -->
         <members>NEPA_Error_Event__e</members>
         <name>CustomObject</name>
@@ -703,6 +711,8 @@
         <members>NEPA_Statute_Risk_Weight.ESA</members>
         <members>NEPA_Statute_Risk_Weight.CWA</members>
         <members>NEPA_Statute_Risk_Weight.NHPA</members>
+        <!-- NEPA_Risk_Threshold seed record -->
+        <members>NEPA_Risk_Threshold.Default</members>
         <name>CustomMetadata</name>
     </types>
     <types>
@@ -718,6 +728,8 @@
         <members>NEPA_CE_Intake</members>
         <!-- Priority 4: Timeline Risk Assessment -->
         <members>NEPA_Timeline_Risk_Assessor</members>
+        <!-- Phase 2 Climate Assessment Applicability -->
+        <members>NEPA_Phase2_Applicability_Setter</members>
         <!-- Priority 6: Workflow Orchestration -->
         <members>NEPA_Stage_Gate</members>
         <members>NEPA_Stage_Gate_Orchestrator</members>
@@ -770,6 +782,7 @@
         <members>NEPA_Decision_Payload_Record_Page</members>
         <members>NEPA_Decision_Log_Record_Page</members>
         <members>NEPA_GIS_Data_Record_Page</members>
+        <members>nepa_litigation__c_Record_Page</members>
         <name>FlexiPage</name>
     </types>
     <types>

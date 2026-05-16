@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Default</label>
+    <protected>false</protected>
+    <values>
+        <field>Very_High_Floor__c</field>
+        <value xsi:type="xsd:decimal">58</value>
+    </values>
+    <values>
+        <field>High_Floor__c</field>
+        <value xsi:type="xsd:decimal">45</value>
+    </values>
+    <values>
+        <field>Moderate_Floor__c</field>
+        <value xsi:type="xsd:decimal">35</value>
+    </values>
+    <values>
+        <field>Legal_Review_Floor__c</field>
+        <value xsi:type="xsd:decimal">58</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>Calibration_Source__c</field>
+        <value xsi:type="xsd:string">PermitTEC v0.1 (PNNL 2025) — 761 NEPA litigation cases, 13-stage calibration pipeline. Very High ≥58, High ≥45, Moderate ≥35, Legal Review auto-task ≥58.</value>
+    </values>
+</CustomMetadata>

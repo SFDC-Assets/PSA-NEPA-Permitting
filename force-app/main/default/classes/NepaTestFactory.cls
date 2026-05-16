@@ -433,6 +433,65 @@ public class NepaTestFactory {
         return rc;
     }
 
+    /**
+     * Inserts a ContentVersion with configurable draft source, status, reviewer, and reviewed date.
+     * Use this to test NEPA_AIDocumentRequiresSMEReview validation rule scenarios.
+     * @param linkedEntityId Id of the record to link the document to
+     * @param docType        Value for nepa_document_type__c
+     * @param draftSource    Value for nepa_draft_source__c (e.g. 'AI-Generated', 'Human-Authored')
+     * @param status         Value for nepa_status__c (e.g. 'Draft', 'Approved', 'Published')
+     * @param reviewerId     Id of the reviewing User (null to leave blank — triggers VR when AI+Approved)
+     * @param reviewedDate   Value for nepa_reviewed_date__c (null to leave blank)
+     * @return Saved ContentVersion record
+     */
+    @SuppressWarnings('PMD.ExcessiveParameterList')
+    public static ContentVersion insertContentVersionWithStatus(
+        Id linkedEntityId, String docType, String draftSource,
+        String status, Id reviewerId, Date reviewedDate
+    ) {
+        cvCounter++;
+        String uniqueLabel = docType + ' STATUS ' + cvCounter + ' ' + String.valueOf(linkedEntityId).right(4);
+        ContentVersion cv = new ContentVersion();
+        cv.Title                    = uniqueLabel;
+        cv.PathOnClient             = uniqueLabel.replaceAll('[^a-zA-Z0-9]', '_') + '.pdf';
+        cv.VersionData              = Blob.valueOf('test content');
+        cv.FirstPublishLocationId   = linkedEntityId;
+        cv.nepa_public_access__c    = true;
+        cv.nepa_document_type__c    = docType != null ? docType : 'EA';
+        cv.nepa_draft_source__c     = draftSource;
+        cv.nepa_status__c           = status != null ? status : 'Draft';
+        cv.nepa_publish_date__c     = Date.today();
+        cv.nepa_process__c          = linkedEntityId;
+        if (reviewerId != null) {
+            cv.nepa_reviewer__c = reviewerId;
+        }
+        if (reviewedDate != null) {
+            cv.nepa_reviewed_date__c = reviewedDate;
+        }
+        insert cv;
+        cv = [SELECT Id, ContentDocumentId FROM ContentVersion WHERE Id = :cv.Id];
+        return cv;
+    }
+
+    /**
+     * Inserts a PublicComplaint with an explicit commenter organization name.
+     * Use this when the org name drives CMT-based plaintiff lookup (bulk plaintiff tests).
+     * @param processId   Parent IndividualApplication Id
+     * @param orgName     Value for nepa_organization__c
+     * @param commentBody Value for nepa_comment_body__c (null uses a default)
+     * @return Saved PublicComplaint record
+     */
+    public static PublicComplaint insertCommentWithOrg(Id processId, String orgName, String commentBody) {
+        PublicComplaint pc = new PublicComplaint();
+        pc.LastName                = 'Test Commenter';
+        pc.IncidentDate            = Date.today();
+        pc.nepa_organization__c    = orgName;
+        pc.nepa_related_process__c = processId;
+        pc.nepa_comment_body__c    = commentBody != null ? commentBody : 'Test comment.';
+        insert pc;
+        return pc;
+    }
+
     private static ContentVersion insertContentVersionRecord(Id linkedEntityId, Boolean publicAccess, String docType) {
         // Unique title per insert prevents ContentDocument index lock contention when
         // multiple test classes run in parallel and Salesforce serializes on title dedup.

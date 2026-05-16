@@ -148,7 +148,7 @@ The script deploys in dependency order:
 | 8c | OmniStudio DataRaptors and Integration Procedures |
 | 9–16 | Tabs, report types, reports, dashboards, layouts, LWC, FlexiPages, Lightning app |
 
-Expected total time: 10–15 minutes.
+Expected automated deploy time: 10–15 minutes. Add ~15 minutes for 4 required manual post-deploy steps (BRE activation, CSV import, field type conversion, record type setup) documented in DEVELOPER_GUIDE.md Post-Deploy Checklist. **Total end-to-end: ~30 minutes.**
 
 ### Option B — Single-shot manifest deploy (re-deploy to existing org)
 

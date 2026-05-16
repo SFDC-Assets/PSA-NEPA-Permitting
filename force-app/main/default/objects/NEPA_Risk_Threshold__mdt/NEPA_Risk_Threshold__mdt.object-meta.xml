@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Configurable risk score threshold values used by NEPA_Litigation_Risk_Scorer flow to classify litigation risk bands and trigger legal review tasks. Storing thresholds in custom metadata makes them auditable and updateable without a flow deployment. The Default record seeds the PermitTEC-calibrated thresholds (PNNL 2025, 761 cases).</description>
+    <label>NEPA Risk Threshold</label>
+    <pluralLabel>NEPA Risk Thresholds</pluralLabel>
+    <visibility>Public</visibility>
+    <fields>
+        <fullName>Very_High_Floor__c</fullName>
+        <description>Minimum risk score for the VERY HIGH band. Scores at or above this value receive the Very High tier label and auto-create a legal review task. Default: 58 (PermitTEC calibration).</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Very High Floor</label>
+        <precision>5</precision>
+        <scale>0</scale>
+        <type>Number</type>
+    </fields>
+    <fields>
+        <fullName>High_Floor__c</fullName>
+        <description>Minimum risk score for the HIGH band. Scores at or above this value (and below Very_High_Floor__c) receive the High tier label. Default: 45 (PermitTEC calibration).</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>High Floor</label>
+        <precision>5</precision>
+        <scale>0</scale>
+        <type>Number</type>
+    </fields>
+    <fields>
+        <fullName>Moderate_Floor__c</fullName>
+        <description>Minimum risk score for the MODERATE band. Scores at or above this value (and below High_Floor__c) receive the Moderate tier label. Scores below this are Low. Default: 35 (PermitTEC calibration).</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Moderate Floor</label>
+        <precision>5</precision>
+        <scale>0</scale>
+        <type>Number</type>
+    </fields>
+    <fields>
+        <fullName>Legal_Review_Floor__c</fullName>
+        <description>Minimum risk score that auto-creates a Legal Defensibility Review task. Intentionally equal to Very_High_Floor__c by default but configurable independently. Default: 58 (PermitTEC calibration).</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Legal Review Auto-Create Floor</label>
+        <precision>5</precision>
+        <scale>0</scale>
+        <type>Number</type>
+    </fields>
+    <fields>
+        <fullName>Active__c</fullName>
+        <description>Only the active threshold record is queried by NEPA_Litigation_Risk_Scorer. Set exactly one record to Active = true.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Active</label>
+        <type>Checkbox</type>
+        <defaultValue>true</defaultValue>
+    </fields>
+    <fields>
+        <fullName>Calibration_Source__c</fullName>
+        <description>Human-readable citation for the dataset used to calibrate these thresholds. Provides traceability for audit purposes.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Calibration Source</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+</CustomObject>

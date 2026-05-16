@@ -545,3 +545,24 @@ This sequence is documented in QUICKSTART.md Step 4 and in `package.xml`.
 - **Stage-gate flows now benefit from picklist consistency.** Flows that branch on `nepa_process_stage__c` values will no longer silently fail due to case or spacing inconsistencies.
 - **PathAssistant is additive, not blocking.** The Guidance text in the PathAssistant is informational — it does not enforce stage transitions. Stage transition enforcement remains in `NEPA_Stage_Gate` (before-save flow).
 - **18 canonical values are the authoritative list.** New stages must be added to both the picklist metadata (`nepa_process_stage__c.field-meta.xml`) and the PathAssistant (`IndividualApplication_NEPA_Process_Path.pathAssistant-meta.xml`) in the same deployment. Adding a value to only one causes an orphaned stage in either the UI guidance or the stage gate conditions.
+
+---
+
+## ADR-012: Scope of E.O. 13175 Tribal Consultation Enforcement
+
+### Decision
+
+This accelerator implements two distinct and non-overlapping tribal protections:
+
+1. **EJ/Tribal comment triage gate (fully automated):** `NEPA_Comment_AI_Router` unconditionally detects tribal sovereignty, sacred sites, EJ, and civil rights keywords via `NepaCommentEJDetector` (Apex). Matched comments are never AI-classified — they route directly to the EJ/Tribal Liaison queue via `NEPA_EJTribal_Router`. This gate cannot be disabled by configuration. Enforces OMB M-24-10 and EO 12898.
+
+2. **E.O. 13175 tribal consultation process:** Government-to-government consultation schedules, correspondence logs, and meeting records are captured as `ApplicationTimeline` (Case Event) records with `nepa_tier__c = Tribal_Consultation`. The data model does not impose a procedural stage-gate block on process advancement, because:
+   - Tribal consultation obligations are agency-specific and depend on the nature of tribal interests identified during scoping — they cannot be generically enforced at the platform level without risk of false-blocking or false-satisfaction.
+   - E.O. 13175 compliance determination is a legal and intergovernmental judgment that belongs to the agency's designated tribal liaison and legal counsel, not an automated rule engine.
+   - A generic stage gate could create a false appearance of compliance where the underlying consultation was inadequate.
+
+### Consequences
+
+- Agencies deploying this accelerator should implement their own E.O. 13175 compliance tracking through the `ApplicationTimeline` object, supplemented by their agency-specific consultation protocols.
+- The EJ/tribal comment gate is the correct and fully implemented boundary for AI governance compliance under OMB M-24-10.
+- Roadmap item (post-June 2026): Add a configurable tribal consultation checklist as a `nepa_required_document__c` type requirement on EA/EIS records that agencies can optionally activate.

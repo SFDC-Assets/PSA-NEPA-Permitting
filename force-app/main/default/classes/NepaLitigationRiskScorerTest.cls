@@ -432,6 +432,51 @@ private class NepaLitigationRiskScorerTest {
         }
     }
 
+    // ── 200-record bulk safety ────────────────────────────────────────────────
+
+    @IsTest
+    static void riskScorer_200Records_noGovernorLimitException() {
+        Program proj = makeProject('Bureau of Land Management', '9th');
+
+        Test.startTest();
+        Boolean ok = NepaTestFactory.runBulkReviewTypeUpdate(proj.Id, 200, 'EA', 'EIS');
+        Test.stopTest();
+
+        System.assertEquals(true, ok,
+            'Risk scorer bulk update of 200 records must not throw a governor limit or unhandled exception');
+    }
+
+    @IsTest
+    static void riskScorer_nullProjectLink_defaultsApplied_doesNotThrow() {
+        // IA with no Program parent — scorer must not NPE on null agency/circuit lookups
+        IndividualApplication ia = new IndividualApplication();
+        ia.Category               = 'Permit';
+        ia.LicenseTypeId          = getLicenseTypeId();
+        ia.nepa_process_status__c = 'in progress';
+        ia.nepa_process_stage__c  = 'Scoping';
+        ia.nepa_review_type__c    = 'EA';
+        insert ia;
+
+        Test.startTest();
+        Boolean threw = false;
+        try {
+            update new IndividualApplication(Id = ia.Id, nepa_review_type__c = 'EIS');
+        } catch (Exception e) {
+            threw = true;
+        }
+        Test.stopTest();
+
+        System.assertEquals(false, threw,
+            'Risk scorer must apply defaults and not throw when nepa_related_project__c is null');
+
+        // If score was written, it must be a valid non-negative value
+        IndividualApplication result = [SELECT nepa_risk_score__c FROM IndividualApplication WHERE Id = :ia.Id];
+        if (result.nepa_risk_score__c != null) {
+            System.assert(result.nepa_risk_score__c >= 0 && result.nepa_risk_score__c <= 100,
+                'Risk score with null project must be in 0–100 range; got: ' + result.nepa_risk_score__c);
+        }
+    }
+
     @IsTest
     static void recordCompletenessChange_doesNotThrow() {
         Program proj = makeProject('Bureau of Land Management', '9th');

@@ -1,0 +1,66 @@
+name: Validate Deploy (Dry Run)
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'force-app/**'
+      - 'manifest/**'
+      - 'package.json'
+      - 'sfdx-project.json'
+
+jobs:
+  validate:
+    name: Validate metadata against sandbox
+    runs-on: ubuntu-latest
+    environment: sandbox
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Salesforce CLI
+        run: npm install --global @salesforce/cli@latest
+
+      - name: Authenticate to sandbox (JWT)
+        env:
+          SF_JWT_KEY: ${{ secrets.SF_JWT_KEY }}
+          SF_CLIENT_ID: ${{ secrets.SF_CLIENT_ID }}
+          SF_USERNAME: ${{ secrets.SF_USERNAME }}
+          SF_INSTANCE_URL: ${{ secrets.SF_INSTANCE_URL }}
+        run: |
+          printf '%s' "$SF_JWT_KEY" > server.key
+          sf org login jwt \
+            --client-id "$SF_CLIENT_ID" \
+            --jwt-key-file server.key \
+            --username "$SF_USERNAME" \
+            --instance-url "$SF_INSTANCE_URL" \
+            --alias sandbox \
+            --set-default
+          rm -f server.key
+
+      - name: Dry-run deploy (validate only)
+        run: |
+          sf project deploy start \
+            --dry-run \
+            --source-dir force-app \
+            --target-org sandbox \
+            --test-level RunLocalTests \
+            --wait 30 \
+            --json | tee deploy-result.json
+          node -e "
+            const r = require('./deploy-result.json');
+            if (r.status !== 0) {
+              console.error('Validation failed');
+              process.exit(1);
+            }
+            console.log('Validation passed.');
+          "
+
+      - name: Upload validation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-validation-report
+          path: deploy-result.json
+          retention-days: 14

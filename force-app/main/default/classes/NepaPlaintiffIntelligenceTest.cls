@@ -513,6 +513,70 @@ private class NepaPlaintiffIntelligenceTest {
             'ICL Active__c must be true');
     }
 
+    // ── 200-record bulk safety ────────────────────────────────────────────────
+
+    @IsTest
+    static void plaintiffIntelligence_200Comments_noGovernorLimitException() {
+        // 200 PublicComplaint records on one IA → flow must not hit SOQL/DML limit
+        IndividualApplication ia = getParentApp();
+
+        List<PublicComplaint> complaints = new List<PublicComplaint>();
+        for (Integer i = 0; i < 200; i++) {
+            PublicComplaint pc = buildComplaint(ia.Id, 'Center for Biological Diversity');
+            pc.LastName = 'BulkSafety ' + i;
+            complaints.add(pc);
+        }
+
+        Test.startTest();
+        Boolean threw = false;
+        try {
+            insert complaints;
+        } catch (Exception e) {
+            threw = true;
+        }
+        Test.stopTest();
+
+        System.assertEquals(false, threw,
+            'Inserting 200 comments must not throw a governor limit or unhandled exception');
+    }
+
+    @IsTest
+    static void plaintiffIntelligence_200MixedOrgs_onlyKnownOrgsFlagged() {
+        // 100 comments from a known-high-risk org + 100 from an unknown org → only the
+        // parent IA for the known-org comments should end up flagged.
+        Program projKnown   = NepaTestFactory.insertProgram('PLT-BULK-KNOWN', 'Known Org Bulk', 'BLM');
+        Program projUnknown = NepaTestFactory.insertProgram('PLT-BULK-UNK',   'Unknown Org Bulk', 'BLM');
+        IndividualApplication iaKnown   = NepaTestFactory.insertProcess(projKnown.Id, 'EIS', null, null);
+        IndividualApplication iaUnknown = NepaTestFactory.insertProcess(projUnknown.Id, 'EIS', null, null);
+
+        List<PublicComplaint> allComplaints = new List<PublicComplaint>();
+        for (Integer i = 0; i < 100; i++) {
+            PublicComplaint pc = buildComplaint(iaKnown.Id, 'Center for Biological Diversity');
+            pc.LastName = 'KnownBulk ' + i;
+            allComplaints.add(pc);
+        }
+        for (Integer i = 0; i < 100; i++) {
+            PublicComplaint pc = buildComplaint(iaUnknown.Id, 'Anonymous Commenter Inc.');
+            pc.LastName = 'UnknownBulk ' + i;
+            allComplaints.add(pc);
+        }
+
+        Test.startTest();
+        insert allComplaints;
+        Test.stopTest();
+
+        IndividualApplication knownResult = [
+            SELECT nepa_plaintiff_risk_flag__c FROM IndividualApplication WHERE Id = :iaKnown.Id
+        ];
+        IndividualApplication unknownResult = [
+            SELECT nepa_plaintiff_risk_flag__c FROM IndividualApplication WHERE Id = :iaUnknown.Id
+        ];
+        System.assertEquals(true, knownResult.nepa_plaintiff_risk_flag__c,
+            'Known high-risk org (Center for Biological Diversity) must flag parent IA');
+        System.assertNotEquals(true, unknownResult.nepa_plaintiff_risk_flag__c,
+            'Unknown org (Anonymous Commenter Inc.) must not flag parent IA');
+    }
+
     @IsTest
     static void cmtShape_shoshonePaiuteTribes_correctTierAndTribalFlag() {
         List<NEPA_Plaintiff_Profile__mdt> records = [

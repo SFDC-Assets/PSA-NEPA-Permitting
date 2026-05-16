@@ -199,7 +199,7 @@
             <label>Statute Present</label>
         </rules>
     </decisions>
-    <description>Calculates composite litigation risk score on IndividualApplication via BRE Expression Set NEPA_Litigation_Risk_Scorer. Pre-computes statute risk points (CONTAINS matching not supported in BRE) before invoking the ES. Writes RiskScore, RiskTier, AIConfidence, and ExpeditedPenaltyApplied back to the IA. Fires async after-commit when key risk fields change.</description>
+    <description>Calculates composite litigation risk score on IndividualApplication via BRE Expression Set NEPA_Litigation_Risk_Scorer. Pre-computes statute risk points (CONTAINS matching not supported in BRE) before invoking the ES. Writes RiskScore, RiskTier, AIConfidence, and ExpeditedPenaltyApplied back to the IA. Fires async after-commit when key risk fields change. Risk band thresholds are loaded from NEPA_Risk_Threshold__mdt (Default record) so they are configurable without a flow deployment.</description>
     <formulas>
         <name>formula_ErrorContext</name>
         <dataType>String</dataType>
@@ -213,7 +213,7 @@
     <formulas>
         <name>formula_RiskTier</name>
         <dataType>String</dataType>
-        <expression>IF( {!Call_NEPA_Risk_Scorer.RiskScore} &gt;= 58, &quot;Very High&quot;, IF( {!Call_NEPA_Risk_Scorer.RiskScore} &gt;= 45, &quot;High&quot;, IF( {!Call_NEPA_Risk_Scorer.RiskScore} &gt;= 35, &quot;Moderate&quot;, &quot;Low&quot; ) ) )</expression>
+        <expression>IF( {!Call_NEPA_Risk_Scorer.RiskScore} &gt;= {!var_ThresholdVeryHigh}, &quot;Very High&quot;, IF( {!Call_NEPA_Risk_Scorer.RiskScore} &gt;= {!var_ThresholdHigh}, &quot;High&quot;, IF( {!Call_NEPA_Risk_Scorer.RiskScore} &gt;= {!var_ThresholdModerate}, &quot;Moderate&quot;, &quot;Low&quot; ) ) )</expression>
     </formulas>
     <formulas>
         <name>formula_ScoreFactorsSummary</name>
@@ -271,6 +271,34 @@
         <queriedFields>nepa_record_owner_agency__c</queriedFields>
         <queriedFields>nepa_primary_sector__c</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_RiskThresholds</name>
+        <label>Get Risk Score Thresholds (CMT)</label>
+        <locationX>176</locationX>
+        <locationY>215</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Assign_ThresholdVars</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Active__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>NEPA_Risk_Threshold__mdt</object>
+        <outputReference>var_RiskThresholdRecord</outputReference>
+        <queriedFields>Very_High_Floor__c</queriedFields>
+        <queriedFields>High_Floor__c</queriedFields>
+        <queriedFields>Moderate_Floor__c</queriedFields>
+        <queriedFields>Legal_Review_Floor__c</queriedFields>
     </recordLookups>
     <recordLookups>
         <name>Get_StatuteWeights</name>
@@ -365,7 +393,7 @@
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <scheduledPaths>
             <connector>
-                <targetReference>Get_RelatedProject</targetReference>
+                <targetReference>Get_RiskThresholds</targetReference>
             </connector>
             <pathType>AsyncAfterCommit</pathType>
         </scheduledPaths>
@@ -415,6 +443,36 @@
             </value>
         </inputAssignments>
     </subflows>
+    <assignments>
+        <name>Assign_ThresholdVars</name>
+        <label>Load Threshold Values from CMT</label>
+        <locationX>176</locationX>
+        <locationY>215</locationY>
+        <assignmentItems>
+            <assignToReference>var_ThresholdVeryHigh</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_RiskThresholdRecord.Very_High_Floor__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_ThresholdHigh</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_RiskThresholdRecord.High_Floor__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_ThresholdModerate</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_RiskThresholdRecord.Moderate_Floor__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_RelatedProject</targetReference>
+        </connector>
+    </assignments>
     <variables>
         <name>col_StatuteWeights</name>
         <dataType>SObject</dataType>
@@ -475,6 +533,47 @@
         <scale>1</scale>
         <value>
             <numberValue>0.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <name>var_RiskThresholdRecord</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>NEPA_Risk_Threshold__mdt</objectType>
+    </variables>
+    <variables>
+        <name>var_ThresholdVeryHigh</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+        <value>
+            <numberValue>58</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <name>var_ThresholdHigh</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+        <value>
+            <numberValue>45</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <name>var_ThresholdModerate</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+        <value>
+            <numberValue>35</numberValue>
         </value>
     </variables>
 </Flow>

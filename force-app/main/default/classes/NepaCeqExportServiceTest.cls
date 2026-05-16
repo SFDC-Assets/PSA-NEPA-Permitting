@@ -483,6 +483,120 @@ private class NepaCeqExportServiceTest {
             'agencyId must round-trip exactly — CEQ uses this as the join key to the agency registry');
     }
 
+    // ── Null-field and edge-case serialization ────────────────────────────────
+
+    @IsTest
+    static void getSingle_allOptionalFieldsNull_returns200() {
+        // A process with every nullable DTO field unset must serialize without NPE.
+        Program proj = NepaTestFactory.insertProgram('NEPA-CEQ-NULL', 'Null Fields Test', 'BLM');
+        IndividualApplication ia = new IndividualApplication();
+        ia.Category                = 'Permit';
+        ia.LicenseTypeId           = [SELECT Id FROM RegulatoryAuthorizationType WHERE Name = 'NEPA Environmental Review' LIMIT 1].Id;
+        ia.nepa_related_project__c = proj.Id;
+        ia.nepa_process_status__c  = 'in progress';
+        ia.nepa_process_stage__c   = 'Scoping';
+        // All other fields intentionally null: no federal_unique_id, no risk score, no SLA dates
+        insert ia;
+
+        RestContext.request  = buildRequest('GET', '/services/apexrest/nepa/v1/processes/' + ia.Id, null);
+        RestContext.response = new RestResponse();
+
+        Test.startTest();
+        NepaCeqExportService.doGet();
+        Test.stopTest();
+
+        System.assertEquals(200, RestContext.response.statusCode,
+            'Service must return 200 for a record with all nullable fields null');
+        Map<String, Object> body = parseBody();
+        System.assertEquals(true, body.get('success'), 'success must be true');
+        Map<String, Object> dto = (Map<String, Object>) body.get('data');
+        System.assertNotEquals(null, dto.get('id'), 'id must always be present even when other fields are null');
+    }
+
+    @IsTest
+    static void getList_updatedSince_futureDateReturnsEmpty() {
+        // updatedSince set 10 years in the future → 0 results, 200 response
+        String futureDate = String.valueOf(Date.today().addYears(10)) + 'T00:00:00Z';
+        Map<String, String> params = new Map<String, String>{ 'updatedSince' => futureDate };
+        RestContext.request  = buildRequest('GET', '/services/apexrest/nepa/v1/processes/', params);
+        RestContext.response = new RestResponse();
+
+        Test.startTest();
+        NepaCeqExportService.doGet();
+        Test.stopTest();
+
+        System.assertEquals(200, RestContext.response.statusCode);
+        Map<String, Object> body = parseBody();
+        System.assertEquals(true, body.get('success'));
+        System.assertEquals(0, (Integer) body.get('totalCount'),
+            'Future updatedSince must return 0 results');
+    }
+
+    @IsTest
+    static void getList_combinedFilters_returnsCorrectSubset() {
+        // reviewType=EIS AND status=in+progress → exactly 1 result (FUID-001 from @TestSetup)
+        Map<String, String> params = new Map<String, String>{
+            'reviewType' => 'EIS',
+            'status'     => 'in progress'
+        };
+        RestContext.request  = buildRequest('GET', '/services/apexrest/nepa/v1/processes/', params);
+        RestContext.response = new RestResponse();
+
+        Test.startTest();
+        NepaCeqExportService.doGet();
+        Test.stopTest();
+
+        System.assertEquals(200, RestContext.response.statusCode);
+        Map<String, Object> body = parseBody();
+        System.assertEquals(1, (Integer) body.get('totalCount'),
+            'Combined reviewType=EIS + status=in+progress must match exactly 1 record');
+        List<Object> data = (List<Object>) body.get('data');
+        Map<String, Object> row = (Map<String, Object>) data[0];
+        System.assertEquals('EIS', (String) row.get('reviewType'));
+        System.assertEquals('in progress', (String) row.get('processStatus'));
+    }
+
+    @IsTest
+    static void getList_pageSizeOne_returnsOneRecord() {
+        Map<String, String> params = new Map<String, String>{
+            'pageSize' => '1',
+            'page'     => '1'
+        };
+        RestContext.request  = buildRequest('GET', '/services/apexrest/nepa/v1/processes/', params);
+        RestContext.response = new RestResponse();
+
+        Test.startTest();
+        NepaCeqExportService.doGet();
+        Test.stopTest();
+
+        System.assertEquals(200, RestContext.response.statusCode);
+        Map<String, Object> body = parseBody();
+        System.assertEquals(2, (Integer) body.get('totalCount'), 'Total count must still reflect full dataset');
+        List<Object> data = (List<Object>) body.get('data');
+        System.assertEquals(1, data.size(), 'pageSize=1 must return exactly 1 record in data array');
+    }
+
+    @IsTest
+    static void compliance_slaOverdue_isBoolean() {
+        // slaOverdue must serialize as a Boolean (formula checkbox), not as a String or null object.
+        RestContext.request  = buildRequest('GET', '/services/apexrest/nepa/v1/processes/FUID-001', null);
+        RestContext.response = new RestResponse();
+
+        Test.startTest();
+        NepaCeqExportService.doGet();
+        Test.stopTest();
+
+        System.assertEquals(200, RestContext.response.statusCode);
+        Map<String, Object> dto = (Map<String, Object>) parseBody().get('data');
+        System.assert(dto.containsKey('slaOverdue'), 'DTO must contain slaOverdue key');
+        // When slaOverdue is present and not null it must be a Boolean
+        Object slaOverdueVal = dto.get('slaOverdue');
+        if (slaOverdueVal != null) {
+            System.assert(slaOverdueVal instanceof Boolean,
+                'slaOverdue must be a Boolean in the DTO; got: ' + slaOverdueVal.getClass().getName());
+        }
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private static RestRequest buildRequest(String method, String uri, Map<String, String> params) {

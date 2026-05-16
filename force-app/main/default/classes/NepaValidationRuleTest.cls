@@ -1,5 +1,5 @@
 @SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage,PMD.MethodNamingConventions,PMD.ApexUnitTestClassShouldHaveRunAs')
-/** Tests validation rules on IndividualApplication: description length, FONSI/ROD on CE, waiver legal sufficiency, tiering age check. */
+/** Tests validation rules on IndividualApplication, PublicComplaint, and ContentVersion. */
 @IsTest
 private class NepaValidationRuleTest {
 
@@ -14,7 +14,9 @@ private class NepaValidationRuleTest {
             SELECT Id, nepa_review_type__c, nepa_description__c,
                    nepa_decision_document_type__c, nepa_waiver_invoked__c,
                    nepa_waiver_statute_cite__c, nepa_tiering_to_prior_eis__c,
-                   nepa_prior_nepa_date__c, nepa_supplementation_review_complete__c
+                   nepa_prior_nepa_date__c, nepa_supplementation_review_complete__c,
+                   nepa_phase2_applicable__c, nepa_climate_assessment_required__c,
+                   nepa_climate_assessment_complete__c, nepa_process_stage__c
             FROM IndividualApplication
             LIMIT 1
         ];
@@ -183,5 +185,238 @@ private class NepaValidationRuleTest {
         update ia;
         IndividualApplication result = [SELECT nepa_tiering_to_prior_eis__c FROM IndividualApplication WHERE Id = :ia.Id];
         System.assertEquals(false, result.nepa_tiering_to_prior_eis__c);
+    }
+
+    // ── NEPA_Comment_Period_Closed ────────────────────────────────────────────
+
+    @IsTest
+    static void commentPeriodClosed_newCommentAfterDeadline_blocks() {
+        Program proj = NepaTestFactory.insertProgram('VR-CPC-001', 'CPC Test Project', 'BLM');
+        DateTime pastDeadline = DateTime.now().addDays(-1);
+        IndividualApplication proc = NepaTestFactory.insertProcessWithDateTimes(
+            proj.Id, 'EA', DateTime.now().addDays(-30), pastDeadline
+        );
+        PublicComplaint pc = new PublicComplaint();
+        pc.LastName                = 'Late Commenter';
+        pc.IncidentDate            = Date.today();
+        pc.nepa_related_process__c = proc.Id;
+        pc.nepa_comment_body__c    = 'Comment after deadline.';
+        try {
+            insert pc;
+            System.assert(false, 'Expected DmlException for comment after closed period');
+        } catch (DmlException e) {
+            System.assert(e.getMessage().contains('comment period'), 'Error should mention comment period: ' + e.getMessage());
+        }
+    }
+
+    @IsTest
+    static void commentPeriodClosed_newCommentBeforeDeadline_saves() {
+        Program proj = NepaTestFactory.insertProgram('VR-CPC-002', 'CPC Open Project', 'BLM');
+        IndividualApplication proc = NepaTestFactory.insertProcessWithDateTimes(
+            proj.Id, 'EA', DateTime.now().addDays(-5), DateTime.now().addDays(10)
+        );
+        PublicComplaint pc = new PublicComplaint();
+        pc.LastName                = 'On Time Commenter';
+        pc.IncidentDate            = Date.today();
+        pc.nepa_related_process__c = proc.Id;
+        pc.nepa_comment_body__c    = 'Comment before deadline.';
+        insert pc;
+        PublicComplaint saved = [SELECT Id FROM PublicComplaint WHERE Id = :pc.Id];
+        System.assertNotEquals(null, saved.Id, 'Comment within open period should save');
+    }
+
+    @IsTest
+    static void commentPeriodClosed_updateAfterDeadline_saves() {
+        // ISNEW() guard: updating an existing comment is allowed even after the deadline
+        Program proj = NepaTestFactory.insertProgram('VR-CPC-003', 'CPC Update Project', 'BLM');
+        IndividualApplication proc = NepaTestFactory.insertProcessWithDateTimes(
+            proj.Id, 'EA', DateTime.now().addDays(-10), DateTime.now().addDays(5)
+        );
+        PublicComplaint pc = new PublicComplaint();
+        pc.LastName                = 'Updater';
+        pc.IncidentDate            = Date.today();
+        pc.nepa_related_process__c = proc.Id;
+        pc.nepa_comment_body__c    = 'Original comment.';
+        insert pc;
+
+        // Now close the period
+        proc.nepa_public_comment_period_end_date__c = DateTime.now().addDays(-1);
+        update proc;
+
+        // Update the existing comment — ISNEW() guard means this should succeed
+        PublicComplaint pcUpdate = new PublicComplaint(Id = pc.Id);
+        pcUpdate.nepa_comment_body__c = 'Updated comment text.';
+        update pcUpdate;
+        PublicComplaint saved = [SELECT nepa_comment_body__c FROM PublicComplaint WHERE Id = :pc.Id];
+        System.assertEquals('Updated comment text.', saved.nepa_comment_body__c);
+    }
+
+    @IsTest
+    static void commentPeriodClosed_noEndDate_failOpen_saves() {
+        // Null end date → fail-open: insert must be allowed
+        Program proj = NepaTestFactory.insertProgram('VR-CPC-004', 'CPC No Date Project', 'BLM');
+        IndividualApplication proc = NepaTestFactory.insertProcess(proj.Id, 'EA', null, null);
+        PublicComplaint pc = new PublicComplaint();
+        pc.LastName                = 'No Deadline Commenter';
+        pc.IncidentDate            = Date.today();
+        pc.nepa_related_process__c = proc.Id;
+        pc.nepa_comment_body__c    = 'Comment with no end date set.';
+        insert pc;
+        PublicComplaint saved = [SELECT Id FROM PublicComplaint WHERE Id = :pc.Id];
+        System.assertNotEquals(null, saved.Id, 'Null end date should fail-open and allow insert');
+    }
+
+    // ── NEPA_AIDocumentRequiresSMEReview ──────────────────────────────────────
+
+    @IsTest
+    static void aiDocReview_aiApprovedMissingReviewer_blocks() {
+        IndividualApplication proc = getProcess();
+        try {
+            NepaTestFactory.insertContentVersionWithStatus(
+                proc.Id, 'EIS', 'AI-Generated', 'Approved', null, null
+            );
+            System.assert(false, 'Expected DmlException for AI Approved doc missing reviewer');
+        } catch (DmlException e) {
+            System.assert(e.getMessage().contains('reviewer') || e.getMessage().contains('Reviewer'),
+                'Error should mention reviewer: ' + e.getMessage());
+        }
+    }
+
+    @IsTest
+    static void aiDocReview_aiApprovedMissingDate_blocks() {
+        // Reviewer set but no reviewed date → VR must still block
+        IndividualApplication proc = getProcess();
+        try {
+            NepaTestFactory.insertContentVersionWithStatus(
+                proc.Id, 'EIS', 'AI-Generated', 'Approved', UserInfo.getUserId(), null
+            );
+            System.assert(false, 'Expected DmlException for AI Approved doc missing review date');
+        } catch (DmlException e) {
+            System.assert(e.getMessage() != null && e.getMessage().length() > 0,
+                'Should surface VR error: ' + e.getMessage());
+        }
+    }
+
+    @IsTest
+    static void aiDocReview_aiApprovedWithBothFields_saves() {
+        IndividualApplication proc = getProcess();
+        ContentVersion cv = NepaTestFactory.insertContentVersionWithStatus(
+            proc.Id, 'EIS', 'AI-Generated', 'Approved', UserInfo.getUserId(), Date.today()
+        );
+        ContentVersion saved = [SELECT nepa_status__c, nepa_reviewer__c FROM ContentVersion WHERE Id = :cv.Id];
+        System.assertEquals('Approved', saved.nepa_status__c);
+        System.assertNotEquals(null, saved.nepa_reviewer__c, 'Reviewer must be set when both fields provided');
+    }
+
+    @IsTest
+    static void aiDocReview_nonAiApprovedMissingReviewer_saves() {
+        // Human-authored doc: VR must not fire even when reviewer is blank
+        IndividualApplication proc = getProcess();
+        ContentVersion cv = NepaTestFactory.insertContentVersionWithStatus(
+            proc.Id, 'EA', 'Human-Authored', 'Approved', null, null
+        );
+        ContentVersion saved = [SELECT nepa_status__c FROM ContentVersion WHERE Id = :cv.Id];
+        System.assertEquals('Approved', saved.nepa_status__c, 'Non-AI doc with Approved status should save without reviewer');
+    }
+
+    // ── NEPA_Phase2_Climate_Gate bypass paths ─────────────────────────────────
+
+    @IsTest
+    static void phase2Gate_notApplicable_decisionStageAllowed() {
+        IndividualApplication ia = getProcess();
+        ia.nepa_phase2_applicable__c          = false;
+        ia.nepa_climate_assessment_required__c = true;
+        ia.nepa_climate_assessment_complete__c = false;
+        ia.nepa_process_stage__c               = 'Decision';
+        update ia;
+        IndividualApplication saved = [SELECT nepa_process_stage__c FROM IndividualApplication WHERE Id = :ia.Id];
+        System.assertEquals('Decision', saved.nepa_process_stage__c);
+    }
+
+    @IsTest
+    static void phase2Gate_notRequired_decisionStageAllowed() {
+        IndividualApplication ia = getProcess();
+        ia.nepa_phase2_applicable__c          = true;
+        ia.nepa_climate_assessment_required__c = false;
+        ia.nepa_climate_assessment_complete__c = false;
+        ia.nepa_process_stage__c               = 'Decision';
+        update ia;
+        IndividualApplication saved = [SELECT nepa_process_stage__c FROM IndividualApplication WHERE Id = :ia.Id];
+        System.assertEquals('Decision', saved.nepa_process_stage__c);
+    }
+
+    @IsTest
+    static void phase2Gate_assessmentComplete_decisionStageAllowed() {
+        IndividualApplication ia = getProcess();
+        ia.nepa_phase2_applicable__c          = true;
+        ia.nepa_climate_assessment_required__c = true;
+        ia.nepa_climate_assessment_complete__c = true;
+        ia.nepa_process_stage__c               = 'Decision';
+        update ia;
+        IndividualApplication saved = [SELECT nepa_process_stage__c FROM IndividualApplication WHERE Id = :ia.Id];
+        System.assertEquals('Decision', saved.nepa_process_stage__c);
+    }
+
+    @IsTest
+    static void phase2Gate_nonDecisionStage_incompleteAllowed() {
+        // applicable + required + incomplete is fine at non-Decision stages
+        IndividualApplication ia = getProcess();
+        ia.nepa_phase2_applicable__c          = true;
+        ia.nepa_climate_assessment_required__c = true;
+        ia.nepa_climate_assessment_complete__c = false;
+        ia.nepa_process_stage__c               = 'Scoping';
+        update ia;
+        IndividualApplication saved = [SELECT nepa_process_stage__c FROM IndividualApplication WHERE Id = :ia.Id];
+        System.assertEquals('Scoping', saved.nepa_process_stage__c);
+    }
+
+    // ── NEPA_Phase2_Applicability_Setter flow auto-triggers ───────────────────
+
+    @IsTest
+    static void phase2Setter_eisReviewType_autoSetsFlags() {
+        // Before-save flow NEPA_Phase2_Applicability_Setter should set applicable=true
+        // and required=true when review type changes to EIS
+        IndividualApplication ia = getProcess();
+        ia.nepa_review_type__c = 'EIS';
+        update ia;
+        IndividualApplication saved = [
+            SELECT nepa_phase2_applicable__c, nepa_climate_assessment_required__c
+            FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+        System.assertEquals(true, saved.nepa_phase2_applicable__c,
+            'EIS review type should auto-set Phase 2 applicable flag');
+        System.assertEquals(true, saved.nepa_climate_assessment_required__c,
+            'EIS review type should auto-set climate assessment required flag');
+    }
+
+    @IsTest
+    static void phase2Setter_eaReviewType_autoSetsFlags() {
+        IndividualApplication ia = getProcess();
+        ia.nepa_review_type__c = 'EA';
+        update ia;
+        IndividualApplication saved = [
+            SELECT nepa_phase2_applicable__c, nepa_climate_assessment_required__c
+            FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+        System.assertEquals(true, saved.nepa_phase2_applicable__c,
+            'EA review type should auto-set Phase 2 applicable flag');
+    }
+
+    @IsTest
+    static void phase2Setter_ceReviewType_clearsFlags() {
+        // If previously set to EIS and then changed to CE, flags should clear
+        IndividualApplication ia = getProcess();
+        ia.nepa_phase2_applicable__c          = true;
+        ia.nepa_climate_assessment_required__c = true;
+        ia.nepa_review_type__c                 = 'CE';
+        update ia;
+        IndividualApplication saved = [
+            SELECT nepa_phase2_applicable__c, nepa_climate_assessment_required__c
+            FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+        System.assertEquals(false, saved.nepa_phase2_applicable__c,
+            'CE review type should clear Phase 2 applicable flag');
+        System.assertEquals(false, saved.nepa_climate_assessment_required__c,
+            'CE review type should clear climate assessment required flag');
     }
 }
