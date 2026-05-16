@@ -14,7 +14,7 @@
 
 The proposed solution delivers a fully configured NEPA permitting acceleration platform built on **Salesforce Government Cloud Plus** and the **Salesforce Agentforce for Public Sector (APS)** suite. It satisfies all nine CEQ Standard entities (CEQ NEPA and Permitting Data and Technology Standard v1.2), all 82 requirements in this RFP, and all Priority 1 technical, data, security, and implementation requirements.
 
-The platform is FedRAMP High authorized on Salesforce Government Cloud Plus. No Agency-managed server infrastructure is required. The vast majority of capability is delivered through **configuration** — Salesforce declarative tools including Flows (31 total), Custom Metadata Types (15 types), OmniStudio Integration Procedures and DataRaptors, Business Rules Engine (BRE) Decision Matrices and Expression Sets, and the Salesforce Field Service scheduling engine — rather than custom code. This produces a maintainable, upgradeable platform that Agency administrators can extend without engaging developers for routine business rule changes.
+The platform is FedRAMP High authorized on Salesforce Government Cloud Plus. No Agency-managed server infrastructure is required. The vast majority of capability is delivered through **configuration** — Salesforce declarative tools including Flows (37 total), Custom Metadata Types (19 types), OmniStudio Integration Procedures and DataRaptors, Business Rules Engine (BRE) Decision Matrices and Expression Sets, and the Salesforce Field Service scheduling engine — rather than custom code. This produces a maintainable, upgradeable platform that Agency administrators can extend without engaging developers for routine business rule changes.
 
 The platform ships with a fully operational **empirical risk intelligence layer** calibrated from 761 federal NEPA litigation cases (PermitTEC v0.1, PNNL 2025) and the 61,881-project NETATEC v2.0 EIS timeline corpus. All risk scoring is deterministic and fully transparent: litigation risk scores, challenge prediction rules, tribal plaintiff intelligence, sector-circuit risk cells, and per-agency EIS scoping performance tiers are all configurable metadata records — not opaque AI outputs. The AI vs. deterministic boundary is explicitly disclosed in every score factors string written to the administrative record.
 
@@ -85,7 +85,7 @@ The Salesforce PSS `IndividualApplication` object serves as CEQ Entity 2 (Proces
 | federal_unique_process_id | `nepa_federal_unique_id__c` | External ID, Unique |
 | review_type | `nepa_review_type__c` | Picklist: CE / EA / EIS |
 | process_status | `StatusCode` | PSS native lifecycle field |
-| process_stage | `nepa_process_stage__c` | Picklist aligned to stage gate model |
+| process_stage | `nepa_process_stage__c` | Picklist (18 canonical values); drives Salesforce Path for stage-specific coordinator guidance |
 | comment_period_start / end | `nepa_comment_start_date__c` / `nepa_comment_end_date__c` | Date |
 | completion_date | `nepa_completion_date__c` | Date |
 | related_project | `nepa_related_project__c` | Lookup → Program |
@@ -274,12 +274,13 @@ The `nepa_litigation__c` custom object stores 761 federal NEPA litigation cases 
 
 When a `PublicComplaint` is saved, the `NEPA_Plaintiff_Intelligence` Flow queries `NEPA_Plaintiff_Profile__mdt` for the commenter's organization. If a match is found, the Flow:
 
-1. Sets `nepa_plaintiff_risk_flag__c = true` on the parent `IndividualApplication`.
-2. Writes the matched plaintiff profile reference to `nepa_plaintiff_profile_ref__c`.
-3. Creates a `Task` for elevated legal review assignment.
-4. If `Is_Tribal_Nation__c = true` on the matched profile, additionally sets `nepa_tribal_plaintiff_flag__c = true` on the `IndividualApplication` and creates a separate escalation Task for government-to-government consultation review (see PC-008).
+1. Sets `nepa_plaintiff_risk_flag__c = true` directly on the `PublicComplaint` record and on the parent `IndividualApplication`.
+2. Sets `nepa_plaintiff_risk_tier__c` on the `PublicComplaint` record to the matched profile's risk tier.
+3. Writes the matched plaintiff profile reference to `nepa_plaintiff_profile_ref__c`.
+4. Creates a `Task` for elevated legal review assignment.
+5. If `Is_Tribal_Nation__c = true` on the matched profile, additionally sets `nepa_tribal_plaintiff_flag__c = true` directly on the `PublicComplaint` record and on the `IndividualApplication`, and creates a separate escalation Task for government-to-government consultation review (see PC-008).
 
-The platform ships with six pre-seeded `NEPA_Plaintiff_Profile__mdt` records: WildEarth Guardians (75% success rate, 12 cases), Earthjustice (40% success rate, 20 cases), Oregon Natural Resources Council (38% success rate, 8 cases), Navajo Nation (75% success rate, `Is_Tribal_Nation__c = true`), Sierra Club, and Western Watersheds Project. Tribal Nation challengers achieved an 87.5% win rate in the PermitTEC corpus — the highest of any plaintiff category — making the tribal dual-flag the highest-priority litigation risk escalation path in the platform.
+The platform ships with 16 pre-seeded `NEPA_Plaintiff_Profile__mdt` records, including: WildEarth Guardians (75% success rate, 12 cases), Earthjustice (40% success rate, 20 cases), Oregon Natural Resources Council (38% success rate, 8 cases), Navajo Nation (75% success rate, `Is_Tribal_Nation__c = true`), Shoshone-Paiute Tribes (`Is_Tribal_Nation__c = true`), Idaho Conservation League, Sierra Club, Western Watersheds Project, and additional high-frequency federal NEPA litigants identified in the PermitTEC corpus. Tribal Nation challengers achieved an 87.5% win rate in the PermitTEC corpus — the highest of any plaintiff category — making the tribal dual-flag the highest-priority litigation risk escalation path in the platform.
 
 Both flags and their rationale are recorded on the `IndividualApplication` record and included in the administrative record export. Administrators maintain the plaintiff registry by updating `NEPA_Plaintiff_Profile__mdt` without code changes.
 
@@ -299,8 +300,14 @@ Each `PublicComplaint` record carries `nepa_response_text__c` (the agency's fina
 
 **PC-008 — Tribal Nation plaintiff dual-flag and consultation hard gate** | **(B) Configuration**
 
-The `NEPA_Plaintiff_Intelligence` Flow checks `Is_Tribal_Nation__c` on the matched `NEPA_Plaintiff_Profile__mdt` record. When true, the Flow sets two distinct flags on the parent `IndividualApplication`:
+The `NEPA_Plaintiff_Intelligence` Flow checks `Is_Tribal_Nation__c` on the matched `NEPA_Plaintiff_Profile__mdt` record. When true, the Flow sets distinct flags on both the `PublicComplaint` record and the parent `IndividualApplication`:
 
+**On `PublicComplaint`:**
+1. `nepa_plaintiff_risk_flag__c = true`
+2. `nepa_plaintiff_risk_tier__c` — set to the matched profile's risk tier
+3. `nepa_tribal_plaintiff_flag__c = true`
+
+**On `IndividualApplication`:**
 1. `nepa_plaintiff_risk_flag__c = true` — the general prior-plaintiff flag
 2. `nepa_tribal_plaintiff_flag__c = true` — the Tribal Nation-specific flag, stored separately for auditability
 
@@ -519,7 +526,7 @@ The BRE Expression Set `NEPA_Litigation_Risk_Scorer` V2 is Active in the platfor
 
 **RI-002 — Configurable risk weight tables** | **(B) Configuration**
 
-Risk weight tables are stored in three Custom Metadata Types and five Decision Matrix definitions:
+Risk weight tables are stored in four Custom Metadata Types and five Decision Matrix definitions:
 
 | Calibration source | CMT | Decision Matrix | Formula |
 |---|---|---|---|
@@ -528,7 +535,9 @@ Risk weight tables are stored in three Custom Metadata Types and five Decision M
 | Statute multiplier | `NEPA_Statute_Risk_Weight__mdt` | (MDT loop, no separate DM) | `pts = (multiplier − 1.00) × 20, min 1` |
 | Sector-circuit win rate | `NEPA_Sector_Circuit_Risk__mdt` | `NEPA_Risk_SectorCircuit.csv` | Cell label (HIGH/MODERATE/LOW) |
 
-Calibrated values shipped with the platform are derived from 761 PermitTEC v0.1 federal NEPA litigation cases (PNNL, 2025). Example calibrated values: BLM = 39pts (39.3% loss rate, 89 cases); 10th Circuit = 43pts (1.45 multiplier, 68 cases); ESA = 10pts (1.48 multiplier, 72 cases). The calibration formula and case counts are documented in the platform's Configuration Management Plan (D-04).
+Additional configuration CMT types supporting the platform: `NEPA_ActionPlan_Config__mdt` (action plan launch rules), `NEPA_Doc_Count_Threshold__mdt` (document count outlier thresholds by review type), `NEPA_Layer_Discipline__mdt` (GIS layer-to-discipline resolver), and `NEPA_MFR_Assessment__mdt` (mandatory findings of fact/review scoring). All 19 CMT types are configurable by administrators without code changes.
+
+Calibrated values shipped with the platform are derived from 761 PermitTEC v0.1 federal NEPA litigation cases (PNNL, 2025). The `NEPA_Agency_Risk_Rate__mdt` CMT ships with 16 pre-seeded agency records. Example calibrated values: BLM = 39pts (39.3% loss rate, 89 cases); 10th Circuit = 43pts (1.45 multiplier, 68 cases); ESA = 10pts (1.48 multiplier, 72 cases). The calibration formula and case counts are documented in the platform's Configuration Management Plan (D-04).
 
 ---
 
@@ -564,9 +573,9 @@ Administrators add new rules by inserting `NEPA_Challenge_Prediction_Rule__mdt` 
 
 **RI-005 — Sector-circuit risk matrix** | **(B) Configuration**
 
-The `NEPA_Sector_Circuit_Risk__mdt` Custom Metadata Type stores 17 sector-circuit cells with empirical agency win rates and risk cell labels derived from the PermitTEC corpus. The composite key is `nepa_primary_sector__c + '|' + nepa_circuit__c` on the parent `Program`. The BRE V3 Expression Set `GetSectorCircuitRisk` step looks up the matching cell and incorporates sector-circuit risk into the composite score formula.
+The `NEPA_Sector_Circuit_Risk__mdt` Custom Metadata Type stores 23 sector-circuit cells with empirical agency win rates and risk cell labels derived from the PermitTEC corpus (expanded to include Stages 10–13 from the PermitTEC v0.1 dataset). The composite key is `nepa_primary_sector__c + '|' + nepa_circuit__c` on the parent `Program`. The BRE V3 Expression Set `GetSectorCircuitRisk` step looks up the matching cell and incorporates sector-circuit risk into the composite score formula.
 
-Selected cells from the 17-cell matrix:
+Selected cells from the 23-cell matrix:
 
 | Cell | Agency Win Rate | Case Count | Risk Label |
 |---|---|---|---|
@@ -962,7 +971,7 @@ Agency points of contact for each reference are provided under separate cover pe
 | PC-002 | Comment period gating | (B) | ✅ | NEPA_Comment_Period_Gate |
 | PC-003 | Substantive classification | (B) | ✅ | Field + AI default + human override + audit |
 | PC-004 | AI comment triage | (B) | ✅ | NEPA_Comment_Triage_Save + Einstein |
-| PC-005 | Litigation history registry | (B) | ✅ | nepa_litigation__c + NEPA_Plaintiff_Profile__mdt; 6 records incl. Is_Tribal_Nation__c |
+| PC-005 | Litigation history registry | (B) | ✅ | nepa_litigation__c + NEPA_Plaintiff_Profile__mdt; 16 records incl. Is_Tribal_Nation__c |
 | PC-006 | Route comments as work orders | (B) | ✅ | After-save Flow + FSL |
 | PC-007 | Comment response log | (B) | ✅ | PublicComplaint response fields + AR export |
 | PC-008 | Tribal Nation dual-flag + consultation gate | (B) | ✅ | NEPA_Plaintiff_Intelligence; nepa_tribal_plaintiff_flag__c; +20pt delta; stage gate |
@@ -983,7 +992,7 @@ Agency points of contact for each reference are provided under separate cover pe
 | RI-002 | Configurable risk weight tables | (B) | ✅ | 3 CMTs + 5 DMs; PermitTEC v0.1 761 cases; formulas documented in CMP |
 | RI-003 | Configurable risk tier thresholds | (B) | ✅ | BRE AssignRiskTier step + formula; ≥58 Very High / ≥45 High / ≥35 Moderate |
 | RI-004 | Challenge prediction rules | (B) | ✅ | NEPA_Challenge_Predictor + NEPA_Challenge_Prediction_Rule__mdt; 7 rules |
-| RI-005 | Sector-circuit risk matrix | (B) | ✅ | NEPA_Sector_Circuit_Risk__mdt; 17 cells; BRE V3 Draft |
+| RI-005 | Sector-circuit risk matrix | (B) | ✅ | NEPA_Sector_Circuit_Risk__mdt; 23 cells (incl. Stages 10–13); BRE V3 Draft |
 | RI-006 | Agency performance tier | (B) | ✅ | NEPA_Agency_Scoping_Baseline__mdt + NEPA_Agency_Tier_Setter Flow; 11 agencies |
 | RI-007 | Advisory-only outputs + audit trail | (B) | ✅ | No auto adverse action; all fields in AR export; AI boundary disclosed in score factors |
 | UR-001 | Structured team role assignments | (B) | ✅ | nepa_process_team_member__c |
