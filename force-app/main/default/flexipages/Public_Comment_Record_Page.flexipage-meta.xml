@@ -401,6 +401,26 @@
                 <identifier>Recordnepa_duplicate_of_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_ai_generated__c</fieldItem>
+                <identifier>Recordnepa_ai_generated_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_human_validated_by__c</fieldItem>
+                <identifier>Recordnepa_human_validated_by_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>cmt-ai-c2</name>
         <type>Facet</type>
     </flexiPageRegions>

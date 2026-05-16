@@ -73,6 +73,26 @@
                 <identifier>ia_overview_completion_date</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_circuit_court__c</fieldItem>
+                <identifier>ia_overview_circuit_court</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_project_sector__c</fieldItem>
+                <identifier>ia_overview_project_sector</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>ia-overview-c1</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -405,6 +425,94 @@
         <type>Facet</type>
     </flexiPageRegions>
 
+    <!-- SECTION: Phase 2 Compliance — Column 1 (always visible; flow-computed flags) -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_climate_assessment_required__c</fieldItem>
+                <identifier>ia_phase2_climate_required</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_ej_analysis_required__c</fieldItem>
+                <identifier>ia_phase2_ej_required</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_elevated_doc_complexity__c</fieldItem>
+                <identifier>ia_phase2_elevated_doc_complexity</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>ia-phase2-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Phase 2 Compliance — Column 2 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_phase2_applicable__c</fieldItem>
+                <identifier>ia_phase2_applicable</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_climate_assessment_complete__c</fieldItem>
+                <identifier>ia_phase2_climate_complete</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>ia-phase2-c2</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Phase 2 Compliance — Columns Wrapper -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>ia-phase2-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>ia_phase2_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>ia-phase2-c2</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>ia_phase2_col2</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>ia-phase2-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
     <!-- SECTION: Intake and Submission — Column 1 -->
     <flexiPageRegions>
         <itemInstances>
@@ -471,6 +579,26 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_missing_documents__c</fieldItem>
                 <identifier>ia_intake_missing_docs</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_pages_missing__c</fieldItem>
+                <identifier>ia_intake_pages_missing</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_polygon__c</fieldItem>
+                <identifier>ia_intake_polygon</identifier>
             </fieldInstance>
         </itemInstances>
         <name>ia-intake-c2</name>
@@ -753,6 +881,36 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_action_plan_launched__c</fieldItem>
                 <identifier>ia_details_action_plan_launched</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_tiering_to_prior_eis__c</fieldItem>
+                <identifier>ia_details_tiering_to_prior_eis</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_prior_nepa_date__c</fieldItem>
+                <identifier>ia_details_prior_nepa_date</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_processing_status__c</fieldItem>
+                <identifier>ia_details_processing_status</identifier>
             </fieldInstance>
         </itemInstances>
         <name>ia-details-c1</name>
@@ -1476,6 +1634,24 @@
                         <rightValue>CE</rightValue>
                     </criteria>
                 </visibilityRule>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>ia-phase2-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Phase 2 Compliance</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>ia_section_phase2</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
