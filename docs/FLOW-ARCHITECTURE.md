@@ -1,6 +1,6 @@
 # NEPA Flow Architecture
 
-30 flows total. This document explains the three non-obvious structural patterns — why the error handling, stage gate, and defensibility scoring are split the way they are.
+37 flows total. This document explains the three non-obvious structural patterns — why the error handling, stage gate, and defensibility scoring are split the way they are.
 
 ---
 
@@ -57,20 +57,26 @@ flowchart TD
 
 | Flow | Type | Trigger / Entry |
 |---|---|---|
+| NEPA_ActionPlan_Launcher | Autolaunched | Invoked when IndividualApplication review type is determined; selects and creates the matching NEPA Action Plan Template |
 | NEPA_Administrative_Record_Checker | Autolaunched subflow | Called from Stage Gate |
-| NEPA_Agency_Tier_Setter | After-save | Program update (nepa_record_owner_agency__c change) |
 | NEPA_AdminRecord_AutoCreate | After-save | ContentVersion insert |
+| NEPA_Agency_Tier_Setter | After-save | Program update (nepa_record_owner_agency__c change) |
 | NEPA_CE_Determination_Router | After-save | IndividualApplication (CE pathway) |
 | NEPA_CE_Intake | Before-save | IndividualApplication insert (CE) |
 | NEPA_CE_Screener | After-save | IndividualApplication (CE, on update) |
 | NEPA_Challenge_Predictor | After-save | IndividualApplication update (review type / sector / tribal flag change) |
+| NEPA_Close_Administrative_Record | After-save (async) | IndividualApplication (nepa_review_type__c transitions to ROD or FONSI) |
+| NEPA_Comment_AI_Router | After-save | PublicComplaint insert — entry point for Agentforce comment triage |
+| NEPA_Comment_Duplicate_Check | Autolaunched | Called from comment triage; substring similarity within 30 days on same process |
 | NEPA_Comment_Period_Gate | Before-save | IndividualApplication update |
+| NEPA_Comment_ResponseTask_Creator | Autolaunched | Called from comment triage; creates high-priority Task for substantive comments |
 | NEPA_Comment_Triage_Save | Autolaunched | Invoked from Apex / Agent |
 | NEPA_Defensibility_Gap_Checker | Autolaunched subflow | Called from trigger wrappers |
 | NEPA_Defensibility_Trigger_ContentVersion | After-save | ContentVersion insert/update |
 | NEPA_Defensibility_Trigger_Engagement | After-save | nepa_engagement__c insert |
 | NEPA_EIS_Section_Assembler | Autolaunched | Invoked from Agent |
 | NEPA_EIS_Section_Draft_Trigger | After-save | ContentVersion insert (EIS) |
+| NEPA_EJTribal_Router | Autolaunched | Called from comment triage; unconditional EJ/tribal keyword gate — routes to human queue, bypasses AI |
 | NEPA_Error_Event_Handler | Platform-event triggered | NEPA_Error_Event__e |
 | NEPA_Error_Logger | Autolaunched subflow | Called from fault connectors |
 | NEPA_FlowError_CountIncrementer | Before-save | NEPA_Flow_Error__c insert |
@@ -78,7 +84,7 @@ flowchart TD
 | NEPA_GIS_Proximity_Check | Autolaunched subflow | Called from CE Screener |
 | NEPA_Litigation_Risk_Scorer | Autolaunched | Invoked from BRE / Agent |
 | NEPA_Permit_Coordinator | Autolaunched | Invoked from Agent |
-| NEPA_Plaintiff_Intelligence | After-save | PublicComplaint insert |
+| NEPA_Plaintiff_Intelligence | After-save | PublicComplaint insert — writes plaintiff flags to both the comment record and the parent IndividualApplication |
 | NEPA_Record_Completeness_Scorer | After-save | IndividualApplication update |
 | NEPA_SLA_Due_Date_Setter | Before-save | ApplicationTimeline insert |
 | NEPA_SLA_Escalation_Monitor | Scheduled | Daily on overdue ApplicationTimeline |

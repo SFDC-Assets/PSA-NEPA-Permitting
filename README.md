@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.txt)
 [![Platform: FedRAMP Authorized](https://img.shields.io/badge/Platform-FedRAMP%20Authorized-green.svg)](https://marketplace.fedramp.gov/)
 [![CEQ Standard: v1.2 Compliant](https://img.shields.io/badge/CEQ%20Standard-v1.2%20Compliant-brightgreen.svg)](https://permitting.innovation.gov/CEQ_NEPA_and_Permitting_Data_and_Technology_Standard.pdf)
-[![Apex Tests: 385+ passing](https://img.shields.io/badge/Apex%20Tests-385%2B%20passing-brightgreen.svg)](force-app/main/default/classes/)
+[![Apex Tests: 473+ passing](https://img.shields.io/badge/Apex%20Tests-473%2B%20passing-brightgreen.svg)](force-app/main/default/classes/)
 [![Section 508: WCAG 2.1 AA](https://img.shields.io/badge/Section%20508-WCAG%202.1%20AA-blue.svg)](https://www.salesforce.com/company/legal/508_accessibility/)
 
 > **CEQ Permitting Innovators submission (June 2, 2026):** See [docs/SUBMISSION-NARRATIVE.md](docs/SUBMISSION-NARRATIVE.md) for the full solution narrative structured around the 5 evaluation criteria.
@@ -35,15 +35,15 @@ Three categories of preventable delay drive most of the gap between the current 
 | CEQ entities implemented | 13 of 13 (6 standard + 7 extended, per PIC OpenAPI v1.2.0) |
 | MFRs addressed | 10 of 10 |
 | Service delivery standards addressed | 4 of 4 |
-| Declarative flows | 31 record-triggered, autolaunched, and scheduled |
+| Declarative flows | 37 record-triggered, autolaunched, and scheduled |
 | CE Library records | 2,105 categorical exclusions across 79 federal agencies |
 | GIS services at intake | 5 (FWS ECOS, EPA EJScreen, USGS NHD, BLM tribal cadastral, BLM PLSS) |
 | Litigation cases in risk model | 761 (PermitTEC v0.1, PNNL 2025) |
 | NEPA projects in baseline corpus | 61,881 (NETATEC v2.0, PNNL 2025) |
-| Custom Metadata Types | 15 |
+| Custom Metadata Types | 19 |
 | BRE Decision Matrices + Expression Sets | 8 DMs + 3 ESs (deterministic, not AI) |
 | Decision model exports | Published to GitHub `/docs/decision-models/` — machine-readable JSON |
-| Apex regression tests | 385+ across 36 test classes |
+| Apex regression tests | 473+ across 36 test classes |
 | Platform | Salesforce Agentforce for Public Sector (FedRAMP Authorized) |
 | Shield Field Audit Trail | Available on Gov Cloud — 10-year field-level history for NARA/litigation hold |
 | PIV/CAC authentication | Native Salesforce support — no separate IdP required |
@@ -151,7 +151,7 @@ The BRE Litigation Risk Scorer evaluates seven dimensions at every record save a
 - **Agency loss rate** — empirical PermitTEC per-agency loss rates (e.g., BIA: highest-risk agency)
 - **Circuit multiplier** — 10th Circuit (43pts, 68 cases), 9th Circuit next
 - **Statute involvement** — ESA, NFMA, CWA, NGA, NHPA add independent risk points
-- **Sector × circuit cell** — 17-cell matrix from Stage 13 PermitTEC analysis
+- **Sector × circuit cell** — 23-cell matrix from Stage 10-13 PermitTEC analysis
 - **Challenge prediction rules** — Energy × 4th Circuit (+12pts), Tribal plaintiff override (+20pts)
 - **Scoping overrun** — triggers against 11 per-agency empirical baselines
 - **Tribal plaintiff flag** — dual flag + +20pt delta based on 87.5% Tribal Nation win rate
@@ -169,7 +169,7 @@ Scores ≥58 auto-create a Legal Review Task. All weights are traceable to speci
 | Path | Contents | Why It Matters |
 |---|---|---|
 | `force-app/main/default/objects/` | 13 CEQ entity object definitions + 15 custom metadata type schemas | The complete data model — start here to understand the schema |
-| `force-app/main/default/flows/` | 31 flow XML files | All automation: stage gates, risk scoring, CE screening, comment triage, AR close, plaintiff intelligence, scoping baselines, error logging |
+| `force-app/main/default/flows/` | 37 flow XML files | All automation: stage gates, risk scoring, CE screening, comment triage, AR close, plaintiff intelligence, scoping baselines, error logging |
 | `force-app/main/default/agents/` | `NEPA_Comment_Triage.agent` | Agentforce comment classification and routing agent |
 | `force-app/main/default/expressionSetDefinition/` | 3 BRE Expression Set definitions | The deterministic scoring engines (CE Screener, Litigation Risk Scorer, Permit Coordinator) |
 | `force-app/main/default/decisionMatrixDefinition/` | 8 BRE Decision Matrix definitions | Rule tables that feed the Expression Sets |
@@ -179,7 +179,7 @@ Scores ≥58 auto-create a Legal Review Task. All weights are traceable to speci
 | `force-app/main/default/omniProcesses/` | `NEPA_CEQExport` Integration Procedure | CEQ-standard JSON export (MFR #2 compliance) |
 | `force-app/main/default/omniDataTransforms/` | 15 DataRaptor files (Extract, Load, Upsert) | OmniStudio data transformation layer |
 | `force-app/main/default/flexipages/` | Lightning record pages for IndividualApplication and PublicComplaint | Pre-configured UI pages surfacing all key fields |
-| `force-app/main/default/classes/` | 36 Apex test classes (385+ tests total) | Compliance verification — run `sf apex run test` against your org |
+| `force-app/main/default/classes/` | 36 Apex test classes (473+ tests total) | Compliance verification — run `sf apex run test` against your org |
 | `docs/decision-models/` | Machine-readable JSON exports of CE rules, GIS layers, litigation risk weights | MFR #4 — screening criteria publicly accessible and version-controlled |
 | `demo/` | Demo story + import data CSVs + Apex scripts | Carrie's Placer Mine scenario — full end-to-end walkthrough |
 | `DEVELOPER_GUIDE.md` | Complete post-deploy configuration guide | Start here after running `deploy.sh` |
@@ -194,7 +194,7 @@ Scores ≥58 auto-create a Legal Review Task. All weights are traceable to speci
 
 | Standard | Coverage |
 |---|---|
-| **CEQ NEPA and Permitting Data and Technology Standard v1.2** | All 13 entities implemented; 5 required provenance fields on each; 385+ Apex tests verify field-level compliance |
+| **CEQ NEPA and Permitting Data and Technology Standard v1.2** | All 13 entities implemented; 5 required provenance fields on each; 473+ Apex tests verify field-level compliance |
 | **CEQ Permitting Technology Action Plan (May 2025) — all 10 MFRs** | MFR #1 Data Standards (Leading-Edge), #2 Data Sharing (Emerging), #3 Automated Screening (Leading-Edge), #4 Screening Criteria Access (Emerging), #5 Case Management (Emerging→Leading-Edge), #6 GIS Analysis (Emerging), #7 Document Management (Emerging), #8 Comment Compilation (Emerging), #9 Administrative Record (Emerging), #10 Interoperable Services (Emerging) |
 | **OMB M-25-21** | AI advisory-only; AI recommends, human confirms enforced in all flows; EJ/tribal gate non-negotiable |
 | **FAST-41** | Per-agency baseline durations pre-seeded; `nepa_milestone_variance_days__c` provides real-time variance against agency-specific statutory targets |
@@ -272,18 +272,22 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
       <li>Process Agency Relationship (<code>nepa_process_related_agencies__c</code>) — supports tribal nations and cooperating agencies as named parties</li>
     </ul>
   </li>
-  <li><strong>Custom Metadata Types</strong> (x15) — all agency-specific parameters externalized as configuration:
+  <li><strong>Custom Metadata Types</strong> (x19) — all agency-specific parameters externalized as configuration:
     <ul>
-      <li><code>NEPA_Agency_Risk_Rate__mdt</code> — per-agency litigation loss rates (7 records)</li>
+      <li><code>NEPA_Agency_Risk_Rate__mdt</code> — per-agency litigation loss rates (16 records)</li>
       <li><code>NEPA_Circuit_Risk_Weight__mdt</code> — per-circuit risk multipliers (13 records)</li>
       <li><code>NEPA_Statute_Risk_Weight__mdt</code> — adjacent statute risk weights (5 records: ESA, NFMA, CWA, NGA, NHPA)</li>
-      <li><code>NEPA_Sector_Circuit_Risk__mdt</code> — sector × circuit win-rate matrix (17 cells)</li>
-      <li><code>NEPA_Plaintiff_Profile__mdt</code> — known plaintiff profiles with win rates and tribal flag (6 records)</li>
-      <li><code>NEPA_Challenge_Prediction_Rule__mdt</code> — challenge prediction rules with risk deltas (7 records)</li>
+      <li><code>NEPA_Sector_Circuit_Risk__mdt</code> — sector × circuit win-rate matrix (23 cells)</li>
+      <li><code>NEPA_Plaintiff_Profile__mdt</code> — known plaintiff profiles with win rates and tribal flag (16 records)</li>
+      <li><code>NEPA_Challenge_Prediction_Rule__mdt</code> — challenge prediction rules with risk deltas (10 records)</li>
       <li><code>NEPA_Agency_Scoping_Baseline__mdt</code> — per-agency EIS scoping medians and performance tier (11 records)</li>
       <li><code>NEPA_GIS_Layer__mdt</code> — GIS service registry with endpoints, buffer distances, regulatory citations (5 records)</li>
       <li><code>NEPA_CE_Screening_Rule__mdt</code>, <code>NEPA_CE_Code__mdt</code> — CE screening rules and CE Library</li>
       <li><code>NEPA_SLA_Config__mdt</code>, <code>NEPA_Stage_Baseline_Duration__mdt</code>, <code>NEPA_Required_Document__mdt</code>, <code>NEPA_Process_Model__mdt</code>, <code>NEPA_Permit_Matrix__mdt</code> — process configuration</li>
+      <li><code>NEPA_MFR_Assessment__mdt</code> — self-assessment against CEQ Permitting Technology Action Plan MFR maturity levels (10 records)</li>
+      <li><code>NEPA_Doc_Count_Threshold__mdt</code> — CE/EA/EIS P50/P90/Elevated page count thresholds derived from NETATEC v2.0 (3 records)</li>
+      <li><code>NEPA_Layer_Discipline__mdt</code> — GIS layer discipline routing rules for proximity analysis</li>
+      <li><code>NEPA_ActionPlan_Config__mdt</code> — permit-type-specific NEPA action plan templates (36 records)</li>
     </ul>
   </li>
   <li><strong>BRE Decision Matrices</strong> (x8) and <strong>Expression Sets</strong> (x3):
@@ -293,7 +297,7 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
       <li>Permit Coordinator: Permit Matrix</li>
     </ul>
   </li>
-  <li><strong>Declarative Flows</strong> (x31) — all business logic is Flow-based; no custom Apex encodes business rules</li>
+  <li><strong>Declarative Flows</strong> (x37) — all business logic is Flow-based; no custom Apex encodes business rules</li>
   <li><strong>Agentforce Agent:</strong> <code>NEPA_Comment_Triage</code> — comment classification, deduplication, EJ/tribal routing, response task creation</li>
   <li><strong>OmniStudio:</strong> 15 DataRaptors (12 Extract, 2 Load, 1 Upsert) + <code>NEPA/CEQExport</code> Integration Procedure</li>
   <li><strong>Named Credentials:</strong> 3 GIS services (USGS NHD, BLM Tribal Cadastral, BLM PLSS)</li>
@@ -301,7 +305,7 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
   <li><strong>Lightning Record Pages:</strong> Pre-configured pages for IndividualApplication and PublicComplaint surfacing all key fields</li>
   <li><strong>CE Library:</strong> 2,105 categorical exclusions across 79 federal agencies (sourced from CEQ CE Explorer v2.0)</li>
   <li><strong>Decision Model Exports:</strong> <code>ce-screening-rules.json</code>, <code>litigation-risk-weights.json</code>, <code>gis-layers-inventory.json</code> published to <code>/docs/decision-models/</code></li>
-  <li><strong>Apex Test Suite:</strong> 385+ tests across 36 classes covering all 13 entities, REST export, BRE configuration, CE screening, stage gates, SLA escalation, plaintiff intelligence, EJ detection, GIS proximity, comment triage, AR management, and error handling</li>
+  <li><strong>Apex Test Suite:</strong> 473+ tests across 36 classes covering all 13 entities, REST export, BRE configuration, CE screening, stage gates, SLA escalation, plaintiff intelligence, EJ detection, GIS proximity, comment triage, AR management, and error handling</li>
 </ol>
 
 ---
@@ -310,7 +314,7 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
 
 **NETATEC v2.0 (PNNL, 2025):** 61,881 federal NEPA projects compiled by Pacific Northwest National Laboratory. Used to derive CE screening rules, page count outlier thresholds (CE p95 = 17 pages, EA p95 = 200 pages), per-agency EIS scoping baselines, and FAST-41 timeline durations.
 
-**PermitTEC v0.1 (PNNL, 2025):** 761 federal NEPA litigation cases covering 1970–2025. A 13-stage calibration pipeline produced empirically derived risk weights: agency points from observed loss rates, circuit points from court decision multipliers, statute points from involvement multipliers, and a 17-cell sector-circuit win-rate matrix. All weights are traceable to specific case counts. Low-confidence weights (fewer than 20 cases) are flagged with `Low_Data_Confidence__c = true` and disclosed in every risk score output.
+**PermitTEC v0.1 (PNNL, 2025):** 761 federal NEPA litigation cases covering 1970–2025. A 13-stage calibration pipeline produced empirically derived risk weights: agency points from observed loss rates, circuit points from court decision multipliers, statute points from involvement multipliers, and a 23-cell sector-circuit win-rate matrix (Stages 10-13). All weights are traceable to specific case counts. Low-confidence weights (fewer than 20 cases) are flagged with `Low_Data_Confidence__c = true` and disclosed in every risk score output.
 
 **CEQ EIS Timeline Data 2010–2024 (CEQ):** 1,903 Final EIS records used to derive per-agency scoping medians and the scoping overrun detection model. Analysis confirms a 49% improvement in median NOI→ROD time since 2016 (4.46 → 2.28 years in 2024). Scoping is the universal bottleneck in 34 of 36 agencies (60–75% of total EIS time).
 
@@ -325,6 +329,8 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
 **Process status values** align with CEQ standard: `planned | pre-application | in progress | paused | completed | cancelled`.
 
 **Provenance fields:** All 5 custom provenance fields are present on all 13 implemented entities. `LastModifiedDate` (native) satisfies the standard's `Last Updated` property.
+
+**`nepa_process_stage__c` field type and Salesforce Path:** This field was converted from Text to Picklist (18 canonical values spanning CE/EA/EIS pathways). A `PathAssistant` (`IndividualApplication_NEPA_Process_Path`) provides stage-specific Key Fields and guidance text for all 18 stages. **Deploy prerequisite:** Salesforce blocks a Text→Picklist field type change via API when records exist in the org. Before deploying the PathAssistant and updated FlexiPage, convert `nepa_process_stage__c` manually in Setup → Object Manager → IndividualApplication → Fields and Relationships. See QUICKSTART.md Step 4 for the full sequence.
 
 **BRE activation requirement:** Deploying Decision Matrix and Expression Set metadata via CLI does not create the `LatestVersionSnapshotId` required by the BRE runtime. After every deploy, open each DM and ES in Setup → Business Rules Engine and click **Activate**. See [decision_matrix_rows/README.md](decision_matrix_rows/README.md) for the full sequence including CSV import.
 
@@ -347,6 +353,17 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
 ---
 
 ## Revision History
+
+**3.1 (2026-05-15)** — Stage 10-13 risk improvements, Salesforce Path, 4 new CMT types, 22 FLS fields, 17 new tests
+
+- **Salesforce Path:** `nepa_process_stage__c` converted from Text to Picklist (18 canonical values). `IndividualApplication_NEPA_Process_Path` PathAssistant added with stage-specific Key Fields and coordinator guidance for all 18 stages. Manual Setup field-type conversion required before deploying (see QUICKSTART.md Step 4).
+- **Stage 10-13 sector-circuit risk:** 6 new `NEPA_Sector_Circuit_Risk__mdt` records complete the 23-cell corpus matrix (Transportation/5th HIGH, Transportation/10th MODERATE, WaterCoastal/9th HIGH, Wildlife/9th MODERATE, Other/10th HIGH, Other/9th MODERATE — all N≥4). Matrix expanded from 17 to 23 cells.
+- **Plaintiff Intelligence — comment-level flags:** `NEPA_Plaintiff_Intelligence` flow now writes `nepa_plaintiff_risk_flag__c`, `nepa_plaintiff_risk_tier__c`, and `nepa_tribal_plaintiff_flag__c` directly onto the `PublicComplaint` record in addition to the parent `IndividualApplication`. Added Idaho Conservation League and Shoshone-Paiute Tribes CMT records for Scene 3 demo fidelity.
+- **New CMT types (x4):** `NEPA_MFR_Assessment__mdt` (10 records — self-assessment against CEQ Permitting Technology Action Plan MFR maturity levels), `NEPA_Doc_Count_Threshold__mdt` (3 records — CE/EA/EIS page count thresholds from NETATEC Stage 6), `NEPA_Layer_Discipline__mdt`, `NEPA_ActionPlan_Config__mdt` (36 NEPA action plan templates). Total CMT types: 15 → 19.
+- **CEQ Phase 2 compliance fields:** `nepa_phase2_applicable__c`, `nepa_climate_assessment_required__c`, `nepa_climate_assessment_complete__c`, `nepa_ej_analysis_required__c`, `nepa_elevated_doc_complexity__c` on `IndividualApplication` (40 CFR 1502.17 climate; 40 CFR 1508.1(m) EJ; applicable to NOI on/after May 2024). Validation rule `NEPA_Phase2_Climate_Gate` blocks Decision stage when climate assessment required but incomplete.
+- **Challenge Prediction basis field:** `nepa_challenge_prediction_basis__c` on `IndividualApplication` — populated when a challenge prediction rule fires.
+- **FLS:** 22 previously uncovered fields added to `NEPA_Permitting` permission set across 7 objects.
+- **Test suite:** 17 new test methods (23 total in `NepaPlaintiffIntelligenceTest`, 46 in `NepaBREConfigTest`, 13 in `NepaAIGovernanceTest`, 9 in `NepaChallengePredictorTest`). Total: 385 → 473+.
 
 **3.0 (2026-05-14)** — Phase E: GIS proximity, Agentforce comment triage, administrative record, 36-class test suite deployed to NEPADEMO
 
@@ -386,8 +403,143 @@ This accelerator requires **Salesforce Agentforce for Public Sector (APS)**. If 
 
 ---
 
+## Legal Review Summary
+
+This section is written for legal professionals assessing IP ownership, third-party dependencies, data licensing, trademark use, and compliance risk. All items that require legal attention are called out explicitly.
+
+---
+
+### 1. This Project's License
+
+**⚠️ License file / README mismatch — requires resolution before publication.**
+
+The `README.md` file describes this project as MIT-licensed throughout. The `LICENSE.txt` file in the repository root contains the **Apache License, Version 2.0**, with a Salesforce, Inc. copyright notice dated 2024. These cannot both be correct. Before relying on the open-source distribution, a legal reviewer must confirm:
+
+- Which license governs — MIT or Apache 2.0?
+- Whether the Apache 2.0 / Salesforce copyright notice in `LICENSE.txt` is boilerplate carried over from a Salesforce open-source template (and should be replaced with the correct MIT text and copyright holder), or whether Salesforce retains copyright in the work.
+- Whether Shannon Schupbach is the sole copyright holder, or whether this work was created in the scope of employment, which would vest copyright with the employer.
+
+**Until this is resolved, the license status of the project is ambiguous.** Downstream users (federal agencies) cannot determine their redistribution rights or attribution obligations.
+
+---
+
+### 2. Intellectual Property Ownership
+
+| Item | Claimed Owner | Basis |
+|---|---|---|
+| Salesforce metadata structure (object definitions, Flow XML, permission set XML, FlexiPage XML) | Shannon Schupbach | Custom-authored; does not copy Salesforce source code. Salesforce platform objects (IndividualApplication, Program, etc.) are used per Salesforce platform license but not copied. |
+| Apex classes (`NepaCeqExportService`, `NepaGISProximityIPInvoker`, and 45 others) | Shannon Schupbach | Original source code; no third-party Apex libraries incorporated. No Salesforce-proprietary source copied. |
+| LWC components | Shannon Schupbach | Custom-authored; uses Salesforce Lightning Design System (SLDS) via standard platform APIs. SLDS is available under Salesforce's standard license for use within the platform — no separate licensing required. |
+| Risk weight calibration methodology and 13-stage PermitTEC pipeline | Shannon Schupbach | Original analytical methodology. Inputs (PermitTEC corpus) are third-party; outputs (numeric weights baked into custom metadata) are derived works authored by Shannon Schupbach. |
+| CE Library records (2,105 records) | U.S. Government / public domain | Sourced from CEQ CE Explorer v2.0, a federal government publication. Federal government works are generally not subject to copyright under 17 U.S.C. § 105. No redistribution restriction identified. |
+| CEQ EIS Timeline Data (1,903 records) | U.S. Government / public domain | Published by CEQ. Same public domain basis as above. |
+| PermitTEC v0.1 dataset (761 cases) | Pacific Northwest National Laboratory / DOE | PNNL is a DOE national laboratory. Data publications from DOE national labs funded by federal appropriations are generally public domain or released under open government data policies. **Reviewers should confirm current PNNL data sharing terms for PermitTEC v0.1 before redistributing the derived weights.** |
+| NETATEC v2.0 dataset (61,881 records) | Pacific Northwest National Laboratory / DOE | Same PNNL / DOE provenance as PermitTEC. **Same confirmation recommended.** |
+| NAEP 2025 Workshop statistic (4-hour comment processing claim) | National Association of Environmental Professionals | A documented federal case study cited in the README. No data or content reproduced — citation only. No IP issue. |
+
+---
+
+### 3. Third-Party Software Dependencies
+
+#### Runtime dependencies (deployed to Salesforce org)
+
+**None.** The accelerator deploys as Salesforce metadata only — XML files, Apex source, and custom metadata records. No npm packages, Python packages, Java libraries, or any other third-party software libraries are deployed to or executed in the target Salesforce org at runtime.
+
+The Salesforce platform itself (Agentforce for Public Sector, OmniStudio, Einstein AI) is a commercial SaaS product governed by the deploying agency's Salesforce subscription agreement. The accelerator does not modify, distribute, or sublicense any Salesforce platform components.
+
+#### Development-time dependencies (local toolchain only, not deployed)
+
+These packages appear in `package.json` as `devDependencies` and are used only for local linting and LWC unit testing. They are not shipped to or executed in the Salesforce org.
+
+| Package | License | Use |
+|---|---|---|
+| `eslint` ^8.11.0 | MIT | JavaScript linting |
+| `prettier` ^2.6.0 | MIT | Code formatting |
+| `prettier-plugin-apex` ^1.10.0 | MIT | Apex code formatting |
+| `@prettier/plugin-xml` ^2.0.1 | MIT | XML formatting |
+| `@salesforce/sfdx-lwc-jest` ^1.1.0 | MIT (Salesforce) | LWC unit test runner |
+| `@lwc/eslint-plugin-lwc` ^1.1.2 | MIT (Salesforce) | LWC lint rules |
+| `@salesforce/eslint-config-lwc` ^3.2.3 | MIT (Salesforce) | LWC ESLint config |
+| `@salesforce/eslint-plugin-aura` ^2.0.0 | MIT (Salesforce) | Aura lint rules |
+| `@salesforce/eslint-plugin-lightning` ^1.0.0 | MIT (Salesforce) | Lightning lint rules |
+| `eslint-plugin-import` ^2.25.4 | MIT | Import lint rules |
+| `eslint-plugin-jest` ^26.1.2 | MIT | Jest lint rules |
+| `husky` ^7.0.4 | MIT | Git hooks |
+| `lint-staged` ^12.3.7 | MIT | Pre-commit linting |
+
+**All dev dependencies are MIT-licensed.** No GPL, LGPL, AGPL, or other copyleft licenses are present in the development toolchain. No dev dependency is incorporated into the deployed artifact.
+
+#### Salesforce platform dependencies
+
+The accelerator requires Salesforce Agentforce for Public Sector (APS), which includes OmniStudio and Agentforce capabilities. These are governed entirely by the deploying agency's Salesforce subscription contract. The accelerator has no separate licensing relationship with Salesforce; it is a configuration-layer implementation running within the platform.
+
+---
+
+### 4. Trademark Acknowledgments
+
+The following registered trademarks and service marks are referenced in this project's documentation. They are used solely for factual identification of the platforms and technologies this accelerator is built on. No endorsement by the trademark holders is claimed, and this project is not affiliated with or sponsored by any trademark holder except as noted.
+
+| Mark | Owner | Use in this project |
+|---|---|---|
+| Salesforce® | Salesforce, Inc. | Platform on which the accelerator runs |
+| Agentforce™ | Salesforce, Inc. | AI agent capability used for comment triage |
+| Einstein™ | Salesforce, Inc. | AI classification feature (comment triage, screening confidence) |
+| OmniStudio™ | Salesforce, Inc. | OmniScript CE intake wizard and DataRaptor data transforms |
+| Lightning™ | Salesforce, Inc. | UI framework (Lightning Design System, Lightning Web Components) |
+| Trailhead® | Salesforce, Inc. | Training platform referenced in deployment guidance |
+| FedRAMP® | U.S. General Services Administration | Federal cloud authorization standard referenced for compliance |
+| WCAG | W3C / Web Accessibility Initiative | Accessibility standard referenced for Section 508 compliance |
+
+---
+
+### 5. Data Licensing and Attribution
+
+| Dataset | Source | License / Terms | How Used | Redistribution status |
+|---|---|---|---|---|
+| **PermitTEC v0.1** | Pacific Northwest National Laboratory (PNNL), DOE, 2025 | DOE / PNNL open data (confirm current terms at pnnl.gov/available-technologies) | 761 case records used offline to calibrate numeric risk weights. No raw case data is included in the repository or deployed to orgs. Only derived numeric weights (e.g., "BLM: 39 points") are stored in custom metadata records. | Raw data: not redistributed. Derived weights: redistributed as custom metadata records in this repository. **Verify PNNL terms allow this derivative redistribution.** |
+| **NETATEC v2.0** | Pacific Northwest National Laboratory (PNNL), DOE, 2025 | DOE / PNNL open data (same) | 61,881 project records used offline to derive CE screening thresholds and scoping baselines. No raw records included in the repository. | Same as PermitTEC. |
+| **CEQ CE Explorer v2.0** | Council on Environmental Quality, U.S. Government | U.S. Government work — 17 U.S.C. § 105 (no copyright, public domain) | 2,105 CE code records loaded as `nepa_ce_library__c` sObject records. Reproduced in full in the repository as CSV data and org seed data. | No restriction. U.S. Government publications are public domain. Attribution maintained in `nepa_cfr_authority__c` field on each record. |
+| **CEQ EIS Timeline Data 2010–2024** | Council on Environmental Quality, U.S. Government | U.S. Government work — public domain | Offline analysis only. Per-agency scoping medians derived and stored as 11 `NEPA_Agency_Scoping_Baseline__mdt` records. No raw data redistributed. | Derived metrics redistributed. No restriction. |
+| **CEQ NEPA and Permitting Data and Technology Standard v1.2** | Council on Environmental Quality, U.S. Government | U.S. Government publication — public domain | Schema and field definitions aligned to the standard. No text copied verbatim into source code. Standard is cited, not reproduced. | N/A — cited as reference standard only. |
+| **CEQ Permitting Technology Action Plan (2025)** | Council on Environmental Quality, U.S. Government | U.S. Government publication — public domain | MFR categories and descriptions referenced for compliance self-assessment. Not reproduced verbatim. | N/A — cited as reference only. |
+
+**Key risk item:** The PNNL datasets (PermitTEC, NETATEC) were produced under DOE funding. DOE-funded research data is generally subject to DOE's Public Access Plan, which encourages open sharing, but specific dataset terms vary. A legal reviewer should confirm that the redistribution of numeric weights derived from these datasets as open-source custom metadata records is consistent with PNNL's data sharing agreement for these specific datasets before broad public release.
+
+---
+
+### 6. No Patent Claims
+
+This project makes no patent claims and does not implement any technology known to be subject to patent encumbrance. The risk intelligence algorithms are statistical scoring models using published court outcome data. The CE screening logic implements publicly available CFR regulatory criteria. No novel computational methods subject to patent protection have been identified.
+
+The Apache 2.0 license in `LICENSE.txt` (if that is the governing license — see Section 1) includes an express patent license grant and a patent retaliation clause. The MIT license (as claimed in `README.md`) does not include an express patent license. This distinction may be material to agencies evaluating the project under their IP policy.
+
+---
+
+### 7. Open Source Compliance Summary
+
+| Question | Answer |
+|---|---|
+| Does the project contain GPL/LGPL/AGPL code? | No. All dev dependencies are MIT. No runtime dependencies. |
+| Does the project copy or embed any third-party open-source code? | No third-party source code is incorporated. Salesforce platform APIs are called, not copied. |
+| Does the project redistribute any dataset under a license that restricts redistribution? | Potentially — PNNL dataset derivation terms should be confirmed (see Section 5). CEQ data is public domain. |
+| Are there any contributor license agreements (CLAs) in place? | `CONTRIBUTING.md` references the Salesforce CLA (`cla.salesforce.com/sign-cla`). Reviewers should confirm whether a CLA has been executed for all contributors. |
+| Is the copyright holder clearly identified? | **Disputed** — README says Shannon Schupbach / MIT; LICENSE.txt says Salesforce, Inc. / Apache 2.0. Resolve before publication. |
+
+---
+
+### 8. Items Requiring Legal Resolution Before Publication
+
+1. **Resolve license file mismatch.** Replace `LICENSE.txt` with the correct license text (MIT, if that is the intent) and confirm copyright holder. If Salesforce retains copyright, confirm that Salesforce has authorized open-source release under MIT.
+2. **Confirm PNNL data redistribution rights.** Contact PNNL or review the PermitTEC and NETATEC dataset landing pages to confirm that publishing derived numeric weights as open-source custom metadata is permitted.
+3. **Add trademark attribution line.** Insert a standard "Salesforce and related marks are trademarks of Salesforce, Inc." acknowledgment, consistent with Salesforce's trademark usage guidelines for open-source projects.
+4. **CLA verification.** Confirm whether the Salesforce CLA process was followed for this project, or whether CLA requirement in `CONTRIBUTING.md` is template boilerplate that does not apply.
+
+---
+
 ## License and Terms
 
-MIT. See [LICENSE.txt](LICENSE.txt). Accelerators are provided as-is and are not supported by Salesforce.
+> **⚠️ See [Legal Review Summary](#legal-review-summary) above.** There is a discrepancy between the license claimed in this README (MIT) and the license text in `LICENSE.txt` (Apache 2.0, Salesforce copyright). This must be resolved before relying on the license for any purpose.
 
-Built by Shannon Schupbach. MIT license — see [LICENSE.txt](LICENSE.txt).
+This project is intended to be released as MIT-licensed open source. See [LICENSE.txt](LICENSE.txt) for the license file as currently committed. Accelerators are provided as-is and are not supported by Salesforce.
+
+Built by Shannon Schupbach.

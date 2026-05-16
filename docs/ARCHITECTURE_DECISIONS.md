@@ -2,7 +2,7 @@
 
 **Project:** PSA-NEPA-Permitting-Data-Model
 **Maintainer:** Shannon Schupbach
-**Last Updated:** 2026-05-13
+**Last Updated:** 2026-05-15
 
 Open-source NEPA permitting accelerator built on Salesforce Agentforce for Public Sector (APS). Maps CEQ NEPA and Permitting Data and Technology Standard v1.2 entities to PSS standard objects, adds custom objects and 12+ declarative flows for risk intelligence, and prepares for Phase 2 OmniStudio + Agentforce portal delivery.
 
@@ -23,6 +23,7 @@ Open-source NEPA permitting accelerator built on Salesforce Agentforce for Publi
 | 009 | [Apex Bridge for Flow-to-OmniIP Invocation](#adr-009--apex-bridge-for-flow-to-omniip-invocation) | Accepted |
 | 010 | [CE Library as Custom Object (nepa_ce_library__c)](#adr-010--ce-library-as-custom-object-nepa_ce_library__c) | Accepted |
 | 011 | [OmniScript CE Intake over Screen Flow](#adr-011--omniscript-ce-intake-over-screen-flow) | Accepted |
+| 012 | [nepa_process_stage__c Text → Picklist and Salesforce Path](#adr-012--nepa_process_stage__c-text--picklist-and-salesforce-path) | Accepted |
 
 ---
 
@@ -496,3 +497,51 @@ Implement the CE intake wizard as an OmniScript backed by two Integration Proced
 - **Integration Procedure activation may lag deployment.** When IPs are deployed via `sf project deploy start`, the platform creates the underlying `OmniProcess` records but does not always automatically activate them. If `CEScreeningIP` or `CESaveIP` is not in Active state after deployment, the OmniScript will fail at the step that calls the IP. The manual activation fallback (Setup → OmniStudio → Integration Procedures → Activate) is documented in QUICKSTART.md.
 - **Screen Flow remains as the Phase 1 fallback.** `NEPA_CE_Intake` (Screen Flow) is preserved in the repository and remains deployable for organizations that do not have OmniStudio available or prefer to delay OmniStudio adoption. Per ADR 005, no new business logic should be added to the Screen Flow — it is frozen at Phase 1 capability.
 - **ADR 005 compatibility.** The autolaunched scoring flows (`NEPA_CE_Screener`, `NEPA_Litigation_Risk_Scorer`, `NEPA_Defensibility_Gap_Checker`) are invoked from `CEScreeningIP` via FlowAction steps — exactly the integration surface ADR 005 established. No refactoring of the scoring flows was required to support the OmniScript path.
+
+---
+
+## ADR 012 -- nepa_process_stage__c Text → Picklist and Salesforce Path
+
+**Status:** Accepted
+**Date:** 2026-05-15
+**Deciders:** Shannon Schupbach
+
+### Context
+
+`nepa_process_stage__c` on `IndividualApplication` was originally defined as a Text field. As the accelerator matured, three operational problems emerged with a free-text stage field:
+
+1. **Inconsistent values.** Without a controlled picklist, coordinators and migration scripts entered stage values in varied formats ("Draft EIS Prep", "Draft EIS Preparation", "DEIS Preparation"), making stage-based flow conditions unreliable and reporting ambiguous.
+
+2. **No visual stage guidance.** Coordinators had no in-UI indication of which stage they were in, what key fields mattered at that stage, or what the recommended next action was. Onboarding new staff required separate documentation review.
+
+3. **No Salesforce Path support.** The Salesforce Path component (PathAssistant metadata) requires a Picklist field — it cannot be bound to a Text field. Path was the natural mechanism to surface stage-specific Key Fields and Guidance text without a custom LWC.
+
+### Decision
+
+Convert `nepa_process_stage__c` from Text to Picklist with 18 canonical values spanning all CE, EA, and EIS pathways:
+
+| Pathway | Stage values |
+|---|---|
+| CE | Intake, CE Screening, CE Determination, CE Approved |
+| EA | Scoping, Comment Period, Draft EA, EA Comment Review, FONSI, EA Closed |
+| EIS | Scoping, NOI Published, Draft EIS Preparation, Draft EIS Published, DEIS Comment Review, Final EIS Preparation, Final EIS Published, ROD |
+
+Deploy `IndividualApplication_NEPA_Process_Path` (PathAssistant) with stage-specific Key Fields and Guidance text for each of the 18 stages, surfaced via a `subHeader` region on the `IndividualApplication_Record_Page` FlexiPage.
+
+### Manual Deploy Prerequisite
+
+**Salesforce blocks a field type change (Text → Picklist) via Metadata API when records exist in the target org.** This is a platform constraint, not a deployment configuration issue. The field type change must be completed manually before deploying the updated field metadata, PathAssistant, and FlexiPage:
+
+1. Go to Setup → Object Manager → IndividualApplication → Fields and Relationships
+2. Click `nepa_process_stage__c` → Edit
+3. Change field type from Text to Picklist and save
+4. Then deploy: `sf project deploy start --metadata "CustomField:IndividualApplication.nepa_process_stage__c,PathAssistant:IndividualApplication_NEPA_Process_Path,FlexiPage:IndividualApplication_Record_Page" --target-org <alias> --wait 30`
+
+This sequence is documented in QUICKSTART.md Step 4 and in `package.xml`.
+
+### Consequences
+
+- **Existing free-text stage values become invalid.** Any `IndividualApplication` records in the org with `nepa_process_stage__c` values that do not match the 18 canonical picklist values will have a blank stage after conversion. A data migration script should remap common variants before activating stage-gate flows.
+- **Stage-gate flows now benefit from picklist consistency.** Flows that branch on `nepa_process_stage__c` values will no longer silently fail due to case or spacing inconsistencies.
+- **PathAssistant is additive, not blocking.** The Guidance text in the PathAssistant is informational — it does not enforce stage transitions. Stage transition enforcement remains in `NEPA_Stage_Gate` (before-save flow).
+- **18 canonical values are the authoritative list.** New stages must be added to both the picklist metadata (`nepa_process_stage__c.field-meta.xml`) and the PathAssistant (`IndividualApplication_NEPA_Process_Path.pathAssistant-meta.xml`) in the same deployment. Adding a value to only one causes an orphaned stage in either the UI guidance or the stage gate conditions.

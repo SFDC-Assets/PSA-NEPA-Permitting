@@ -161,14 +161,14 @@ Analysis of 1,903 Final EIS records (CEQ EIS Timeline Data 2010–2024) shows a 
 
 ## Readiness
 
-**Current state: production-ready.** The accelerator is fully deployed and verified against the CEQ PIC Standard v1.2.0. A 385-test Apex regression suite covers all 13 entities, the REST export API, BRE configuration integrity, CE screening, stage gate logic, SLA escalation, plaintiff intelligence, EJ detection, GIS proximity, comment agent routing, and error handling. All tests pass. Code coverage exceeds 75%.
+**Current state: production-ready.** The accelerator is fully deployed and verified against the CEQ PIC Standard v1.2.0. A 473-test Apex regression suite covers all 13 entities, the REST export API, BRE configuration integrity, CE screening, stage gate logic, SLA escalation, plaintiff intelligence, EJ detection, GIS proximity, comment agent routing, and error handling. All tests pass. Code coverage exceeds 75%.
 
 **Deployment in ~15 minutes:**
 ```
 sf org login web --alias nepademo
 ./scripts/deploy.sh nepademo
 ```
-No infrastructure provisioning, no database migration, no vendor onboarding. The repository includes complete object definitions, 31 flow XML files, permission sets with field-level security, 15 DataRaptors (12 Extract, 2 Load, 1 Upsert), 3 Integration Procedures, DMN decision model exports, and custom metadata pre-seeded with empirically calibrated risk weights.
+No infrastructure provisioning, no database migration, no vendor onboarding. The repository includes complete object definitions, 37 flow XML files, permission sets with field-level security, 15 DataRaptors (12 Extract, 2 Load, 1 Upsert), 3 Integration Procedures, DMN decision model exports, and custom metadata pre-seeded with empirically calibrated risk weights.
 
 **Tested against PermitTEC and NETATEC corpus data.** Risk weights are derived from a 13-stage calibration pipeline over 761 NEPA litigation cases. Confidence levels for each circuit and agency weight are documented explicitly in the AI Use Policy included in the repository (OMB M-25-21 AI inventory ready).
 
@@ -184,7 +184,7 @@ No infrastructure provisioning, no database migration, no vendor onboarding. The
 
 ## Multi-Agency Compatibility
 
-**Every agency-variable parameter is externalized to configuration.** All CE screening rules, risk weights, SLA targets, EIS scoping baselines, plaintiff profiles, and sector-circuit risk cells are stored in 15 Custom Metadata Types. Adding a new agency requires creating metadata records — no flow XML modifications, no Apex changes, no code deployment.
+**Every agency-variable parameter is externalized to configuration.** All CE screening rules, risk weights, SLA targets, EIS scoping baselines, plaintiff profiles, and sector-circuit risk cells are stored in 19 Custom Metadata Types. Adding a new agency requires creating metadata records — no flow XML modifications, no Apex changes, no code deployment.
 
 **CE Library by agency.** The `nepa_ce_library__c` object holds 2,105 categorical exclusions across 79 federal agencies from CEQ CE Explorer v2.0. BLM 516 DM citations, DOE 10 CFR 1021 Appendix B codes, Energy Policy Act Section 390 exclusions, and USFS 36 CFR 220.6 codes coexist without collision. Each record carries the CFR authority, plain-language description, acreage threshold, and GIS review requirement.
 
@@ -214,7 +214,7 @@ No infrastructure provisioning, no database migration, no vendor onboarding. The
 | Custom Metadata Types | 15 |
 | BRE Decision Matrices / Expression Sets | 8 DMs + 3 ESs (deterministic, not AI) |
 | DMN decision model exports | Published to GitHub `/docs/decision-models/` |
-| Apex regression tests | 385+ across 27 test classes |
+| Apex regression tests | 473+ across 36 test classes |
 | Deployment time from CLI | ~15 minutes |
 | Platform FedRAMP status | Authorized (Salesforce Gov Cloud) |
 | Shield Field Audit Trail | Available on Gov Cloud — 10-year field-level history for NARA/litigation hold |
