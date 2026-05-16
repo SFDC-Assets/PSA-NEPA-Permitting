@@ -26,9 +26,10 @@ The deploy script automates nearly everything, but two steps **cannot** be scrip
 
 | Step | What you'll do | When |
 |---|---|---|
-| **BRE Decision Matrix row import** | Upload 7 CSV files via Setup → Business Rules Engine → Decision Matrices | After Step 3 (deploy), before Step 7 (verification) |
+| **BRE Decision Matrix row import** | Upload 8 CSV files via Setup → Business Rules Engine → Decision Matrices | After Step 3 (deploy), before Step 7 (verification) |
 | **Scheduled flow configuration** | Open `NEPA_SLA_Escalation_Monitor` in Flow Builder, set schedule to Daily 7 AM, activate | After Step 4c (Flow activation) |
 | **CE Library data load** | Run `python3 scripts/load_ce_library.py --org NEPADEV` to populate 314 CE reference records | After Step 3 (deploy), see Step 4e |
+| **Lightning Record Page assignment** | In Setup → Lightning App Builder, assign 8 custom pages as Org Default | After Step 3 (deploy), see Step 4d |
 
 The BRE import is the most common failure point. If you skip it, CE Screener and Risk Scorer will throw runtime errors. See [Step 4b](#4b-import-bre-decision-matrix-rows) for the full procedure.
 
@@ -41,6 +42,7 @@ The BRE import is the most common failure point. If you skip it, CE Screener and
 | Salesforce org with **Agentforce for Public Sector** | See Step 0 above. Use the [APS trial org setup guide](https://help.salesforce.com/s/articleView?id=ind.psc_create_trial_org.htm&language=en_US&type=5) if you don't have one. Foundations or Advanced license required. |
 | **Salesforce CLI v2** (`sf`) | Install from [developer.salesforce.com/tools/salesforcecli](https://developer.salesforce.com/tools/salesforcecli). Verify with `sf --version`. |
 | **jq** | JSON formatter used by `deploy.sh`. Install with `brew install jq` (Mac) or `apt install jq` (Linux). |
+| **Python 3** | Required for CE Library data load (`scripts/load_ce_library.py`). Verify with `python3 --version`. |
 | Git | To clone this repository. |
 | System Administrator profile in the target org | Required for deployment. |
 
@@ -634,7 +636,7 @@ sf apex run test \
 ```
 
 **Expected results:**
-- All 125 tests pass across 4 test classes (`NepaApiComplianceTest`, `NepaCeqExportServiceTest`, `NepaEntity789Test`, `NepaBREConfigTest`)
+- All 509+ tests pass across 37 test classes
 - Overall Apex code coverage ≥ 75%
 - Zero failures
 
