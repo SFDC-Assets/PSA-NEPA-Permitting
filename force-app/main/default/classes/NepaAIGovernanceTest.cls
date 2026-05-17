@@ -52,14 +52,14 @@ private class NepaAIGovernanceTest {
     // ── Station 3: Generative Content / Document Gate — validation rules ──────
 
     /**
-     * Creates a Decision Issued timeline event for processId and attempts to complete it.
+     * Creates a ROD Issued timeline event for processId and attempts to complete it.
      * @param processId Id of the IndividualApplication to test the gate against
      * @return True if a DmlException was thrown (gate blocked the update), false otherwise
      */
     private static Boolean attemptDecisionGateComplete(Id processId) {
         ApplicationTimeline evt = new ApplicationTimeline();
         evt.nepa_related_process__c = processId;
-        evt.nepa_event_type__c      = 'Decision Issued';
+        evt.nepa_event_type__c      = 'ROD Issued';
         evt.nepa_status__c          = 'In Progress';
         insert evt;
         evt.nepa_status__c = 'Completed';

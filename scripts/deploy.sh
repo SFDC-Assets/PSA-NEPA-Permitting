@@ -414,12 +414,13 @@ fi
 # ── phase 7: apex classes ─────────────────────────────────────────────────────
 # Must precede flows — flows that call @InvocableMethod actions require the
 # class to exist and compile first.
-# RunLocalTests here also validates flow-touching test classes that cover the
-# flow logic indirectly (compensates for skipping flow dry-run in --check mode).
+# Tests run in Phase 8d (after flows are deployed) so that flow-integration test
+# classes can invoke flows via Flow.Interview.createInterview() and FLS-enforcing
+# queries succeed with the permission set in place.
 phase_header "Phase 7: Apex classes"
 deploy "apex" \
     --source-dir force-app/main/default/classes \
-    --test-level RunLocalTests \
+    --test-level NoTestRun \
     --target-org "$TARGET_ORG"
 
 # ── phase 4b: permission set (post-apex) ─────────────────────────────────────
@@ -585,6 +586,20 @@ if [[ -n "$(find force-app/main/default/omniScripts -name '*.xml' 2>/dev/null)" 
     deploy_omniscript_with_retry
 else
     echo "    (no OmniScripts to deploy)"
+fi
+
+# ── phase 8d: run local tests ─────────────────────────────────────────────────
+# Runs after flows (Phase 8), permission set (Phase 4b), and OmniStudio (Phase 8c)
+# are all deployed so that:
+#   - Flow-integration tests can invoke flows via Flow.Interview.createInterview()
+#   - USER_MODE / WITH SECURITY_ENFORCED queries succeed with FLS grants in place
+# Skipped in --check mode (dry-run) because flows are not deployed in that mode.
+if [[ "$DRY_RUN" == "false" ]]; then
+    phase_header "Phase 8d: RunLocalTests (post-flow validation)"
+    deploy "local tests" \
+        --source-dir force-app/main/default/classes \
+        --test-level RunLocalTests \
+        --target-org "$TARGET_ORG"
 fi
 
 # ── phase 9: custom tabs ──────────────────────────────────────────────────────
