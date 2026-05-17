@@ -195,8 +195,8 @@ private class NepaSlaEscalationMonitorTest {
         insert ia;
 
         Test.startTest();
-        Flow.Interview.NEPA_SLA_Escalation_Monitor interview =
-            new Flow.Interview.NEPA_SLA_Escalation_Monitor(new Map<String, Object>());
+        Flow.Interview interview = Flow.Interview.createInterview(
+            'NEPA_SLA_Escalation_Monitor', new Map<String, Object>());
         interview.start();
         Test.stopTest();
 
@@ -257,8 +257,8 @@ private class NepaSlaEscalationMonitorTest {
         Test.startTest();
         Boolean threw = false;
         try {
-            Flow.Interview.NEPA_SLA_Escalation_Monitor interview =
-                new Flow.Interview.NEPA_SLA_Escalation_Monitor(new Map<String, Object>());
+            Flow.Interview interview = Flow.Interview.createInterview(
+                'NEPA_SLA_Escalation_Monitor', new Map<String, Object>());
             interview.start();
         } catch (System.FlowException fe) {
             // Chatter not enabled for IndividualApplication in this org — allow that specific error
