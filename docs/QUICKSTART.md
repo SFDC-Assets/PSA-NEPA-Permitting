@@ -29,7 +29,7 @@ The deploy script automates nearly everything, but two steps **cannot** be scrip
 | **BRE Decision Matrix row import** | Upload 8 CSV files via Setup → Business Rules Engine → Decision Matrices | After Step 3 (deploy), before Step 7 (verification) |
 | **Scheduled flow configuration** | Open `NEPA_SLA_Escalation_Monitor` in Flow Builder, set schedule to Daily 7 AM, activate | After Step 4c (Flow activation) |
 | **CE Library data load** | Run `python3 scripts/load_ce_library.py --org NEPADEV` to populate 314 CE reference records | After Step 3 (deploy), see Step 4e |
-| **Lightning Record Page assignment** | In Setup → Lightning App Builder, assign 8 custom pages as Org Default | After Step 3 (deploy), see Step 4d |
+| **Lightning Record Page assignment** | In Setup → Lightning App Builder, assign **8** custom pages as Org Default (IndividualApplication, Program, PublicComplaint, Engagement, Litigation, CE Library, Decision Payload, Decision Log) | After Step 3 (deploy), see Step 4d |
 
 The BRE import is the most common failure point. If you skip it, CE Screener and Risk Scorer will throw runtime errors. See [Step 4b](#4b-import-bre-decision-matrix-rows) for the full procedure.
 
@@ -41,7 +41,7 @@ The BRE import is the most common failure point. If you skip it, CE Screener and
 |---|---|
 | Salesforce org with **Agentforce for Public Sector** | See Step 0 above. Use the [APS trial org setup guide](https://help.salesforce.com/s/articleView?id=ind.psc_create_trial_org.htm&language=en_US&type=5) if you don't have one. Foundations or Advanced license required. |
 | **Salesforce CLI v2** (`sf`) | Install from [developer.salesforce.com/tools/salesforcecli](https://developer.salesforce.com/tools/salesforcecli). Verify with `sf --version`. |
-| **jq** | JSON formatter used by `deploy.sh`. Install with `brew install jq` (Mac) or `apt install jq` (Linux). |
+| **jq** | JSON formatter used by `deploy.sh` to parse deploy results. Install with `brew install jq` (Mac) or `apt install jq` (Linux). If missing, the script will exit with `jq: command not found`. |
 | **Python 3** | Required for CE Library data load (`scripts/load_ce_library.py`). Verify with `python3 --version`. |
 | Git | To clone this repository. |
 | System Administrator profile in the target org | Required for deployment. |
@@ -102,7 +102,7 @@ chmod +x scripts/deploy.sh
 ./scripts/deploy.sh NEPADEV --check
 ```
 
-All 8 phases should report `Status: Succeeded`. Fix any errors before proceeding.
+All 8 phases should report `Status: Succeeded`. Each phase prints a line like `✓ Phase 1 — Status: Succeeded`. If a phase fails, the script prints the error JSON from the Salesforce CLI and exits — fix the error listed in the output and re-run the script.
 
 ---
 
@@ -125,6 +125,8 @@ After completing this step, the `deploy.sh` script will successfully deploy the 
 ## Step 3 — Deploy All Metadata
 
 ### Option A — Phased deploy script (first-time install, recommended)
+
+> **First-time install? Use Option A.** Only switch to Option B when re-deploying updates to an org that already has the base schema deployed.
 
 Run the full deploy:
 
@@ -193,9 +195,17 @@ To assign to a specific user:
 sf org assign permset --name NEPA_Permitting --on-behalf-of user@example.com --target-org NEPADEV
 ```
 
+Verify the assignment succeeded:
+
+```bash
+sf data query \
+  --query "SELECT Assignee.Username FROM PermissionSetAssignment WHERE PermissionSet.Name='NEPA_Permitting'" \
+  --target-org NEPADEV
+```
+
 ### 4b. Import BRE Decision Matrix Rows
 
-BRE Decision Matrix rows **cannot be deployed via CLI or Metadata API** — this is a Salesforce platform limitation. After deploy, import each CSV from `decision_matrix_rows/` manually:
+The BRE (Business Rules Engine) Decision Matrix rows **cannot be deployed via CLI or Metadata API** — this is a Salesforce platform limitation (deploying the schema via Metadata API does not create the runtime snapshot required to execute rules). After deploy, import each CSV from `decision_matrix_rows/` manually:
 
 1. Go to **Setup → Business Rules Engine → Decision Matrices**
 2. Open the matrix, click the **V1** version, then click **Import CSV**
@@ -212,14 +222,16 @@ BRE Decision Matrix rows **cannot be deployed via CLI or Metadata API** — this
 | `NEPA_Permit_Matrix_BRE.csv` | NEPA Permit Matrix | |
 | `NEPA_Risk_SectorCircuit.csv` | NEPA Risk Scorer - Sector Circuit Risk Points | **Import only after activating the DM.** Required for BRE V3. See [decision_matrix_rows/README.md](../decision_matrix_rows/README.md). |
 
-After importing all CSV files, activate each Decision Matrix version in Setup → BRE → Decision Matrices. Then go to **Setup → BRE → Expression Sets** and activate each Expression Set version:
+**Import order matters for one file:** Import the first 7 CSVs (all except `NEPA_Risk_SectorCircuit.csv`), then activate each Decision Matrix version in Setup → BRE → Decision Matrices. Then import `NEPA_Risk_SectorCircuit.csv` last — it requires the `NEPA Risk Scorer - Sector Circuit Risk Points` DM to already be active before rows are loaded.
+
+After all CSVs are imported and Decision Matrices are activated, go to **Setup → BRE → Expression Sets** and activate each Expression Set version:
 - **NEPA CE Screener**: activate V2 (the current active version)
 - **NEPA Litigation Risk Scorer**: activate V2 (V3 remains Draft until `NEPA_Risk_SectorCircuit` DM rows are loaded and validated in sandbox)
 - **NEPA Permit Coordinator**: activate V2
 
 ### 4c. Activate Flows
 
-Deploy sets all **37 flows** to Draft. Activate the flows listed below in order to avoid trigger dependency errors. The remaining flows are conditional or deferred:
+Deploy sets all **37 flows** to Draft. Activate the 33 flows listed below in order to avoid trigger dependency errors. The remaining 4 flows (`NEPA_Comment_Triage_Save`, `NEPA_EIS_Section_Assembler`, `NEPA_EIS_Section_Draft_Trigger`, `NEPA_Work_Order_Generator`) are deferred — see the Notes section at the end of the activation list. Total deployed: 37 flows; activate now: 33.
 
 - `NEPA_Comment_Triage_Save` — activate only when deploying the Comment Triage Agentforce agent
 - `NEPA_EIS_Section_Assembler` — requires Einstein Generative AI; activate when enabling AI document drafting
@@ -278,6 +290,8 @@ Go to **Setup → Flows** in your org and activate in this order:
 - `NEPA_EIS_Section_Assembler` — requires **Einstein Generative AI** to be provisioned in the org (uses `generateText` action). Skipped by `deploy.sh` if Einstein AI is not available. Deploy manually once enabled: `sf project deploy start --metadata "Flow:NEPA_EIS_Section_Assembler" --target-org NEPADEV --test-level NoTestRun --wait 30`. Once deployed, `NEPA_EIS_Section_Draft_Trigger` can also be activated.
 - `NEPA_Work_Order_Generator` — stub; flow file not yet implemented.
 
+**Verify activation:** In Setup → Flows, filter by Status = Active. You should see 33 active flows. If a flow fails to activate, the error appears inline in the Flows list — the most common cause is activating an after-save flow before its subflow dependencies (items 1–4 in the activation list) are already active.
+
 ### 4d. Assign Lightning Record Pages
 
 The deployment includes custom Lightning Record Pages for all 6 CEQ entities. Assign them as org defaults:
@@ -301,7 +315,9 @@ Populate the `nepa_ce_library__c` searchable CE reference library with priority-
 python3 scripts/load_ce_library.py --org NEPADEV
 ```
 
-This uses `sf data upsert bulk` with `nepa_ce_explorer_id__c` as the external ID — safe to re-run after a dataset update.
+This uses `sf data upsert bulk` with `nepa_ce_explorer_id__c` as the external ID — safe to re-run after a dataset update (upsert with an external ID will not create duplicates).
+
+**For a trial org or proof of concept, the 314-record load is recommended** — it covers the 6 most common federal agencies and runs faster. Use `--all` only if your use case requires full 79-agency CE coverage.
 
 To load the full 2,105-record federal catalog instead (requires downloading `exclusions.json` first):
 
@@ -313,7 +329,21 @@ curl -o exclusions.json https://ce.permitting.innovation.gov/data/exclusions.jso
 python3 scripts/load_ce_library.py --org NEPADEV --all
 ```
 
+**If the script fails**, common causes: wrong org alias (verify with `sf org display --target-org NEPADEV`), missing Python package (install with `pip3 install simple_salesforce`), or network timeout (retry once — the upsert is safe to re-run).
+
+**Verify the load:**
+
+```bash
+sf data query \
+  --query "SELECT COUNT() FROM nepa_ce_library__c" \
+  --target-org NEPADEV
+```
+
+Expected: 314 (priority load) or 2105 (full load).
+
 ### 4f. Activate the CE Intake OmniScript (if auto-deploy failed)
+
+> **OmniStudio** is the Salesforce product suite included with PSS; **OmniScript** is the guided-form component within it. Both terms appear in the Salesforce Setup UI under the OmniStudio app.
 
 `deploy.sh` deploys the `NEPA_CEIntake` OmniScript automatically in Phase 8c. If that phase failed with "Couldn't find dependent components," the Metadata API index hadn't caught up with the newly-deployed Integration Procedures. Activate manually:
 
@@ -321,6 +351,10 @@ python3 scripts/load_ce_library.py --org NEPADEV --all
 2. Find `NEPA / CEIntake` and click **Activate**
 
 The Integration Procedures (`NEPA_CEScreeningIP`, `NEPA_CESaveIP`) were deployed successfully in Phase 8c and are already available.
+
+### 4g. Configure Named Credentials for GIS Services
+
+Three Named Credentials (USGS NHD, BLM Tribal Cadastral, BLM PLSS) were deployed by the script but require OAuth configuration in your org before GIS proximity checks will fire. See [GIS-Proximity-Guide.md](GIS-Proximity-Guide.md) for the step-by-step Named Credential setup procedure. GIS checks are called at intake when project coordinates are saved; without configured Named Credentials, the proximity check flow will fault and log an error to `NEPA_Flow_Error__c`.
 
 ---
 
@@ -334,7 +368,7 @@ In your terminal:
 sf apex run --file scripts/seed-sample-data.apex --target-org NEPADEV
 ```
 
-If you don't have `scripts/seed-sample-data.apex` yet, paste the following into **Developer Console → Debug → Open Execute Anonymous Window** and click **Execute**:
+If you don't have `scripts/seed-sample-data.apex` yet, paste the following into the **Developer Console → Debug → Open Execute Anonymous Window** and click **Execute**. (Access the Developer Console from the org UI: click the gear icon ⚙ in the top-right → Developer Console.)
 
 ```apex
 // ── 1. Agency accounts ────────────────────────────────────────────────────────

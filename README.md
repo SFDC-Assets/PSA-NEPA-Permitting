@@ -1,6 +1,6 @@
 # PSA-NEPA Permitting Accelerator
 
-**Open-source NEPA permitting data model, workflow automation, GIS proximity screening, Agentforce comment triage, and litigation risk intelligence — built on Salesforce Agentforce for Public Sector. Aligned to CEQ NEPA and Permitting Data and Technology Standard v1.2. All 10 MFRs addressed. Deployable from the CLI in ~15 minutes.**
+**Open-source NEPA permitting data model, workflow automation, GIS proximity screening, Agentforce comment triage, and litigation risk intelligence — built on Salesforce Agentforce for Public Sector. Aligned to CEQ NEPA and Permitting Data and Technology Standard v1.2. All 10 MFRs addressed. Deployable end-to-end in ~30 minutes (15 min automated CLI deployment + ~15 min manual post-deploy steps).**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.txt)
 [![Platform: FedRAMP Authorized](https://img.shields.io/badge/Platform-FedRAMP%20Authorized-green.svg)](https://marketplace.fedramp.gov/)
@@ -46,10 +46,10 @@ Three categories of preventable delay drive most of the gap between the current 
 | Apex regression tests | 473+ across 36 test classes |
 | Platform | Salesforce Agentforce for Public Sector (FedRAMP Authorized) |
 | Shield Field Audit Trail | Available on Gov Cloud — 10-year field-level history for NARA/litigation hold |
-| PIV/CAC authentication | Native Salesforce support — no separate IdP required |
+| PIV/CAC authentication | Native Salesforce support via SAML 2.0 (PIV/CAC = Personal Identity Verification / Common Access Card, the U.S. federal smartcard standard) — no separate IdP required |
 | Section 508 / WCAG 2.1 AA | Compliant — inherited from Salesforce Lightning Design System and OmniScript |
 | Software license cost | $0 (MIT open source) |
-| Deployment time | ~15 minutes from CLI |
+| Deployment time | ~30 minutes end-to-end (15 min automated CLI + ~15 min manual post-deploy steps) |
 
 ---
 
@@ -74,14 +74,22 @@ A clear AI/rules boundary is a legal requirement for federal permitting. This so
 
 An agency can spin up a Salesforce sandbox, deploy this MIT-licensed accelerator, and be running a live proof-of-concept with their own historical data **in an afternoon** — bypassing the traditional 6-month software implementation cycle.
 
-**Prerequisites:** Salesforce Agentforce for Public Sector org (Foundations or Advanced). A free APS developer org is available at the [APS trial link](https://developer.salesforce.com/free-trials/comparison/public-sector).
+**Prerequisites:**
+- Salesforce org with **Agentforce for Public Sector** (Foundations or Advanced). A free APS developer org is available at the [APS trial org setup guide](https://help.salesforce.com/s/articleView?id=ind.psc_create_trial_org.htm&language=en_US&type=5).
+- **Salesforce CLI v2** (`sf`) — install from [developer.salesforce.com/tools/salesforcecli](https://developer.salesforce.com/tools/salesforcecli)
+- **Git**, **jq**, and **Python 3** — see [docs/QUICKSTART.md](docs/QUICKSTART.md) Prerequisites table for install commands
+- System Administrator profile in the target org
+
+> The Salesforce platform is FedRAMP Authorized (FedRAMP is the U.S. federal cloud-security authorization program) — authorization details at [marketplace.fedramp.gov](https://marketplace.fedramp.gov/).
 
 ```bash
-sf org login web --alias nepademo
-./scripts/deploy.sh nepademo
+git clone https://github.com/SFDC-Assets-emu/PSA-NEPA-Permitting.git
+cd PSA-NEPA-Permitting
+sf org login web --alias nepademo    # replace 'nepademo' with any alias you choose
+./scripts/deploy.sh nepademo         # use the same alias you chose above
 ```
 
-That is the complete deployment command. No infrastructure provisioning, no database migration, no middleware configuration. For the complete post-deploy sequence (BRE activation, Decision Matrix CSV import, flow activation, permission set assignment, sample data load), see **[DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)**.
+No infrastructure provisioning, no database migration, no middleware configuration. For the complete post-deploy sequence (BRE activation, Decision Matrix CSV import, flow activation, permission set assignment, sample data load), see **[docs/QUICKSTART.md](docs/QUICKSTART.md)**.
 
 **For agencies already on Salesforce APS:** this accelerator represents zero incremental software licensing cost — it deploys into an existing org as a package of standard metadata, leveraging the enterprise agreement already in place.
 
@@ -182,7 +190,8 @@ Scores ≥58 auto-create a Legal Review Task. All weights are traceable to speci
 | `force-app/main/default/classes/` | 36 Apex test classes (473+ tests total) | Compliance verification — run `sf apex run test` against your org |
 | `docs/decision-models/` | Machine-readable JSON exports of CE rules, GIS layers, litigation risk weights | MFR #4 — screening criteria publicly accessible and version-controlled |
 | `demo/` | Demo story + import data CSVs + Apex scripts | Carrie's Placer Mine scenario — full end-to-end walkthrough |
-| `DEVELOPER_GUIDE.md` | Complete post-deploy configuration guide | Start here after running `deploy.sh` |
+| `docs/QUICKSTART.md` | Complete end-to-end setup guide (Step 0 through smoke tests) | Start here |
+| `DEVELOPER_GUIDE.md` | Developer/contributor task guide — extending and customizing the accelerator | After initial deployment |
 | `docs/SUBMISSION-NARRATIVE.md` | CEQ Permitting Innovators submission narrative | Full solution narrative around 5 evaluation criteria |
 | `docs/AI-Use-Policy.md` | OMB M-25-21 AI disclosure | Training data sources, limitations, prohibited uses, human confirmation requirements |
 | `docs/ARCHITECTURE_DECISIONS.md` | ADRs 001–011 | Every significant design choice with context, rationale, and consequences |
@@ -399,7 +408,7 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
 
 ## APS Dependency
 
-This accelerator requires **Salesforce Agentforce for Public Sector (APS)**. If your org does not have APS installed, see [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) for object replacement guidance. A free APS developer org is available at the [APS trial link](https://developer.salesforce.com/free-trials/comparison/public-sector).
+This accelerator requires **Salesforce Agentforce for Public Sector (APS)**. If your org does not have APS installed, see [docs/QUICKSTART.md — APS Substitution](docs/QUICKSTART.md) for object replacement guidance. A free APS developer org is available at the [APS trial org setup guide](https://help.salesforce.com/s/articleView?id=ind.psc_create_trial_org.htm&language=en_US&type=5).
 
 ---
 

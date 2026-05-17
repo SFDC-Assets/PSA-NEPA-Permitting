@@ -1,10 +1,9 @@
 # PSA-NEPA Permitting Accelerator — Developer Guide
 
-**For:** Junior Salesforce developer executing the remaining submission improvement items  
-**Deadline:** June 2, 2026  
+**For:** Developers contributing to or extending the PSA-NEPA accelerator  
 **Org type:** Salesforce Agentforce for Public Sector (APS)
 
-This guide covers the four remaining build tasks and the demo validation sprint, in priority order. Each section is self-contained: read the section for the task you're working on, execute it top to bottom, verify, then move to the next.
+This guide covers build tasks and the demo validation sprint, in priority order. Each section is self-contained: read the section for the task you're working on, execute it top to bottom, verify, then move to the next.
 
 ---
 
@@ -32,7 +31,7 @@ Before starting any task, confirm the following are in place.
 # Salesforce CLI (sf v2)
 sf --version          # must be ≥ 2.0.0
 
-# Node.js (for sf plugins)
+# Node.js (required by the Salesforce CLI plugin system — not used directly by deploy scripts)
 node --version        # must be ≥ 18
 
 # Git
@@ -48,15 +47,12 @@ sf org login web --alias nepadev
 sf org display --target-org nepadev   # confirm you see the org username
 ```
 
-### Retrieve existing metadata into a local project
+### Retrieve metadata from an org into the local project
 
-There is no `force-app/` directory in this repo yet. Create one by retrieving from the org. Run these commands from the repo root:
+The `force-app/` directory is already present in this repo and contains all deployed metadata. Use the retrieve command only if you want to pull changes made directly in an org back into your local project:
 
 ```bash
-# Initialize sfdx project structure
-sf project generate --name psa-nepa --output-dir . --template empty
-
-# Retrieve all existing custom objects, fields, flows, and CMTs
+# Retrieve all custom objects, fields, flows, and CMTs from org to local
 sf project retrieve start \
   --metadata "CustomObject,CustomField,Flow,CustomMetadata,OmniIntegrationProcedure,EmbeddedServiceConfig" \
   --target-org nepadev \
@@ -64,10 +60,10 @@ sf project retrieve start \
   --wait 30
 ```
 
-After retrieval, commit the baseline to git before making any changes:
+After retrieval, commit the changes to git before making additional edits:
 ```bash
 git add force-app/
-git commit -m "baseline: retrieve existing org metadata"
+git commit -m "sync: retrieve updated metadata from org"
 ```
 
 ---

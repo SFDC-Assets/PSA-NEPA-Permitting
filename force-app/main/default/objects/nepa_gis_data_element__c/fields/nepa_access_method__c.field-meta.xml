@@ -1,5 +1,4 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- sfca-disable pmd:ProtectSensitiveData -- Restricted picklist (URL/API/Direct Upload) records delivery mechanism only; no credential, token, or authentication data is captured. CEQ Standard GIS Data Entity Access Method property. -->
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_access_method__c</fullName>
         <description>Delivery mechanism for this GIS dataset per CEQ Standard Access Method property. Restricted picklist — no credentials stored.</description>
         <inlineHelpText>How this dataset is delivered (URL, API, or Direct Upload). Not for storing credentials.</inlineHelpText>

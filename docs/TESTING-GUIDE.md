@@ -2,7 +2,7 @@
 
 End-to-end test scenarios for the PSA-NEPA accelerator's live-integration and UI-dependent flows. Automated Apex tests cover logic correctness for all features; the steps in this guide verify production integration paths — async flow triggers, HTTP callouts, REST connectivity, BRE activation state, and UI-layer behavior that Apex cannot reach.
 
-**Prerequisites:** Solution deployed, permission set assigned, BRE Decision Matrix rows imported, all 37 flows active, sample data loaded. See QUICKSTART.md Steps 3–5 if any of these are incomplete.
+**Prerequisites:** Solution deployed, permission set assigned, BRE Decision Matrix rows imported, 33 core flows active (see QUICKSTART.md Step 4c for the activation list; 4 flows are deferred and not required for testing), sample data loaded. See QUICKSTART.md Steps 3–5 if any of these are incomplete.
 
 **Test suite size:** 37 test classes, 509+ test methods across all feature areas. Run `sf apex run test --test-level RunLocalTests` to execute the full automated suite (see [Section 20](#20-apex-test-suite)).
 
@@ -303,7 +303,7 @@ sf apex run test \
 ```
 
 **Expected:**
-- **All tests pass**, 0 failures
+- **All tests pass**, 0 failures. The current baseline is 509+ test methods; the exact count increases as tests are added. When using `--result-format json`, a passing run shows `"summary": { "outcome": "Passed", "failing": 0 }` and the `summary.passing` field shows the current count.
 - Overall Apex coverage ≥ 75%
 - All five key test classes pass:
   - `NepaApiComplianceTest` (55 tests)
@@ -522,7 +522,7 @@ Use this matrix to track test execution. Mark each test ✅ Pass, ❌ Fail, or �
 | 12d | AI AUP | AI classification read-only; human field editable | | |
 | 16a | GIS Proximity | Coordinates trigger IP; layers written back | | |
 | 17a | CEQ Export | REST API returns 9-entity payload | | |
-| 20a | Test Suite | All 509+ tests pass, ≥ 75% coverage | | |
+| 20a | Test Suite | All tests pass (509+ methods, 0 failures), ≥ 75% coverage | | |
 | 20b | Test Suite | NepaBREConfigTest (46 tests) passes | | |
 | 20c | Test Suite | NepaApiComplianceTest (55 tests) passes | | |
 | 20d | Test Suite | NepaEntity789Test (25 tests) passes | | |
@@ -548,7 +548,7 @@ Use this matrix to track test execution. Mark each test ✅ Pass, ❌ Fail, or �
 | Stage gate not blocking | `NEPA_Stage_Gate` or `NEPA_Stage_Gate_Doc_Check` not active | Activate both; Doc Check must be active before Stage Gate |
 | GIS proximity not firing | Named Credentials not configured | Configure Named Credentials per QUICKSTART Step 6 |
 | CEQ API returning 404 | `nepa_project_id__c` value doesn't match | Use exact `nepa_project_id__c` value, not `Name` |
-| Apex tests < 75% coverage | Flow-invoked Apex classes need flows active during test run | Activate all 37 flows, then rerun tests |
+| Apex tests < 75% coverage | Flow-invoked Apex classes need flows active during test run | Activate the 33 core flows per QUICKSTART Step 4c, then rerun tests |
 | Error record not created | Platform event delivery delay | Wait 30 seconds; if still missing, verify `NEPA_Error_Event_Handler` is active |
 | `INVALID_FIELD` on SOQL | Permission set not assigned | Run `sf org assign permset --name NEPA_Permitting --target-org $ALIAS` |
 | `Internal Salesforce Error: 723447963` in ContentVersion tests | Pre-existing sandbox platform bug in NEPADEMO on `ContentVersion` insert | Known issue — not fixable in code; tests include `try/catch` guards; open a Salesforce Support case if critical |

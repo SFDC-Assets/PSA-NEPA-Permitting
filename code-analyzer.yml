@@ -8,3 +8,13 @@ suppressions:
   "force-app/main/default/objects/nepa_detected_protection_layer__c/fields/nepa_upsert_key__c.field-meta.xml":
     - rule_selector: "pmd:ProtectSensitiveData"
       max_suppressed_violations: 1
+  # Url-type field stores public GIS endpoint URLs only; no credentials, tokens, or auth data.
+  # Maps to CEQ Standard GIS Data Entity Access Information property. Rule fires on "access" in the name.
+  "force-app/main/default/objects/nepa_gis_data_element__c/fields/nepa_access_information__c.field-meta.xml":
+    - rule_selector: "pmd:ProtectSensitiveData"
+      max_suppressed_violations: 1
+  # Restricted picklist (URL/API/Direct Upload) records delivery mechanism only; no credentials stored.
+  # Maps to CEQ Standard GIS Data Entity Access Method property. Rule fires on "access" in the name.
+  "force-app/main/default/objects/nepa_gis_data_element__c/fields/nepa_access_method__c.field-meta.xml":
+    - rule_selector: "pmd:ProtectSensitiveData"
+      max_suppressed_violations: 1

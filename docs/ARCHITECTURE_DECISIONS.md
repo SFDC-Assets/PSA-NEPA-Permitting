@@ -4,7 +4,7 @@
 **Maintainer:** Shannon Schupbach
 **Last Updated:** 2026-05-15
 
-Open-source NEPA permitting accelerator built on Salesforce Agentforce for Public Sector (APS). Maps CEQ NEPA and Permitting Data and Technology Standard v1.2 entities to PSS standard objects, adds custom objects and 12+ declarative flows for risk intelligence, and prepares for Phase 2 OmniStudio + Agentforce portal delivery.
+Open-source NEPA permitting accelerator built on Salesforce Agentforce for Public Sector (APS). Maps CEQ NEPA and Permitting Data and Technology Standard v1.2 entities — which define MFRs (Minimum Functional Requirements) as CEQ's baseline capability benchmarks — to PSS standard objects, adds custom objects and 12+ declarative flows for risk intelligence, and prepares for Phase 2 OmniStudio + Agentforce portal delivery.
 
 ---
 
@@ -135,7 +135,7 @@ Risk intelligence flows require configurable weight tables for litigation risk f
 
 ### Decision
 
-Nine Custom Metadata Types store risk weights and screening rules:
+Nine Custom Metadata Types (CMTs — configuration records deployed as metadata rather than data, queryable at runtime without consuming SOQL limits) store risk weights and screening rules:
 
 | Custom Metadata Type | Purpose |
 |---|---|
@@ -325,7 +325,7 @@ Phase 1 (v1.1) implemented comment and document metadata fields for Agentforce/R
 
 During deployment it was discovered that OmniIntegrationProcedures are stored as `OmniProcess` sObject records, not as Flow records. The Metadata API resolves `<subflows>` references by looking up a Flow record with the matching developer name. When the referenced name resolves to an `OmniProcess` record instead of a Flow record, the platform does not return a structured error. Instead, it crashes at the HTTP transport level during Flow activation with `UNKNOWN_EXCEPTION`, leaving no actionable error message.
 
-This behavior is reproducible across org types and is not caused by Flow XML syntax errors, XML encoding issues, or deployment configuration. It is an architectural constraint of the Metadata API: `<subflows>` only resolves Flow-type records.
+This behavior is reproducible across org types and is not caused by Flow XML syntax errors, XML encoding issues, or deployment configuration. It is an architectural constraint of the Metadata API: `<subflows>` only resolves Flow-type records. This is a known Salesforce platform behavior as of API v62.0 — the `deploy.sh` script includes a retry workaround for the `UNKNOWN_EXCEPTION` that occurs during Flow activation when this conflict is encountered.
 
 ### Decision
 
@@ -541,7 +541,7 @@ This sequence is documented in QUICKSTART.md Step 4 and in `package.xml`.
 
 ### Consequences
 
-- **Existing free-text stage values become invalid.** Any `IndividualApplication` records in the org with `nepa_process_stage__c` values that do not match the 18 canonical picklist values will have a blank stage after conversion. A data migration script should remap common variants before activating stage-gate flows.
+- **Existing free-text stage values become invalid.** Any `IndividualApplication` records in the org with `nepa_process_stage__c` values that do not match the 18 canonical picklist values will have a blank stage after conversion. **Recovery:** before converting the field, export all existing stage values via SOQL (`SELECT Id, nepa_process_stage__c FROM IndividualApplication`), save to CSV, remap variants to the canonical values in the 18-stage list above, and re-import after conversion using `sf data upsert bulk`. A data migration script should remap common variants (e.g., "Draft EIS Prep" → "Draft EIS Preparation") before activating stage-gate flows.
 - **Stage-gate flows now benefit from picklist consistency.** Flows that branch on `nepa_process_stage__c` values will no longer silently fail due to case or spacing inconsistencies.
 - **PathAssistant is additive, not blocking.** The Guidance text in the PathAssistant is informational — it does not enforce stage transitions. Stage transition enforcement remains in `NEPA_Stage_Gate` (before-save flow).
 - **18 canonical values are the authoritative list.** New stages must be added to both the picklist metadata (`nepa_process_stage__c.field-meta.xml`) and the PathAssistant (`IndividualApplication_NEPA_Process_Path.pathAssistant-meta.xml`) in the same deployment. Adding a value to only one causes an orphaned stage in either the UI guidance or the stage gate conditions.
