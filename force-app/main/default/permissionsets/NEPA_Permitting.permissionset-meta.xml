@@ -1694,11 +1694,6 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
-        <field>nepa_detected_protection_layer__c.nepa_program__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
         <editable>true</editable>
         <field>nepa_engagement__c.External_ID__c</field>
         <readable>true</readable>
@@ -2158,11 +2153,6 @@
         <readable>true</readable>
     </fieldPermissions>
     
-    <fieldPermissions>
-        <editable>false</editable>
-        <field>nepa_process_team_member__c.nepa_process__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_process_team_member__c.nepa_role_type__c</field>
