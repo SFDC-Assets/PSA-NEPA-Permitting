@@ -133,7 +133,7 @@
          NEPA_Comment_Triage agent. No AI action is taken here;
          status = Queued signals to the agent that triage is needed.
     ============================================================ -->
-    <!-- sfca-disable flow:SameRecordUpdate -- Intentional after-save: status field set after EJ-routing decisions complete; before-save would fire before related comment records are committed -->
+    <!-- sfca-disable flow:SameRecordUpdate: Intentional after-save; status field set after EJ-routing decisions complete -->
     <recordUpdates>
         <name>Update_Status_Queued</name>
         <label>Set Triage Status Queued</label>
