@@ -1,7 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
+<!-- sfca-disable pmd:ProtectSensitiveData -- Url-type field stores public GIS endpoint URLs only; no credentials, tokens, or authentication data stored here. CEQ Standard Access Information property (see GIS Data Entity spec). -->
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_access_information__c</fullName>
-        <description>URL, API endpoint, or instructions for accessing this GIS dataset externally.</description>
-        <inlineHelpText>URL, API endpoint, or access instructions for this dataset.</inlineHelpText>
+        <description>Public URL or endpoint for this GIS dataset (no credentials stored). Maps to CEQ Standard GIS Data Entity Access Information property.</description>
+        <inlineHelpText>Public URL or endpoint for this GIS dataset. Do not store credentials here.</inlineHelpText>
         <label>Access Information</label>
         <required>false</required>
         <trackHistory>false</trackHistory>
