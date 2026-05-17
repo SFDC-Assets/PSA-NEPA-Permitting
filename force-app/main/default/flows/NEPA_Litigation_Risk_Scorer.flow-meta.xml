@@ -142,6 +142,36 @@
             <targetReference>Call_ErrorLogger</targetReference>
         </connector>
     </assignments>
+    <assignments>
+        <name>Assign_ThresholdVars</name>
+        <label>Load Threshold Values from CMT</label>
+        <locationX>176</locationX>
+        <locationY>215</locationY>
+        <assignmentItems>
+            <assignToReference>var_ThresholdVeryHigh</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_RiskThresholdRecord.Very_High_Floor__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_ThresholdHigh</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_RiskThresholdRecord.High_Floor__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_ThresholdModerate</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_RiskThresholdRecord.Moderate_Floor__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_RelatedProject</targetReference>
+        </connector>
+    </assignments>
     <decisions>
         <name>Decision_AppendPenaltyNote</name>
         <label>Append APA Penalty Note?</label>
@@ -444,36 +474,6 @@
             </value>
         </inputAssignments>
     </subflows>
-    <assignments>
-        <name>Assign_ThresholdVars</name>
-        <label>Load Threshold Values from CMT</label>
-        <locationX>176</locationX>
-        <locationY>215</locationY>
-        <assignmentItems>
-            <assignToReference>var_ThresholdVeryHigh</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>var_RiskThresholdRecord.Very_High_Floor__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_ThresholdHigh</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>var_RiskThresholdRecord.High_Floor__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>var_ThresholdModerate</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>var_RiskThresholdRecord.Moderate_Floor__c</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Get_RelatedProject</targetReference>
-        </connector>
-    </assignments>
     <variables>
         <name>col_StatuteWeights</name>
         <dataType>SObject</dataType>
