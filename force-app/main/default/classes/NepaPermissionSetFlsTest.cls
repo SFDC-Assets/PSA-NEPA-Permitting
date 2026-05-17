@@ -1,4 +1,4 @@
-@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage,PMD.MethodNamingConventions')
+@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage,PMD.MethodNamingConventions,PMD.ApexUnitTestClassShouldHaveRunAs')
 /**
  * FLS enforcement tests for the NEPA_Permitting permission set.
  * Verifies that system-set risk/plaintiff fields are read-only to assigned users,

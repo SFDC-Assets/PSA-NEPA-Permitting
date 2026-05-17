@@ -1,4 +1,4 @@
-@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage,PMD.MethodNamingConventions,PMD.ApexUnitTestClassShouldHaveRunAs')
+@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage,PMD.MethodNamingConventions,PMD.ApexUnitTestClassShouldHaveRunAs,PMD.NcssCount,PMD.CyclomaticComplexity')
 /**
  * PIC OpenAPI Standard v1.2.0 Compliance Test Suite
  *

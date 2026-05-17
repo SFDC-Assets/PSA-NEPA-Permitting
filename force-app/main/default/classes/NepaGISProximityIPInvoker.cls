@@ -5,11 +5,13 @@
  */
 public with sharing class NepaGISProximityIPInvoker {
 
+    /** Input variables for the invocable method. */
     public class InvokerRequest {
         @InvocableVariable(label='Project Id' required=true)
         public String projectId;
     }
 
+    /** Output variables from the invocable method. */
     public class InvokerResult {
         @InvocableVariable(label='Success')
         public Boolean success;
@@ -18,6 +20,11 @@ public with sharing class NepaGISProximityIPInvoker {
         public String errorMessage;
     }
 
+    /**
+     * Invokes the GIS Proximity Integration Procedure for each project request.
+     * @param requests List of InvokerRequest with projectId
+     * @return List of InvokerResult with success flag and errorMessage per request
+     */
     @InvocableMethod(
         label='Invoke GIS Proximity Integration Procedure'
         description='Calls NEPA_GISProximityIP OmniStudio IP asynchronously with the given projectId.'

@@ -8,6 +8,30 @@
 
     <!-- All decisions together — Flow Metadata API requires same-type elements be contiguous -->
     <decisions>
+        <name>Decision_ApplyDuplicateMark</name>
+        <label>Duplicate Detected?</label>
+        <locationX>176</locationX>
+        <locationY>755</locationY>
+        <defaultConnector>
+            <targetReference>Set_No_Duplicate</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No match — skip update</defaultConnectorLabel>
+        <rules>
+            <name>Is_Duplicate_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>out_IsDuplicate</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><booleanValue>true</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Duplicate_Fields</targetReference>
+            </connector>
+            <label>Duplicate found — update record</label>
+        </rules>
+    </decisions>
+
+    <decisions>
         <name>Decision_HasProcess</name>
         <label>Has Related Process?</label>
         <locationX>176</locationX>
@@ -133,7 +157,7 @@
             <targetReference>Check_Similarity</targetReference>
         </nextValueConnector>
         <noMoreValuesConnector>
-            <targetReference>Set_No_Duplicate</targetReference>
+            <targetReference>Decision_ApplyDuplicateMark</targetReference>
         </noMoreValuesConnector>
     </loops>
 
@@ -162,7 +186,7 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Update_Duplicate_Fields</targetReference>
+            <targetReference>Loop_Comments</targetReference>
         </connector>
     </assignments>
 

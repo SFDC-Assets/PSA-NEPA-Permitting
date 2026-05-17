@@ -14,6 +14,13 @@
  */
 private class NepaCommentDuplicateCheckTest {
 
+    // ── Fields ────────────────────────────────────────────────────────────────
+
+    private static final String LONG_BODY =
+        'The proposed pipeline route would cross the Yellowstone River at a point where annual spring '
+        + 'floods have historically deposited significant sediment loads affecting downstream habitat. '
+        + 'Federal and tribal monitoring data confirm elevated turbidity levels during runoff events.';
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private static PublicComplaint makeComment(Id processId, String body) {
@@ -32,11 +39,6 @@ private class NepaCommentDuplicateCheckTest {
         m.put('inp_RelatedProcessId', processId);
         return m;
     }
-
-    private static final String LONG_BODY =
-        'The proposed pipeline route would cross the Yellowstone River at a point where annual spring '
-        + 'floods have historically deposited significant sediment loads affecting downstream habitat. '
-        + 'Federal and tribal monitoring data confirm elevated turbidity levels during runoff events.';
 
     // ── Tests ─────────────────────────────────────────────────────────────────
 

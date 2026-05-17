@@ -357,6 +357,7 @@ TEXT(ROUND({!var_MatchedSuccessRate} * 100, 0)) &amp; "% success rate"</expressi
         <sortOrder>Asc</sortOrder>
     </recordLookups>
 
+    <!-- sfca-disable flow:SameRecordUpdate -- Intentional after-save: requires litigation lookup results unavailable before save -->
     <recordUpdates>
         <name>Update_CommentRecord</name>
         <label>Set Plaintiff Flags on Comment Record</label>

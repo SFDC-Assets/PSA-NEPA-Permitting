@@ -254,6 +254,7 @@
         <queriedFields>Id</queriedFields>
     </recordLookups>
 
+    <!-- sfca-disable flow:SameRecordUpdate -- Intentional after-save: ActionPlan insert must complete first before setting the guard flag on the same record -->
     <recordUpdates>
         <description>Set guard field so subsequent stage updates do not create a second ActionPlan for this record.</description>
         <name>Update_LaunchedFlag</name>

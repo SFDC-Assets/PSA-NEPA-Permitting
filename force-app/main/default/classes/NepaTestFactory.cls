@@ -1,6 +1,6 @@
 /** Shared test data factory for NEPA controller unit tests. */
 @IsTest
-@SuppressWarnings('PMD.ExcessivePublicCount')
+@SuppressWarnings('PMD.ExcessivePublicCount,PMD.CyclomaticComplexity')
 public class NepaTestFactory {
 
     // ── Field declarations ────────────────────────────────────────────────────
@@ -291,6 +291,12 @@ public class NepaTestFactory {
 
     // ── nepa_gis_data__c (CEQ Entity 7 — gis_data) ──────────────────────────
 
+    /**
+     * Builds an unsaved GIS data record.
+     * @param projectId Parent Program Id
+     * @param processId Parent IndividualApplication Id
+     * @return Unsaved nepa_gis_data__c record
+     */
     public static nepa_gis_data__c makeGisData(Id projectId, Id processId) {
         nepa_gis_data__c g = new nepa_gis_data__c();
         g.Name                        = 'Test GIS Record';
@@ -309,6 +315,12 @@ public class NepaTestFactory {
         return g;
     }
 
+    /**
+     * Inserts and returns a GIS data record.
+     * @param projectId Parent Program Id
+     * @param processId Parent IndividualApplication Id
+     * @return Saved nepa_gis_data__c record
+     */
     public static nepa_gis_data__c insertGisData(Id projectId, Id processId) {
         nepa_gis_data__c g = makeGisData(projectId, processId);
         insert g;
@@ -351,7 +363,15 @@ public class NepaTestFactory {
 
     // ── Bulk test helpers ────────────────────────────────────────────────────
 
-    /** Creates n processes under proj, then bulk-updates them to newReviewType. Returns true if no exception. */
+    /**
+     * Creates n processes under proj, then bulk-updates them to a new review type.
+     * @param projId          Parent Program Id
+     * @param n               Number of processes to create
+     * @param fromReviewType  Initial review type for created processes
+     * @param toReviewType    Review type to update processes to
+     * @return True if bulk update succeeded without exception; false otherwise
+     */
+    @SuppressWarnings('PMD.ExcessiveParameterList')
     public static Boolean runBulkReviewTypeUpdate(Id projId, Integer n, String fromReviewType, String toReviewType) {
         List<IndividualApplication> ias = new List<IndividualApplication>();
         for (Integer i = 0; i < n; i++) {

@@ -69,8 +69,8 @@ private class NepaSlaEscalationMonitorTest {
 
     /** Runs the SLA Escalation Monitor flow. */
     private static void runSlaMonitorFlow() {
-        Flow.Interview.NEPA_SLA_Escalation_Monitor interview =
-            new Flow.Interview.NEPA_SLA_Escalation_Monitor(new Map<String, Object>());
+        Flow.Interview interview = Flow.Interview.createInterview(
+            'NEPA_SLA_Escalation_Monitor', new Map<String, Object>());
         interview.start();
     }
 
@@ -163,8 +163,8 @@ private class NepaSlaEscalationMonitorTest {
         insert ia;
 
         Test.startTest();
-        Flow.Interview.NEPA_SLA_Escalation_Monitor interview =
-            new Flow.Interview.NEPA_SLA_Escalation_Monitor(new Map<String, Object>());
+        Flow.Interview interview = Flow.Interview.createInterview(
+            'NEPA_SLA_Escalation_Monitor', new Map<String, Object>());
         interview.start();
         Test.stopTest();
 

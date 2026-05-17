@@ -18,7 +18,7 @@
  *      BRE Expression Sets must be activated in the target org for these
  *      tests to produce output fields (activation requires Setup UI — see docs).
  */
-@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.MethodNamingConventions')
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.MethodNamingConventions,PMD.CognitiveComplexity,PMD.CyclomaticComplexity,PMD.ExcessiveParameterList')
 @IsTest
 private class NepaBREConfigTest {
 
@@ -64,12 +64,11 @@ private class NepaBREConfigTest {
         return p;
     }
 
-
-    // ══════════════════════════════════════════════════════════════════════════
+    // ==========================================================================
     // PART 1 — CMT CONFIGURATION INTEGRITY
     // These tests run entirely against custom metadata (no DML on SObjects)
     // and will pass even when BRE Expression Sets are not yet activated.
-    // ══════════════════════════════════════════════════════════════════════════
+    // ==========================================================================
 
     // ── CE Screening Rules ────────────────────────────────────────────────────
 
@@ -450,14 +449,13 @@ private class NepaBREConfigTest {
         System.assert(veryHigh <= 100, 'Very High tier starts at or below 100');
     }
 
-
-    // ══════════════════════════════════════════════════════════════════════════
+    // ==========================================================================
     // PART 2 — FLOW END-TO-END SMOKE TESTS
     // These trigger the record-triggered flows and assert on output fields.
     // AsyncAfterCommit: output fields may not populate synchronously.
     // All assertions are null-guarded; the primary assertion is no-throw.
     // BRE Expression Sets must be activated in the org for outputs to appear.
-    // ══════════════════════════════════════════════════════════════════════════
+    // ==========================================================================
 
     // ── CE Screener: recommendation field populated, review_type not overwritten ──
 
@@ -922,10 +920,9 @@ private class NepaBREConfigTest {
             'NHPA Risk_Points__c must be >= 1; got: ' + pointsByKey.get('NHPA'));
     }
 
-
-    // ══════════════════════════════════════════════════════════════════════════
+    // ==========================================================================
     // PART 9 — PHASE 3 DATA-DRIVEN ADDITIONS
-    // ══════════════════════════════════════════════════════════════════════════
+    // ==========================================================================
 
     @IsTest
     static void sectorCircuitRisk_allSixNewCellsPresent() {

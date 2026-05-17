@@ -10,6 +10,7 @@
  */
 public with sharing class NepaLayerDisciplineResolver {
 
+    /** Input variables for the invocable method. */
     public class Request {
         @InvocableVariable(label='Program Id' required=true)
         public Id programId;
@@ -19,6 +20,7 @@ public with sharing class NepaLayerDisciplineResolver {
         public String accountId;
     }
 
+    /** Output variables from the invocable method. */
     public class Result {
         @InvocableVariable(label='Team Members Created')
         public Integer teamMembersCreated;
@@ -37,6 +39,11 @@ public with sharing class NepaLayerDisciplineResolver {
         description='Matches active NEPA_Layer_Discipline__mdt records against detected GIS hits for a Program, finds ServiceResources by discipline, and bulk-inserts nepa_process_team_member__c and WorkOrder records.'
         category='NEPA'
     )
+    /**
+     * Processes each request and assembles a team for the associated program.
+     * @param requests List of Request with programId, relatedAppId, and optional accountId
+     * @return List of Result with team/WO counts and any error messages
+     */
     public static List<Result> assemble(List<Request> requests) {
         List<Result> results = new List<Result>();
         for (Request req : requests) {
@@ -45,6 +52,12 @@ public with sharing class NepaLayerDisciplineResolver {
         return results;
     }
 
+    /**
+     * Assembles team members and work orders for one program request.
+     * @param req Request containing programId, relatedAppId, and optional accountId
+     * @return Result with counts, unmatched disciplines, and any error message
+     */
+    @SuppressWarnings('PMD.NcssCount,PMD.CyclomaticComplexity,PMD.CognitiveComplexity')
     private static Result assembleOne(Request req) {
         Result res = new Result();
         res.teamMembersCreated = 0;

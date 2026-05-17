@@ -1,5 +1,10 @@
+/**
+ * Invocable bridge: launches a named Action Plan Template against a WorkOrder record.
+ * Called by NEPA_WO_Milestone_Setter flow.
+ */
 public with sharing class NepaActionPlanLauncher {
 
+    /** Input variables for the invocable method. */
     public class LaunchRequest {
         @InvocableVariable(label='Record Id' description='WorkOrder.Id to attach the Action Plan to' required=true)
         public String recordId;
@@ -8,6 +13,7 @@ public with sharing class NepaActionPlanLauncher {
         public String aptDeveloperName;
     }
 
+    /** Output variables from the invocable method. */
     public class LaunchResult {
         @InvocableVariable(label='Action Plan Id' description='Id of the created ActionPlan record, if successful')
         public String actionPlanId;
@@ -16,6 +22,11 @@ public with sharing class NepaActionPlanLauncher {
         public String errorMessage;
     }
 
+    /**
+     * Launches named Action Plan Templates against WorkOrder records.
+     * @param requests List of LaunchRequest with recordId and aptDeveloperName
+     * @return List of LaunchResult with actionPlanId or errorMessage per request
+     */
     @InvocableMethod(
         label='Launch Action Plan Template'
         description='Launches a named Action Plan Template against a WorkOrder record. Called by NEPA_WO_Milestone_Setter.'

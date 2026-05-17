@@ -323,6 +323,7 @@
         <queriedFields>Statute_Key__c</queriedFields>
         <queriedFields>Risk_Points__c</queriedFields>
     </recordLookups>
+    <!-- sfca-disable flow:SameRecordUpdate -- AsyncAfterCommit path: before-save not applicable; writes calculated score fields after async scoring completes -->
     <recordUpdates>
         <name>Update_RiskFields</name>
         <label>Update Risk Fields</label>

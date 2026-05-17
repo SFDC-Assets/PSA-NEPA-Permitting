@@ -296,17 +296,7 @@ private class NepaCeqExportServiceTest {
         Set<String> validReviewTypes = new Set<String>{
             'EIS', 'EA', 'CE', 'Other Authorization'
         };
-
-        RestContext.request  = buildRequest('GET', '/services/apexrest/nepa/v1/processes/', null);
-        RestContext.response = new RestResponse();
-
-        Test.startTest();
-        NepaCeqExportService.doGet();
-        Test.stopTest();
-
-        System.assertEquals(200, RestContext.response.statusCode);
-        List<Object> records = (List<Object>) parseBody().get('data');
-        for (Object rec : records) {
+        for (Object rec : getListRecords()) {
             Map<String, Object> dto = (Map<String, Object>) rec;
             String rt = (String) dto.get('reviewType');
             if (rt != null) {
@@ -321,17 +311,7 @@ private class NepaCeqExportServiceTest {
         Set<String> validStatuses = new Set<String>{
             'planned', 'pre-application', 'in progress', 'paused', 'completed', 'cancelled'
         };
-
-        RestContext.request  = buildRequest('GET', '/services/apexrest/nepa/v1/processes/', null);
-        RestContext.response = new RestResponse();
-
-        Test.startTest();
-        NepaCeqExportService.doGet();
-        Test.stopTest();
-
-        System.assertEquals(200, RestContext.response.statusCode);
-        List<Object> records = (List<Object>) parseBody().get('data');
-        for (Object rec : records) {
+        for (Object rec : getListRecords()) {
             Map<String, Object> dto = (Map<String, Object>) rec;
             String st = (String) dto.get('processStatus');
             if (st != null) {
@@ -593,7 +573,7 @@ private class NepaCeqExportServiceTest {
         Object slaOverdueVal = dto.get('slaOverdue');
         if (slaOverdueVal != null) {
             System.assert(slaOverdueVal instanceof Boolean,
-                'slaOverdue must be a Boolean in the DTO; got: ' + slaOverdueVal.getClass().getName());
+                'slaOverdue must be a Boolean in the DTO; got: ' + String.valueOf(slaOverdueVal));
         }
     }
 
@@ -613,5 +593,15 @@ private class NepaCeqExportServiceTest {
         return (Map<String, Object>) JSON.deserializeUntyped(
             RestContext.response.responseBody.toString()
         );
+    }
+
+    private static List<Object> getListRecords() {
+        RestContext.request  = buildRequest('GET', '/services/apexrest/nepa/v1/processes/', null);
+        RestContext.response = new RestResponse();
+        Test.startTest();
+        NepaCeqExportService.doGet();
+        Test.stopTest();
+        System.assertEquals(200, RestContext.response.statusCode);
+        return (List<Object>) parseBody().get('data');
     }
 }
