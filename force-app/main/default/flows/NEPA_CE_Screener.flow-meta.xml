@@ -94,6 +94,12 @@
                 <elementReference>$Record.nepa_disturbance_acres__c</elementReference>
             </value>
         </inputParameters>
+        <inputParameters>
+            <name>ExtraordinaryCircumstances</name>
+            <value>
+                <elementReference>$Record.nepa_extraordinary_circumstances__c</elementReference>
+            </value>
+        </inputParameters>
         <nameSegment>NEPA_CE_Screener</nameSegment>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </actionCalls>

@@ -12,7 +12,7 @@
         <rank>3</rank>
         <shouldShowExplExternally>false</shouldShowExplExternally>
         <startDate>2026-05-08T00:00:00.000Z</startDate>
-        <status>Active</status>
+        <status>Inactive</status>
 
         <!-- Step 1: NAICS lookup -->
         <steps>
@@ -431,5 +431,495 @@
             <type>Variable</type>
         </variables>
         <versionNumber>3</versionNumber>
+    </versions>
+
+    <versions>
+        <fullName>NEPA_CE_Screener_V4</fullName>
+        <description>CE screening BRE V4: adds EC override step (G1 fix). When ExtraordinaryCircumstances is non-empty AND ReviewType resolved to CE, escalates to EA per 40 CFR 1508.1(d). V3 deactivated; this version is Active.</description>
+        <expressionSetDefinition>NEPA_CE_Screener</expressionSetDefinition>
+        <label>NEPA CE Screener V4</label>
+        <processType>Bre</processType>
+        <rank>4</rank>
+        <shouldShowExplExternally>false</shouldShowExplExternally>
+        <startDate>2026-05-18T00:00:00.000Z</startDate>
+        <status>Active</status>
+
+        <!-- Step 1: NAICS lookup -->
+        <steps>
+            <actionType>GetOutputsFromDecisionMatrix</actionType>
+            <decisionTable>
+                <decisionTableName>NEPA_CE_Screener_NAICS</decisionTableName>
+                <type>DecisionMatrix</type>
+            </decisionTable>
+            <label>NAICS Lookup</label>
+            <name>NAICSLookup</name>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>1</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <!-- Step 2: Tier1 lookup -->
+        <steps>
+            <actionType>GetOutputsFromDecisionMatrix</actionType>
+            <decisionTable>
+                <decisionTableName>NEPA_CE_Screener_Tier1</decisionTableName>
+                <type>DecisionMatrix</type>
+            </decisionTable>
+            <label>Tier 1 Agency Sector Lookup</label>
+            <name>Tier1AgencySectorLookup</name>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>2</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <!-- Step 3: Tier2 lookup -->
+        <steps>
+            <actionType>GetOutputsFromDecisionMatrix</actionType>
+            <decisionTable>
+                <decisionTableName>NEPA_CE_Screener_Tier2</decisionTableName>
+                <type>DecisionMatrix</type>
+            </decisionTable>
+            <label>Tier 2 Agency Action Type Lookup</label>
+            <name>Tier2AgencyActionTypeLookup</name>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>3</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <!-- Step 4: Consolidate — pick first non-empty result across all three tiers -->
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>ReviewType</assignedParameter>
+                <expression>IF( LEN(NEPA_CE_Screener_NAICS__ReviewType) &gt; 0, NEPA_CE_Screener_NAICS__ReviewType, IF( LEN(NEPA_CE_Screener_Tier1__ReviewType) &gt; 0, NEPA_CE_Screener_Tier1__ReviewType, IF( LEN(NEPA_CE_Screener_Tier2__ReviewType) &gt; 0, NEPA_CE_Screener_Tier2__ReviewType, &apos;EA&apos; ) ) )</expression>
+            </assignment>
+            <label>Consolidate Review Type</label>
+            <name>ConsolidateReviewType</name>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>4</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>CECode</assignedParameter>
+                <expression>IF( LEN(NEPA_CE_Screener_NAICS__CECode) &gt; 0, NEPA_CE_Screener_NAICS__CECode, IF( LEN(NEPA_CE_Screener_Tier1__CECode) &gt; 0, NEPA_CE_Screener_Tier1__CECode, IF( LEN(NEPA_CE_Screener_Tier2__CECode) &gt; 0, NEPA_CE_Screener_Tier2__CECode, &apos;&apos; ) ) )</expression>
+            </assignment>
+            <label>Consolidate CE Code</label>
+            <name>ConsolidateCECode</name>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>5</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>Confidence</assignedParameter>
+                <expression>IF( LEN(NEPA_CE_Screener_NAICS__Confidence) &gt; 0, NEPA_CE_Screener_NAICS__Confidence, IF( LEN(NEPA_CE_Screener_Tier1__Confidence) &gt; 0, NEPA_CE_Screener_Tier1__Confidence, IF( LEN(NEPA_CE_Screener_Tier2__Confidence) &gt; 0, NEPA_CE_Screener_Tier2__Confidence, &apos;Low&apos; ) ) )</expression>
+            </assignment>
+            <label>Consolidate Confidence</label>
+            <name>ConsolidateConfidence</name>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>6</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>ClassificationBasis</assignedParameter>
+                <expression>IF( LEN(NEPA_CE_Screener_NAICS__ClassificationBasis) &gt; 0, NEPA_CE_Screener_NAICS__ClassificationBasis, IF( LEN(NEPA_CE_Screener_Tier1__ClassificationBasis) &gt; 0, NEPA_CE_Screener_Tier1__ClassificationBasis, IF( LEN(NEPA_CE_Screener_Tier2__ClassificationBasis) &gt; 0, NEPA_CE_Screener_Tier2__ClassificationBasis, &apos;No screening rule matched; defaulted to EA for manual review&apos; ) ) )</expression>
+            </assignment>
+            <label>Consolidate Classification Basis</label>
+            <name>ConsolidateClassificationBasis</name>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>7</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <!-- Step 8: Acreage override — if CE was selected but acreage exceeds threshold, escalate to EA -->
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>ReviewType</assignedParameter>
+                <expression>IF( ReviewType == &apos;CE&apos; &amp;&amp; DisturbanceAcres &gt; CONST_AcreageThreshold, &apos;EA&apos;, IF( LEN(ReviewType) &gt; 0, ReviewType, &apos;EA&apos; ) )</expression>
+            </assignment>
+            <label>Apply Acreage Override</label>
+            <name>ApplyAcreageOverride</name>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>8</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <!-- Step 9: EC override — if extraordinary circumstances are present AND the result is CE,
+             escalate to EA. Under 40 CFR 1508.1(d), a categorical exclusion cannot be applied
+             when extraordinary circumstances are present. EC field contains a non-empty string
+             when any GIS flag or user-reported EC is active. -->
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>ReviewType</assignedParameter>
+                <expression>IF( ReviewType == &apos;CE&apos; &amp;&amp; LEN(ExtraordinaryCircumstances) &gt; 0, &apos;EA&apos;, ReviewType )</expression>
+            </assignment>
+            <label>Apply EC Override</label>
+            <name>ApplyECOverride</name>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>9</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>Confidence</assignedParameter>
+                <expression>IF( ReviewType == &apos;EA&apos; &amp;&amp; LEN(ExtraordinaryCircumstances) &gt; 0 &amp;&amp; Confidence != &apos;Low&apos;, &apos;High&apos;, Confidence )</expression>
+            </assignment>
+            <label>Set EC Override Confidence</label>
+            <name>SetECOverrideConfidence</name>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>10</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>ClassificationBasis</assignedParameter>
+                <expression>IF( ReviewType == &apos;EA&apos; &amp;&amp; LEN(ExtraordinaryCircumstances) &gt; 0 &amp;&amp; LEN(NEPA_CE_Screener_NAICS__CECode) + LEN(NEPA_CE_Screener_Tier1__CECode) + LEN(NEPA_CE_Screener_Tier2__CECode) &gt; 0, &apos;EC override — categorical exclusion does not apply when extraordinary circumstances are present (40 CFR 1508.1(d)). EC factors: &apos; &amp; ExtraordinaryCircumstances, ClassificationBasis )</expression>
+            </assignment>
+            <label>Set EC Override Basis</label>
+            <name>SetECOverrideBasis</name>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>11</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>CECode</assignedParameter>
+                <expression>IF( ReviewType == &apos;CE&apos;, CECode, &apos;&apos; )</expression>
+            </assignment>
+            <label>Clear CE Code on Non-CE</label>
+            <name>ClearCECodeOnNonCE</name>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>12</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <!-- Step 13: Output final determination -->
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>ReviewType</assignedParameter>
+                <expression>ReviewType</expression>
+            </assignment>
+            <label>Output Screening Result</label>
+            <name>OutputScreeningResult</name>
+            <resultIncluded>true</resultIncluded>
+            <sequenceNumber>13</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Agency abbreviation (BLM, DOE, USFS, etc.)</description>
+            <input>true</input>
+            <name>AgencyAbbr</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value></value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Specific action type from IndividualApplication.nepa_action_type__c</description>
+            <input>true</input>
+            <name>ActionType</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value></value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Applicable CE code</description>
+            <input>false</input>
+            <name>CECode</name>
+            <output>true</output>
+            <type>Variable</type>
+            <value></value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Human-readable classification explanation</description>
+            <input>false</input>
+            <name>ClassificationBasis</name>
+            <output>true</output>
+            <type>Variable</type>
+            <value></value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Classification confidence: High, Medium, or Low</description>
+            <input>false</input>
+            <name>Confidence</name>
+            <output>true</output>
+            <type>Variable</type>
+            <value></value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Numeric</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Disturbance acreage ceiling for CE applicability (250 per CEQ guidance)</description>
+            <input>false</input>
+            <name>CONST_AcreageThreshold</name>
+            <output>false</output>
+            <type>Constant</type>
+            <value>250</value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Numeric</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Physical disturbance area in acres</description>
+            <input>true</input>
+            <name>DisturbanceAcres</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value>0</value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Extraordinary circumstances text from IndividualApplication.nepa_extraordinary_circumstances__c. Non-empty string means EC is active; CE must be escalated to EA per 40 CFR 1508.1(d).</description>
+            <input>true</input>
+            <name>ExtraordinaryCircumstances</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value></value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>NAICS code string from Program.nepa_applicant_naics__c</description>
+            <input>true</input>
+            <name>NAICSCode</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value></value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Determined review type: CE, EA, or EIS</description>
+            <input>false</input>
+            <name>ReviewType</name>
+            <output>true</output>
+            <type>Variable</type>
+            <value></value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Project sector key</description>
+            <input>true</input>
+            <name>SectorKey</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value></value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <description>Project type key</description>
+            <input>true</input>
+            <name>TypeKey</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value></value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_NAICS</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_NAICS__CECode</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_NAICS</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_NAICS__ClassificationBasis</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_NAICS</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_NAICS__Confidence</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_NAICS</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_NAICS__ReviewType</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_Tier1</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_Tier1__CECode</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_Tier1</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_Tier1__ClassificationBasis</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_Tier1</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_Tier1__Confidence</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_Tier1</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_Tier1__ReviewType</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_Tier2</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_Tier2__CECode</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_Tier2</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_Tier2__ClassificationBasis</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_Tier2</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_Tier2__Confidence</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_CE_Screener_Tier2</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_CE_Screener_Tier2__ReviewType</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <versionNumber>4</versionNumber>
     </versions>
 </ExpressionSetDefinition>

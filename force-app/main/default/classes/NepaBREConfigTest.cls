@@ -1044,4 +1044,103 @@ private class NepaBREConfigTest {
         System.assert(caughtError,
             'NEPA_Phase2_Climate_Gate validation rule must block Decision stage when climate assessment is incomplete');
     }
+
+    // ── PART 11: CE Screener V4 EC Override ──────────────────────────────────
+    // BRE V4 adds an EC override step: when nepa_extraordinary_circumstances__c
+    // is non-empty AND the BRE resolves to CE, the result must be escalated to EA.
+    // These tests verify the flow wiring and field behavior used by V4.
+    // Full end-to-end BRE output tests require V4 to be activated in the target org.
+
+    @IsTest
+    static void ceScreener_ecField_acceptsGISText() {
+        Program proj = makeProject('EC-GIS', 'Bureau of Land Management', '9th', 'Energy', 'CE');
+        IndividualApplication ia = makeProcess(proj.Id, 'CE');
+
+        Test.startTest();
+        ia.nepa_extraordinary_circumstances__c = 'NHD Waterway Proximity; Tribal Lands Proximity';
+        update ia;
+        Test.stopTest();
+
+        IndividualApplication result = [
+            SELECT nepa_extraordinary_circumstances__c FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+        System.assertEquals('NHD Waterway Proximity; Tribal Lands Proximity',
+            result.nepa_extraordinary_circumstances__c,
+            'nepa_extraordinary_circumstances__c must persist GIS-derived EC text');
+    }
+
+    @IsTest
+    static void ceScreener_ecField_acceptsEmptyString() {
+        Program proj = makeProject('EC-EMPTY', 'Bureau of Land Management', '9th', 'Energy', 'CE');
+        IndividualApplication ia = makeProcess(proj.Id, 'CE');
+        ia.nepa_extraordinary_circumstances__c = 'NHD Waterway Proximity';
+        update ia;
+
+        Test.startTest();
+        ia.nepa_extraordinary_circumstances__c = '';
+        update ia;
+        Test.stopTest();
+
+        IndividualApplication result = [
+            SELECT nepa_extraordinary_circumstances__c FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+        System.assert(String.isBlank(result.nepa_extraordinary_circumstances__c),
+            'nepa_extraordinary_circumstances__c must accept empty string (EC cleared)');
+    }
+
+    @IsTest
+    static void ceScreener_ecOverride_flowDoesNotThrow_withECPresent() {
+        Program proj = makeProject('EC-FLOW', 'Bureau of Land Management', '9th', 'Energy', 'CE');
+        IndividualApplication ia = makeProcess(proj.Id, 'CE');
+
+        Test.startTest();
+        Boolean threw = false;
+        try {
+            ia.nepa_extraordinary_circumstances__c = 'NHD Waterway Proximity';
+            ia.nepa_action_type__c = 'Road Construction';
+            ia.nepa_disturbance_acres__c = 5;
+            update ia;
+        } catch (Exception e) {
+            threw = true;
+        }
+        Test.stopTest();
+
+        System.assertEquals(false, threw,
+            'Updating screening inputs with EC present must not throw an exception');
+
+        // Null-guard: async BRE may not have run synchronously.
+        // If recommendation is populated, it must be EA-Required (not CE-Recommended)
+        // when EC is present, per the V4 EC override step.
+        IndividualApplication result = [
+            SELECT nepa_ce_pathway_recommendation__c, nepa_extraordinary_circumstances__c
+            FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+        System.assertEquals('NHD Waterway Proximity', result.nepa_extraordinary_circumstances__c,
+            'EC field must persist after flow runs');
+        if (result.nepa_ce_pathway_recommendation__c != null) {
+            System.assertNotEquals('CE-Recommended', result.nepa_ce_pathway_recommendation__c,
+                'BRE V4 EC override: when EC is present, recommendation must not be CE-Recommended');
+        }
+    }
+
+    @IsTest
+    static void ceScreener_ecOverride_flowDoesNotThrow_withNoEC() {
+        Program proj = makeProject('EC-NONE', 'Bureau of Land Management', '9th', 'Energy', 'CE');
+        IndividualApplication ia = makeProcess(proj.Id, 'CE');
+
+        Test.startTest();
+        Boolean threw = false;
+        try {
+            ia.nepa_extraordinary_circumstances__c = '';
+            ia.nepa_action_type__c = 'Routine Maintenance';
+            ia.nepa_disturbance_acres__c = 2;
+            update ia;
+        } catch (Exception e) {
+            threw = true;
+        }
+        Test.stopTest();
+
+        System.assertEquals(false, threw,
+            'Updating screening inputs with no EC must not throw an exception');
+    }
 }

@@ -22,7 +22,7 @@
     <formulas>
         <name>formula_ManifestEnvelope</name>
         <dataType>String</dataType>
-        <expression>"{\"schema_version\":\"1.0\",\"standard\":\"CEQ NEPA and Permitting Data and Technology Standard v1.2\",\"mfr\":\"MFR 9\",\"generated\":\"" &amp; TEXT(NOW()) &amp; "\",\"process_id\":\"" &amp; {!$Record.Id} &amp; "\",\"process_name\":\"" &amp; SUBSTITUTE({!$Record.Name}, "\"", "'") &amp; "\",\"review_type\":\"" &amp; TEXT({!$Record.nepa_review_type__c}) &amp; "\",\"outcome\":\"" &amp; {!$Record.nepa_process_outcome__c} &amp; "\",\"risk_score\":" &amp; TEXT({!$Record.nepa_risk_score__c}) &amp; ",\"risk_tier\":\"" &amp; TEXT({!$Record.nepa_risk_tier__c}) &amp; "\",\"record_complete\":true}"</expression>
+        <expression>"{\"schema_version\":\"1.0\",\"standard\":\"CEQ NEPA and Permitting Data and Technology Standard v1.2\",\"mfr\":\"MFR 9\",\"generated\":\"" &amp; TEXT(NOW()) &amp; "\",\"process_id\":\"" &amp; {!$Record.Id} &amp; "\",\"process_name\":\"" &amp; SUBSTITUTE({!$Record.Name}, "\"", "'") &amp; "\",\"review_type\":\"" &amp; TEXT({!$Record.nepa_review_type__c}) &amp; "\",\"outcome\":\"" &amp; IF(ISBLANK({!$Record.nepa_process_outcome__c}), "", {!$Record.nepa_process_outcome__c}) &amp; "\",\"risk_score\":" &amp; IF(ISNULL({!$Record.nepa_risk_score__c}), "null", TEXT({!$Record.nepa_risk_score__c})) &amp; ",\"risk_tier\":" &amp; IF(ISBLANK(TEXT({!$Record.nepa_risk_tier__c})), "null", "\"" &amp; TEXT({!$Record.nepa_risk_tier__c}) &amp; "\"") &amp; ",\"record_complete\":true}"</expression>
     </formulas>
 
     <!-- All assignments together -->
@@ -39,7 +39,7 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Create_Manifest_ContentVersion</targetReference>
+            <targetReference>Check_Existing_Manifest</targetReference>
         </connector>
     </assignments>
 
@@ -59,6 +59,62 @@
             <targetReference>Call_ErrorLogger</targetReference>
         </connector>
     </assignments>
+
+    <!-- V1 fix: check for an existing manifest before creating to prevent duplicates
+         when Lock_Application_Record faults after Create_Manifest_ContentVersion succeeds -->
+    <recordLookups>
+        <name>Check_Existing_Manifest</name>
+        <label>Check for Existing AR Manifest</label>
+        <locationX>176</locationX>
+        <locationY>161</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_ManifestAlreadyExists</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>FirstPublishLocationId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_document_type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Administrative Record Manifest</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ContentVersion</object>
+        <queriedFields>Id</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+
+    <decisions>
+        <name>Decision_ManifestAlreadyExists</name>
+        <label>Manifest Already Exists?</label>
+        <locationX>176</locationX>
+        <locationY>215</locationY>
+        <defaultConnector>
+            <targetReference>Create_Manifest_ContentVersion</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No existing manifest — create</defaultConnectorLabel>
+        <rules>
+            <name>Manifest_Exists_Skip</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Check_Existing_Manifest.Id</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Lock_Application_Record</targetReference>
+            </connector>
+            <label>Manifest exists — skip create, ensure lock</label>
+        </rules>
+    </decisions>
 
     <recordCreates>
         <name>Create_Manifest_ContentVersion</name>

@@ -163,4 +163,55 @@ private class NepaCloseAdminRecordFlowTest {
         System.assertEquals(75, result.nepa_record_completeness__c,
             'nepa_record_completeness__c must accept a numeric value and be readable');
     }
+
+    // ── V1 fix: duplicate manifest guard — ar_locked field persists independently ──
+    // Full integration test for the duplicate-guard path is blocked until ROD/FONSI
+    // picklist values are added to the record type in Setup (see class-level comment).
+    // This test verifies the guard's key prerequisite: nepa_ar_locked__c can be set
+    // to true independently of the flow trigger path, which is what the guard relies on.
+
+    @IsTest
+    static void arLockGuard_lockCanBeSetWithoutManifest() {
+        IndividualApplication ia = makeProcess('EA');
+        Integer manifestsBefore = [
+            SELECT COUNT() FROM ContentVersion WHERE FirstPublishLocationId = :ia.Id
+            AND nepa_document_type__c = 'Administrative Record Manifest'
+        ];
+
+        Test.startTest();
+        ia.nepa_ar_locked__c = true;
+        update ia;
+        Test.stopTest();
+
+        IndividualApplication result = [SELECT nepa_ar_locked__c FROM IndividualApplication WHERE Id = :ia.Id];
+        System.assertEquals(true, result.nepa_ar_locked__c,
+            'nepa_ar_locked__c must be settable independently');
+        Integer manifestsAfter = [
+            SELECT COUNT() FROM ContentVersion WHERE FirstPublishLocationId = :ia.Id
+            AND nepa_document_type__c = 'Administrative Record Manifest'
+        ];
+        System.assertEquals(manifestsBefore, manifestsAfter,
+            'Setting ar_locked without a ROD/FONSI transition must not create a manifest');
+    }
+
+    // ── V2 fix: null-safe JSON formula — schema test that risk score/tier can be null ──
+
+    @IsTest
+    static void nullRiskScore_fieldAcceptsNull() {
+        IndividualApplication ia = makeProcess('EA');
+
+        Test.startTest();
+        ia.nepa_risk_score__c = null;
+        ia.nepa_risk_tier__c  = null;
+        update ia;
+        Test.stopTest();
+
+        IndividualApplication result = [
+            SELECT nepa_risk_score__c, nepa_risk_tier__c FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+        System.assertEquals(null, result.nepa_risk_score__c,
+            'nepa_risk_score__c must accept null without error');
+        System.assertEquals(null, result.nepa_risk_tier__c,
+            'nepa_risk_tier__c must accept null without error');
+    }
 }
