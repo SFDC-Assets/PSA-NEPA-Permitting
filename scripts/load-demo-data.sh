@@ -297,6 +297,10 @@ upsert_csv "nepa_ar_export__c" "nepa_ar_export__c" "25_ar_export.csv" "nepa_proc
 step_header "Step 27: Apex insert for objects blocked from CSV upsert (engagement, PublicComplaint PC_003, decision_payload, ar_export)"
 run_apex "missing records insert" "demo/import_data/27_postload_missing_records.apex"
 
+# ── step 28: OFD coordination milestones ──────────────────────────────────────
+step_header "Step 28: OFD Coordination Milestones (ApplicationTimeline OFD tracks for IDI-38709)"
+run_apex "OFD milestones" "demo/import_data/27_ofd_milestones.apex"
+
 # ── post-load summary ─────────────────────────────────────────────────────────
 echo ""
 echo "==> Demo data load complete."
