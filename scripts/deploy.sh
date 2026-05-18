@@ -133,6 +133,52 @@
 #     b) Remove the existing page in the org before deploying.
 #     The source file is checked in with sobjectType=Program (the correct value for
 #     APS trial orgs). See manifest/deploy_clean.xml for the excluded manifest path.
+#
+# 15. Flow record filter: the <In> operator requires a collection variable, not a literal.
+#     If you write a recordFilter with <operator>In</operator> and a <stringValue> (e.g. a
+#     single status value), the platform compiles it as an empty collection and Get Records
+#     always returns zero rows — no error is raised at deploy time or at runtime.
+#     Symptom: a flow gate that should block never blocks because col_ExistingDocs is always
+#     empty. Fix: change single-value record filters from <operator>In</operator> to
+#     <operator>EqualTo</operator> with a <stringValue> literal.
+#
+# 16. Flow loop accumulator: every <assignments> node inside a collection loop must have
+#     an explicit <connector> back to the loop element. Omitting the connector is valid XML
+#     and deploys without error, but the flow terminates silently at that node — subsequent
+#     elements (e.g., a Block_Save customErrors element) are never reached.
+#     Symptom: a before-save gate that appends missing items to an error string never blocks
+#     the save; flow run history shows "Completed" with no blocked executions.
+#     Fix: add <connector><targetReference>Loop_Element_Name</targetReference></connector>
+#     to every Assign node that should continue the loop.
+#
+# 17. Flow start filter using RecordType.DeveloperName on objects with no record types:
+#     A Flow start filter on {$Record.RecordType.DeveloperName} compiles to the string
+#     "null__NotFound" at runtime when the trigger object has no record types configured.
+#     The flow entry condition always evaluates false and the flow never fires.
+#     Symptom: UNKNOWN_EXCEPTION with no structured message during deploy/activation, or
+#     flow is Active but never fires on ContentVersion / ApplicationTimeline.
+#     Fix: remove the RecordType filter from the start element; guard with a Decision node
+#     immediately after the start if record-type branching is needed.
+#
+# 18. PSS "Update Complaint Summary" package process + bulk PublicComplaint inserts:
+#     The PSS managed package process "Update Complaint Summary and Resolution Priority"
+#     fires on every PublicComplaint insert. In Apex test context it consumes governor
+#     limits proportional to batch size. Batches above ~30 records in a single DML call
+#     can exhaust org-level limits and fail with:
+#       CANNOT_EXECUTE_FLOW_TRIGGER, Limit Exceeded
+#     This is a PSS package constraint, not a NEPA flow issue.
+#     Workaround: limit PublicComplaint bulk test inserts to ≤20 records per DML call.
+#     Tests that prove NEPA flow bulk safety at 20 records are sufficient — the PSS
+#     limit is a package ceiling, not a NEPA automation limit.
+#
+# 19. Text field length for formula-populated fields:
+#     Flow formula values written to Text fields fail silently when the output string
+#     exceeds the field's length. The DML exception is caught by any faultConnector on
+#     the Update Records element and routed to End without surfacing an error.
+#     Symptom: downstream fields that should be set (e.g., nepa_plaintiff_risk_flag__c)
+#     are never written even though the flow logic appears correct.
+#     Fix: audit Text fields populated by formula elements. Size them to accommodate the
+#     maximum realistic formula output — use length 255 for any structured summary string.
 
 set -euo pipefail
 

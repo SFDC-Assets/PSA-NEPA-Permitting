@@ -938,3 +938,22 @@ Some PSS orgs (particularly those upgraded from an older managed package) have `
 
 **`ConnectedApp:NEPA_CEQExport_API` parse error**
 The source file has an `<oauthFlows>` element inside `<oauthConfig>` which is invalid for API v62. The ConnectedApp is excluded from `manifest/deploy_clean.xml` and the phased script. To fix: open `force-app/main/default/connectedApps/NEPA_CEQExport_API.connectedApp-meta.xml`, remove the `<oauthFlows>` block, validate against the ConnectedApp schema, and redeploy using `--metadata "ConnectedApp:NEPA_CEQExport_API"`.
+
+**Flow gate not blocking (or always blocking) despite correct logic**
+Two silent flow bugs can produce this symptom:
+
+1. *Missing loop connector.* Every `<assignments>` node inside a collection loop must have an explicit `<connector>` back to the loop element. Omitting it is valid XML and deploys without error, but the flow terminates at that node — subsequent elements (like a `Block_Save` customErrors element) are never reached. Check flow run history: if runs show "Completed" when they should show "Fault" or a blocked save, inspect every Assign node for a missing connector.
+
+2. *`In` operator with a literal value.* Flow record filters using `<operator>In</operator>` require a collection variable. Using `<stringValue>` (a literal) with `In` compiles silently to an empty collection — Get Records returns zero rows regardless of actual data. If a gate is never blocking, check whether any filter uses `In` with a single literal; change it to `EqualTo`.
+
+**Flow fires when it should not (RecordType filter on object with no record types)**
+A flow start filter on `{$Record.RecordType.DeveloperName}` evaluates to `"null__NotFound"` at runtime when the trigger object (`ContentVersion`, `ApplicationTimeline`) has no record types configured. The entry condition always fails and the flow never fires — or the comparison matches an unexpected string. Remove `RecordType.DeveloperName` from the start filter and guard with a Decision node immediately inside the flow instead.
+
+**`CANNOT_EXECUTE_FLOW_TRIGGER, Limit Exceeded` on `PublicComplaint` bulk insert (tests)**
+The PSS managed package process "Update Complaint Summary and Resolution Priority" fires on every `PublicComplaint` insert and consumes governor limits proportional to batch size. Batches above ~30 records in a single Apex test DML call can exhaust org-level limits. This is a PSS package ceiling, not a NEPA automation limit. Limit `PublicComplaint` bulk test inserts to **≤20 records per DML call**. At 20 records NEPA duplicate-check, plaintiff intelligence, and comment-period flows all complete within limits.
+
+**Flow-written field values silently not saved (field length too short)**
+If a Flow `Update Records` element writes a formula value to a Text field and the output string exceeds the field's declared length, the DML fails silently — any `faultConnector` on the Update element catches the error and routes to End. Downstream fields that depend on this write (e.g., `nepa_plaintiff_risk_flag__c` not set after plaintiff intelligence runs) appear unset even though the flow logic is correct. Fix: increase the Text field length to accommodate the maximum realistic formula output. Use 255 for any structured summary or tier string.
+
+**`IsChanged = true` flow entry filter not firing in Apex tests**
+If `@TestSetup` creates a record with the field already set to the target value, an `IsChanged = true` entry filter on a before-save flow will never fire when the test updates the record to the same value — no change = no entry. Symptom: flow-managed fields (e.g., `nepa_phase2_applicable__c`) stay unchanged after the update. Fix: in the test method, first update the field to a different value, then update it to the target value to guarantee a genuine change that satisfies `IsChanged = true`.

@@ -4,7 +4,7 @@ End-to-end test scenarios for the PSA-NEPA accelerator's live-integration and UI
 
 **Prerequisites:** Solution deployed, permission set assigned, BRE Decision Matrix rows imported, 33 core flows active (see QUICKSTART.md Step 4c for the activation list; 4 flows are deferred and not required for testing), sample data loaded. See QUICKSTART.md Steps 3–5 if any of these are incomplete.
 
-**Test suite size:** 37 test classes, 514+ test methods across all feature areas. Run `sf apex run test --test-level RunLocalTests` to execute the full automated suite (see [Section 20](#20-apex-test-suite)).
+**Test suite size:** 37 test classes, 519+ test methods across all feature areas. Run `sf apex run test --test-level RunLocalTests` to execute the full automated suite (see [Section 20](#20-apex-test-suite)).
 
 ---
 
@@ -303,7 +303,7 @@ sf apex run test \
 ```
 
 **Expected:**
-- **All tests pass**, 0 failures. The current baseline is 514+ test methods; the exact count increases as tests are added. When using `--result-format json`, a passing run shows `"summary": { "outcome": "Passed", "failing": 0 }` and the `summary.passing` field shows the current count.
+- **All tests pass**, 0 failures. The current baseline is 519+ test methods; the exact count increases as tests are added. When using `--result-format json`, a passing run shows `"summary": { "outcome": "Passed", "failing": 0 }` and the `summary.passing` field shows the current count.
 - Overall Apex coverage ≥ 75%
 - All five key test classes pass:
   - `NepaApiComplianceTest` (55 tests)
