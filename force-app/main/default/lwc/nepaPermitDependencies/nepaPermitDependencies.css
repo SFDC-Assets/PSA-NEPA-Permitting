@@ -1,0 +1,18 @@
+.nepa-critical-row {
+    background-color: #fff3e0;
+}
+
+.slds-badge.slds-theme_success {
+    background-color: #04844b;
+    color: #ffffff;
+}
+
+.slds-badge.slds-theme_warning {
+    background-color: #ffb75d;
+    color: #080707;
+}
+
+.slds-badge.slds-theme_error {
+    background-color: #c23934;
+    color: #ffffff;
+}

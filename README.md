@@ -1,14 +1,14 @@
 # PSA-NEPA Permitting Accelerator
 
-**Open-source NEPA permitting data model, workflow automation, GIS proximity screening, Agentforce comment triage, and litigation risk intelligence — built on Salesforce Agentforce for Public Sector. Aligned to CEQ NEPA and Permitting Data and Technology Standard v1.2. All 10 MFRs addressed. Deployable end-to-end in ~30 minutes (15 min automated CLI deployment + ~15 min manual post-deploy steps).**
+**Open-source NEPA permitting data model, workflow automation, GIS proximity screening, live cross-agency permit status, Agentforce comment triage, and litigation risk intelligence — built on Salesforce Agentforce for Public Sector. Aligned to CEQ NEPA and Permitting Data and Technology Standard v1.2. All 10 MFRs addressed. Deployable end-to-end in ~30 minutes (15 min automated CLI deployment + ~15 min manual post-deploy steps).**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.txt)
 [![Platform: FedRAMP Authorized](https://img.shields.io/badge/Platform-FedRAMP%20Authorized-green.svg)](https://marketplace.fedramp.gov/)
 [![CEQ Standard: v1.2 Compliant](https://img.shields.io/badge/CEQ%20Standard-v1.2%20Compliant-brightgreen.svg)](https://permitting.innovation.gov/CEQ_NEPA_and_Permitting_Data_and_Technology_Standard.pdf)
-[![Apex Tests: 473+ passing](https://img.shields.io/badge/Apex%20Tests-473%2B%20passing-brightgreen.svg)](force-app/main/default/classes/)
+[![Apex Tests: 514+ passing](https://img.shields.io/badge/Apex%20Tests-514%2B%20passing-brightgreen.svg)](force-app/main/default/classes/)
 [![Section 508: WCAG 2.1 AA](https://img.shields.io/badge/Section%20508-WCAG%202.1%20AA-blue.svg)](https://www.salesforce.com/company/legal/508_accessibility/)
 
-> **CEQ Permitting Innovators submission (June 2, 2026):** See [docs/SUBMISSION-NARRATIVE.md](docs/SUBMISSION-NARRATIVE.md) for the full solution narrative structured around the 5 evaluation criteria.
+> **CEQ Permitting Innovators submission (June 2, 2026):** This solution was developed as a direct response to the [CEQ Permitting Innovators Call for Solutions](https://www.whitehouse.gov/releases/2026/04/ceq-opens-permitting-innovators-call-for-solutions-to-industry-partners/). See [docs/SUBMISSION-NARRATIVE.md](docs/SUBMISSION-NARRATIVE.md) for the full narrative addressing all 5 evaluation criteria: Impact, User-centered design, Readiness, Multi-agency compatibility, and Team capacity.
 
 ---
 
@@ -40,10 +40,10 @@ Three categories of preventable delay drive most of the gap between the current 
 | GIS services at intake | 5 (FWS ECOS, EPA EJScreen, USGS NHD, BLM tribal cadastral, BLM PLSS) |
 | Litigation cases in risk model | 761 (PermitTEC v0.1, PNNL 2025) |
 | NEPA projects in baseline corpus | 61,881 (NETATEC v2.0, PNNL 2025) |
-| Custom Metadata Types | 19 |
+| Custom Metadata Types | 20 |
 | BRE Decision Matrices + Expression Sets | 8 DMs + 3 ESs (deterministic, not AI) |
 | Decision model exports | Published to GitHub `/docs/decision-models/` — machine-readable JSON |
-| Apex regression tests | 473+ across 36 test classes |
+| Apex regression tests | 514+ across 37 test classes |
 | Platform | Salesforce Agentforce for Public Sector (FedRAMP Authorized) |
 | Shield Field Audit Trail | Available on Gov Cloud — 10-year field-level history for NARA/litigation hold |
 | PIV/CAC authentication | Native Salesforce support via SAML 2.0 (PIV/CAC = Personal Identity Verification / Common Access Card, the U.S. federal smartcard standard) — no separate IdP required |
@@ -109,6 +109,7 @@ C4Context
 
     System_Ext(fpisc, "FPISC Permitting Dashboard", "Federal permitting reporting (CEQ JSON export)")
     System_Ext(arcgis, "GIS Services (5)", "FWS ECOS, EPA EJScreen, USGS NHD, BLM tribal cadastral, BLM PLSS")
+    System_Ext(agency_apis, "Agency NEPA REST APIs (3)", "USACE, USFWS, BLM — live cross-agency permit status via NEPA_Agency_Endpoint__mdt")
     System_Ext(permittec, "PermitTEC v0.1 Corpus", "761 NEPA litigation cases — calibrates risk weights (offline)")
     System_Ext(netatec, "NETATEC v2.0 Corpus", "61,881 NEPA projects — calibrates CE screener and baselines (offline)")
     System_Ext(idp, "Agency Identity Provider", "PIV/CAC SSO via SAML 2.0")
@@ -118,6 +119,7 @@ C4Context
     Rel(legal, nepa, "Reviews litigation risk scores and tribal escalations")
     Rel(nepa, fpisc, "Exports CEQ-standard JSON payload", "REST API")
     Rel(nepa, arcgis, "Proximity checks on project coordinates", "Named Credential HTTPS")
+    Rel(nepa, agency_apis, "Live cross-agency permit status at record open", "Named Credential HTTPS / CEQ REST v1")
     Rel(nepa, idp, "Staff authentication", "SAML 2.0 / PIV/CAC")
     Rel(permittec, nepa, "Calibration data baked into CMT risk weight records", "offline import")
     Rel(netatec, nepa, "CE screener rules and baselines baked into CMT records", "offline import")
@@ -140,6 +142,19 @@ Five GIS services are called via OmniIntegrationProcedure at intake — before t
 | BLM PLSS | Surface ownership, federal land status | Yes — land jurisdiction |
 
 Results write to structured proximity fields on `IndividualApplication` and feed directly into CE screening and extraordinary circumstances determination.
+
+### Cross-Agency Permit Status (MFR #10)
+
+Most federal actions require parallel permits from multiple agencies. The `nepaPermitDependencies` LWC — displayed on the IndividualApplication record page — shows live status of each dependent permit by calling the other agency's deployed NEPA REST endpoint at record load:
+
+| Component | Role |
+|---|---|
+| `nepa_required_permit__c` | Structured permit record per dependent agency action (USACE CWA §404, USFWS ESA §7, BLM ROW, FERC Certificate, WQC §401, NHPA §106) |
+| `NEPA_Agency_Endpoint__mdt` | Config-driven agency endpoint registry — add a new agency by adding a CMT record + Named Credential, no code changes |
+| `NepaAgencyPermitService` | `@AuraEnabled` Apex service; calls each agency's `/services/apexrest/nepa/v1/processes/{federal_unique_id}` endpoint; gracefully degrades to locally-cached status on callout failure |
+| `nepaPermitDependencies` LWC | Permit dependency table with live status badges (green/amber/red), critical-path row highlight, and cached-data warning when an agency API is unreachable |
+
+Adding a new agency requires only: a `NEPA_Agency_Endpoint__mdt` seed record, a Named Credential, and a Remote Site Setting — no Apex changes. The CEQ REST endpoint shape (`/services/apexrest/nepa/v1/processes/`) is the same endpoint pattern this accelerator exposes via `NepaCeqExportService`, ensuring interoperability across all CEQ-standard NEPA deployments.
 
 ### Agentforce Comment Triage Agent (MFR #8)
 
@@ -183,11 +198,12 @@ Scores ≥58 auto-create a Legal Review Task. All weights are traceable to speci
 | `force-app/main/default/decisionMatrixDefinition/` | 8 BRE Decision Matrix definitions | Rule tables that feed the Expression Sets |
 | `decision_matrix_rows/` | CSV files for each Decision Matrix + import instructions | **BRE row data cannot be deployed via CLI — must be imported via Setup UI. Read [README](decision_matrix_rows/README.md) first.** |
 | `force-app/main/default/customMetadata/` | Pre-seeded risk weights, CE screening rules, plaintiff profiles, scoping baselines, sector-circuit matrix | The empirically calibrated data that powers the intelligence layer |
-| `force-app/main/default/namedCredentials/` | 3 named credentials for GIS services (NHD, Tribal, PLSS) | Required for GIS proximity calls at intake |
+| `force-app/main/default/namedCredentials/` | 12 named credentials: 9 GIS services (NHD, Tribal, PLSS + EPA, USGS, BLM variants) + 3 agency NEPA APIs (USACE, USFWS, BLM) | Required for GIS proximity calls at intake and live cross-agency permit status |
 | `force-app/main/default/omniProcesses/` | `NEPA_CEQExport` Integration Procedure | CEQ-standard JSON export (MFR #2 compliance) |
 | `force-app/main/default/omniDataTransforms/` | 15 DataRaptor files (Extract, Load, Upsert) | OmniStudio data transformation layer |
 | `force-app/main/default/flexipages/` | Lightning record pages for IndividualApplication and PublicComplaint | Pre-configured UI pages surfacing all key fields |
-| `force-app/main/default/classes/` | 36 Apex test classes (473+ tests total) | Compliance verification — run `sf apex run test` against your org |
+| `force-app/main/default/lwc/` | `nepaPermitDependencies` LWC — live cross-agency permit status component | Displayed on the IndividualApplication record page |
+| `force-app/main/default/classes/` | 37 Apex test classes (514+ tests total) including `NepaAgencyPermitServiceTest` | Compliance verification — run `sf apex run test` against your org |
 | `docs/decision-models/` | Machine-readable JSON exports of CE rules, GIS layers, litigation risk weights | MFR #4 — screening criteria publicly accessible and version-controlled |
 | `demo/` | Demo story + import data CSVs + Apex scripts | Carrie's Placer Mine scenario — full end-to-end walkthrough |
 | `docs/QUICKSTART.md` | Complete end-to-end setup guide (Step 0 through smoke tests) | Start here |
@@ -203,8 +219,8 @@ Scores ≥58 auto-create a Legal Review Task. All weights are traceable to speci
 
 | Standard | Coverage |
 |---|---|
-| **CEQ NEPA and Permitting Data and Technology Standard v1.2** | All 13 entities implemented; 5 required provenance fields on each; 473+ Apex tests verify field-level compliance |
-| **CEQ Permitting Technology Action Plan (May 2025) — all 10 MFRs** | MFR #1 Data Standards (Leading-Edge), #2 Data Sharing (Emerging), #3 Automated Screening (Leading-Edge), #4 Screening Criteria Access (Emerging), #5 Case Management (Emerging→Leading-Edge), #6 GIS Analysis (Emerging), #7 Document Management (Emerging), #8 Comment Compilation (Emerging), #9 Administrative Record (Emerging), #10 Interoperable Services (Emerging) |
+| **CEQ NEPA and Permitting Data and Technology Standard v1.2** | All 13 entities implemented (including Permits via `nepa_required_permit__c`); 5 required provenance fields on each; 514+ Apex tests verify field-level compliance |
+| **CEQ Permitting Technology Action Plan (May 2025) — all 10 MFRs** | MFR #1 Data Standards (Leading-Edge), #2 Data Sharing (Emerging), #3 Automated Screening (Leading-Edge), #4 Screening Criteria Access (Emerging), #5 Case Management (Emerging→Leading-Edge), #6 GIS Analysis (Emerging), #7 Document Management (Emerging), #8 Comment Compilation (Emerging), #9 Administrative Record (Emerging), #10 Interoperable Services (Emerging) — live cross-agency permit status via `NEPA_Agency_Endpoint__mdt` + `NepaAgencyPermitService` directly addresses MFR #10 |
 | **OMB M-25-21** | AI advisory-only; AI recommends, human confirms enforced in all flows; EJ/tribal gate non-negotiable |
 | **FAST-41** | Per-agency baseline durations pre-seeded; `nepa_milestone_variance_days__c` provides real-time variance against agency-specific statutory targets |
 | **EO 12898 / EO 13175** | EJ/tribal comment keyword gate is unconditional — tribal sovereignty and EJ keywords bypass AI and route to a human coordinator queue, enforced by `NEPA_Comment_AI_Router` and `NEPA_EJTribal_Router`. E.O. 13175 tribal consultation process compliance (government-to-government consultation schedule, correspondence tracking) is agency workflow responsibility — the data model captures the consultation timeline in `ApplicationTimeline` events but does not impose a procedural stage block, consistent with the principle that the platform supports but does not substitute for agency judgment. |
@@ -226,8 +242,9 @@ Scores ≥58 auto-create a Legal Review Task. All weights are traceable to speci
 | Entity 7: GIS Data | `nepa_gis_data__c` + Program lat/lon/polygon + 5 GIS proximity services | ✅ Implemented |
 | Entity 8: User Role | `nepa_process_team_member__c` — structured role assignment linking User, Agency, and Process | ✅ Implemented |
 | Entity 9: Legal Structure | APS `RegulatoryCode` extended with `nepa_compliance_requirements__c`, `nepa_text_content__c`, and 5 provenance fields | ✅ Implemented |
+| Cross-agency Permits | `nepa_required_permit__c` — one record per dependent agency permit (USACE §404, USFWS ESA §7, BLM ROW, FERC, WQC §401, NHPA §106); live status via `NepaAgencyPermitService` + `NEPA_Agency_Endpoint__mdt` | ✅ Implemented |
 
-All 13 entities include the 5 custom provenance fields required by CEQ standard v1.2 (`Data Record Version`, `Data Source Agency`, `Data Source System`, `Record Owner Agency`, `Retrieved Timestamp`). `LastModifiedDate` (native Salesforce) satisfies the standard's `Last Updated` property.
+All 13 standard entities include the 5 custom provenance fields required by CEQ standard v1.2 (`Data Record Version`, `Data Source Agency`, `Data Source System`, `Record Owner Agency`, `Retrieved Timestamp`). `LastModifiedDate` (native Salesforce) satisfies the standard's `Last Updated` property.
 
 ---
 
@@ -251,7 +268,8 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
         "status": "in progress",
         "documents": [...],
         "public_engagement_events": [...],
-        "case_events": [...]
+        "case_events": [...],
+        "permits": [...]
       }
     ]
   }
@@ -272,16 +290,17 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
       <li>ApplicationTimeline — 17 fields (Entity 6: Case Events)</li>
     </ul>
   </li>
-  <li><strong>Custom Objects</strong> (x5)
+  <li><strong>Custom Objects</strong> (x6)
     <ul>
       <li>NEPA Public Engagement Event (<code>nepa_engagement__c</code>) — Entity 5</li>
       <li>NEPA GIS Data Element (<code>nepa_gis_data__c</code>) — Entity 7</li>
       <li>NEPA Decision Log (<code>nepa_decision_log__c</code>) — process decision payload</li>
       <li>NEPA Decision Element (<code>nepa_decision_element__c</code>) — screening criteria definitions</li>
       <li>Process Agency Relationship (<code>nepa_process_related_agencies__c</code>) — supports tribal nations and cooperating agencies as named parties</li>
+      <li>Required Permit (<code>nepa_required_permit__c</code>) — cross-agency dependent permit tracking; live status via NEPA REST API</li>
     </ul>
   </li>
-  <li><strong>Custom Metadata Types</strong> (x19) — all agency-specific parameters externalized as configuration:
+  <li><strong>Custom Metadata Types</strong> (x20) — all agency-specific parameters externalized as configuration:
     <ul>
       <li><code>NEPA_Agency_Risk_Rate__mdt</code> — per-agency litigation loss rates (16 records)</li>
       <li><code>NEPA_Circuit_Risk_Weight__mdt</code> — per-circuit risk multipliers (13 records)</li>
@@ -297,6 +316,7 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
       <li><code>NEPA_Doc_Count_Threshold__mdt</code> — CE/EA/EIS P50/P90/Elevated page count thresholds derived from NETATEC v2.0 (3 records)</li>
       <li><code>NEPA_Layer_Discipline__mdt</code> — GIS layer discipline routing rules for proximity analysis</li>
       <li><code>NEPA_ActionPlan_Config__mdt</code> — permit-type-specific NEPA action plan templates (36 records)</li>
+      <li><code>NEPA_Agency_Endpoint__mdt</code> — cross-agency NEPA REST API registry (3 starter records: USACE, USFWS, BLM); add new agencies with a CMT record + Named Credential only</li>
     </ul>
   </li>
   <li><strong>BRE Decision Matrices</strong> (x8) and <strong>Expression Sets</strong> (x3):
@@ -309,12 +329,13 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
   <li><strong>Declarative Flows</strong> (x37) — all business logic is Flow-based; no custom Apex encodes business rules</li>
   <li><strong>Agentforce Agent:</strong> <code>NEPA_Comment_Triage</code> — comment classification, deduplication, EJ/tribal routing, response task creation</li>
   <li><strong>OmniStudio:</strong> 15 DataRaptors (12 Extract, 2 Load, 1 Upsert) + <code>NEPA/CEQExport</code> Integration Procedure</li>
-  <li><strong>Named Credentials:</strong> 3 GIS services (USGS NHD, BLM Tribal Cadastral, BLM PLSS)</li>
+  <li><strong>Named Credentials:</strong> 12 total — 9 GIS services (FWS, EPA, USGS, BLM variants) + 3 agency NEPA APIs (USACE, USFWS, BLM) with placeholder endpoints for operator update post-deploy</li>
   <li><strong>Permission Set:</strong> <code>NEPA_Permitting</code> with FLS configured for all custom fields</li>
   <li><strong>Lightning Record Pages:</strong> Pre-configured pages for IndividualApplication and PublicComplaint surfacing all key fields</li>
   <li><strong>CE Library:</strong> 2,105 categorical exclusions across 79 federal agencies (sourced from CEQ CE Explorer v2.0)</li>
   <li><strong>Decision Model Exports:</strong> <code>ce-screening-rules.json</code>, <code>litigation-risk-weights.json</code>, <code>gis-layers-inventory.json</code> published to <code>/docs/decision-models/</code></li>
-  <li><strong>Apex Test Suite:</strong> 473+ tests across 36 classes covering all 13 entities, REST export, BRE configuration, CE screening, stage gates, SLA escalation, plaintiff intelligence, EJ detection, GIS proximity, comment triage, AR management, and error handling</li>
+  <li><strong>Apex Test Suite:</strong> 514+ tests across 37 classes covering all 13 entities, REST export, BRE configuration, CE screening, stage gates, SLA escalation, plaintiff intelligence, EJ detection, GIS proximity, comment triage, AR management, cross-agency permit callouts, and error handling</li>
+  <li><strong>Lightning Web Components:</strong> <code>nepaPermitDependencies</code> — live cross-agency permit status on the IndividualApplication record page</li>
 </ol>
 
 ---
@@ -362,6 +383,18 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
 ---
 
 ## Revision History
+
+**3.2 (2026-05-17)** — Cross-agency permit dependency tracking and live NEPA REST API status
+
+- **`nepa_required_permit__c` custom object:** Structured per-permit records replacing unstructured semicolon text fields. Master-detail to IndividualApplication. 12 fields: permit type (CWA §404, ESA §7, BLM ROW, FERC Certificate, WQC §401, NHPA §106), lead agency, external federal ID (ExternalId), critical path flag, expected/actual completion, regulatory citation, agency system URL, last synced timestamp.
+- **`NEPA_Agency_Endpoint__mdt`:** Config-driven agency endpoint registry. 4 fields: Agency Key, Named Credential, Process Endpoint Path, Is Active. Mirrors `NEPA_GIS_Layer__mdt` pattern — adding a new agency requires only a CMT record + Named Credential + Remote Site Setting. Three starter records: USACE, USFWS, BLM.
+- **`NepaAgencyPermitService` Apex service:** `@AuraEnabled(cacheable=false)` service class. Queries permits, resolves active endpoints from CMT, makes `Http.send()` callouts against each agency's CEQ REST endpoint (`/services/apexrest/nepa/v1/processes/{federal_unique_id}`). Parses `{success, data: {processStatus, processStage, targetCompletionDate, lastModified}}`. Gracefully degrades to locally-cached status on callout failure, CMT miss, or HTTP 404 — `calloutSuccess=false` with error message rather than exception.
+- **`nepaPermitDependencies` LWC:** Imperative Apex call on load and Refresh. Table with spinner/empty/error states. Colored status badges (green=Issued/Completed, amber=Under Review, red=Denied), critical-path row highlight, cached-data warning footer when any agency API is unreachable. Targets `lightning__RecordPage` / `IndividualApplication` only.
+- **Named Credentials + Remote Site Settings:** 3 agency Named Credentials (NEPA_Agency_USACE/USFWS/BLM) with placeholder endpoints for operator update post-deploy. Total Named Credentials: 9 GIS → 12.
+- **`NEPA_Permitting` permission set:** Extended with `nepa_required_permit__c` CRUD, 12 field-level permissions, and `NepaAgencyPermitService` apex class access.
+- **`NepaAgencyPermitServiceTest`:** 5 test methods covering success, HTTP callout failure, CMT not found (graceful degradation), HTTP 404, and empty permit list.
+- **Test suite:** 473+ → 514+. Test classes: 36 → 37.
+- **Custom Metadata Types:** 19 → 20 (`NEPA_Agency_Endpoint__mdt` added).
 
 **3.1 (2026-05-15)** — Stage 10-13 risk improvements, Salesforce Path, 4 new CMT types, 22 FLS fields, 17 new tests
 

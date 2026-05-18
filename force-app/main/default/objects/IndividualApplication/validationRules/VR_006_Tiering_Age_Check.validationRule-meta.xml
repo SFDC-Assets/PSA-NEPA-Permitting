@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>VR_006_Tiering_Age_Check</fullName>
+    <active>true</active>
+    <description>VR-006: Blocks save when tiering to a prior EIS older than 5 years without supplementation review. Addresses failure_to_supplement challenge type (100% agency loss rate in PermitTEC). Requires both tiering checkbox and prior NEPA date to be set.</description>
+    <errorConditionFormula>AND(
+  ISPICKVAL(nepa_review_type__c, "EIS"),
+  nepa_tiering_to_prior_eis__c = true,
+  NOT(ISBLANK(nepa_prior_nepa_date__c)),
+  nepa_prior_nepa_date__c &lt; (TODAY() - 1825),
+  nepa_supplementation_review_complete__c = false
+)</errorConditionFormula>
+    <errorMessage>The prior EIS is more than 5 years old. A supplementation review is required under 40 CFR 1502.9(c). Check "Supplementation Review Complete" after the responsible official makes a written determination.</errorMessage>
+</ValidationRule>

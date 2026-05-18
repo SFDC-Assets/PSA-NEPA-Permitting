@@ -1,0 +1,92 @@
+.nepa-section-label {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--lwc-colorTextLabel, #3e3e3c);
+    font-size: 0.75rem;
+}
+
+.nepa-score-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--lwc-colorTextDefault, #080707);
+}
+
+.nepa-divider {
+    border: none;
+    border-top: 1px solid var(--lwc-colorBorderSeparator, #dddbda);
+    margin: 1rem 0;
+}
+
+.nepa-factor-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nepa-factor-item {
+    padding: 0.2rem 0;
+    color: var(--lwc-colorTextWeak, #706e6b);
+    border-bottom: 1px solid var(--lwc-colorBorderSeparatorAlt, #f3f2f2);
+}
+
+.nepa-factor-item:last-child {
+    border-bottom: none;
+}
+
+.nepa-warning-box {
+    border-left: 4px solid var(--lwc-colorBorderWarning, #ff9e2c);
+    padding: 0.5rem 0.75rem;
+    display: flex;
+    align-items: flex-start;
+}
+
+.nepa-duration-percentile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 4rem;
+}
+
+.nepa-percentile-number {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--lwc-colorTextDefault, #080707);
+}
+
+/* Risk tier badge colors */
+.nepa-tier-low {
+    background-color: #04844b;
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.nepa-tier-moderate {
+    background-color: #ff9e2c;
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.nepa-tier-high {
+    background-color: #c23934;
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.nepa-tier-very-high {
+    background-color: #700c00;
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+}

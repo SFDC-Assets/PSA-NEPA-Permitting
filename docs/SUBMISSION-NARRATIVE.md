@@ -14,7 +14,7 @@ PSA-NEPA Permitting Accelerator: Open-Source Federal NEPA Intelligence Platform
 
 ## Solution Abstract
 
-The PSA-NEPA Permitting Accelerator is an open-source, production-ready implementation of the CEQ NEPA and Permitting Data and Technology Standard v1.2, built on Salesforce Agentforce for Public Sector — a FedRAMP-authorized platform already deployed at federal agencies. It delivers automated project screening with GIS proximity checks at intake, deterministic CE screening across 2,105 CE authorities, empirically calibrated litigation risk scoring, Agentforce-powered comment classification, automated stage gate enforcement, tribal plaintiff intelligence, machine-readable administrative record packaging, and a CEQ-compliant REST export API. All 13 CEQ entities are implemented. Risk weights are derived from 761 federal NEPA litigation cases (PermitTEC v0.1, PNNL). Deployment takes approximately 15 minutes from the command line. License: MIT.
+The PSA-NEPA Permitting Accelerator is an open-source, production-ready implementation of the CEQ NEPA and Permitting Data and Technology Standard v1.2, built on Salesforce Agentforce for Public Sector — a FedRAMP-authorized platform already deployed at federal agencies. It delivers automated project screening with GIS proximity checks at intake, deterministic CE screening across 2,105 CE authorities, empirically calibrated litigation risk scoring, Agentforce-powered comment classification, automated stage gate enforcement, tribal plaintiff intelligence, machine-readable administrative record packaging, live cross-agency permit status via the CEQ NEPA REST API, and a CEQ-compliant REST export API. All 13 CEQ entities are implemented plus a structured cross-agency Permits entity (`nepa_required_permit__c`). Risk weights are derived from 761 federal NEPA litigation cases (PermitTEC v0.1, PNNL). Deployment takes approximately 15 minutes from the command line. License: MIT.
 
 ---
 
@@ -38,7 +38,7 @@ This solution addresses the following minimum functional requirements from CEQ's
 
 **MFR #1 — Data Standards (Leading-Edge).** All 13 CEQ entities are implemented on Salesforce-native objects with required standard fields, provenance fields, and the `nepa_other__c` extension bag. The `NEPA/CEQExport` REST API exposes all 13 entities in PIC OpenAPI v1.2.0-aligned JSON; authorized systems can read all 13 entities via the REST endpoint, and agency systems with write-back needs use the included Upsert DataRaptor integration — meeting Leading-Edge maturity. A 125-test regression suite (`NepaApiComplianceTest`, `NepaCeqExportServiceTest`) verifies compliance continuously.
 
-**MFR #2 — Application Data Sharing (Emerging).** The `NEPA/CEQExport` OmniIntegration Procedure exposes all 13 entities as a structured REST API. The CEQExport API provides the structured payload that eliminates the data-extraction problem from NEPA workflow software; each consuming agency's integration layer handles schema mapping to their internal systems — no data extraction from the NEPA platform is required. The same endpoint serves EPA DARTER, USACE ORM2, DOT NEPA tracking systems, and FPISC. Information entered once is available to all authorized downstream systems without re-entry.
+**MFR #2 — Application Data Sharing (Emerging).** The `NEPA/CEQExport` OmniIntegration Procedure exposes all 13 entities as a structured REST API, including a `permits[]` array under each process node — providing structured dependent permit data to consuming systems. The CEQExport API provides the structured payload that eliminates the data-extraction problem from NEPA workflow software; each consuming agency's integration layer handles schema mapping to their internal systems — no data extraction from the NEPA platform is required. The same endpoint serves EPA DARTER, USACE ORM2, DOT NEPA tracking systems, and FPISC. Information entered once is available to all authorized downstream systems without re-entry.
 
 **MFR #3 — Automated Project Screening (Leading-Edge).** The 7-step OmniScript CE Intake Wizard captures federal jurisdiction, project sector/type, action type, physical parameters, NAICS code, and GIS footprint. On submission, five GIS proximity checks fire automatically against FWS ECOS (critical habitat), EPA EJScreen, USGS NHD (waterways), BLM tribal cadastral boundaries, and BLM PLSS (surface ownership). The three-tier BRE CE Screener evaluates the project against 2,105 CE authorities across 79 agencies, applies all six extraordinary circumstances triggers, and returns a recommendation with the specific rule row that fired — before formal submission. Leading-Edge maturity: screening criteria and GIS data are publicly available via the GitHub decision model exports, and the screening tool is integrated with the applicant intake process.
 
@@ -56,17 +56,21 @@ This solution addresses the following minimum functional requirements from CEQ's
 
 **MFR #10 — Common or Interoperable Agency Services (Emerging).** The accelerator runs on Salesforce Agentforce for Public Sector — a commercial-grade enterprise platform with FedRAMP Moderate ATO, updated automatically three times per year. The MIT license and 15-minute CLI deployment mean any agency can adopt the accelerator on their existing APS org at zero incremental licensing cost, sharing the same codebase and configuration layer. Every agency-variable parameter (CE codes, risk weights, SLA targets, per-agency baselines, plaintiff profiles) is externalized to Custom Metadata — agencies share the platform and customize through configuration, not code.
 
+The `nepa_required_permit__c` object and `NEPA_Agency_Endpoint__mdt` CMT implement a concrete cross-agency interoperability mechanism: each dependent permit record carries the other agency's `federal_unique_id`, and the `NepaAgencyPermitService` Apex class calls that agency's deployed NEPA REST endpoint (`/services/apexrest/nepa/v1/processes/{id}`) at record load. A NEPA coordinator can see live USACE §404, USFWS ESA §7, and BLM ROW permit status on the same record page — without leaving Salesforce and without the other agency sharing a data file. Adding a new agency requires only three metadata records (CMT endpoint record, Named Credential, Remote Site Setting) — no code change. This pattern is the same endpoint structure this accelerator exposes via `NepaCeqExportService`, meaning any CEQ-standard deployment is natively callable.
+
 ---
 
 ## Team Capacity
 
 This solution is built on **Salesforce** — the world's leading SaaS/PaaS provider — and submitted by **Shannon Schupbach**, Salesforce Public Sector solution architect and sole developer of this accelerator. Salesforce's **Global Public Sector Solution Engineering organization** includes 400+ solution engineers who support public sector customers across federal, state, local, and international government; that platform depth is embedded in every design choice throughout this accelerator.
 
-The environmental and policy disciplines required to build a defensible NEPA intelligence system were embedded through rigorous federal dataset analysis. A 13-stage calibration pipeline was built over the same primary data sources that federal researchers use:
+The environmental and policy disciplines required to build a defensible NEPA intelligence system were embedded through rigorous federal dataset analysis. A 16-stage calibration pipeline was built over the same primary data sources that federal researchers use:
 
 - **NETATEC v2.0 (PNNL)** — 61,881 NEPA projects / 120,000+ documents: drove CE Screener logic, page-count risk thresholds, sector EIS probability matrices, and per-agency performance baselines
 - **PermitTEC v0.1 (PNNL)** — 761 federal litigation cases: drove all risk weight calibration, plaintiff intelligence profiles, circuit-specific multipliers, and procedural guardrails
 - **CEQ EIS Timeline Data 2010–2024 (CEQ)** — 1,903 Final EIS records: drove per-agency scoping baselines and the scoping overrun detection model
+- **CourtListener bulk dockets (Free Law Project)** — 71 million federal court records: drove litigation duration profiling by agency and circuit, and extended the composite risk score to v3 with a litigation cost dimension
+- **Holland & Knight CEQA Time Study 2022** — 312 certified California EIRs: established the federal friction multiplier baseline (1.45× overall; range 1.09× Energy to 1.65× Military)
 
 Every CE screening rule traces to a specific CFR citation. Every risk weight traces to a specific agency case count from the PermitTEC corpus. Sector-circuit risk cells with fewer than 10 cases are labeled LOW confidence in the Custom Metadata records; the scorer applies a conservative default weight for low-N cells rather than extrapolating from thin data. Every per-agency baseline traces to a specific record count from the CEQ timeline dataset. Domain knowledge is not assumed — it is documented, version-controlled, and recalibrated as PNNL releases updated corpus data.
 
@@ -88,7 +92,7 @@ Shannon Schupbach is a U.S.-based Salesforce Public Sector architect.
 
 **Key outputs:** CE recommendation with auditable rule-match basis, 0–100 litigation risk score with full formula disclosure, GIS proximity results (5 services), scoping overrun flag against agency-specific baselines, Agentforce comment classification, tribal/EJ comment routing, stage gate enforcement on save, machine-readable administrative record package, defensibility gap checklist, CEQ-compliant REST export.
 
-**Integration:** The `NEPA/CEQExport` REST API exposes all 13 entities in PIC OpenAPI v1.2.0 format. GIS proximity checks call FWS ECOS, EPA EJScreen, USGS NHD, BLM tribal cadastral, and BLM PLSS via OmniIntegrationProcedure at intake. The same integration pattern extends to additional data layers by adding named credentials — no Apex required.
+**Integration:** The `NEPA/CEQExport` REST API exposes all 13 entities in PIC OpenAPI v1.2.0 format, including a `permits[]` node. GIS proximity checks call FWS ECOS, EPA EJScreen, USGS NHD, BLM tribal cadastral, and BLM PLSS via OmniIntegrationProcedure at intake. The `nepaPermitDependencies` LWC calls other agencies' deployed NEPA REST endpoints at record load, providing live cross-agency permit status without leaving Salesforce. Both the GIS and agency permit integration patterns extend by adding Named Credentials and metadata records — no Apex required.
 
 ### System Context
 
@@ -104,6 +108,7 @@ C4Context
 
     System_Ext(fpisc, "FPISC Permitting Dashboard", "Federal permitting reporting (CEQ JSON export)")
     System_Ext(arcgis, "GIS Services (5)", "FWS ECOS, EPA EJScreen, USGS NHD, BLM tribal cadastral, BLM PLSS")
+    System_Ext(agency_apis, "Agency NEPA REST APIs (3)", "USACE, USFWS, BLM — live cross-agency permit status via NEPA_Agency_Endpoint__mdt")
     System_Ext(permittec, "PermitTEC v0.1 Corpus", "761 NEPA litigation cases — calibrates risk weights (offline)")
     System_Ext(netatec, "NETATEC v2.0 Corpus", "61,881 NEPA projects — calibrates CE screener and baselines (offline)")
     System_Ext(idp, "Agency Identity Provider", "PIV/CAC SSO via SAML 2.0")
@@ -113,6 +118,7 @@ C4Context
     Rel(legal, nepa, "Reviews litigation risk scores and tribal escalations")
     Rel(nepa, fpisc, "Exports CEQ-standard JSON payload", "REST API / SFTP")
     Rel(nepa, arcgis, "Proximity checks on project coordinates", "Named Credential HTTPS")
+    Rel(nepa, agency_apis, "Live cross-agency permit status at record open", "Named Credential HTTPS / CEQ REST v1")
     Rel(nepa, idp, "Staff authentication", "SAML 2.0")
     Rel(permittec, nepa, "Calibration data baked into CMT risk weight records", "offline import")
     Rel(netatec, nepa, "CE screener rules and baselines baked into CMT records", "offline import")
@@ -161,16 +167,16 @@ Analysis of 1,903 Final EIS records (CEQ EIS Timeline Data 2010–2024) shows a 
 
 ## Readiness
 
-**Current state: production-ready.** The accelerator is fully deployed and verified against the CEQ PIC Standard v1.2.0. A 473-test Apex regression suite covers all 13 entities, the REST export API, BRE configuration integrity, CE screening, stage gate logic, SLA escalation, plaintiff intelligence, EJ detection, GIS proximity, comment agent routing, and error handling. All tests pass. Code coverage exceeds 75%.
+**Current state: production-ready.** The accelerator is fully deployed and verified against the CEQ PIC Standard v1.2.0. A 514-test Apex regression suite covers all 13 entities, the REST export API, BRE configuration integrity, CE screening, stage gate logic, SLA escalation, plaintiff intelligence, EJ detection, GIS proximity, comment agent routing, cross-agency permit callouts, and error handling. All tests pass. Code coverage exceeds 75%.
 
 **Deployment in ~15 minutes:**
 ```
 sf org login web --alias nepademo
 ./scripts/deploy.sh nepademo
 ```
-No infrastructure provisioning, no database migration, no vendor onboarding. The repository includes complete object definitions, 37 flow XML files, permission sets with field-level security, 15 DataRaptors (12 Extract, 2 Load, 1 Upsert), 3 Integration Procedures, DMN decision model exports, and custom metadata pre-seeded with empirically calibrated risk weights.
+No infrastructure provisioning, no database migration, no vendor onboarding. The repository includes complete object definitions, 37 flow XML files, permission sets with field-level security, 15 DataRaptors (12 Extract, 2 Load, 1 Upsert), 3 Integration Procedures, DMN decision model exports, custom metadata pre-seeded with empirically calibrated risk weights, and the `nepaPermitDependencies` LWC for live cross-agency permit status.
 
-**Tested against PermitTEC and NETATEC corpus data.** Risk weights are derived from a 13-stage calibration pipeline over 761 NEPA litigation cases. Confidence levels for each circuit and agency weight are documented explicitly in the AI Use Policy included in the repository (OMB M-25-21 AI inventory ready).
+**Tested against PermitTEC and NETATEC corpus data.** Risk weights are derived from a 16-stage calibration pipeline over 761 NEPA litigation cases and 71 million CourtListener docket records. The v3 composite risk formula adds a litigation duration cost dimension (BOEM 6.5 months → FTA 33.4 months). Confidence levels for each circuit and agency weight are documented explicitly in the AI Use Policy included in the repository (OMB M-25-21 AI inventory ready).
 
 **Live demonstration environment:** A persistent sandbox org with the complete Carrie Placer Mine dataset loaded is available for evaluator review. A narrated video walkthrough (20–25 minutes, four scenes) is linked from the GitHub repository. The repository itself is publicly accessible at MIT license.
 
@@ -194,7 +200,9 @@ No infrastructure provisioning, no database migration, no vendor onboarding. The
 
 **Shared platform, MIT license.** Running on Salesforce APS — a FedRAMP-authorized commercial platform serving multiple federal agencies — the accelerator is available to any agency at zero incremental licensing cost. The MIT license permits unrestricted modification, extension, and redistribution. CEQ, GSA, and Permitting Innovation Center can fork, extend, and redistribute this codebase as a shared government service.
 
-**CEQ standard REST API.** The `NEPA/CEQExport` Integration Procedure exposes all 13 entities as a PIC OpenAPI v1.2.0-aligned JSON payload. EPA DARTER, USACE ORM2, DOT NEPA tracking systems, and any internal permit database can pull structured NEPA data via authenticated REST call. The API eliminates the data-extraction problem; cross-agency authentication and payload mapping to each agency's internal schema remain the responsibility of each agency's integration team — standard for any inter-agency data exchange. No new authorization boundary is required on the NEPA platform side.
+**CEQ standard REST API.** The `NEPA/CEQExport` Integration Procedure exposes all 13 entities as a PIC OpenAPI v1.2.0-aligned JSON payload, including a `permits[]` array covering all dependent cross-agency permit records. EPA DARTER, USACE ORM2, DOT NEPA tracking systems, and any internal permit database can pull structured NEPA data via authenticated REST call. The API eliminates the data-extraction problem; cross-agency authentication and payload mapping to each agency's internal schema remain the responsibility of each agency's integration team — standard for any inter-agency data exchange. No new authorization boundary is required on the NEPA platform side.
+
+**Live cross-agency permit status.** The `nepa_required_permit__c` custom object replaces unstructured semicolon-delimited permit text fields with one record per dependent federal permit. The `NEPA_Agency_Endpoint__mdt` Custom Metadata Type acts as a config-driven agency endpoint registry — mirroring the pattern already used for GIS services (`NEPA_GIS_Layer__mdt`). At record load, the `NepaAgencyPermitService` Apex class calls each active agency's CEQ REST endpoint to retrieve live permit status, parsing the same JSON shape this accelerator exposes via `NepaCeqExportService`. The `nepaPermitDependencies` LWC renders live status badges (Issued / Under Review / Denied) on the IndividualApplication record page, with graceful degradation to locally-cached status when an agency endpoint is unreachable. A NEPA coordinator can see the live status of parallel USACE, USFWS, and BLM permits on a single screen — no manual status calls, no shared spreadsheets. Adding a new agency requires only three metadata records; no code is required.
 
 ---
 
@@ -209,12 +217,12 @@ No infrastructure provisioning, no database migration, no vendor onboarding. The
 | CE Library records | 2,105 across 79 agencies |
 | GIS services at intake | 5 (FWS ECOS, EPA EJScreen, USGS NHD, BLM tribal, BLM PLSS) |
 | Litigation cases in risk model | 761 (PermitTEC v0.1, PNNL) |
-| Risk model calibration stages | 13 |
+| Risk model calibration stages | 16 |
 | NEPA projects in baseline corpus | 61,881 / 120,000+ documents (NETATEC v2.0) |
-| Custom Metadata Types | 15 |
+| Custom Metadata Types | 20 |
 | BRE Decision Matrices / Expression Sets | 8 DMs + 3 ESs (deterministic, not AI) |
 | DMN decision model exports | Published to GitHub `/docs/decision-models/` |
-| Apex regression tests | 473+ across 36 test classes |
+| Apex regression tests | 514+ across 37 test classes |
 | Deployment time from CLI | ~15 minutes |
 | Platform FedRAMP status | Authorized (Salesforce Gov Cloud) |
 | Shield Field Audit Trail | Available on Gov Cloud — 10-year field-level history for NARA/litigation hold |

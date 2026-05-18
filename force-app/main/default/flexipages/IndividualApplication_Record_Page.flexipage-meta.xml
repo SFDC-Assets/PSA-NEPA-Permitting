@@ -361,6 +361,26 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
+                <fieldItem>Record.nepa_extraordinary_circumstance_multi_dod__c</fieldItem>
+                <identifier>ia_ce_ec_multi_dod</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_extraordinary_circumstance_usace_czma__c</fieldItem>
+                <identifier>ia_ce_ec_usace_czma</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
                 <fieldItem>Record.nepa_classification_basis__c</fieldItem>
                 <identifier>ia_ce_classification_basis</identifier>
             </fieldInstance>
@@ -1211,6 +1231,16 @@
                 <identifier>ia_risk_defensibility_updated</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_litigation_duration_cost__c</fieldItem>
+                <identifier>ia_risk_litigation_duration_cost</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>ia-risk-c1</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -1773,6 +1803,16 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>ia_section_purpose</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>recordId</name>
+                    <value>{!recordId}</value>
+                </componentInstanceProperties>
+                <componentName>c:nepaRiskIntelligenceCard</componentName>
+                <identifier>ia_nepa_risk_intelligence_card</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>

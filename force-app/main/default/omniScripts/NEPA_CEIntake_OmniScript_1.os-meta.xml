@@ -247,6 +247,74 @@
         <type>Text</type>
     </omniProcessElements>
 
+    <!-- IMP-008: Military sector — multi-DoD extraordinary circumstances flag -->
+    <omniProcessElements>
+        <isActive>true</isActive>
+        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+        <level>1.0</level>
+        <name>EC_MultiDoDConditional</name>
+        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+        <propertySetConfig>{
+  &quot;conditionType&quot;: &quot;Show&quot;,
+  &quot;conditions&quot;: [{&quot;fieldName&quot;: &quot;nepa_project_sector__c&quot;, &quot;operator&quot;: &quot;==&quot;, &quot;value&quot;: &quot;Military&quot;}],
+  &quot;conditionLogic&quot;: &quot;1&quot;,
+  &quot;label&quot;: &quot;Military Sector — Federal Overhead Factors&quot;,
+  &quot;showLabel&quot;: true,
+  &quot;collapsible&quot;: false
+}</propertySetConfig>
+        <sequenceNumber>12.1</sequenceNumber>
+        <type>Block</type>
+    </omniProcessElements>
+
+    <omniProcessElements>
+        <isActive>true</isActive>
+        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+        <level>2.0</level>
+        <name>nepa_extraordinary_circumstance_multi_dod__c</name>
+        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+        <propertySetConfig>{
+  &quot;label&quot;: &quot;Does this project affect more than one DoD installation?&quot;,
+  &quot;helpText&quot;: &quot;Check if the project footprint spans multiple DoD installations. This triggers multi-installation NHPA Section 106 coordination and USACE Section 404 dual-track review, which adds federal overhead. Stage 16 analysis: Military sector carries a 1.65x federal friction multiplier driven primarily by multi-installation coordination requirements.&quot;,
+  &quot;required&quot;: false
+}</propertySetConfig>
+        <sequenceNumber>12.2</sequenceNumber>
+        <type>Checkbox</type>
+    </omniProcessElements>
+
+    <!-- IMP-008: Water/Coastal sector — USACE Section 404 / CZMA flag -->
+    <omniProcessElements>
+        <isActive>true</isActive>
+        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+        <level>1.0</level>
+        <name>EC_USACECZMAConditional</name>
+        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+        <propertySetConfig>{
+  &quot;conditionType&quot;: &quot;Show&quot;,
+  &quot;conditions&quot;: [{&quot;fieldName&quot;: &quot;nepa_project_sector__c&quot;, &quot;operator&quot;: &quot;==&quot;, &quot;value&quot;: &quot;Water/Coastal&quot;}],
+  &quot;conditionLogic&quot;: &quot;1&quot;,
+  &quot;label&quot;: &quot;Water/Coastal Sector — Federal Overhead Factors&quot;,
+  &quot;showLabel&quot;: true,
+  &quot;collapsible&quot;: false
+}</propertySetConfig>
+        <sequenceNumber>12.3</sequenceNumber>
+        <type>Block</type>
+    </omniProcessElements>
+
+    <omniProcessElements>
+        <isActive>true</isActive>
+        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+        <level>2.0</level>
+        <name>nepa_extraordinary_circumstance_usace_czma__c</name>
+        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+        <propertySetConfig>{
+  &quot;label&quot;: &quot;Does the project cross jurisdictional waters?&quot;,
+  &quot;helpText&quot;: &quot;Check if the project discharges fill material into waters of the U.S., coastal zone areas, or essential fish habitat (EFH). This triggers USACE Section 404 pre-application coordination and CZMA federal consistency review. Stage 16 analysis: Water/Coastal sector carries a 1.47x federal friction multiplier driven by CZMA consistency, EFH Magnuson-Stevens consultation, and dual-track 404 review.&quot;,
+  &quot;required&quot;: false
+}</propertySetConfig>
+        <sequenceNumber>12.4</sequenceNumber>
+        <type>Checkbox</type>
+    </omniProcessElements>
+
     <!-- ══════════════════════════════════════════════════════════
          STEP 4: CE Pre-Screening
          Calls CEScreeningIP → returns preliminary recommendation

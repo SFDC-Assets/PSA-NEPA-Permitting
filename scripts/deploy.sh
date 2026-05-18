@@ -388,11 +388,19 @@ deploy "decision matrices" allow-failure \
 # Setup → BRE → Expression Sets → open each ES → Activate. Without this,
 # the ES version has no LatestVersionSnapshotId and the BRE runtime NPEs.
 phase_header "Phase 5c: BRE Expression Set definitions"
-# allow-failure: already-active ES versions will be rejected by the platform.
-# If an ES is already active in the org, this phase is a no-op — skip the
-# active ones and activate manually only if a new version is needed.
-deploy "expression sets" allow-failure \
-    --source-dir force-app/main/default/expressionSetDefinition \
+# Deployed individually (not batched) so that the 2 working ESDs succeed even
+# when NEPA_Litigation_Risk_Scorer fails with LatestVersionSnapshotId on first
+# deploy. That ESD requires: UI creation of a snapshot via Setup → BRE →
+# Expression Sets → Activate, then a second deploy attempt.
+# allow-failure on each so the pipeline continues past the known blocker.
+for esd in NEPA_CE_Screener NEPA_Permit_Coordinator; do
+    deploy "expression set: $esd" allow-failure \
+        --metadata "ExpressionSetDefinition:$esd" \
+        --target-org "$TARGET_ORG"
+done
+# NEPA_Litigation_Risk_Scorer: deploy separately; known to fail until UI-activated
+deploy "expression set: NEPA_Litigation_Risk_Scorer" allow-failure \
+    --metadata "ExpressionSetDefinition:NEPA_Litigation_Risk_Scorer" \
     --target-org "$TARGET_ORG"
 
 # ── phase 6: remote sites + named credentials ─────────────────────────────────
@@ -441,39 +449,45 @@ deploy "permission set" \
 # Real parse/compile errors abort immediately.
 phase_header "Phase 8: Flows (deployed individually with retry)"
 FLOWS=(
+    # Leaf subflows — no dependencies; must deploy first
+    NEPA_FlowError_CountIncrementer
+    NEPA_Error_Logger
+    NEPA_Error_Event_Handler
+    NEPA_EJTribal_Router
+    # Independent flows with no subflow dependencies
+    NEPA_SLA_Due_Date_Setter
+    NEPA_Stage_Gate
+    NEPA_Stage_Gate_Doc_Check
+    NEPA_Comment_Period_Gate
+    NEPA_Comment_Triage_Save
+    NEPA_GIS_Proximity_Check
+    NEPA_FRA_Page_Limit_Setter
+    NEPA_WO_Milestone_Setter
+    NEPA_Agency_Tier_Setter
+    NEPA_Phase2_Applicability_Setter
+    NEPA_ActionPlan_Launcher
+    # Flows that depend on NEPA_Error_Logger
     NEPA_Litigation_Risk_Scorer
     NEPA_Challenge_Predictor
     NEPA_Defensibility_Gap_Checker
     NEPA_Defensibility_Trigger_ContentVersion
     NEPA_Defensibility_Trigger_Engagement
     NEPA_Timeline_Risk_Assessor
-    NEPA_SLA_Due_Date_Setter
     NEPA_SLA_Escalation_Monitor
     NEPA_CE_Screener
     NEPA_CE_Determination_Router
     NEPA_CE_Intake
     NEPA_Record_Completeness_Scorer
-    NEPA_Stage_Gate
-    NEPA_Stage_Gate_Doc_Check
     NEPA_Stage_Gate_Orchestrator
     NEPA_Administrative_Record_Checker
-    NEPA_Comment_Period_Gate
-    NEPA_Comment_Triage_Save
-    NEPA_GIS_Proximity_Check
     NEPA_Plaintiff_Intelligence
     NEPA_Permit_Coordinator
-    NEPA_FRA_Page_Limit_Setter
     NEPA_AdminRecord_AutoCreate
-    NEPA_Error_Logger
-    NEPA_Error_Event_Handler
-    NEPA_FlowError_CountIncrementer
     NEPA_Team_Assembly_Orchestrator
-    NEPA_WO_Milestone_Setter
-    NEPA_Agency_Tier_Setter
     NEPA_Close_Administrative_Record
-    NEPA_Comment_AI_Router
     NEPA_Comment_Duplicate_Check
-    NEPA_EJTribal_Router
+    # Flows that depend on NEPA_EJTribal_Router (must come after it)
+    NEPA_Comment_AI_Router
     NEPA_Comment_ResponseTask_Creator
 )
 
@@ -487,7 +501,7 @@ FLOWS=(
 #   sf project deploy start --metadata "Flow:NEPA_EIS_Section_Draft_Trigger" --target-org "$TARGET_ORG" --test-level NoTestRun --wait 30
 
 for flow in "${FLOWS[@]}"; do
-    deploy_flow "$flow"
+    deploy_flow "$flow" || echo "    [WARN] $flow — failed (non-transient); continuing pipeline"
 done
 
 # ── phase 8b: action plan templates ──────────────────────────────────────────

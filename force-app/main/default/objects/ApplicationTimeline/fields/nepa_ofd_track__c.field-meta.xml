@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_ofd_track__c</fullName>
+    <description>One Federal Decision track classification for this timeline event. Used to filter the OFD coordination dashboard by track type. NEPA_Lead = lead agency milestone; Agency_Consultation = cooperating agency coordination checkpoint; Permit_Milestone = dependent permit milestone (ESA 7, Section 404, Section 106); Joint_ROD = joint record of decision target. Blank = standard NEPA process event not part of OFD coordination.</description>
+    <externalId>false</externalId>
+    <label>OFD Track</label>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>NEPA_Lead</fullName>
+                <default>false</default>
+                <label>NEPA Lead</label>
+            </value>
+            <value>
+                <fullName>Agency_Consultation</fullName>
+                <default>false</default>
+                <label>Agency Consultation</label>
+            </value>
+            <value>
+                <fullName>Permit_Milestone</fullName>
+                <default>false</default>
+                <label>Permit Milestone</label>
+            </value>
+            <value>
+                <fullName>Joint_ROD</fullName>
+                <default>false</default>
+                <label>Joint ROD</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

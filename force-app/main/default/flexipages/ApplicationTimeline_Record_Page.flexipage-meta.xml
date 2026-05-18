@@ -214,6 +214,48 @@
         <type>Facet</type>
     </flexiPageRegions>
 
+    <!-- SECTION 2b: OFD Coordination — Column 1 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_ofd_track__c</fieldItem>
+                <identifier>at_ofd_track</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_coordinating_agency__c</fieldItem>
+                <identifier>at_ofd_coordinating_agency</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>at-ofd-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION 2b: OFD Coordination — Columns Wrapper -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>at-ofd-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>at_ofd_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>at-ofd-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
     <!-- SECTION 3: Description and Outcome — Column 1 (full width) -->
     <flexiPageRegions>
         <itemInstances>
@@ -380,6 +422,24 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>at_section_ctx</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>at-ofd-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>OFD Coordination</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>at_section_ofd</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>

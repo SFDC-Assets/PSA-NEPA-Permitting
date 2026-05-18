@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>NEPA Agency Endpoint</label>
+    <pluralLabel>NEPA Agency Endpoints</pluralLabel>
+    <description>Registry of federal agency NEPA REST API endpoints. Each record defines one agency — add a new record to add a new agency without modifying code. The DeveloperName must match nepa_agency_endpoint_key__c on nepa_required_permit__c records.</description>
+    <fields>
+        <fullName>Agency_Key__c</fullName>
+        <label>Agency Key</label>
+        <type>Text</type>
+        <length>40</length>
+        <description>Short agency abbreviation matching nepa_agency_endpoint_key__c (e.g., USACE, USFWS, BLM). Must be unique across records.</description>
+    </fields>
+    <fields>
+        <fullName>Named_Credential__c</fullName>
+        <label>Named Credential</label>
+        <type>Text</type>
+        <length>80</length>
+        <description>API name of the Named Credential used to authenticate to this agency's NEPA REST API (e.g., NEPA_Agency_USACE). All public endpoints use NoAuthentication credentials.</description>
+    </fields>
+    <fields>
+        <fullName>Process_Endpoint_Path__c</fullName>
+        <label>Process Endpoint Path</label>
+        <type>Text</type>
+        <length>200</length>
+        <description>URL path appended to the Named Credential base URL, with trailing slash. The federal_unique_id is appended at runtime. Example: /services/apexrest/nepa/v1/processes/</description>
+    </fields>
+    <fields>
+        <fullName>Is_Active__c</fullName>
+        <label>Is Active</label>
+        <type>Checkbox</type>
+        <defaultValue>true</defaultValue>
+        <description>When false, this agency is skipped by NepaAgencyPermitService. Use to disable an endpoint without deleting the record.</description>
+    </fields>
+</CustomObject>

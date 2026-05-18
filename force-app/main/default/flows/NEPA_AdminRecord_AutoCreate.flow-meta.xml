@@ -363,14 +363,14 @@
         <triggerType>RecordAfterSave</triggerType>
         <filterLogic>and</filterLogic>
         <filters>
-            <field>RecordType.DeveloperName</field>
-            <operator>EqualTo</operator>
+            <field>nepa_document_type__c</field>
+            <operator>IsNull</operator>
             <value>
-                <stringValue>nepa_permit_document</stringValue>
+                <booleanValue>false</booleanValue>
             </value>
         </filters>
         <filters>
-            <field>nepa_document_type__c</field>
+            <field>nepa_related_case_event__c</field>
             <operator>IsNull</operator>
             <value>
                 <booleanValue>false</booleanValue>

@@ -50,6 +50,16 @@
         <label>Low Data Confidence</label>
         <type>Checkbox</type>
     </fields>
+    <fields>
+        <fullName>Median_Litigation_Months__c</fullName>
+        <description>Median litigation duration in months for NEPA cases heard in this circuit, from CourtListener Stage 14 pipeline. Independent of outcome — used as a cost-exposure signal, not a win-probability signal. Surfaced in the risk factors display alongside the win-probability score.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Median Litigation Months</label>
+        <precision>5</precision>
+        <scale>1</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
     <!-- Mandate 2: EO 14270 temporal versioning -->
     <fields>
         <fullName>Effective_Start_Date__c</fullName>

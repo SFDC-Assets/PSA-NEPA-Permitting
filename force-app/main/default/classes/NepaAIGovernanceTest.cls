@@ -58,9 +58,11 @@ private class NepaAIGovernanceTest {
      */
     private static Boolean attemptDecisionGateComplete(Id processId) {
         ApplicationTimeline evt = new ApplicationTimeline();
+        evt.Name                    = 'ROD Gate Test Event';
         evt.nepa_related_process__c = processId;
-        evt.nepa_event_type__c      = 'ROD Issued';
+        evt.nepa_event_type__c      = 'Draft EIS Published';
         evt.nepa_status__c          = 'In Progress';
+        evt.nepa_public_access__c   = false;
         insert evt;
         evt.nepa_status__c = 'Completed';
         Boolean threw = false;

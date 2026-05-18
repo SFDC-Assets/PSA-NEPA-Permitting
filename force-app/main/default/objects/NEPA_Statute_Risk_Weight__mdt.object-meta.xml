@@ -49,6 +49,14 @@
         <type>Checkbox</type>
         <defaultValue>true</defaultValue>
     </fields>
+    <fields>
+        <fullName>Low_Data_Confidence__c</fullName>
+        <description>True when the risk multiplier for this statute cannot be decomposed into sub-components due to missing external data. When true, the risk scorer appends a low-confidence disclosure note to the factors string. ESA is flagged pending TAILS/PCTS API linkage.</description>
+        <defaultValue>false</defaultValue>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Low Data Confidence</label>
+        <type>Checkbox</type>
+    </fields>
 
     <!-- Mandate 2: EO 14270 temporal versioning -->
     <fields>

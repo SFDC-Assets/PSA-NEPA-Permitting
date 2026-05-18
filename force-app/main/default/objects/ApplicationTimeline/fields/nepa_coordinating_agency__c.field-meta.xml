@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_coordinating_agency__c</fullName>
+    <description>The cooperating or coordinating agency responsible for this One Federal Decision milestone. Lookup to Account (Account represents federal agencies in the PSS data model). Used to filter OFD dashboard by agency and to drive automated reminder tasks to the correct agency coordinator. Blank for standard NEPA process events not assigned to a specific coordinating agency.</description>
+    <externalId>false</externalId>
+    <label>Coordinating Agency</label>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>OFD Coordination Timeline Events</relationshipLabel>
+    <relationshipName>OFD_Coordinating_Timeline_Events</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackHistory>false</trackHistory>
+    <type>Lookup</type>
+    <deleteConstraint>SetNull</deleteConstraint>
+</CustomField>

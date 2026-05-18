@@ -137,6 +137,29 @@ public class NepaTestFactory {
         return ia;
     }
 
+    public static IndividualApplication makeProcessWithExtraordinaryCircumstances(
+        Id projectId, Boolean multiDod, Boolean usaczma
+    ) {
+        IndividualApplication ia = new IndividualApplication();
+        ia.Category                                           = 'Permit';
+        ia.LicenseTypeId                                      = getOrCreateLicenseType();
+        ia.nepa_related_project__c                            = projectId;
+        ia.nepa_review_type__c                                = 'CE';
+        ia.nepa_process_status__c                             = 'in progress';
+        ia.nepa_process_stage__c                              = 'Scoping';
+        ia.nepa_extraordinary_circumstance_multi_dod__c       = multiDod;
+        ia.nepa_extraordinary_circumstance_usace_czma__c      = usaczma;
+        return ia;
+    }
+
+    public static IndividualApplication insertProcessWithExtraordinaryCircumstances(
+        Id projectId, Boolean multiDod, Boolean usaczma
+    ) {
+        IndividualApplication ia = makeProcessWithExtraordinaryCircumstances(projectId, multiDod, usaczma);
+        insert ia;
+        return ia;
+    }
+
     /**
      * Inserts a process whose comment period is currently open (starts 5 days ago, ends 25 days from now).
      * @param projectId Parent Program Id
@@ -263,6 +286,22 @@ public class NepaTestFactory {
         evt.nepa_end_date__c        = Date.today().addDays(-20);
         evt.nepa_public_access__c   = publicAccess;
         evt.nepa_related_process__c = processId;
+        insert evt;
+        return evt;
+    }
+
+    public static ApplicationTimeline insertTimelineEventWithOFDTracking(Id processId, String ofdTrack) {
+        ApplicationTimeline evt = new ApplicationTimeline();
+        evt.Name                    = 'NEPA OFD Test Event';
+        evt.nepa_event_type__c      = 'NOI';
+        evt.nepa_status__c          = 'In Progress';
+        evt.nepa_tier__c            = '1';
+        evt.nepa_source__c          = 'Test';
+        evt.nepa_start_date__c      = Date.today().addDays(-10);
+        evt.nepa_end_date__c        = Date.today().addDays(90);
+        evt.nepa_public_access__c   = true;
+        evt.nepa_related_process__c = processId;
+        evt.nepa_ofd_track__c       = ofdTrack;
         insert evt;
         return evt;
     }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>VR_Description_Minimum_Length</fullName>
+    <active>true</active>
+    <description>Enforces minimum 200-character description when nepa_description__c is populated. Truncated descriptions degrade CE classification accuracy (NEPATEC feature lift 0.71). Does not fire on blank descriptions.</description>
+    <errorConditionFormula>AND(
+  NOT(ISBLANK(nepa_description__c)),
+  LEN(nepa_description__c) &lt; 200
+)</errorConditionFormula>
+    <errorMessage>Process Description must be at least 200 characters. Include: purpose, location summary, disturbance type (new/existing/renewal), and estimated acreage. This improves CE screening accuracy.</errorMessage>
+</ValidationRule>

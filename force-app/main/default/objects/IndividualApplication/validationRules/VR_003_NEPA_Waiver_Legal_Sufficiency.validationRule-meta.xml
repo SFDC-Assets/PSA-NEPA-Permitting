@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>VR_003_NEPA_Waiver_Legal_Sufficiency</fullName>
+    <active>true</active>
+    <description>VR-003: Blocks save when NEPA waiver is invoked without a statutory citation. Agencies lose cases by asserting waivers without valid legal authority. OGC memo must be in the administrative record.</description>
+    <errorConditionFormula>AND(
+  nepa_waiver_invoked__c = true,
+  ISBLANK(nepa_waiver_statute_cite__c)
+)</errorConditionFormula>
+    <errorMessage>NEPA waiver is checked but no statutory citation is provided. Enter the specific statutory provision authorizing the waiver (e.g., IIRIRA Section 102(c); EPAct 2005 Section 390). Attach an OGC legal sufficiency memo before advancing.</errorMessage>
+</ValidationRule>

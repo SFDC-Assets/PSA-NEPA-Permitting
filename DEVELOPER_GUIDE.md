@@ -1283,6 +1283,69 @@ Create a read-only guest user profile so evaluators can log in without being abl
 
 ---
 
+## Task 6 — Cross-Agency Permit Status Configuration
+
+The `nepa_required_permit__c` object, `NEPA_Agency_Endpoint__mdt` CMT, `NepaAgencyPermitService` Apex class, and `nepaPermitDependencies` LWC are all deployed as part of the standard metadata package. After deploying, complete these post-deploy steps:
+
+### Step 1 — Update Agency Named Credential URLs
+
+The three agency Named Credentials deploy with placeholder hostnames. Update each one in **Setup → Security → Named Credentials** to the real agency API URL once that agency has a deployed CEQ NEPA REST endpoint:
+
+| Named Credential | Placeholder URL | Real agency URL (update post-deploy) |
+|---|---|---|
+| `NEPA_Agency_USACE` | `https://permits.usace.army.mil` | U.S. Army Corps permit API |
+| `NEPA_Agency_USFWS` | `https://permits.fws.gov` | U.S. Fish and Wildlife Service |
+| `NEPA_Agency_BLM` | `https://eplanning.blm.gov` | Bureau of Land Management |
+
+Until updated, callouts will fail gracefully and the LWC will display locally-cached status with a "Live sync unavailable — showing cached data" warning. This is the intended behavior during initial setup.
+
+### Step 2 — Update Remote Site Settings
+
+After updating Named Credential URLs, also update the corresponding Remote Site Settings (**Setup → Security → Remote Site Settings**) to match:
+- `NEPA_Agency_USACE`
+- `NEPA_Agency_USFWS`
+- `NEPA_Agency_BLM`
+
+### Step 3 — Add the LWC to the Record Page (if not auto-assigned)
+
+If the `NEPA_Process_Record_Page` flexipage was not deployed or was already customized, add the `nepaPermitDependencies` component manually:
+
+1. **Setup → Lightning App Builder** → open `NEPA_Process_Record_Page`
+2. Drag the **Permit Dependencies** component into the "Permit Dependencies" tab
+3. Click **Save** → **Activate** → assign as Org Default for IndividualApplication
+
+### Step 4 — Create Test Permit Records
+
+To verify the component is working:
+
+1. Open an IndividualApplication record
+2. In the **Required Permits** related list, click **New**
+3. Set:
+   - **Permit Type:** `CWA §404`
+   - **Lead Agency:** `USACE`
+   - **External Federal ID:** any UUID (e.g., `12345678-0000-0000-0000-000000000001`)
+   - **Agency Endpoint Key:** `USACE`
+   - **Local Status:** `Under Review`
+   - **Is Critical Path:** checked
+4. Open the record page → **Permit Dependencies** tab
+5. Confirm the component loads with spinner, then renders the permit row
+6. Confirm "Live sync unavailable — showing cached data" is shown (expected until real endpoint is configured)
+
+### Step 5 — Add a New Agency (config-only)
+
+To add a fourth agency (e.g., FERC):
+
+1. Create a Named Credential `NEPA_Agency_FERC` with the FERC NEPA API base URL
+2. Create a Remote Site Setting `NEPA_Agency_FERC` for the same URL
+3. Create a `NEPA_Agency_Endpoint__mdt` record:
+   - **Agency Key:** `FERC`
+   - **Named Credential:** `NEPA_Agency_FERC`
+   - **Process Endpoint Path:** `/services/apexrest/nepa/v1/processes/`
+   - **Is Active:** checked
+4. No Apex changes. No flow reactivation. No redeployment required.
+
+---
+
 ## Final Pre-Submission Checklist
 
 Run through this before hitting submit at permittinginnovators.awardsplatform.com.
@@ -1312,6 +1375,8 @@ Run through this before hitting submit at permittinginnovators.awardsplatform.co
 - [ ] MFR 4 section includes GitHub link to `/docs/decision-models/`
 - [ ] MFR 6 section names all 5 GIS services
 - [ ] MFR 8 section describes the Agentforce comment agent
+- [ ] MFR 10 section describes `nepa_required_permit__c` and live cross-agency permit status
+- [ ] Multi-Agency Compatibility section mentions `NEPA_Agency_Endpoint__mdt` and `nepaPermitDependencies` LWC
 - [ ] Readiness section includes live sandbox URL and Loom video link
 - [ ] Page count ≤ 6 pages at 12pt font / 1-inch margins (check in Google Docs or Word)
 - [ ] "NEPATEC" spelling is consistent throughout — all instances should read "NETATEC v2.0"

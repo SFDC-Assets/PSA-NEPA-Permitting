@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>VR_FONSI_ROD_On_CE</fullName>
+    <active>true</active>
+    <description>Blocks FONSI or ROD as decision document type when review type is CE. Addresses NEPATEC doc_type conflation where ROD/FONSI appeared in the CE stratum. CE decisions use DR or CE Determination.</description>
+    <errorConditionFormula>AND(
+  ISPICKVAL(nepa_review_type__c, "CE"),
+  OR(
+    ISPICKVAL(nepa_decision_document_type__c, "FONSI"),
+    ISPICKVAL(nepa_decision_document_type__c, "ROD")
+  )
+)</errorConditionFormula>
+    <errorMessage>FONSI and ROD are not valid decision document types for a Categorical Exclusion (CE) process. Use "CE Determination" or "DR" for CE decision documents.</errorMessage>
+</ValidationRule>

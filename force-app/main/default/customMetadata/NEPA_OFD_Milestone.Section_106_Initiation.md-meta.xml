@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Section 106 Consultation Initiation</label>
+    <protected>false</protected>
+    <values>
+        <field>Milestone_Label__c</field>
+        <value xsi:type="xsd:string">Section 106 Consultation Initiation</value>
+    </values>
+    <values>
+        <field>Sector_Key__c</field>
+        <value xsi:type="xsd:string">ALL</value>
+    </values>
+    <values>
+        <field>Agency_Role__c</field>
+        <value xsi:type="xsd:string">Agency_Consultation</value>
+    </values>
+    <values>
+        <field>Typical_Day_Offset__c</field>
+        <value xsi:type="xsd:decimal">90</value>
+    </values>
+    <values>
+        <field>Responsible_Party__c</field>
+        <value xsi:type="xsd:string">SHPO/THPO</value>
+    </values>
+    <values>
+        <field>Legal_Citation__c</field>
+        <value xsi:type="xsd:string">16 U.S.C. 470f; 36 CFR 800.3</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

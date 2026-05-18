@@ -30,6 +30,7 @@ The deploy script automates nearly everything, but two steps **cannot** be scrip
 | **Scheduled flow configuration** | Open `NEPA_SLA_Escalation_Monitor` in Flow Builder, set schedule to Daily 7 AM, activate | After Step 4c (Flow activation) |
 | **CE Library data load** | Run `python3 scripts/load_ce_library.py --org NEPADEV` to populate 314 CE reference records | After Step 3 (deploy), see Step 4e |
 | **Lightning Record Page assignment** | In Setup → Lightning App Builder, assign **8** custom pages as Org Default (IndividualApplication, Program, PublicComplaint, Engagement, Litigation, CE Library, Decision Payload, Decision Log) | After Step 3 (deploy), see Step 4d |
+| **Agency Named Credential URLs** | In Setup → Security → Named Credentials, update the 3 agency credentials (`NEPA_Agency_USACE`, `NEPA_Agency_USFWS`, `NEPA_Agency_BLM`) from placeholder hostnames to real agency NEPA API URLs | After Step 3 (deploy), see DEVELOPER_GUIDE.md Task 6 |
 
 The BRE import is the most common failure point. If you skip it, CE Screener and Risk Scorer will throw runtime errors. See [Step 4b](#4b-import-bre-decision-matrix-rows) for the full procedure.
 

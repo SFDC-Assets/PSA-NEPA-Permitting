@@ -2,7 +2,7 @@
 
 **Project:** PSA-NEPA-Permitting-Data-Model
 **Maintainer:** Shannon Schupbach
-**Last Updated:** 2026-05-15
+**Last Updated:** 2026-05-17
 
 Open-source NEPA permitting accelerator built on Salesforce Agentforce for Public Sector (APS). Maps CEQ NEPA and Permitting Data and Technology Standard v1.2 entities — which define MFRs (Minimum Functional Requirements) as CEQ's baseline capability benchmarks — to PSS standard objects, adds custom objects and 12+ declarative flows for risk intelligence, and prepares for Phase 2 OmniStudio + Agentforce portal delivery.
 
@@ -24,6 +24,7 @@ Open-source NEPA permitting accelerator built on Salesforce Agentforce for Publi
 | 010 | [CE Library as Custom Object (nepa_ce_library__c)](#adr-010--ce-library-as-custom-object-nepa_ce_library__c) | Accepted |
 | 011 | [OmniScript CE Intake over Screen Flow](#adr-011--omniscript-ce-intake-over-screen-flow) | Accepted |
 | 012 | [nepa_process_stage__c Text → Picklist and Salesforce Path](#adr-012--nepa_process_stage__c-text--picklist-and-salesforce-path) | Accepted |
+| 013 | [Cross-Agency Permit Status: Live NEPA REST Callout over External Objects](#adr-013--cross-agency-permit-status-live-nepa-rest-callout-over-external-objects) | Accepted |
 
 ---
 
@@ -566,3 +567,39 @@ This accelerator implements two distinct and non-overlapping tribal protections:
 - Agencies deploying this accelerator should implement their own E.O. 13175 compliance tracking through the `ApplicationTimeline` object, supplemented by their agency-specific consultation protocols.
 - The EJ/tribal comment gate is the correct and fully implemented boundary for AI governance compliance under OMB M-24-10.
 - Roadmap item (post-June 2026): Add a configurable tribal consultation checklist as a `nepa_required_document__c` type requirement on EA/EIS records that agencies can optionally activate.
+
+---
+
+## ADR 013 -- Cross-Agency Permit Status: Live NEPA REST Callout over External Objects
+
+**Status:** Accepted
+**Date:** 2026-05-17
+**Deciders:** Shannon Schupbach
+
+### Context
+
+Most major NEPA actions require parallel permits from multiple federal agencies: USACE CWA §404 for water impacts, USFWS ESA §7 consultation for species, BLM ROW for right-of-way crossings, FERC certificates for energy infrastructure, WQC §401 for water quality, NHPA §106 for cultural resources. NEPA coordinators currently have no way to see the status of these dependent permits without contacting each agency individually — a coordination failure that adds weeks of delay per permit cycle.
+
+Three implementation approaches were evaluated:
+
+1. **External Objects (Salesforce Connect):** Defines an OData or custom adapter connector per agency. Real-time data with no local storage, but requires each agency to expose an OData v4 endpoint, adds Salesforce Connect licensing, and creates a hard dependency on each agency's endpoint availability — a broken agency endpoint would produce a blank row rather than a cached fallback.
+
+2. **Scheduled sync to local records:** A nightly Flow or Apex job polls each agency's NEPA REST endpoint and writes results to local `nepa_required_permit__c` records. No callout at page load; fast, resilient. Downside: status is up to 24 hours stale; the NEPA standard's goal of near-real-time inter-agency visibility is not met.
+
+3. **Live callout from LWC (chosen):** An `@AuraEnabled(cacheable=false)` Apex service calls each agency's CEQ REST endpoint at page load. The status a coordinator sees is live. The approach uses the same Named Credential + `NEPA_Agency_Endpoint__mdt` pattern already established for GIS services. On callout failure, the service degrades gracefully to the locally-cached `nepa_permit_status__c` value and sets `calloutSuccess=false`, so the LWC can display a "cached data" warning without surfacing an error.
+
+### Decision
+
+Use live HTTP callouts from an `@AuraEnabled` Apex service class (`NepaAgencyPermitService`) invoked imperatively by the `nepaPermitDependencies` LWC. Each agency's NEPA REST endpoint (`/services/apexrest/nepa/v1/processes/{federal_unique_id}`) is registered in a `NEPA_Agency_Endpoint__mdt` Custom Metadata record paired with a Named Credential — the same pattern used for the five GIS services.
+
+The `nepa_required_permit__c` object stores one record per dependent permit with all required fields for the graceful-degradation fallback: `nepa_permit_status__c` (locally cached), `nepa_external_federal_id__c` (ExternalId — the other agency's `federal_unique_id`), `nepa_agency_endpoint_key__c` (links to CMT), `nepa_is_critical_path__c`, and `nepa_last_synced__c`.
+
+The CEQ REST endpoint shape this accelerator parses on incoming calls is the same shape this accelerator exposes via `NepaCeqExportService` — ensuring any CEQ-standard NEPA deployment is natively callable without a custom adapter per agency.
+
+### Consequences
+
+- **Adding a new agency is metadata-only.** Create a `NEPA_Agency_Endpoint__mdt` record, a Named Credential, and a Remote Site Setting. No Apex changes.
+- **Governor limits.** Each page load makes one HTTP callout per active permit record. For a process with 6 dependent permits across 6 agencies, that is 6 sequential callouts — within the 100-callout-per-transaction governor limit, but large numbers of permits (>20) could approach synchronous timeout. Mitigation: the 10-second per-callout timeout ensures the page does not hang indefinitely; the graceful-degradation path ensures a timeout surfaces as a cached-data warning rather than an error state.
+- **Endpoint placeholder deployment pattern.** The three starter Named Credentials (`NEPA_Agency_USACE`, `NEPA_Agency_USFWS`, `NEPA_Agency_BLM`) deploy with placeholder hostnames. Operators update these to real agency NEPA API URLs post-deploy. Until updated, callouts will fail gracefully and display locally-cached status — this is the intended behavior during initial setup.
+- **CEQ interoperability guarantee.** Because both the callout target (`/services/apexrest/nepa/v1/processes/{id}`) and the callout source use the same CEQ standard REST endpoint shape, no per-agency schema mapping is required. This is a durable interoperability guarantee as long as all agencies deploy against the CEQ standard.
+- **Deferred: `permits[]` node in CEQExport.** A `DR_Extract_NEPA_RequiredPermit` DataRaptor and extension of `NEPA_CEQExport` IP to include `permits[]` under each process node is a planned follow-on (Phase 7 in the cross-agency permit plan). The `nepa_required_permit__c` object is deployed; the CEQExport extension is not yet implemented.

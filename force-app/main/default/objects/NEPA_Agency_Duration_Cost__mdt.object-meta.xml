@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Per-agency median litigation duration table from CourtListener Stage 14 pipeline (71M-row docket analysis). Used by NEPA_Litigation_Risk_Scorer to populate Litigation_Duration_Cost__c on IndividualApplication and to display expected litigation duration in the Risk Intelligence card. Duration is INDEPENDENT of outcome (agency-won median 15.1 mo ≈ challenger-won 16.3 mo) — treat as cost proxy only, not a win-probability signal.</description>
+    <label>NEPA Agency Duration Cost</label>
+    <pluralLabel>NEPA Agency Duration Costs</pluralLabel>
+    <fields>
+        <fullName>Agency_Key__c</fullName>
+        <description>Abbreviation used as lookup key matching nepa_lead_agency__c on IndividualApplication (e.g., BLM, USACE, USFWS). DEFAULT record is the global fallback.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Agency Key</label>
+        <length>20</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Median_Duration_Months__c</fullName>
+        <description>Median litigation duration in months for NEPA cases filed against this agency, from CourtListener Stage 14 analysis. Range: BOEM 6.5 months (min) to FTA 33.4 months (max). Global median fallback: 15.4 months.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Median Duration (Months)</label>
+        <precision>5</precision>
+        <scale>1</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Normalized_Duration_Cost__c</fullName>
+        <description>Litigation_Duration_Cost normalized to [0,1] using formula: (median_months - 6.5) / (33.4 - 6.5). Written to IndividualApplication.nepa_litigation_duration_cost__c by the Risk Scorer flow. Weighted at 15% in the v3 composite score formula.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Normalized Duration Cost</label>
+        <precision>4</precision>
+        <scale>2</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Pathway_Note__c</fullName>
+        <description>Short description of the litigation pathway that explains this agency&#39;s median duration. Appended to the risk score factors string in the format: Expected litigation duration: ~X months (pathway note). Example: APA district court / summary judgment track.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Pathway Note</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Active__c</fullName>
+        <description>When false, this agency duration record is excluded from Risk Scorer lookups. SubscriberControlled so agencies can override with local data.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
+        <defaultValue>true</defaultValue>
+        <label>Active</label>
+        <type>Checkbox</type>
+    </fields>
+</CustomObject>

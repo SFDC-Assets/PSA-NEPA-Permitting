@@ -450,6 +450,41 @@ private class NepaApiComplianceTest {
         System.assertNotEquals(null,      result.nepa_retrieved_timestamp__c);
     }
 
+    // ── OFD tracking fields on ApplicationTimeline (IMP-006) ─────────────────
+
+    @IsTest
+    static void caseEvent_ofdTrack_fieldPersists() {
+        Program proj = NepaTestFactory.insertProgram('OFD-TRACK-001', 'OFD Track Test', 'Bureau of Land Management');
+        IndividualApplication ia = NepaTestFactory.insertProcess(proj.Id, 'EIS', null, null);
+
+        ApplicationTimeline evt = NepaTestFactory.insertTimelineEventWithOFDTracking(ia.Id, 'NEPA_Lead');
+
+        ApplicationTimeline result = [
+            SELECT nepa_ofd_track__c FROM ApplicationTimeline WHERE Id = :evt.Id
+        ];
+        System.assertEquals('NEPA_Lead', result.nepa_ofd_track__c,
+            'nepa_ofd_track__c must persist the NEPA_Lead picklist value');
+    }
+
+    @IsTest
+    static void caseEvent_coordinatingAgency_lookupPersists() {
+        Program proj = NepaTestFactory.insertProgram('OFD-COORD-001', 'OFD Coord Test', 'U.S. Army Corps of Engineers');
+        IndividualApplication ia = NepaTestFactory.insertProcess(proj.Id, 'EIS', null, null);
+
+        Account coordAgency = new Account(Name = 'USFWS Coordinating Agency');
+        insert coordAgency;
+
+        ApplicationTimeline evt = NepaTestFactory.insertTimelineEventWithOFDTracking(ia.Id, 'Agency_Consultation');
+        evt.nepa_coordinating_agency__c = coordAgency.Id;
+        update evt;
+
+        ApplicationTimeline result = [
+            SELECT nepa_coordinating_agency__c FROM ApplicationTimeline WHERE Id = :evt.Id
+        ];
+        System.assertEquals(coordAgency.Id, result.nepa_coordinating_agency__c,
+            'nepa_coordinating_agency__c must store the coordinating agency lookup');
+    }
+
     // ══════════════════════════════════════════════════════════════════════════
     // Entity 8b — decision_element → nepa_decision_element__c (Phase 1 fields)
     // ══════════════════════════════════════════════════════════════════════════

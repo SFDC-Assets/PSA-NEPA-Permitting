@@ -88,4 +88,23 @@
         <label>Active</label>
         <type>Checkbox</type>
     </fields>
+    <fields>
+        <fullName>Median_Litigation_Months__c</fullName>
+        <description>Per-agency median litigation duration in months from CourtListener Stage 14 pipeline analysis (71M-row docket file). Duration is independent of outcome — treat as cost proxy only. Surfaced in the Risk Intelligence display to tell coordinators: If this project is challenged under [agency], expect approximately X months of litigation.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Median Litigation Months</label>
+        <precision>5</precision>
+        <scale>1</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Litigation_Pathway__c</fullName>
+        <description>Short description of the litigation pathway and factors that explain this agency&#39;s median litigation duration. Example: APA district court summary judgment track. Used in the Risk Intelligence cost exposure tooltip.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Litigation Pathway</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
 </CustomObject>

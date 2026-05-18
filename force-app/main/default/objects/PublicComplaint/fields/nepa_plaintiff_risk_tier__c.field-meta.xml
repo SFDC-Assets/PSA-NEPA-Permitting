@@ -4,7 +4,7 @@
     <description>Risk tier from the matched NEPA_Plaintiff_Profile__mdt record. Values mirror the CMT Risk_Tier__c picklist: LOW, MEDIUM, HIGH, VERY_HIGH. Blank when nepa_plaintiff_risk_flag__c is false. Used by the Litigation Threat section visibility rule and by downstream risk scoring.</description>
     <inlineHelpText>Risk tier assigned by Plaintiff Intelligence based on matched organization profile.</inlineHelpText>
     <label>Plaintiff Risk Tier</label>
-    <length>20</length>
+    <length>255</length>
     <required>false</required>
     <trackHistory>false</trackHistory>
     <type>Text</type>

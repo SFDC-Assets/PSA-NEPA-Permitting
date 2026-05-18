@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RemoteSiteSetting xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>BLM NEPA permitting platform REST API. Placeholder — update URL to the actual BLM NEPA platform host after deployment. Required for NepaAgencyPermitService callouts.</description>
+    <disableProtocolSecurity>false</disableProtocolSecurity>
+    <isActive>true</isActive>
+    <url>https://eplanning.blm.gov</url>
+</RemoteSiteSetting>

@@ -30,4 +30,12 @@
         <field>Active__c</field>
         <value xsi:type="xsd:boolean">true</value>
     </values>
+    <values>
+        <field>Federal_Friction_Multiplier__c</field>
+        <value xsi:type="xsd:decimal">1.65</value>
+    </values>
+    <values>
+        <field>Friction_Drivers__c</field>
+        <value xsi:type="xsd:string">DoD NHPA Section 106 across installations; USACE Section 404 dual-track; multi-installation coordination</value>
+    </values>
 </CustomMetadata>

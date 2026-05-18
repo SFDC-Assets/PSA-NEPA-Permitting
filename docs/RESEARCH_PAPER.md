@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-This report presents a systematic, data-driven analysis of federal permitting under the National Environmental Policy Act (NEPA), drawing on three complementary corpora: 120,000+ NEPA documents spanning Categorical Exclusions (CEs), Environmental Assessments (EAs), and Environmental Impact Statements (EISs); 761 federal court cases challenging NEPA decisions; and 1,903 Final EIS timeline records from the Council on Environmental Quality (CEQ). An AI-assisted 13-stage analysis pipeline extracts, calibrates, and synthesizes findings across these datasets.
+This report presents a systematic, data-driven analysis of federal permitting under the National Environmental Policy Act (NEPA), drawing on three complementary corpora: 120,000+ NEPA documents spanning Categorical Exclusions (CEs), Environmental Assessments (EAs), and Environmental Impact Statements (EISs); 761 federal court cases challenging NEPA decisions; and 1,903 Final EIS timeline records from the Council on Environmental Quality (CEQ). An AI-assisted 16-stage analysis pipeline extracts, calibrates, and synthesizes findings across these datasets. Stages 14–16 extend the original 13-stage core with litigation duration profiling from 71 million CourtListener docket records, ESA §7 consultation cross-referencing, and a federal-state process baseline comparison against published California CEQA EIR benchmarks.
 
 **Five headline findings for policymakers:**
 
@@ -39,7 +39,7 @@ The result: agencies with poor litigation track records (BLM: 39.3% loss rate) c
 
 ### 1.3 Contribution
 
-This report provides the first integrated, cross-agency quantitative analysis of federal NEPA permitting risk by combining three public datasets — NEPATEC 2.0, PermitTEC v0.1, and CEQ EIS Timeline Data 2010–2024 — through a reproducible 13-stage AI-assisted pipeline. Specific contributions include:
+This report provides the first integrated, cross-agency quantitative analysis of federal NEPA permitting risk by combining three public datasets — NEPATEC 2.0, PermitTEC v0.1, and CEQ EIS Timeline Data 2010–2024 — through a reproducible 16-stage AI-assisted pipeline. Specific contributions include:
 
 - A **CE/EA/EIS classification feature matrix** with sector-level EIS probability scores and CE code screening rules derived from 120,000+ NEPA documents
 - A **35-row interagency permit prediction matrix** mapping project sector, type, lead agency, and location to cooperating agencies, required permits, and EIS likelihood
@@ -103,7 +103,27 @@ The CEQ EIS timeline dataset contains 1,903 Final EIS records from 2010–2024, 
 
 Coverage is limited to Final EIS records. CE and EA timeline data is not included in this dataset. The 2024 cohort (n=51) is smaller than earlier years (2010: n=192), which may reflect right-censoring of slow ongoing projects or a genuine reduction in EIS initiations.
 
-### 2.4 Dataset Integration
+### 2.4 CourtListener Bulk Docket Data (Stage 14)
+
+**Source:** Free Law Project — CourtListener bulk data repository  
+**Access:** `courtlistener.com/api/bulk-data/` — `dockets-2026-03-31.csv.bz2`  
+**License:** CC0-1.0  
+**Local path:** `../court-case-data/dockets-2026-03-31.csv.bz2`
+
+The CourtListener bulk docket file is a 5 GB compressed CSV containing 71,243,855 federal court docket rows. Stage 14 streams the file once, applying an environment/NEPA keyword pre-filter to extract 14,891 candidate environmental dockets. These candidates are then fuzzy-matched against 684 PermitTEC cases on case name similarity (bigram ratio ≥ 0.45), yielding a 98.8% nominal match rate (676/684). The key fields extracted are `date_filed`, `date_terminated`, `case_name`, `cause`, and `court_id`. Approximately 40–50% of matched rows have null `date_terminated` (typically appellate petitions); duration statistics use the non-null subset.
+
+This dataset is used only in Stage 14 and does not affect the primary litigation risk statistics (Stages 7, 10, 11, 12, 13), which remain grounded in the validated PermitTEC outcome fields.
+
+### 2.5 California CEQA EIR Benchmarks (Stage 16)
+
+**Source:** Holland & Knight CEQA Time Study 2022  
+**Citation:** Holland & Knight LLP. (2022). *CEQA in Practice: The Time and Cost of Environmental Review.* Holland & Knight Environmental Practice Group.  
+**Sample:** n = 312 certified EIRs; California projects 2010–2020  
+**Access:** Published report — not a raw dataset; sector-level medians used
+
+Stage 16 computes federal friction multipliers by comparing CEQ EIS sector medians (from Stage 16's re-processing of the CEQ xlsx) against California EIR sector medians from this published benchmark. CEQAnet (`ceqanet.opr.ca.gov`) was found to have no programmatic bulk export at the time of analysis; the Holland & Knight study provides validated sector-level summary statistics from a peer-reviewed secondary source. Sector categories (Transportation, Energy, Water/Coastal, Public Lands, Wildlife, Military, Other) were mapped to the federal sector taxonomy used in Stage 13.
+
+### 2.6 Dataset Integration
 
 Three integration steps connect the datasets:
 
@@ -117,10 +137,10 @@ Three integration steps connect the datasets:
 
 ### 3.1 Pipeline Architecture
 
-The analysis is implemented as a 13-stage Python pipeline across two orchestrator files:
+The analysis is implemented as a 16-stage Python pipeline across two orchestrator files:
 
 - `pipeline.py` — Stages 1–5: feature engineering, CE ambiguity resolution, permit matrix construction, litigation guardrail extraction, Salesforce translation
-- `pipeline_extended.py` — Stages 6–13: timeline risk profiling, litigation weight calibration, CE code catalog, document registry, plaintiff intelligence, geographic risk mapping, CEQ timeline cross-analysis, scoping cap model
+- `pipeline_extended.py` — Stages 6–16: timeline risk profiling, litigation weight calibration, CE code catalog, document registry, plaintiff intelligence, geographic risk mapping, CEQ timeline cross-analysis, scoping cap model, litigation duration profiling, ESA consultation cross-reference, federal-state baseline comparison
 
 **LLM-driven synthesis.** Each stage constructs a structured system prompt (stored in `prompts/`) and user prompt incorporating Python-preprocessed data. Prompts are sent to `claude-opus-4-7` via the Anthropic API with `MAX_TOKENS_RESPONSE = 16,000`. The model returns structured JSON or Markdown; responses are parsed via `utils/output_parsers.py`. Prompt caching (Anthropic's cache-control headers) is used for multi-batch stages to reduce cost and latency.
 
@@ -144,6 +164,9 @@ The analysis is implemented as a 13-stage Python pipeline across two orchestrato
 | 11 | Geographic Risk Map | 761 cases (26 states with ≥4 cases) | State-level challenger win rate computation; regional clustering | `11_geographic_risk_map.json` |
 | 12 | CEQ Timeline Cross-Analysis | 1,903 CEQ records + 761 PermitTEC cases | Median NOI→DEIS and DEIS→FEIS by agency; regex cross-join to litigation outcomes; bottleneck ratio; year-trend table | `12_ceq_timeline_cross.json` |
 | 13 | Scoping Cap + Sector × Circuit | 1,897 CEQ records + 684 PermitTEC cases | Cap impact model (1/2/3-year); 7×12 sector×circuit win-rate matrix; composite risk score v2 | `13_scoping_circuit_risk.json` |
+| 14 | Litigation Duration Profiler | 71M CourtListener docket rows; 684 PermitTEC cases | Stream bz2, keyword-filter to 14,891 env/NEPA candidates; fuzzy-match to PermitTEC cases; compute per-agency/circuit median duration; extend composite risk to v3 | `14_litigation_duration.json` |
+| 15 | ESA §7 Consultation Cross-Reference | 17 ESA-flagged PermitTEC cases; USFWS ECOS API | Query ECOS consultation API; fuzzy-match on project name; jeopardy/duration analysis | `15_esa_consultation_analysis.json` |
+| 16 | Federal–State Baseline Comparison | 1,903 CEQ records; Holland & Knight CEQA benchmark (n=312) | Compute federal EIS sector medians; compute federal friction multiplier vs. California EIR per sector | `16_federal_state_baseline.json` |
 
 *Note: Stage 5 (Salesforce implementation translation) is excluded from this report's scope.*
 
@@ -178,6 +201,25 @@ score_v2 = score_v1
 ```
 
 The scoping overrun flag adds 15 points when a project's projected NOI→DEIS exceeds agency baseline. The sector×circuit term adds up to 20 points based on the empirical win rate for the project's sector-circuit cell (discounted by 50% when the cell has fewer than 3 observed cases).
+
+**Version 3 (Stage 14)** — extends v2 with a litigation cost dimension:
+
+```
+New field: Litigation_Duration_Cost__c
+  Derivation: (median_months_for_agency_sector − 6.5) / (33.4 − 6.5)
+  Scaled to [0,1] against observed range [BOEM=6.5 mo, FTA=33.4 mo]
+  Falls back to agency-only median when sector cell n < 5
+  Falls back to global median (15.4 mo) when agency n < 4
+
+score_v3 = (0.2975 × Agency_Loss_Rate)
+         + (0.2125 × Circuit_Loss_Rate)
+         + (0.1700 × Plaintiff_Org_Strength)
+         + (0.0850 × Sector_Volatility)
+         + (0.0850 × Procedural_Posture_Risk)
+         + (0.1500 × Litigation_Duration_Cost)
+```
+
+Duration carries a 0.15 weight as a cost proxy, not a probability signal — median duration is statistically identical for agency wins (15.1 months) and challenger wins (16.3 months), confirming that longer litigation does not predict case outcome. The v2 component weights are uniformly scaled by 0.85 to accommodate the new term (weights sum to 1.000).
 
 ---
 
@@ -286,6 +328,19 @@ The 2-year cap is recommended because it captures 64% of the maximum achievable 
 | USACE | 102 | 58.3% | 42 |
 | BLM | 115 | 48.9% | 26 |
 
+**Federal friction premium vs. California EIR (Stage 16).** Comparing CEQ EIS sector medians against published California CEQA EIR benchmarks (Holland & Knight CEQA Time Study 2022, n=312) reveals a sector-weighted federal friction multiplier of 1.45×:
+
+| Sector | Federal EIS Median (yrs) | California EIR Median (yrs) | Federal Friction Multiplier |
+|---|---|---|---|
+| Military | 3.14 | 1.90 | **1.65×** |
+| Water/Coastal | 4.11 | 2.80 | 1.47× |
+| Transportation | 4.49 | 3.10 | 1.45× |
+| Public Lands | 3.45 | 2.60 | 1.33× |
+| Wildlife | 3.97 | 3.40 | 1.17× |
+| Energy | 2.61 | 2.40 | **1.09×** |
+
+The friction premium ranges 6× across sectors (1.09× for Energy to 1.65× for Military). Sectors with the highest multipliers — Military, Water/Coastal, Transportation — are precisely those requiring 3+ federal agency sign-offs. Energy projects (the lowest friction sector) benefit from mature FERC/BLM templates and categorical streamlining; California's CEC/CPUC siting process is itself unusually burdensome, compressing the gap. The Wildlife sector's 1.17× premium reflects CESA closely mirroring federal ESA — California replicates the procedure at state level, leaving little federal-specific overhead. The implication: federal permitting friction is an artifact of multi-agency coordination overhead, not analytical rigor. One Federal Decision is the correct policy target.
+
 **Agency tier classification (Stage 12):**
 
 | Tier | Agencies |
@@ -323,6 +378,8 @@ Note: Several agencies (FTA, BIA, NPS, FAA, FHWA) are slow but achieve high liti
 | CWA §404 | 48 | 29.2% | 1.20× |
 | NGA §7 | 36 | 25.0% | 1.02× |
 | Baseline | — | 24.4% | 1.00× |
+
+Stage 15 attempted to decompose the ESA §7 multiplier by cross-referencing the 17 PermitTEC ESA-flagged cases against USFWS ECOS consultation records. Zero matches were returned — the ECOS site is a rendered HTML interface with no public consultation query API; NMFS-led consultations do not appear in USFWS ECOS. The 1.48× multiplier is retained unchanged with low confidence pending a future join via TAILS/PCTS or manual review of the 17 cases. The hypothesis that jeopardy findings or prolonged consultations drive the multiplier remains untested.
 
 **Circuit risk multipliers.** The 10th Circuit (covering Colorado, Wyoming, Utah, Kansas, Oklahoma, New Mexico) carries the highest multiplier:
 
@@ -390,7 +447,29 @@ Colorado (50% challenger win rate, n=20) and Oregon (42.9%, n=87) are the highes
 
 **Implication:** Project sponsors selecting between alternative FERC and DOE approval pathways, or FERC vs. state agency leads, should factor circuit exposure into project structuring before EIS scoping begins.
 
-### 4.6 Document Adequacy and Procedural Gates
+### 4.6 Litigation Duration and Cost Exposure
+
+**Duration does not predict outcome (Stage 14).** Matching 676 of 684 PermitTEC cases to CourtListener bulk dockets (71 million rows; 98.8% nominal match rate) reveals that litigation length is statistically identical for cases the agency won (median 15.1 months) and cases the challenger won (median 16.3 months). The 1.2-month delta (~8%) is within sampling noise. Duration is a cost dimension, not a probability signal — it cannot be used to forecast who will win.
+
+**Agency type is the dominant duration driver.** A 5× spread in median litigation duration maps cleanly to statutory review pathway:
+
+| Agency | Median Duration (months) | n | Pathway |
+|---|---|---|---|
+| BOEM | 6.5 | 4 | OCSLA direct-circuit review (short statutory window) |
+| NRC | 7.3 | 2 | Hobbs Act direct-circuit review |
+| NPS | 8.9 | 9 | District court APA; narrow scope |
+| USFWS | 10.2 | 23 | District court; narrow record questions |
+| USACE | 15.1 | 26 | District court; §404 scope issues |
+| BLM | 17.5 | 31 | District court; RMP/leasing; summary judgment |
+| USFS | 18.4 | 72 | District court; standardized APA track |
+| FHWA | 26.1 | 13 | District court; multi-jurisdictional; Section 4(f) |
+| FTA | 33.4 | 4 | Multi-party urban EIS; intervenors |
+
+**Circuit duration effects are large and partially statutory.** The 6th Circuit's 47.9-month median (n=15) is an outlier likely driven by docket congestion and coal-ash/TVA-related litigation. The DC Circuit's 12.2-month median (n=62) reflects its concentration of direct-petition FERC/NRC/FAA cases that bypass district court entirely.
+
+**Match quality caveat.** Approximately 40–50% of matched rows have null `date_terminated` (predominantly appellate petitions) and ~30% have match scores below 0.70, indicating false-positive docket assignments. Duration statistics should be treated as directional. A filtered high-confidence subset (match score ≥ 0.75 AND `date_terminated` non-null) yields approximately 280–320 reliable rows.
+
+### 4.7 Document Adequacy and Procedural Gates
 
 **Document registry (Stage 9).** Seven blocking gates are required for legally defensible records — documents whose absence creates HIGH litigation risk:
 
@@ -458,6 +537,12 @@ The findings above converge on five actionable reform priorities, ordered by pro
 
 **FAST-41 data not obtained.** The FAST-41 permitting milestone database (permits.performance.gov) returned 403 errors at the time of analysis. Inter-agency handoff delays and target-vs.-actual FAST-41 milestone comparisons would substantially enrich the timeline analysis. Contact FAST-41@permitting.gov for bulk data access.
 
+**USFWS ECOS consultation data inaccessible via API.** The ECOS site (`ecos.fws.gov`) is a server-rendered HTML interface; no public REST API for consultation record queries is available. Stage 15's cross-reference of 17 ESA-flagged PermitTEC cases against ECOS returned zero matches. The ESA §7 risk multiplier (1.48×) cannot be decomposed into consultation-duration or jeopardy-finding components until TAILS/PCTS access is established or manual review is completed. NMFS-led consultations are absent from USFWS ECOS regardless of API access.
+
+**California CEQAnet bulk export unavailable.** CEQAnet (`ceqanet.opr.ca.gov`) has no programmatic bulk export endpoint. Stage 16's California EIR baseline relies on Holland & Knight CEQA Time Study 2022 (n=312 certified EIRs) rather than raw CEQAnet data. The published benchmark introduces selection bias (certifying agencies self-report; slow or abandoned EIRs may be underrepresented) and covers a slightly earlier time window (projects largely 2010–2020) than the federal CEQ data (2010–2024).
+
+**CourtListener duration data is partially null.** Approximately 40–50% of CourtListener docket rows matched to PermitTEC cases have null `date_terminated` fields, predominantly appellate petitions where filing/termination dates are not consistently populated. Duration statistics in Stage 14 are computed over the non-null subset and should be treated as directional.
+
 **Small sample sizes in some cells.** Some sector × circuit cells have 3–5 cases. Win rates in these cells are reported with the caveat that small-n results are highly sensitive to individual case outcomes. The composite risk score v2 discounts sector × circuit cells with n < 3 by 50%.
 
 ---
@@ -473,9 +558,9 @@ All pipeline code, prompts, and utility scripts are included in this repository.
 - The `anthropic` and `openpyxl` Python packages
 - Approximately 2 GB of disk space for the sample cache
 
-**Estimated API cost:** Running all 13 stages requires approximately 1.5–3 million tokens of API calls depending on cache hit rate. Add your estimated cost here based on current Anthropic pricing.
+**Estimated API cost:** Running all 16 stages requires approximately 1.5–3 million tokens of API calls depending on cache hit rate. Add your estimated cost here based on current Anthropic pricing.
 
-**Estimated wall time:** 2–4 hours for a full pipeline run with API latency.
+**Estimated wall time:** 2–5 hours for a full pipeline run with API latency. Stage 14 (streaming 5 GB bz2) adds approximately 20–30 minutes depending on disk I/O.
 
 ### 7.2 Data Setup
 
@@ -574,7 +659,7 @@ SAMPLE_TARGETS = [
 .venv/bin/python pipeline.py --resample
 ```
 
-**Stages 6–13:**
+**Stages 6–16:**
 
 ```bash
 # Run all extended stages
@@ -582,7 +667,14 @@ SAMPLE_TARGETS = [
 
 # Run a single extended stage (e.g., Stage 12 only)
 .venv/bin/python pipeline_extended.py --stage 12
+
+# Run a new stage (14, 15, or 16)
+.venv/bin/python pipeline_extended.py --stage 14
+.venv/bin/python pipeline_extended.py --stage 15
+.venv/bin/python pipeline_extended.py --stage 16
 ```
+
+**Additional data requirement for Stage 14:** Place the CourtListener bulk docket file at `../court-case-data/dockets-2026-03-31.csv.bz2` (approximately 5 GB). Download from `courtlistener.com/api/bulk-data/`. Stage 14 will skip and log a warning if this file is absent.
 
 ### 7.6 Outputs
 
@@ -603,6 +695,9 @@ All stage outputs are written to `outputs/`:
 | `11_geographic_risk_map.json` | 11 | State win rates; regional risk zones |
 | `12_ceq_timeline_cross.json` | 12 | Agency tier table; bottleneck analysis; year trend |
 | `13_scoping_circuit_risk.json` | 13 | Scoping cap model; sector×circuit matrix; score v2 |
+| `14_litigation_duration.json` | 14 | Per-agency/circuit median litigation duration; outcome-duration comparison; composite risk score v3 |
+| `15_esa_consultation_analysis.json` | 15 | ESA §7 ECOS cross-reference attempt; zero-match findings; 1.48× multiplier retained |
+| `16_federal_state_baseline.json` | 16 | Federal friction multiplier by sector; 1.45× weighted premium; policy implications |
 | `pipeline_insights.md` | All | Consolidated findings reference (358 lines) |
 
 ### 7.7 Configuration
@@ -691,6 +786,30 @@ Formula:
                      × IF(Sector_Circuit_Case_Count ≥ 3, 1.0, 0.5))
 ```
 
+**Version 3 (Stage 14 output: `14_litigation_duration.json`)**
+
+```
+Additional input variable:
+  Litigation_Duration_Cost__c    — normalized median litigation duration for (Agency × Sector) cell,
+                                   scaled to [0,1] via min-max normalization against observed range
+                                   [BOEM=6.5 mo (min), FTA=33.4 mo (max)]
+                                   Derivation: (median_months_for_agency_sector − 6.5) / (33.4 − 6.5)
+                                   Fallback: agency-only median when sector cell n < 5;
+                                             global median (15.4 mo) when agency n < 4
+
+Formula (weights sum to 1.000):
+  score_v3 = (0.2975 × Agency_Loss_Rate__c)
+           + (0.2125 × Circuit_Loss_Rate__c)
+           + (0.1700 × Plaintiff_Org_Strength__c)
+           + (0.0850 × Sector_Volatility__c)
+           + (0.0850 × Procedural_Posture_Risk__c)
+           + (0.1500 × Litigation_Duration_Cost__c)
+
+Design note: Duration has zero correlation with outcome (15.1 mo agency-won vs. 16.3 mo
+  challenger-won). It is included as a cost proxy, not a win-probability signal. The v2
+  component weights are uniformly scaled by 0.85 to accommodate the 0.15 duration term.
+```
+
 ### Appendix D: Full Agency Timeline Table (All 36 Agencies)
 
 | Agency | n (EIS) | NOI→DEIS (median yrs) | DEIS→FEIS (median yrs) | NOI→ROD (median yrs) | Bottleneck | Litigation Win % |
@@ -741,6 +860,9 @@ Formula:
 | DOJ ENRD annual caseload | Which statutes drive most NEPA litigation government-wide | Annual PDF reports; manual extraction |
 | RegInfo.gov OIRA data | Upstream bottleneck: OMB approval delays for permit application forms | Structured XML at reginfo.gov |
 | GAO report appendices | Workforce/staffing deficits (BIA, OSMRE understaffing) | PDF only; manual extraction |
+| USFWS TAILS / NMFS PCTS | ESA §7 consultation duration and jeopardy finding rates (Stage 15 gap) | Internal agency systems; requires data-sharing agreement or FOIA |
+| CEQAnet EIR raw records | California EIR timing at project level (currently using published benchmarks) | ceqanet.opr.ca.gov — no bulk API; contact California OPR for data export |
+| CourtListener RECAP docket entries | Preliminary injunction rate by agency and circuit (Stage 14 gap) | CourtListener RECAP API; requires per-case docket-entry pull on ~300 high-confidence matches |
 
 ---
 
@@ -757,3 +879,7 @@ Fiscal Responsibility Act of 2023, Pub. L. No. 118-5, §321, 137 Stat. 10 (2023)
 National Environmental Policy Act of 1969, 42 U.S.C. §§ 4321–4370m (2023 amendments).
 
 Council on Environmental Quality. (2023). *National Environmental Policy Act Implementing Regulations Revisions Phase 2*, 88 Fed. Reg. 49924 (July 31, 2023).
+
+Free Law Project. (2026). *CourtListener Bulk Data: Federal Docket Records 2026-03-31* [Dataset]. courtlistener.com/api/bulk-data/. CC0-1.0.
+
+Holland & Knight LLP. (2022). *CEQA in Practice: The Time and Cost of Environmental Review.* Holland & Knight Environmental Practice Group.

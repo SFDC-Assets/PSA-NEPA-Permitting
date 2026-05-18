@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_litigation_duration_cost__c</fullName>
+    <description>Normalized litigation duration cost component for this project, populated by NEPA_Litigation_Risk_Scorer from NEPA_Agency_Duration_Cost__mdt. Range: 0.00 (BOEM minimum, 6.5 months) to 1.00 (FTA maximum, 33.4 months). This is a COST proxy, not a win-probability signal — median duration is statistically identical for agency wins and challenger wins. Weighted at 15% in the v3 composite score formula. Stored separately to enable CRM Analytics dashboards that filter by cost exposure independently of win-probability.</description>
+    <externalId>false</externalId>
+    <label>Litigation Duration Cost</label>
+    <precision>4</precision>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

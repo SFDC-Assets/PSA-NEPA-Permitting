@@ -30,4 +30,12 @@
         <field>Active__c</field>
         <value xsi:type="xsd:boolean">true</value>
     </values>
+    <values>
+        <field>Federal_Friction_Multiplier__c</field>
+        <value xsi:type="xsd:decimal">1.17</value>
+    </values>
+    <values>
+        <field>Friction_Drivers__c</field>
+        <value xsi:type="xsd:string">CESA mirrors ESA; reduced friction vs. other sectors (California EIR comparable)</value>
+    </values>
 </CustomMetadata>

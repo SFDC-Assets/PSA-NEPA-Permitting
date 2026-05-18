@@ -1,13 +1,15 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "standard": "CEQ NEPA and Permitting Data and Technology Standard v1.2 (August 18, 2025)",
   "mfr": "MFR 4 — Decision-logic export for litigation risk scoring weights",
-  "source": "NEPA_Agency_Risk_Rate__mdt, NEPA_Circuit_Risk_Weight__mdt, NEPA_Statute_Risk_Weight__mdt, NEPA_Challenge_Prediction_Rule__mdt — calibrated from PermitTEC v0.1 corpus (761 NEPA litigation cases, PNNL 2025)",
-  "generated": "2026-05-15",
-  "description": "Additive risk weights used by the NEPA_Litigation_Risk_Scorer Flow + BRE Expression Set to compute a per-project litigation risk score (0–100+). Weights are summed across agency, circuit, adjacent statutes, review type, and active challenge prediction rules. Score drives risk tier (Low/Moderate/High/Very High) and triggers the NEPA_Defensibility_Gap_Checker.",
+  "source": "NEPA_Agency_Risk_Rate__mdt, NEPA_Circuit_Risk_Weight__mdt, NEPA_Statute_Risk_Weight__mdt, NEPA_Challenge_Prediction_Rule__mdt — calibrated from PermitTEC v0.1 corpus (761 NEPA litigation cases, PNNL 2025) + CourtListener bulk dockets (71M rows, Free Law Project, Stage 14 pipeline)",
+  "generated": "2026-05-17",
+  "description": "Additive risk weights used by the NEPA_Litigation_Risk_Scorer Flow + BRE Expression Set to compute a per-project litigation risk score (0–100+). Weights are summed across agency, circuit, adjacent statutes, review type, and active challenge prediction rules. Score drives risk tier (Low/Moderate/High/Very High) and triggers the NEPA_Defensibility_Gap_Checker. Version 1.1 adds the v3 composite formula and per-agency litigation duration table from Stage 14 (CourtListener analysis).",
   "scoring_model": {
-    "algorithm": "Additive weighted sum",
-    "formula": "risk_score = agency_risk + circuit_risk + sum(statute_risks) + sum(challenge_prediction_deltas) + confidence_modifier",
+    "algorithm": "Additive weighted sum (v3 — Stage 14)",
+    "formula_v1": "risk_score = agency_risk + circuit_risk + sum(statute_risks) + sum(challenge_prediction_deltas) + confidence_modifier",
+    "formula_v3": "Composite_Litigation_Risk_v3 = (0.2975 * Agency_Loss_Rate) + (0.2125 * Circuit_Loss_Rate) + (0.1700 * Plaintiff_Org_Strength) + (0.0850 * Sector_Volatility) + (0.0850 * Procedural_Posture_Risk) + (0.1500 * Litigation_Duration_Cost)",
+    "v3_notes": "Duration (Litigation_Duration_Cost) is a COST proxy normalized to [0,1] from observed per-agency median litigation months [BOEM=6.5 min, FTA=33.4 max]. It is not a win-probability signal — median duration is statistically identical for agency wins (15.1 mo) and challenger wins (16.3 mo). V2 component weights scaled uniformly by 0.85 to sum to 1.000.",
     "tier_thresholds": {
       "Low": { "min": 0, "max": 39 },
       "Moderate": { "min": 40, "max": 59 },
@@ -200,6 +202,30 @@
       { "review_type": "CE",  "base_modifier": 0,  "note": "CE pathway starts with no base modifier; agency and circuit weights determine risk" },
       { "review_type": "EA",  "base_modifier": 4,  "note": "EA pathway adds 4 points; FONSI challenge is the primary vector" },
       { "review_type": "EIS", "base_modifier": 8,  "note": "EIS pathway adds 8 points; inadequacy challenge rate is highest of all review types" }
+    ]
+  },
+  "litigation_duration_by_agency": {
+    "description": "Per-agency median litigation duration in months from CourtListener bulk docket analysis (Stage 14). Used to populate Litigation_Duration_Cost__c. Source: 71M-row docket file, 676/684 PermitTEC cases matched. Duration is INDEPENDENT of outcome (agency-won median=15.1 mo, challenger-won=16.3 mo) — treat as cost proxy only.",
+    "source": "CourtListener bulk data, Free Law Project, 2026-03-31; Stage 14 pipeline output 14_litigation_duration.json",
+    "normalization_range_months": { "min": 6.5, "max": 33.4 },
+    "formula": "Litigation_Duration_Cost = (median_months_for_agency_sector - 6.5) / (33.4 - 6.5)",
+    "fallback": "agency-only median when sector-cell n<5; global median 15.4 when agency n<4",
+    "per_agency": [
+      { "agency": "BOEM", "n": 4,  "median_months": 6.5,  "normalized": 0.00, "pathway_note": "OCSLA direct-circuit review — statutory short window" },
+      { "agency": "NRC",  "n": 2,  "median_months": 7.3,  "normalized": 0.03, "pathway_note": "Hobbs Act direct-circuit review; low-n" },
+      { "agency": "NPS",  "n": 9,  "median_months": 8.9,  "normalized": 0.09, "pathway_note": "District court APA; narrow project scope" },
+      { "agency": "USFWS","n": 23, "median_months": 10.2, "normalized": 0.14, "pathway_note": "District court; narrow record questions" },
+      { "agency": "FERC", "n": 2,  "median_months": 11.2, "normalized": 0.17, "pathway_note": "NGA direct-circuit review; low-n" },
+      { "agency": "NOAA", "n": 10, "median_months": 12.3, "normalized": 0.21, "pathway_note": "MSA-expedited review timelines" },
+      { "agency": "DOE",  "n": 6,  "median_months": 12.6, "normalized": 0.23, "pathway_note": "Often resolved on standing/ripeness grounds" },
+      { "agency": "BIA",  "n": 4,  "median_months": 12.9, "normalized": 0.24, "pathway_note": "Trust-acquisition; deferential standard; low-n" },
+      { "agency": "USACE","n": 26, "median_months": 15.1, "normalized": 0.32, "pathway_note": "Section 404 scope issues; summary judgment track" },
+      { "agency": "BLM",  "n": 31, "median_months": 17.5, "normalized": 0.41, "pathway_note": "RMP/leasing challenges; APA summary judgment" },
+      { "agency": "USFS", "n": 72, "median_months": 18.4, "normalized": 0.44, "pathway_note": "Standardized APA district court track; largest sample" },
+      { "agency": "BR",   "n": 10, "median_months": 21.6, "normalized": 0.56, "pathway_note": "Water cases; intervenors extend briefing schedules" },
+      { "agency": "FHWA", "n": 13, "median_months": 26.1, "normalized": 0.73, "pathway_note": "Multi-jurisdictional; Section 4(f); state co-defendants" },
+      { "agency": "FAA",  "n": 4,  "median_months": 26.7, "normalized": 0.75, "pathway_note": "Airport/airspace NEPA; complex noise/air record; low-n" },
+      { "agency": "FTA",  "n": 4,  "median_months": 33.4, "normalized": 1.00, "pathway_note": "Multi-party urban EIS; extensive intervenors; low-n" }
     ]
   }
 }

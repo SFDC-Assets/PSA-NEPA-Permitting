@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Bureau of Indian Affairs</label>
+    <protected>false</protected>
+    <values>
+        <field>Agency_Key__c</field>
+        <value xsi:type="xsd:string">BIA</value>
+    </values>
+    <values>
+        <field>Median_Duration_Months__c</field>
+        <value xsi:type="xsd:decimal">12.9</value>
+    </values>
+    <values>
+        <field>Normalized_Duration_Cost__c</field>
+        <value xsi:type="xsd:decimal">0.24</value>
+    </values>
+    <values>
+        <field>Pathway_Note__c</field>
+        <value xsi:type="xsd:string">Trust-acquisition; deferential standard; low-n</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

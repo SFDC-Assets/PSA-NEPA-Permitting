@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Submit Cooperating Agency Milestones</label>
+    <protected>false</protected>
+    <values>
+        <field>Milestone_Label__c</field>
+        <value xsi:type="xsd:string">Submit Cooperating Agency Milestones</value>
+    </values>
+    <values>
+        <field>Sector_Key__c</field>
+        <value xsi:type="xsd:string">ALL</value>
+    </values>
+    <values>
+        <field>Agency_Role__c</field>
+        <value xsi:type="xsd:string">Agency_Consultation</value>
+    </values>
+    <values>
+        <field>Typical_Day_Offset__c</field>
+        <value xsi:type="xsd:decimal">30</value>
+    </values>
+    <values>
+        <field>Responsible_Party__c</field>
+        <value xsi:type="xsd:string">Each cooperating agency</value>
+    </values>
+    <values>
+        <field>Legal_Citation__c</field>
+        <value xsi:type="xsd:string">42 U.S.C. 4370m-2(c)(1)(C)</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

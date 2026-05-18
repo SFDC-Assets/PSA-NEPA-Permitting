@@ -86,4 +86,23 @@
         <label>Active</label>
         <type>Checkbox</type>
     </fields>
+    <fields>
+        <fullName>Federal_Friction_Multiplier__c</fullName>
+        <description>Stage 16 federal-vs-state friction multiplier for this sector. Ratio of federal EIS median duration to California EIR median. 1.45x overall; higher for sectors requiring multi-agency coordination (Military 1.65x, Water/Coastal 1.47x). Used in the Challenge Prediction panel tooltip to explain sector-specific delay drivers.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Federal Friction Multiplier</label>
+        <precision>4</precision>
+        <scale>2</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Friction_Drivers__c</fullName>
+        <description>Plain-language description of the federal-only requirements that produce the friction multiplier for this sector. Displayed as a tooltip in the Challenge Prediction panel. Example: Section 4(f); MPO conformity; Title VI requirements absent at state level.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Friction Drivers</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
 </CustomObject>

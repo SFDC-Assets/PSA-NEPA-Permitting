@@ -1,0 +1,130 @@
+<template>
+    <lightning-card title="Permit Dependencies" icon-name="standard:partner_marketing_budget">
+
+        <div slot="actions">
+            <lightning-button
+                label="Refresh"
+                icon-name="utility:refresh"
+                onclick={handleRefresh}
+                disabled={isLoading}>
+            </lightning-button>
+        </div>
+
+        <div class="slds-var-m-around_medium">
+
+            <!-- Loading spinner -->
+            <template lwc:if={isLoading}>
+                <div class="slds-align_absolute-center slds-var-p-around_large">
+                    <lightning-spinner alternative-text="Loading permit statuses..." size="medium"></lightning-spinner>
+                </div>
+            </template>
+
+            <!-- Error state -->
+            <template lwc:elseif={hasError}>
+                <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                    <span class="slds-icon_container slds-icon-utility-error">
+                        <lightning-icon icon-name="utility:error" alternative-text="error" size="x-small" variant="inverse"></lightning-icon>
+                    </span>
+                    <p>{errorMessage}</p>
+                </div>
+            </template>
+
+            <!-- Empty state -->
+            <template lwc:elseif={isEmpty}>
+                <div class="slds-illustration slds-illustration_small slds-var-p-around_large">
+                    <div class="slds-text-align_center slds-text-color_weak">
+                        <lightning-icon icon-name="utility:checkin" size="large" class="slds-var-m-bottom_small"></lightning-icon>
+                        <h3 class="slds-text-heading_small">No dependent permits recorded</h3>
+                        <p class="slds-text-body_regular">Add permits using the Required Permits related list.</p>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Permit rows -->
+            <template lwc:else>
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_fixed-layout" role="grid">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col" style="width:18%"><div class="slds-truncate" title="Permit Type">Permit Type</div></th>
+                            <th scope="col" style="width:9%"><div class="slds-truncate" title="Agency">Agency</div></th>
+                            <th scope="col" style="width:14%"><div class="slds-truncate" title="Live Status">Live Status</div></th>
+                            <th scope="col" style="width:11%"><div class="slds-truncate" title="Stage">Stage</div></th>
+                            <th scope="col" style="width:12%"><div class="slds-truncate" title="Expected Completion">Expected</div></th>
+                            <th scope="col" style="width:10%"><div class="slds-truncate" title="Critical Path">Critical Path</div></th>
+                            <th scope="col" style="width:14%"><div class="slds-truncate" title="Last Synced">Last Synced</div></th>
+                            <th scope="col" style="width:12%"><div class="slds-truncate" title="Agency Link">Agency Link</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={permits} for:item="permit">
+                            <tr key={permit.permitId} class={permit.rowClass}>
+                                <td data-label="Permit Type">
+                                    <div class="slds-truncate" title={permit.permitType}>{permit.permitType}</div>
+                                    <template lwc:if={permit.regulatoryCitation}>
+                                        <div class="slds-text-body_small slds-text-color_weak">{permit.regulatoryCitation}</div>
+                                    </template>
+                                </td>
+                                <td data-label="Agency">
+                                    <div class="slds-truncate" title={permit.leadAgency}>{permit.leadAgency}</div>
+                                </td>
+                                <td data-label="Live Status">
+                                    <template lwc:if={permit.calloutSuccess}>
+                                        <lightning-badge label={permit.liveStatus} class={permit.statusClass}></lightning-badge>
+                                    </template>
+                                    <template lwc:else>
+                                        <span class="slds-badge slds-badge_lightest" title={permit.calloutError}>{permit.localStatus}</span>
+                                        <lightning-icon
+                                            icon-name="utility:warning"
+                                            size="xx-small"
+                                            variant="warning"
+                                            alternative-text="Cached status"
+                                            title={permit.calloutError}
+                                            class="slds-var-m-left_xx-small">
+                                        </lightning-icon>
+                                    </template>
+                                </td>
+                                <td data-label="Stage">
+                                    <div class="slds-truncate" title={permit.liveStage}>{permit.liveStage}</div>
+                                </td>
+                                <td data-label="Expected">
+                                    <template lwc:if={permit.displayExpected}>
+                                        <lightning-formatted-date-time value={permit.displayExpected} year="numeric" month="short" day="numeric"></lightning-formatted-date-time>
+                                    </template>
+                                </td>
+                                <td data-label="Critical Path" class="slds-text-align_center">
+                                    <template lwc:if={permit.isCriticalPath}>
+                                        <lightning-icon icon-name="utility:warning" size="x-small" variant="warning" alternative-text="Critical path" title="This permit is on the critical path"></lightning-icon>
+                                    </template>
+                                </td>
+                                <td data-label="Last Synced">
+                                    <template lwc:if={permit.lastSynced}>
+                                        <lightning-formatted-date-time value={permit.lastSynced} year="numeric" month="short" day="numeric" hour="2-digit" minute="2-digit"></lightning-formatted-date-time>
+                                    </template>
+                                    <template lwc:else>
+                                        <span class="slds-text-color_weak">—</span>
+                                    </template>
+                                </td>
+                                <td data-label="Agency Link">
+                                    <template lwc:if={permit.agencySystemUrl}>
+                                        <a href={permit.agencySystemUrl} target="_blank" rel="noopener noreferrer">View in agency system</a>
+                                    </template>
+                                    <template lwc:else>
+                                        <span class="slds-text-color_weak">—</span>
+                                    </template>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+
+                <template lwc:if={hasCachedWarning}>
+                    <div class="slds-var-m-top_small slds-text-body_small slds-text-color_weak">
+                        <lightning-icon icon-name="utility:info" size="xx-small" alternative-text="info" class="slds-var-m-right_xx-small"></lightning-icon>
+                        Some permit statuses could not be retrieved from agency APIs — cached status shown. Verify agency endpoint configuration in NEPA Agency Endpoint custom metadata.
+                    </div>
+                </template>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>

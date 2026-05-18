@@ -1,7 +1,7 @@
 # PSA-NEPA Permitting Accelerator — AI Use Policy
 
-**Version:** 1.1  
-**Date:** 2026-05-12  
+**Version:** 1.2  
+**Date:** 2026-05-17  
 **Status:** Active  
 **Scope:** All AI-assisted features in the PSA-NEPA-Permitting-Data-Model Salesforce package
 
@@ -43,7 +43,8 @@ Compliance baseline: Salesforce Acceptable Use Policy for Einstein and Generativ
 | AI type | Weighted scoring model (custom metadata-driven) |
 | Output fields | `nepa_risk_score__c`, `nepa_risk_tier__c`, `nepa_risk_score_factors__c` |
 | Disclosure field | `nepa_risk_score_is_ai__c` (always true — formula field) |
-| Training source | PermitTEC v0.1 (PNNL, 2025): 761 federal NEPA litigation cases, 1970–2025 |
+| Training source | PermitTEC v0.1 (PNNL, 2025): 761 federal NEPA litigation cases, 1970–2025; CourtListener bulk dockets (Free Law Project, 71M rows): per-agency median litigation duration (Stage 14) |
+| Formula version | v3 (Stage 14, May 2026): adds `Litigation_Duration_Cost__c` at 0.15 weight as cost proxy — see `docs/decision-models/litigation-risk-weights.json` schema_version 1.1 |
 
 **Human confirmation requirement:** The risk score is an analytical tool to direct legal review attention — it is not a legal determination and does not automatically block or approve any action. Very High tier scores (75–100) trigger a Task assigned to the NEPA Solicitor/Legal team for a "Legal Defensibility Deep-Dive." That review is the human gate; the score is the signal.
 
@@ -57,7 +58,7 @@ Compliance baseline: Salesforce Acceptable Use Policy for Einstein and Generativ
 | No outcome prediction | The score reflects litigation *exposure* (case filing likelihood and ground strength), not outcome prediction. Agencies have won Very High-tier cases; scores do not prejudge results. |
 
 The `nepa_risk_score_factors__c` field always contains the disclaimer:  
-> `[AI-GENERATED — PermitTEC v0.1, PNNL 2025, 761 cases; circuit weights based on small sample, treat as directional]`
+> `[AI-GENERATED — PermitTEC v0.1, PNNL 2025, 761 cases + CourtListener bulk dockets 676 matched cases; circuit weights based on small sample, treat as directional; duration term is cost proxy only, not win-probability signal]`
 
 ### 2.3 Comment Triage (`NEPA_Comment_Triage` Agentforce Agent)
 
@@ -87,6 +88,8 @@ The `nepa_risk_score_factors__c` field always contains the disclaimer:
 | NEPATEC | Federal NEPA process registry | v2.0 | 61,881 project records | Multi-agency, multi-decade |
 | CE Decision Tree | Analysis of NEPATEC BLM/DOE/USDA CE records | 2026-04 | 1,489 classified records | BLM, DOE, USDA Forest Service |
 | Permit Matrix | Analysis of NEPATEC sector/agency routing patterns | 2026-04 | 30+ sector-agency combinations | Multi-agency |
+| CourtListener Bulk Dockets | Free Law Project | 2026-03-31 | 71,243,855 docket rows; 676 PermitTEC-matched | Federal courts, all circuits; Stage 14 litigation duration analysis |
+| Holland & Knight CEQA Time Study | Holland & Knight LLP | 2022 | 312 certified EIRs | California EIR timing benchmarks by sector; Stage 16 federal friction analysis |
 
 ---
 
@@ -107,14 +110,15 @@ The following uses of AI features in this package are prohibited under Salesforc
 When a new PermitTEC corpus release becomes available:
 
 1. Download updated corpus from PNNL data repository
-2. Re-run feature engineering analysis against the new case set
+2. Re-run feature engineering analysis against the new case set (pipeline stages 1–16)
 3. Update custom metadata records in the following types:
    - `NEPA_Agency_Risk_Rate__mdt` — update `Risk_Points__c` per agency
    - `NEPA_Circuit_Risk_Weight__mdt` — update `Risk_Points__c` per circuit; update `Low_Data_Confidence__c` flag if sample size < 20
    - `NEPA_Statute_Risk_Weight__mdt` — update if new statutory challenge patterns emerge
-4. Document the update in this policy (version number, date, corpus size change)
-5. Deploy via `sf project deploy start` following the standard deployment sequence
-6. Notify all NEPA Coordinator users of the weight update and updated statistical limitations
+4. Refresh CourtListener duration table annually: download the latest `dockets-YYYY-MM-DD.csv.bz2` from `courtlistener.com/api/bulk-data/`, re-run Stage 14, and update `litigation_duration_by_agency` in `docs/decision-models/litigation-risk-weights.json`. Update `NEPA_Agency_Duration_Cost__mdt` (or equivalent CMT) with revised `Median_Duration_Months__c` values.
+5. Document the update in this policy (version number, date, corpus size change)
+6. Deploy via `sf project deploy start` following the standard deployment sequence
+7. Notify all NEPA Coordinator users of the weight update and updated statistical limitations
 
 ---
 
@@ -152,5 +156,7 @@ M-24-10 remains applicable to the extent it imposes requirements not superseded 
 - OMB M-24-10, Advancing Governance, Innovation, and Risk Management for Agency Use of Artificial Intelligence (superseded by M-25-21 for executive agency use)
 - 40 CFR Part 1500 (NEPA Regulations)
 - PermitTEC v0.1 dataset — PNNL, 2025
+- CourtListener bulk docket data — Free Law Project, 2026-03-31
+- Holland & Knight CEQA Time Study 2022 — Holland & Knight LLP Environmental Practice Group
 - CEQ NEPA and Permitting Data and Technology Standard v1.2 (May 30 / August 18, 2025)
 - CEQ Permitting Technology Action Plan (2025)

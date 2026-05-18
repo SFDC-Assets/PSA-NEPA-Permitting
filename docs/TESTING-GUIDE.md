@@ -4,7 +4,7 @@ End-to-end test scenarios for the PSA-NEPA accelerator's live-integration and UI
 
 **Prerequisites:** Solution deployed, permission set assigned, BRE Decision Matrix rows imported, 33 core flows active (see QUICKSTART.md Step 4c for the activation list; 4 flows are deferred and not required for testing), sample data loaded. See QUICKSTART.md Steps 3–5 if any of these are incomplete.
 
-**Test suite size:** 37 test classes, 509+ test methods across all feature areas. Run `sf apex run test --test-level RunLocalTests` to execute the full automated suite (see [Section 20](#20-apex-test-suite)).
+**Test suite size:** 37 test classes, 514+ test methods across all feature areas. Run `sf apex run test --test-level RunLocalTests` to execute the full automated suite (see [Section 20](#20-apex-test-suite)).
 
 ---
 
@@ -303,7 +303,7 @@ sf apex run test \
 ```
 
 **Expected:**
-- **All tests pass**, 0 failures. The current baseline is 509+ test methods; the exact count increases as tests are added. When using `--result-format json`, a passing run shows `"summary": { "outcome": "Passed", "failing": 0 }` and the `summary.passing` field shows the current count.
+- **All tests pass**, 0 failures. The current baseline is 514+ test methods; the exact count increases as tests are added. When using `--result-format json`, a passing run shows `"summary": { "outcome": "Passed", "failing": 0 }` and the `summary.passing` field shows the current count.
 - Overall Apex coverage ≥ 75%
 - All five key test classes pass:
   - `NepaApiComplianceTest` (55 tests)
@@ -473,6 +473,33 @@ sf apex run test \
 
 **Expected:** All 17 tests pass, including VR-001 (supplementation gate), VR-004 (ESA consultation gate), error message content assertions (`1502.9` and `ESA consultation`), stage transition timestamp stamping, and target completion date auto-population.
 
+### 20k. Targeted Test — Cross-Agency Permit Service
+
+```bash
+sf apex run test \
+  --class-names NepaAgencyPermitServiceTest \
+  --target-org $ALIAS \
+  --result-format human \
+  --wait 10
+```
+
+**Expected:** All 5 tests pass:
+- `getPermitStatuses_successCallout` — live callout success path: `calloutSuccess=true`, `liveStatus` populated from mock response
+- `getPermitStatuses_calloutFailure` — HTTP exception degradation: `calloutSuccess=false`, `localStatus` preserved
+- `getPermitStatuses_cmtNotFound` — missing CMT endpoint key: `calloutSuccess=false`, error message contains endpoint key name
+- `getPermitStatuses_http404Response` — HTTP 404 response: `calloutSuccess=false`, `calloutError` populated
+- `getPermitStatuses_emptyPermitList` — no permit records: returns empty list, no exception
+
+**Manual smoke test (after deploying and updating Named Credential URLs):**
+
+1. Create a `nepa_required_permit__c` record on any IndividualApplication with:
+   - `nepa_agency_endpoint_key__c` = `USACE`
+   - `nepa_external_federal_id__c` = any UUID
+   - `nepa_permit_status__c` = `Under Review`
+2. Open the IndividualApplication record page → **Permit Dependencies** tab
+3. Confirm the component renders the permit row with spinner → status badge
+4. Confirm "Live sync unavailable — showing cached data" appears if the USACE endpoint is not yet configured (expected)
+
 ---
 
 ## 21. BRE Configuration Integrity
@@ -522,7 +549,7 @@ Use this matrix to track test execution. Mark each test ✅ Pass, ❌ Fail, or �
 | 12d | AI AUP | AI classification read-only; human field editable | | |
 | 16a | GIS Proximity | Coordinates trigger IP; layers written back | | |
 | 17a | CEQ Export | REST API returns 9-entity payload | | |
-| 20a | Test Suite | All tests pass (509+ methods, 0 failures), ≥ 75% coverage | | |
+| 20a | Test Suite | All tests pass (514+ methods, 0 failures), ≥ 75% coverage | | |
 | 20b | Test Suite | NepaBREConfigTest (46 tests) passes | | |
 | 20c | Test Suite | NepaApiComplianceTest (55 tests) passes | | |
 | 20d | Test Suite | NepaEntity789Test (25 tests) passes | | |
@@ -532,6 +559,8 @@ Use this matrix to track test execution. Mark each test ✅ Pass, ❌ Fail, or �
 | 20h | Test Suite | NepaValidationRuleTest (27 tests) passes | | |
 | 20i | Test Suite | NepaPermissionSetFlsTest (9 tests) passes | | |
 | 20j | Test Suite | NepaStageGateTest (17 tests) passes | | |
+| 20k | Test Suite | NepaAgencyPermitServiceTest (5 tests) passes | | |
+| 20k | Cross-Agency | Permit Dependencies LWC renders on IA record page | | |
 | 21a | BRE Config | All DM row counts match expected | | |
 | 21b | BRE Config | 3 Expression Sets Active | | |
 

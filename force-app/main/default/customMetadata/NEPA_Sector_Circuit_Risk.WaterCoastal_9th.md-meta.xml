@@ -30,4 +30,12 @@
         <field>Active__c</field>
         <value xsi:type="xsd:boolean">true</value>
     </values>
+    <values>
+        <field>Federal_Friction_Multiplier__c</field>
+        <value xsi:type="xsd:decimal">1.47</value>
+    </values>
+    <values>
+        <field>Friction_Drivers__c</field>
+        <value xsi:type="xsd:string">CZMA federal consistency; EFH Magnuson-Stevens consultation; Section 404 dual-track</value>
+    </values>
 </CustomMetadata>

@@ -22,6 +22,12 @@ Terms, acronyms, and concepts used throughout the NEPA and Permitting Data Model
 
 **EJ / Environmental Justice** — Executive Order 12898 and subsequent policy require agencies to identify and address disproportionately high adverse effects on minority and low-income communities.
 
+**CEQA (California Environmental Quality Act)** — California's state analog to NEPA, requiring environmental review of projects with potentially significant effects. Administered by the Governor's Office of Planning and Research (OPR). Used in Stage 16 as the state-level process baseline for computing the federal friction multiplier (1.45× overall).
+
+**CEQAnet** — California's online clearinghouse for CEQA documents, operated by OPR (`ceqanet.opr.ca.gov`). Does not have a bulk export API; project-level timing data is obtained from published studies such as the Holland & Knight CEQA Time Study 2022.
+
+**CourtListener** — A free public federal court data service operated by the Free Law Project. Provides bulk downloads of federal docket records (71 million rows as of 2026-03-31). Used in Stage 14 for litigation duration profiling by agency and circuit.
+
 **FAST-41** — Fixing America's Surface Transportation Act, Title 41. Provides a coordinated environmental review process with binding schedules and a federal permitting dashboard (PERMITTING.GOV) for major infrastructure projects.
 
 **FERC** — Federal Energy Regulatory Commission. Regulates interstate transmission of electricity, natural gas, and oil. High litigation exposure in NEPA cases involving energy projects.
@@ -138,6 +144,10 @@ Terms, acronyms, and concepts used throughout the NEPA and Permitting Data Model
 
 **NEPA Permitting Acceleration Plan** — Internal roadmap document ranking 10 platform features by time-to-permit impact, grounded in NEPATEC2.0 corpus analysis. See [`docs/NEPA-Permitting-Acceleration-Plan.md`](NEPA-Permitting-Acceleration-Plan.md).
 
-**Risk Score** — A 0–100 litigation risk score computed on `IndividualApplication` (`nepa_litigation_risk_score__c`) by the `NEPA_Litigation_Risk_Scorer` flow and BRE Expression Set. Inputs: review type, agency, judicial circuit, extraordinary circumstances, prior litigation. Sourced from PermitTEC v0.1 corpus.
+**Federal Friction Multiplier** — The ratio of federal NEPA EIS median duration to California CEQA EIR median duration for the same project sector. Computed in Stage 16 using Holland & Knight CEQA Time Study 2022 benchmarks. Overall weighted value: 1.45×; range: 1.09× (Energy) to 1.65× (Military). Indicates that federal friction is concentrated in multi-agency coordination overhead, not analytical rigor.
+
+**Litigation Duration Cost** — A normalized [0,1] value representing per-agency median litigation duration in months, derived from CourtListener bulk dockets (Stage 14). Used as the `Litigation_Duration_Cost__c` input to the v3 composite risk formula. Duration is a cost proxy only — it is statistically independent of case outcome (agency-won median: 15.1 months; challenger-won: 16.3 months).
+
+**Risk Score** — A 0–100 litigation risk score computed on `IndividualApplication` (`nepa_litigation_risk_score__c`) by the `NEPA_Litigation_Risk_Scorer` flow and BRE Expression Set. Inputs (v3): agency loss rate, circuit loss rate, plaintiff organization strength, sector volatility, procedural posture risk, and litigation duration cost. Sourced from PermitTEC v0.1 corpus and CourtListener bulk dockets.
 
 **Risk Tier** — Categorical label derived from the Risk Score: `Low` (0–29), `Medium` (30–49), `High` (50–74), `Critical` (75–100). Stored in `nepa_risk_tier__c`.

@@ -172,6 +172,91 @@
             <targetReference>Get_RelatedProject</targetReference>
         </connector>
     </assignments>
+    <assignments>
+        <name>Build_DurationCostFallback</name>
+        <label>Use Default Duration When Agency Not Found</label>
+        <locationX>352</locationX>
+        <locationY>323</locationY>
+        <assignmentItems>
+            <assignToReference>var_ResolvedDurationCost</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <numberValue>0.34</numberValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_ResolvedDurationMonths</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <numberValue>15.4</numberValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_ResolvedDurationPathway</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Global median fallback — agency not identified</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_StatuteWeights</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_DurationCostFromCMT</name>
+        <label>Assign Duration Cost from CMT Record</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <assignmentItems>
+            <assignToReference>var_ResolvedDurationCost</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AgencyDurationRecord.Normalized_Duration_Cost__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_ResolvedDurationMonths</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AgencyDurationRecord.Median_Duration_Months__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_ResolvedDurationPathway</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_AgencyDurationRecord.Pathway_Note__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_StatuteWeights</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>Decision_AgencyDurationFound</name>
+        <label>Agency Duration Record Found?</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <defaultConnector>
+            <targetReference>Build_DurationCostFallback</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Not Found — use fallback</defaultConnectorLabel>
+        <rules>
+            <name>Duration_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_AgencyDurationRecord.Agency_Key__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_DurationCostFromCMT</targetReference>
+            </connector>
+            <label>Duration Record Found</label>
+        </rules>
+    </decisions>
     <decisions>
         <name>Decision_AppendPenaltyNote</name>
         <label>Append APA Penalty Note?</label>
@@ -248,7 +333,16 @@
     <formulas>
         <name>formula_ScoreFactorsSummary</name>
         <dataType>String</dataType>
-        <expression>&quot;[AI-GENERATED — PermitTEC v0.1 684 usable cases; Stage 7 calibrated weights; agency loss_rate×0.40×2.5; circuit (multiplier−0.30)×25×1.5; statute (multiplier−1.0)×20] &quot; &amp; &quot;ReviewType+Agency+Circuit scored via BRE DM; Statutes:&quot; &amp; TEXT({!var_StatutePoints}) &amp; &quot;pts&quot;</expression>
+        <expression>&quot;== LITIGATION PROBABILITY SCORE ==&quot; &amp;
+&quot;; [AI-GENERATED — PermitTEC v0.1 684 usable cases; Stage 14 calibrated weights; v3 composite formula]&quot; &amp;
+&quot;; ReviewType+Agency+Circuit scored via BRE DM; Statutes:&quot; &amp; TEXT({!var_StatutePoints}) &amp; &quot;pts&quot; &amp;
+IF(CONTAINS({!Get_RelatedProject.nepa_adjacent_statutes__c}, &quot;ESA&quot;),
+   &quot;; ESA Section 7: +10pts [LOW CONFIDENCE: ECOS API unavailable — flat 1.48x multiplier, cannot decompose consultation-duration vs. jeopardy-finding drivers. Pending TAILS/PCTS linkage.]&quot;,
+   &quot;&quot;) &amp;
+&quot;; == LITIGATION COST EXPOSURE ==&quot; &amp;
+&quot;; Expected litigation duration: ~&quot; &amp; TEXT({!var_ResolvedDurationMonths}) &amp; &quot; months (&quot; &amp; {!var_ResolvedDurationPathway} &amp; &quot;)&quot; &amp;
+&quot;; Duration cost component (15% of score): normalized &quot; &amp; TEXT({!var_ResolvedDurationCost}) &amp;
+&quot;; Duration is independent of outcome — cost proxy only, not a win-probability signal&quot;</expression>
     </formulas>
     <formulas>
         <name>formula_ScoreFactorsWithPenalty</name>
@@ -283,7 +377,7 @@
         <locationY>215</locationY>
         <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Get_StatuteWeights</targetReference>
+            <targetReference>Get_AgencyDuration</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -301,6 +395,39 @@
         <queriedFields>nepa_record_owner_agency__c</queriedFields>
         <queriedFields>nepa_primary_sector__c</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_AgencyDuration</name>
+        <label>Get Agency Litigation Duration (CMT)</label>
+        <locationX>176</locationX>
+        <locationY>215</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_AgencyDurationFound</targetReference>
+        </connector>
+        <filterLogic>1 AND 2</filterLogic>
+        <filters>
+            <field>Agency_Key__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_RelatedProject.nepa_record_owner_agency__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Active__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>NEPA_Agency_Duration_Cost__mdt</object>
+        <outputReference>var_AgencyDurationRecord</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Agency_Key__c</queriedFields>
+        <queriedFields>Median_Duration_Months__c</queriedFields>
+        <queriedFields>Normalized_Duration_Cost__c</queriedFields>
+        <queriedFields>Pathway_Note__c</queriedFields>
     </recordLookups>
     <recordLookups>
         <name>Get_RiskThresholds</name>
@@ -352,6 +479,7 @@
         <queriedFields>Id</queriedFields>
         <queriedFields>Statute_Key__c</queriedFields>
         <queriedFields>Risk_Points__c</queriedFields>
+        <queriedFields>Low_Data_Confidence__c</queriedFields>
     </recordLookups>
     <!-- sfca-disable flow:SameRecordUpdate: AsyncAfterCommit path, before-save not applicable, writes calculated score fields after async scoring completes -->
     <recordUpdates>
@@ -374,6 +502,12 @@
             <field>nepa_expedited_risk_penalty_applied__c</field>
             <value>
                 <elementReference>formula_IsExpedited</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>nepa_litigation_duration_cost__c</field>
+            <value>
+                <elementReference>var_ResolvedDurationCost</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -576,5 +710,42 @@
         <value>
             <numberValue>35</numberValue>
         </value>
+    </variables>
+    <variables>
+        <name>var_AgencyDurationRecord</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>NEPA_Agency_Duration_Cost__mdt</objectType>
+    </variables>
+    <variables>
+        <name>var_ResolvedDurationCost</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>2</scale>
+        <value>
+            <numberValue>0.34</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <name>var_ResolvedDurationMonths</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>1</scale>
+        <value>
+            <numberValue>15.4</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <name>var_ResolvedDurationPathway</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
     </variables>
 </Flow>

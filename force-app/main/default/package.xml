@@ -164,6 +164,8 @@
         <members>nepa_engagement__c.nepa_record_owner_agency__c</members>
         <members>nepa_engagement__c.nepa_retrieved_timestamp__c</members>
         <!-- ApplicationTimeline (Entity 6: Case Events) custom fields -->
+        <members>ApplicationTimeline.nepa_ofd_track__c</members>
+        <members>ApplicationTimeline.nepa_coordinating_agency__c</members>
         <members>ApplicationTimeline.nepa_event_type__c</members>
         <members>ApplicationTimeline.nepa_event_description__c</members>
         <members>ApplicationTimeline.nepa_source__c</members>
@@ -198,6 +200,11 @@
         <members>IndividualApplication.nepa_circuit_court__c</members>
         <!-- Phase 7: Doc Count Threshold field -->
         <members>IndividualApplication.nepa_elevated_doc_complexity__c</members>
+        <!-- IMP-007: Litigation duration cost field -->
+        <members>IndividualApplication.nepa_litigation_duration_cost__c</members>
+        <!-- IMP-008: Sector-specific extraordinary circumstances flags -->
+        <members>IndividualApplication.nepa_extraordinary_circumstance_multi_dod__c</members>
+        <members>IndividualApplication.nepa_extraordinary_circumstance_usace_czma__c</members>
         <!-- Phase 2: Plaintiff / tribal risk flags -->
         <members>IndividualApplication.nepa_plaintiff_risk_flag__c</members>
         <members>IndividualApplication.nepa_tribal_plaintiff_flag__c</members>
@@ -502,6 +509,45 @@
         <members>nepa_gis_data_element__c.nepa_purpose__c</members>
         <members>nepa_gis_data_element__c.nepa_database_reference__c</members>
         <members>nepa_gis_data_element__c.nepa_access_information__c</members>
+        <!-- IMP-001 / IMP-003: New CMT fields -->
+        <members>NEPA_Statute_Risk_Weight__mdt.Low_Data_Confidence__c</members>
+        <members>NEPA_Circuit_Risk_Weight__mdt.Median_Litigation_Months__c</members>
+        <members>NEPA_Sector_Circuit_Risk__mdt.Federal_Friction_Multiplier__c</members>
+        <members>NEPA_Sector_Circuit_Risk__mdt.Friction_Drivers__c</members>
+        <members>NEPA_Agency_Scoping_Baseline__mdt.Median_Litigation_Months__c</members>
+        <members>NEPA_Agency_Scoping_Baseline__mdt.Litigation_Pathway__c</members>
+        <!-- IMP-002: NEPA_Agency_Duration_Cost__mdt fields -->
+        <members>NEPA_Agency_Duration_Cost__mdt.Agency_Key__c</members>
+        <members>NEPA_Agency_Duration_Cost__mdt.Median_Duration_Months__c</members>
+        <members>NEPA_Agency_Duration_Cost__mdt.Normalized_Duration_Cost__c</members>
+        <members>NEPA_Agency_Duration_Cost__mdt.Pathway_Note__c</members>
+        <members>NEPA_Agency_Duration_Cost__mdt.Active__c</members>
+        <!-- IMP-006: NEPA_OFD_Milestone__mdt fields -->
+        <members>NEPA_OFD_Milestone__mdt.Milestone_Label__c</members>
+        <members>NEPA_OFD_Milestone__mdt.Sector_Key__c</members>
+        <members>NEPA_OFD_Milestone__mdt.Agency_Role__c</members>
+        <members>NEPA_OFD_Milestone__mdt.Typical_Day_Offset__c</members>
+        <members>NEPA_OFD_Milestone__mdt.Responsible_Party__c</members>
+        <members>NEPA_OFD_Milestone__mdt.Legal_Citation__c</members>
+        <members>NEPA_OFD_Milestone__mdt.Active__c</members>
+        <!-- NEPA_Agency_Endpoint__mdt fields -->
+        <members>NEPA_Agency_Endpoint__mdt.Agency_Key__c</members>
+        <members>NEPA_Agency_Endpoint__mdt.Named_Credential__c</members>
+        <members>NEPA_Agency_Endpoint__mdt.Process_Endpoint_Path__c</members>
+        <members>NEPA_Agency_Endpoint__mdt.Is_Active__c</members>
+        <!-- nepa_required_permit__c (CEQ Permits entity — cross-agency permit dependencies) -->
+        <members>nepa_required_permit__c.nepa_actual_completion__c</members>
+        <members>nepa_required_permit__c.nepa_agency_endpoint_key__c</members>
+        <members>nepa_required_permit__c.nepa_agency_system_url__c</members>
+        <members>nepa_required_permit__c.nepa_expected_completion__c</members>
+        <members>nepa_required_permit__c.nepa_external_federal_id__c</members>
+        <members>nepa_required_permit__c.nepa_is_critical_path__c</members>
+        <members>nepa_required_permit__c.nepa_last_synced__c</members>
+        <members>nepa_required_permit__c.nepa_lead_agency__c</members>
+        <members>nepa_required_permit__c.nepa_permit_status__c</members>
+        <members>nepa_required_permit__c.nepa_permit_type__c</members>
+        <members>nepa_required_permit__c.nepa_process__c</members>
+        <members>nepa_required_permit__c.nepa_regulatory_citation__c</members>
         <!-- Junction objects -->
         <members>nepa_process_related_agencies__c.Agency__c</members>
         <members>nepa_process_related_agencies__c.Processes__c</members>
@@ -550,7 +596,9 @@
         <members>nepa_ce_library__c</members>
         <members>nepa_gis_data__c</members>
         <members>nepa_gis_data_element__c</members>
+        <members>nepa_required_permit__c</members>
         <!-- __mdt custom metadata type schemas -->
+        <members>NEPA_Agency_Endpoint__mdt</members>
         <members>NEPA_Agency_Risk_Rate__mdt</members>
         <members>NEPA_Circuit_Risk_Weight__mdt</members>
         <members>NEPA_Challenge_Prediction_Rule__mdt</members>
@@ -561,6 +609,8 @@
         <members>NEPA_SLA_Config__mdt</members>
         <members>NEPA_Process_Model__mdt</members>
         <members>NEPA_Risk_Threshold__mdt</members>
+        <members>NEPA_Agency_Duration_Cost__mdt</members>
+        <members>NEPA_OFD_Milestone__mdt</members>
         <!-- Platform events -->
         <members>NEPA_Error_Event__e</members>
         <name>CustomObject</name>
@@ -711,8 +761,38 @@
         <members>NEPA_Statute_Risk_Weight.ESA</members>
         <members>NEPA_Statute_Risk_Weight.CWA</members>
         <members>NEPA_Statute_Risk_Weight.NHPA</members>
+        <!-- NEPA_Agency_Duration_Cost seed records (IMP-002) -->
+        <members>NEPA_Agency_Duration_Cost.BLM</members>
+        <members>NEPA_Agency_Duration_Cost.BOEM</members>
+        <members>NEPA_Agency_Duration_Cost.BR</members>
+        <members>NEPA_Agency_Duration_Cost.BIA</members>
+        <members>NEPA_Agency_Duration_Cost.DOE</members>
+        <members>NEPA_Agency_Duration_Cost.FAA</members>
+        <members>NEPA_Agency_Duration_Cost.FERC</members>
+        <members>NEPA_Agency_Duration_Cost.FHWA</members>
+        <members>NEPA_Agency_Duration_Cost.FTA</members>
+        <members>NEPA_Agency_Duration_Cost.NOAA</members>
+        <members>NEPA_Agency_Duration_Cost.NPS</members>
+        <members>NEPA_Agency_Duration_Cost.NRC</members>
+        <members>NEPA_Agency_Duration_Cost.USACE</members>
+        <members>NEPA_Agency_Duration_Cost.USFS</members>
+        <members>NEPA_Agency_Duration_Cost.USFWS</members>
+        <members>NEPA_Agency_Duration_Cost.DEFAULT</members>
+        <!-- NEPA_OFD_Milestone seed records (IMP-006) -->
+        <members>NEPA_OFD_Milestone.Initiate_Joint_Schedule</members>
+        <members>NEPA_OFD_Milestone.Submit_Cooperating_Milestones</members>
+        <members>NEPA_OFD_Milestone.Joint_PM_Plan</members>
+        <members>NEPA_OFD_Milestone.ESA_Section7_Initiation</members>
+        <members>NEPA_OFD_Milestone.Section_404_Premeeting</members>
+        <members>NEPA_OFD_Milestone.Section_106_Initiation</members>
+        <members>NEPA_OFD_Milestone.Scoping_Report_Circulated</members>
+        <members>NEPA_OFD_Milestone.Joint_ROD_Target</members>
         <!-- NEPA_Risk_Threshold seed record -->
         <members>NEPA_Risk_Threshold.Default</members>
+        <!-- NEPA_Agency_Endpoint seed records -->
+        <members>NEPA_Agency_Endpoint.BLM</members>
+        <members>NEPA_Agency_Endpoint.USACE</members>
+        <members>NEPA_Agency_Endpoint.USFWS</members>
         <name>CustomMetadata</name>
     </types>
     <types>
@@ -776,6 +856,7 @@
     </types>
     <types>
         <members>IndividualApplication_Record_Page</members>
+        <members>ApplicationTimeline_Record_Page</members>
         <members>Program_Record_Page</members>
         <members>Public_Comment_Record_Page</members>
         <members>NEPA_CE_Library_Record_Page</members>
@@ -794,6 +875,7 @@
     </types>
     <types>
         <members>ApplicationTimeline-NEPA Case Event Layout</members>
+        <members>IndividualApplication-NEPA Process Layout</members>
         <members>ContentVersion-Permit Document</members>
         <members>nepa_engagement__c-NEPA Public Engagement Event Layout</members>
         <members>nepa_process_related_agencies__c-Permit Application Agency Relationship Layout</members>
@@ -902,6 +984,8 @@
         <members>NepaCommentAIRouterTest</members>
         <members>NepaApiComplianceTest</members>
         <members>NepaBREConfigTest</members>
+        <members>NepaAgencyPermitService</members>
+        <members>NepaAgencyPermitServiceTest</members>
         <name>ApexClass</name>
     </types>
     <types>
@@ -922,6 +1006,10 @@
         <name>BotVersion</name>
     </types>
     <types>
+        <!-- Cross-agency permit dependency Named Credentials -->
+        <members>NEPA_Agency_BLM</members>
+        <members>NEPA_Agency_USACE</members>
+        <members>NEPA_Agency_USFWS</members>
         <!-- GIS Named Credentials (MFR 6 expansion) -->
         <members>NEPA_GIS_FWS</members>
         <members>NEPA_GIS_EJScreen</members>
@@ -933,6 +1021,20 @@
         <members>NEPA_GIS_BLM_Tribal</members>
         <members>NEPA_GIS_BLM_PLSS</members>
         <name>NamedCredential</name>
+    </types>
+    <types>
+        <!-- Cross-agency permit dependency LWC -->
+        <members>nepaPermitDependencies</members>
+        <!-- IMP-001: Risk intelligence display LWC -->
+        <members>nepaRiskIntelligenceCard</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <types>
+        <!-- Cross-agency permit dependency Remote Site Settings -->
+        <members>NEPA_Agency_BLM</members>
+        <members>NEPA_Agency_USACE</members>
+        <members>NEPA_Agency_USFWS</members>
+        <name>RemoteSiteSetting</name>
     </types>
     <version>62.0</version>
 </Package>

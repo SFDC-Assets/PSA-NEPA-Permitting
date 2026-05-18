@@ -30,4 +30,12 @@
         <field>Active__c</field>
         <value xsi:type="xsd:boolean">true</value>
     </values>
+    <values>
+        <field>Median_Litigation_Months__c</field>
+        <value xsi:type="xsd:decimal">10.2</value>
+    </values>
+    <values>
+        <field>Litigation_Pathway__c</field>
+        <value xsi:type="xsd:string">District court; narrow record questions</value>
+    </values>
 </CustomMetadata>

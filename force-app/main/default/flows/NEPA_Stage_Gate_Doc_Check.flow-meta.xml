@@ -65,6 +65,9 @@ Design notes:
                 <elementReference>formula_AppendMissing</elementReference>
             </value>
         </assignmentItems>
+        <connector>
+            <targetReference>Loop_RequiredDocs</targetReference>
+        </connector>
     </assignments>
 
     <!-- Before-save custom error — shows inline on the nepa_status__c field -->
@@ -310,7 +313,7 @@ Design notes:
         </filters>
         <filters>
             <field>nepa_status__c</field>
-            <operator>In</operator>
+            <operator>EqualTo</operator>
             <value><stringValue>Approved</stringValue></value>
         </filters>
         <filters>

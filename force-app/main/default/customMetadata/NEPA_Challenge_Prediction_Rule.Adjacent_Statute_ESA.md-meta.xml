@@ -16,7 +16,7 @@
     </values>
     <values>
         <field>Explanation__c</field>
-        <value xsi:type="xsd:string">ESA Section 7 consultation is required when a federal action may affect a listed species or critical habitat. Inadequate consultation, incomplete biological opinion, or failure to reinitiate consultation when new information emerges are frequent grounds for ESA-based NEPA challenges. Verify that formal Section 7 consultation is complete and the BiOp is current before closing the record.</value>
+        <value xsi:type="xsd:string">ESA Section 7 consultation is required when a federal action may affect a listed species or critical habitat. Inadequate consultation, incomplete biological opinion, or failure to reinitiate consultation when new information emerges are frequent grounds for ESA-based NEPA challenges. Verify that formal Section 7 consultation is complete and the BiOp is current before closing the record. NOTE: ESA multiplier is 1.48x flat — USFWS ECOS API unavailable; multiplier cannot be decomposed into consultation-duration vs. jeopardy-finding sub-components. Treat as low-confidence until TAILS/PCTS data-sharing linkage is established.</value>
     </values>
     <values>
         <field>Priority__c</field>

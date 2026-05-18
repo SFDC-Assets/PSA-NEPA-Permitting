@@ -273,7 +273,7 @@ private class NepaValidationRuleTest {
         IndividualApplication proc = getProcess();
         try {
             NepaTestFactory.insertContentVersionWithStatus(
-                proc.Id, 'EIS', 'AI-Generated', 'Approved', null, null
+                proc.Id, 'NOI', 'AI-Generated', 'Approved', null, null
             );
             System.assert(false, 'Expected DmlException for AI Approved doc missing reviewer');
         } catch (DmlException e) {
@@ -288,7 +288,7 @@ private class NepaValidationRuleTest {
         IndividualApplication proc = getProcess();
         try {
             NepaTestFactory.insertContentVersionWithStatus(
-                proc.Id, 'EIS', 'AI-Generated', 'Approved', UserInfo.getUserId(), null
+                proc.Id, 'NOI', 'AI-Generated', 'Approved', UserInfo.getUserId(), null
             );
             System.assert(false, 'Expected DmlException for AI Approved doc missing review date');
         } catch (DmlException e) {
@@ -301,7 +301,7 @@ private class NepaValidationRuleTest {
     static void aiDocReview_aiApprovedWithBothFields_saves() {
         IndividualApplication proc = getProcess();
         ContentVersion cv = NepaTestFactory.insertContentVersionWithStatus(
-            proc.Id, 'EIS', 'AI-Generated', 'Approved', UserInfo.getUserId(), Date.today()
+            proc.Id, 'NOI', 'AI-Generated', 'Approved', UserInfo.getUserId(), Date.today()
         );
         ContentVersion saved = [SELECT nepa_status__c, nepa_reviewer__c FROM ContentVersion WHERE Id = :cv.Id];
         System.assertEquals('Approved', saved.nepa_status__c);
@@ -313,7 +313,7 @@ private class NepaValidationRuleTest {
         // Human-authored doc: VR must not fire even when reviewer is blank
         IndividualApplication proc = getProcess();
         ContentVersion cv = NepaTestFactory.insertContentVersionWithStatus(
-            proc.Id, 'EA', 'Human-Authored', 'Approved', null, null
+            proc.Id, 'NOI', 'Human-Authored', 'Approved', null, null
         );
         ContentVersion saved = [SELECT nepa_status__c FROM ContentVersion WHERE Id = :cv.Id];
         System.assertEquals('Approved', saved.nepa_status__c, 'Non-AI doc with Approved status should save without reviewer');

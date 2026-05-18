@@ -1,0 +1,81 @@
+<template>
+    <lightning-card title="Risk Intelligence" icon-name="utility:shield">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading risk score..." size="small"></lightning-spinner>
+        </template>
+        <template if:false={isLoading}>
+            <template if:true={hasError}>
+                <div class="slds-box slds-theme_error slds-m-around_small">
+                    <p>{errorMessage}</p>
+                </div>
+            </template>
+            <template if:false={hasError}>
+                <div class="slds-p-around_medium">
+                    <!-- Probability Score Section -->
+                    <div class="nepa-risk-section">
+                        <div class="slds-grid slds-gutters slds-grid_vertical-align-center slds-m-bottom_x-small">
+                            <div class="slds-col">
+                                <h3 class="slds-text-heading_small nepa-section-label">LITIGATION PROBABILITY SCORE</h3>
+                            </div>
+                            <div class="slds-col slds-no-flex">
+                                <span class={tierBadgeClass}>{riskTier}</span>
+                            </div>
+                            <div class="slds-col slds-no-flex">
+                                <span class="nepa-score-number">{riskScore} / 100</span>
+                            </div>
+                        </div>
+                        <template if:true={hasEsaLowConfidence}>
+                            <div class="slds-box slds-theme_warning slds-m-bottom_x-small nepa-warning-box">
+                                <lightning-icon icon-name="utility:warning" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                                <span class="slds-text-body_small">ESA §7 multiplier is a flat 1.48× estimate — ECOS API unavailable. Cannot distinguish consultation-duration vs. jeopardy-finding drivers. Treat as low-confidence pending TAILS/PCTS linkage.</span>
+                            </div>
+                        </template>
+                        <ul class="nepa-factor-list">
+                            <template for:each={probabilityFactors} for:item="factor">
+                                <li key={factor} class="slds-text-body_small nepa-factor-item">{factor}</li>
+                            </template>
+                        </ul>
+                    </div>
+
+                    <hr class="nepa-divider" />
+
+                    <!-- Cost Exposure Section -->
+                    <div class="nepa-risk-section">
+                        <h3 class="slds-text-heading_small nepa-section-label slds-m-bottom_x-small">LITIGATION COST EXPOSURE</h3>
+                        <template if:true={hasDurationData}>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col">
+                                    <p class="slds-text-body_regular">
+                                        <strong>Expected duration if challenged:</strong> {durationDisplay}
+                                    </p>
+                                    <p class="slds-text-body_small slds-m-top_x-small">{durationPathway}</p>
+                                    <p class="slds-text-body_small slds-text-color_weak slds-m-top_x-small">
+                                        Duration is independent of outcome — agency-won and challenger-won cases resolve in approximately the same time. This is a cost proxy, not a win-probability signal.
+                                    </p>
+                                </div>
+                                <div class="slds-col slds-no-flex">
+                                    <div class="nepa-duration-percentile">
+                                        <span class="nepa-percentile-number">{durationPercentileDisplay}</span>
+                                        <span class="slds-text-body_small">percentile</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                        <template if:false={hasDurationData}>
+                            <p class="slds-text-body_small slds-text-color_weak">Duration cost not yet calculated. Save this record to trigger the risk scorer.</p>
+                        </template>
+                        <ul class="nepa-factor-list slds-m-top_x-small">
+                            <template for:each={costFactors} for:item="factor">
+                                <li key={factor} class="slds-text-body_small nepa-factor-item">{factor}</li>
+                            </template>
+                        </ul>
+                    </div>
+
+                    <div class="slds-m-top_small slds-text-body_small slds-text-color_weak">
+                        Last scored: {lastScoredDisplay}
+                    </div>
+                </div>
+            </template>
+        </template>
+    </lightning-card>
+</template>

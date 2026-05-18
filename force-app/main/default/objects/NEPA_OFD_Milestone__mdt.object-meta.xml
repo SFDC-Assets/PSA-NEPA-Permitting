@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>One Federal Decision (OFD) Action Plan milestone templates aligned to E.O. 13807 / 42 U.S.C. 4370m. Each record represents a standard coordination milestone that can be instantiated as an ApplicationTimeline event when the OFD Action Plan is launched. Replaces the manually maintained coordination list that agencies currently manage in email. Stage 16 finding: multi-agency coordination overhead (1.45x friction) is the primary cause of federal delay.</description>
+    <label>NEPA OFD Milestone</label>
+    <pluralLabel>NEPA OFD Milestones</pluralLabel>
+    <fields>
+        <fullName>Milestone_Label__c</fullName>
+        <description>Human-readable label for this OFD milestone. Used as the ApplicationTimeline Subject when the milestone is instantiated.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Milestone Label</label>
+        <length>128</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Sector_Key__c</fullName>
+        <description>Sector applicability for this milestone. ALL = applies to all sectors. Otherwise matches nepa_project_sector__c on Program. Used to filter the OFD Action Plan to sector-relevant milestones.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Sector Key</label>
+        <length>50</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Agency_Role__c</fullName>
+        <description>The agency role responsible for completing this milestone. Maps to nepa_ofd_track__c values on ApplicationTimeline: NEPA_Lead, Agency_Consultation, Permit_Milestone, or Joint_ROD. Also used to determine which coordinating agency lookup to populate.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Agency Role</label>
+        <length>100</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Typical_Day_Offset__c</fullName>
+        <description>Typical calendar day offset from project initiation (Day 0 = E.O. 13807 joint schedule initiation). Negative values indicate offsets before a reference milestone (e.g., -90 = 90 days before DEIS publication). Used to populate nepa_target_completion_date__c when the timeline event is created.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Typical Day Offset</label>
+        <precision>5</precision>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Responsible_Party__c</fullName>
+        <description>Agency or role responsible for this milestone. Used to pre-populate nepa_assigned_entity__c on the ApplicationTimeline event. Example: Lead agency, Each cooperating agency, USFWS/NOAA, USACE, SHPO.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Responsible Party</label>
+        <length>100</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Legal_Citation__c</fullName>
+        <description>Statutory or regulatory citation for this milestone. Example: E.O. 13807 §5(b)(2); 42 U.S.C. 4370m-2(c)(1)(B). Used to populate nepa_regulatory_citation__c on the ApplicationTimeline event.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Legal Citation</label>
+        <length>128</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Active__c</fullName>
+        <description>When false, this milestone is excluded from OFD Action Plan instantiation. SubscriberControlled so agencies can tailor the template to their jurisdiction.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
+        <defaultValue>true</defaultValue>
+        <label>Active</label>
+        <type>Checkbox</type>
+    </fields>
+</CustomObject>

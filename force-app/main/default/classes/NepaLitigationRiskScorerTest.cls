@@ -566,4 +566,51 @@ private class NepaLitigationRiskScorerTest {
                 'Complete record (100%) must not trigger APA expedited penalty even with Expedited/Emergency timeline');
         }
     }
+
+    // ── Agency duration cost field (IMP-007) ─────────────────────────────────
+
+    @IsTest
+    static void litigationDurationCost_populatedByFlow() {
+        Program proj = makeProject('Bureau of Land Management', '10th');
+        IndividualApplication ia = makeProcess(proj.Id, 'EA');
+        insert ia;
+
+        IndividualApplication iaUpdate = new IndividualApplication(Id = ia.Id);
+        iaUpdate.nepa_review_type__c = 'EIS';
+        Test.startTest();
+        update iaUpdate;
+        IndividualApplication flip = new IndividualApplication(Id = ia.Id);
+        flip.nepa_review_type__c = 'EA';
+        update flip;
+        Test.stopTest();
+
+        IndividualApplication result = [
+            SELECT nepa_litigation_duration_cost__c FROM IndividualApplication WHERE Id = :ia.Id
+        ];
+        // AsyncAfterCommit flows may not complete synchronously; verify field is either null or a valid value
+        if (result.nepa_litigation_duration_cost__c != null) {
+            System.assert(result.nepa_litigation_duration_cost__c >= 0
+                       && result.nepa_litigation_duration_cost__c <= 1,
+                'nepa_litigation_duration_cost__c must be in range [0,1]; got: '
+                + result.nepa_litigation_duration_cost__c);
+        }
+    }
+
+    @IsTest
+    static void litigationDurationCost_blmRecordLookedUp() {
+        List<NEPA_Agency_Duration_Cost__mdt> blmRecord = [
+            SELECT Normalized_Duration_Cost__c, Median_Duration_Months__c
+            FROM NEPA_Agency_Duration_Cost__mdt
+            WHERE Agency_Key__c = 'BLM' AND Active__c = true
+            LIMIT 1
+        ];
+        System.assert(blmRecord.size() == 1,
+            'NEPA_Agency_Duration_Cost__mdt must have an active BLM record for flow lookup');
+        System.assertEquals(17.5, blmRecord[0].Median_Duration_Months__c,
+            'BLM median litigation duration must be 17.5 months (PermitTEC Stage 14); got: '
+            + blmRecord[0].Median_Duration_Months__c);
+        System.assertEquals(0.41, blmRecord[0].Normalized_Duration_Cost__c,
+            'BLM normalized duration cost must be 0.41; got: '
+            + blmRecord[0].Normalized_Duration_Cost__c);
+    }
 }

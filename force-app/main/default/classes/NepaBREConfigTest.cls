@@ -921,7 +921,55 @@ private class NepaBREConfigTest {
     }
 
     // ==========================================================================
-    // PART 9 — PHASE 3 DATA-DRIVEN ADDITIONS
+    // PART 3 — AGENCY DURATION COST CMT (IMP-002 / IMP-007)
+    // ==========================================================================
+
+    @IsTest
+    static void agencyDurationCost_minimumRecordsCovered() {
+        List<NEPA_Agency_Duration_Cost__mdt> records = [
+            SELECT Agency_Key__c, Median_Duration_Months__c, Normalized_Duration_Cost__c, Active__c
+            FROM NEPA_Agency_Duration_Cost__mdt
+            WHERE Active__c = true
+        ];
+        System.assert(records.size() >= 16,
+            'Expected at least 16 active NEPA_Agency_Duration_Cost__mdt records (15 agencies + DEFAULT); found: ' + records.size());
+    }
+
+    @IsTest
+    static void agencyDurationCost_allActiveRecordsHaveRequiredFields() {
+        List<NEPA_Agency_Duration_Cost__mdt> records = [
+            SELECT Agency_Key__c, Median_Duration_Months__c, Normalized_Duration_Cost__c
+            FROM NEPA_Agency_Duration_Cost__mdt
+            WHERE Active__c = true
+        ];
+        for (NEPA_Agency_Duration_Cost__mdt r : records) {
+            System.assertNotEquals(null, r.Agency_Key__c,
+                'Agency_Key__c must not be null on active NEPA_Agency_Duration_Cost__mdt record');
+            System.assertNotEquals(null, r.Median_Duration_Months__c,
+                'Median_Duration_Months__c must not be null for Agency_Key: ' + r.Agency_Key__c);
+            System.assert(r.Normalized_Duration_Cost__c >= 0 && r.Normalized_Duration_Cost__c <= 1,
+                'Normalized_Duration_Cost__c must be in [0,1] for Agency_Key: ' + r.Agency_Key__c
+                + '; got: ' + r.Normalized_Duration_Cost__c);
+        }
+    }
+
+    @IsTest
+    static void agencyDurationCost_defaultRecordExists() {
+        List<NEPA_Agency_Duration_Cost__mdt> defaults = [
+            SELECT Agency_Key__c, Median_Duration_Months__c, Normalized_Duration_Cost__c
+            FROM NEPA_Agency_Duration_Cost__mdt
+            WHERE Agency_Key__c = 'DEFAULT' AND Active__c = true
+        ];
+        System.assert(defaults.size() == 1,
+            'Exactly one DEFAULT NEPA_Agency_Duration_Cost__mdt record must exist; found: ' + defaults.size());
+        System.assertEquals(15.4, defaults[0].Median_Duration_Months__c,
+            'DEFAULT median must be 15.4 months (global corpus median); got: ' + defaults[0].Median_Duration_Months__c);
+        System.assertEquals(0.34, defaults[0].Normalized_Duration_Cost__c,
+            'DEFAULT normalized cost must be 0.34; got: ' + defaults[0].Normalized_Duration_Cost__c);
+    }
+
+    // ==========================================================================
+    // PART 10 — PHASE 3 DATA-DRIVEN ADDITIONS
     // ==========================================================================
 
     @IsTest

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Queue xmlns="http://soap.sforce.com/2006/04/metadata">
+    <doesSendEmailToMembers>false</doesSendEmailToMembers>
+    <email>nepa-ej-tribal@example.com</email>
+    <name>NEPA EJ Tribal Liaison</name>
+    <queueSobject>
+        <sobjectType>Task</sobjectType>
+    </queueSobject>
+    <queueSobject>
+        <sobjectType>PublicComplaint</sobjectType>
+    </queueSobject>
+</Queue>

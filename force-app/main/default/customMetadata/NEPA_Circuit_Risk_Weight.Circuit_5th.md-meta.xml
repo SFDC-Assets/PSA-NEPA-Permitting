@@ -22,4 +22,8 @@
         <field>Low_Data_Confidence__c</field>
         <value xsi:type="xsd:boolean">true</value>
     </values>
+    <values>
+        <field>Median_Litigation_Months__c</field>
+        <value xsi:type="xsd:decimal">0</value>
+    </values>
 </CustomMetadata>
