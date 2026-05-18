@@ -1807,6 +1807,12 @@
         </itemInstances>
         <itemInstances>
             <componentInstance>
+                <componentName>c:nepaPermitDependencies</componentName>
+                <identifier>ia_nepa_permit_dependencies</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
                     <value>ia-risk-cols</value>

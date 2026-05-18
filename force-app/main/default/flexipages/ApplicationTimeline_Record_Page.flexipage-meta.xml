@@ -236,6 +236,26 @@
                 <identifier>at_ofd_coordinating_agency</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_target_date__c</fieldItem>
+                <identifier>at_ofd_target_date</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_completed_date__c</fieldItem>
+                <identifier>at_ofd_completed_date</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>at-ofd-c1</name>
         <type>Facet</type>
     </flexiPageRegions>
