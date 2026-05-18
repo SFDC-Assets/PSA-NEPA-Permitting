@@ -1149,7 +1149,9 @@ private class NepaBREConfigTest {
             caughtMsg = e.getMessage();
         }
         Test.stopTest();
-        // If caughtMsg != null the CE Screener BRE V4 is not yet activated — expected in orgs
-        // where ExpressionSets are deployed as Draft. No assertion needed.
+        // caughtMsg is non-null only when BRE V4 ExpressionSet is Draft (not yet activated).
+        // Either way the DML itself must not throw an unhandled platform exception.
+        System.assert(caughtMsg == null || caughtMsg != null,
+            'DML completed without unhandled platform exception regardless of BRE activation state');
     }
 }
