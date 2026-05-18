@@ -21,7 +21,7 @@ This demo runs four scenes, each following **Tell → Show → Tell** structure.
 
 **Audience:** BLM field office managers, state permitting directors, NEPA program leads, agency IT/digital transformation leads, CEQ evaluators.
 
-**Total demo time:** 20–25 minutes across four scenes.
+**Total demo time:** 30–35 minutes across six scenes.
 
 ---
 
@@ -34,7 +34,9 @@ Memorize this table before opening the laptop. It maps each scene to the MFRs yo
 | **1: Intake** | #3 Leading-Edge, #6 Emerging, #4 Emerging | 23% of NETATEC CE records have no CE category → adds median 11 months per misrouted project | CE pre-screening result card at OmniScript Step 7 | "That feedback loop used to take 6 weeks. Now it happens at submission." |
 | **2: Work Orders** | #5 Emerging→Leading-Edge, Std 1, Std 4 | Every BLM Plan of Operations requires ≥1 co-permit; co-permit clocks typically start *after* BLM decision | Lek survey in slot 1; IDWR task auto-fires on WO close | "The IDWR clock is running before we've drafted a single page of the EA." |
 | **3: Comments** | #8 Emerging, #5 stage gates | Tribal Nation plaintiffs win 87.5% of contested NEPA cases — the most predictable risk factor in the corpus | Dual-flag on Shoshone-Paiute comment; hard gate blocking EA advance | "The legal work order fired before anyone made a judgment call." |
-| **4: Decision** | #7 Emerging, #9 Emerging, #1 Leading-Edge, #2 Emerging | **42.7%** of challenged EIS/EAs cite inadequate connected actions analysis — the #1 Challenge Prediction Rule; top 3 failure patterns are all stage gate failures | All-5-green Document Registry; `nepa_ar_export__c` Completed status; Challenge Predictor cleared on both fired rules | "Eight months. 13 CEQ entities. 10 MFRs. Same regulations." |
+| **4: Decision** | #7 Emerging, #9 Emerging, #1 Leading-Edge, #2 Emerging | **42.7%** of challenged EIS/EAs cite inadequate connected actions analysis — the #1 Challenge Prediction Rule; top 3 failure patterns are all stage gate failures | All-5-green Document Registry; `nepa_ar_export__c` Completed status; Challenge Predictor cleared on both fired rules; **v3 bifurcated risk score**: Probability Score (85/100) + Cost Exposure (BLM 17.5 months) | "Eight months. 13 CEQ entities. 10 MFRs. Same regulations." |
+| **5: OFD Coordination** | #10 Interoperable, Std 4 (Timeline Minimization) | Federal-state friction accounts for 1.09×–1.65× of timeline overhead by sector (Stage 16) — USACE Section 404 dual-track review is the primary Water/Coastal driver | OFD Coordination Tracker — 4 live ApplicationTimeline milestones across NEPA_Lead / Agency_Consultation / Permit_Milestone / Joint_ROD tracks | "E.O. 13807 requires a master schedule. This is the master schedule — live, in the case record." |
+| **6: Permit Dependencies** | #10 Interoperable, #2 Data Sharing | FTA median litigation duration: 33.4 months — independent of win probability | `nepaPermitDependencies` LWC with live Section 404 (Pending ★), ESA §7 (In Review ★), ROW Grant (Approved) status | "Critical-path permits are flagged before anyone has to ask." |
 
 ---
 
@@ -708,15 +710,19 @@ Here's what the review actually required:
 
 1. **Navigate to the Program record.** Point to `nepa_agency_performance_tier__c = Legally_Vulnerable`. Say: *"This field was set automatically on the day this program was created — before a single survey was scheduled. It comes from the PermitTEC corpus: BLM's litigation loss rate and its 28-month median NOI-to-DEIS placed it in the Legally Vulnerable tier. The Field Manager knew what he was working with on day one."*
 
-2. **Navigate to IndividualApplication → Risk Intelligence panel.** Walk through each field:
-   - `nepa_risk_score__c = 87` / `nepa_risk_tier__c = Very High`
-   Say: *"87 out of 100. Very High tier."*
+2. **Navigate to IndividualApplication → Risk Intelligence panel.** Walk through each section:
+   - **Litigation Probability Score:** `nepa_risk_score__c = 85` / `nepa_risk_tier__c = Very High`
+   Say: *"v3 score: 85 out of 100. Very High tier. This is the probability dimension — likelihood of a challenge."*
+   - **Litigation Cost Exposure:** `nepa_litigation_duration_cost__c = 0.63` / normalized cost dimension
+   Say: *"This is new in v3. The cost dimension is separate from probability. BLM averages 17.5 months of litigation even when they win. 9th Circuit averages 29.3 months. A project sponsor making a financing decision based on win-probability alone was missing half the picture."*
    - `nepa_plaintiff_risk_flag__c = true` (ICL) / `nepa_tribal_plaintiff_flag__c = true` (Shoshone-Paiute Tribes)
    Say: *"Both plaintiff flags set — from Scene 3."*
    - `nepa_defensibility_score__c = 91`
-   Say: *"Defensibility score: 91. Very High risk project, 91 defensibility — because every gate has been cleared. Risk 87 tells you what you're up against. Defensibility 91 tells you you've done everything right."*
+   Say: *"Defensibility score: 91. Very High risk project, 91 defensibility — because every gate has been cleared. Risk 85 tells you what you're up against. Defensibility 91 tells you you've done everything right."*
 
-3. **Click `nepa_risk_score_factors__c`.** Show the formula disclosure: *"BLM: 39 pts. 9th Circuit: 42 pts. FLPMA statute: 8 pts. Tribal plaintiff flag: 15 pts. That's 104 raw, normalized to 87. Every input is disclosed. The coordinator can verify any number. This is MFR #1 — the score is deterministic, not a black box."*
+3. **Click `nepa_risk_score_factors__c`.** Show the v3 factor disclosure: *"Review type (EIS equivalent): 28 pts. BLM agency rate: 21 pts. 9th Circuit adverse rate: 19 pts. FLPMA statute complexity: 5 pts. Tribal plaintiff flag: 8 pts. Sector × Circuit premium: 4 pts. Challenge delta: 0 pts. That's 85. Every input is disclosed. The coordinator can verify any number. This is MFR #1 — the score is deterministic, not a black box."*
+
+   Point to the ESA warning: *"Yellow banner: ESA statute weight uses flat 1.48× — pending TAILS/PCTS linkage. OMB M-24-10 requires that automated scoring disclose known limitations at point-of-use. This is that disclosure. The system tells you exactly where the confidence is lower."*
 
 3b. **Click `nepa_challenge_prediction_basis__c`.** Show the two rules that fired for this project:
    - ESA Section 7 Consultation — **Cleared** (consultation closed; documented in tribal certification)
@@ -788,31 +794,45 @@ Here's what the review actually required:
 
 ---
 
-**Screen 4-B — IndividualApplication: Risk Intelligence Panel (full factor disclosure)**
-*(Show steps 2–3: risk score, defensibility score, raw factor breakdown)*
+**Screen 4-B — IndividualApplication: Risk Intelligence Panel (v3 bifurcated score)**
+*(Show steps 2–3: probability score, cost exposure, defensibility score, ESA warning)*
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │  IndividualApplication  IA-0000000432  — Risk Intelligence       │
 │  ─────────────────────────────────────────────────────────────  │
-│  Risk Score:           87    Risk Tier:  Very High   ◄──────── │──── POINT: score
 │  Defensibility Score:  91               All gates cleared ◄─── │──── POINT: defensibility
 │  ─────────────────────────────────────────────────────────────  │
+│  ── Litigation Probability Score (85/100 · Very High) ───────── │
 │  ┌─── Risk Score Factors  (nepa_risk_score_factors__c) ────┐    │
-│  │  BLM agency litigation rate:          39 pts   ◄──────  │────── DISCLOSE each input
-│  │  9th Circuit — adverse ruling rate:   42 pts   ◄──────  │    │
-│  │  FLPMA statutory complexity:           8 pts            │    │
-│  │  Tribal plaintiff flag (Shoshone-P):  15 pts   ◄──────  │────── highest single weight
+│  │  Review type (EIS):             28 pts   ◄───────────── │──── DISCLOSE each input
+│  │  BLM agency litigation rate:    21 pts   ◄───────────── │    │
+│  │  9th Circuit adverse rate:      19 pts   ◄───────────── │    │
+│  │  FLPMA statutory complexity:     5 pts                  │    │
+│  │  Tribal plaintiff flag:          8 pts   ◄───────────── │──── from Shoshone-Paiute Scene 3
+│  │  Sector × Circuit premium:       4 pts                  │    │
+│  │  Challenge delta (predictor):    0 pts   (all cleared)  │    │
 │  │  ─────────────────────────────────────────────          │    │
-│  │  Raw total: 104  →  Normalized: 87                      │    │
-│  │  Every input disclosed — coordinator can verify any #   │    │
+│  │  Total: 85  ·  Tier: Very High                          │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│  ── Litigation Cost Exposure ──────────────────────────────────  │
+│  ┌─── Cost Dimension (nepa_litigation_duration_cost__c) ────┐   │
+│  │  Agency: BLM — 17.5 months median   ◄─────────────────  │────── POINT: cost ≠ probability
+│  │  Circuit: 9th Circuit — 29.3 months median               │   │
+│  │  Normalized cost dimension: 0.63  (weight: 15%)          │   │
+│  │  ⚠ ESA statute weight uses flat 1.48× — Low Confidence ◄ │────── OMB M-24-10 disclosure
+│  │    Pending TAILS/PCTS linkage                            │   │
 │  └─────────────────────────────────────────────────────────┘    │
 │  Plaintiff Risk Flag:   ✓ TRUE  (ICL)                           │
 │  Tribal Plaintiff Flag: ✓ TRUE  (Shoshone-Paiute)               │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-> **▲ Point to:** Factor breakdown line by line. Say: *"BLM: 39 pts. 9th Circuit: 42 pts. FLPMA: 8 pts. Tribal plaintiff: 15 pts. That's 104 raw, normalized to 87. Every input is disclosed. The coordinator can verify any number."*
+> **▲ Point to first:** Probability Score factor breakdown line by line. Say: *"Review type: 28 pts. BLM: 21 pts. 9th Circuit: 19 pts. FLPMA: 5 pts. Tribal plaintiff: 8 pts. Sector-Circuit premium: 4 pts. Challenge delta: 0 pts. That's 85. Every input is disclosed."*
+>
+> **▲ Point to second:** Cost Exposure section. Say: *"v3 separates likelihood of losing from cost if challenged. BLM averages 17.5 months even when they win. Agencies making financing decisions based only on win-probability were missing this."*
+>
+> **▲ Point to third:** ESA warning banner. Say: *"The system discloses where the data confidence is lower. OMB M-24-10: AI and automated scoring outputs must disclose known limitations at point-of-use. This is that disclosure."*
 
 ---
 
@@ -922,7 +942,7 @@ Here's what the review actually required:
 
 - **MFR #7 — Document Management (Emerging):** Required Document Registry with real-time completeness tracking; stage gate blocking Decision Record issuance until all required documents are confirmed; defensibility gap detection flagging missing documents before the record closes.
 - **MFR #9 — Administrative Record Management (Emerging):** `NEPA_AdminRecord_AutoCreate` generating a locked, machine-readable JSON manifest at decision issuance; package includes all documents, consultations, comments, risk score snapshot, and timeline; immediately available through CEQExport API.
-- **MFR #1 — Data Standards (Leading-Edge):** All 13 CEQ entities on structured Salesforce records with required fields, provenance, and the `nepa_other__c` extension bag; 385-test regression suite verifying compliance; score formula fully disclosed and verifiable.
+- **MFR #1 — Data Standards (Leading-Edge):** All 13 CEQ entities on structured Salesforce records with required fields, provenance, and the `nepa_other__c` extension bag; 519+ Apex tests verifying compliance; v3 score formula (probability + cost dimensions) fully disclosed and verifiable; ESA low-confidence flag surfaced at point-of-use per OMB M-24-10.
 - **MFR #2 — Application Data Sharing (Emerging):** CEQExport REST endpoint serving all 13 entities in PIC OpenAPI v1.2.0 format; available to EPA DARTER, USACE ORM2, FPISC, and any authorized system without custom middleware.
 
 ### Landing Tell *(say this after the demo)*
@@ -930,6 +950,134 @@ Here's what the review actually required:
 > "The system knew BLM was Legally Vulnerable before the first survey. It tracked the tribal plaintiff flag from the moment the comment arrived. It enforced the consultation gate. And then — the moment the Field Manager signed — the administrative record locked, the JSON manifest was generated, and the CEQExport API made all 13 CEQ entities available to every authorized downstream system. Eight months. 13 CEQ entities. 10 MFRs. The same regulations. The only thing that changed was the process."
 
 > "When this gets challenged — and 14% of federal EA decisions are challenged — every consultation, every comment response, every GIS check is in the administrative record with a timestamp. Defensibility score 91. That's not a compliance feature. That's the difference between a 9th Circuit loss and a decision that holds."
+
+---
+
+## Scene 5: OFD Coordination Tracker — E.O. 13807 Master Schedule as a Live Record View
+
+> **Demonstrates:** MFR #10 — Interoperable Services · Service Delivery Standard 4 (Timeline Minimization)
+
+### Data Context *(know this cold)*
+
+- Stage 16 analysis comparing federal EIS durations against California CEQA EIR baselines found sector-specific federal overhead multipliers: Military **1.65×**, Water/Coastal **1.47×**, Transportation **1.45×**, Energy **1.09×** vs. CEQA.
+- The primary driver of the Water/Coastal premium is **CZMA consistency + EFH Magnuson-Stevens dual-track review**. For Water/Coastal projects, USACE Section 404 is on the critical path in virtually every case.
+- E.O. 13807 requires a master schedule with milestones from all cooperating agencies. In most agencies, that master schedule lives in a spreadsheet — outside the permitting system, updated manually, invisible to the applicant.
+
+### Setup Tell *(say this before clicking)*
+
+> "E.O. 13807 requires every major federal action to have a master schedule that includes milestones from all cooperating agencies — BLM, USACE, USFWS, state agencies, all of them in one place. We analyzed federal EIS timelines against California CEQA EIR durations as a baseline. What we found is that the federal overhead isn't random — it's sector-specific. Water and Coastal projects take 1.47 times longer than an equivalent CEQA review. Military projects take 1.65 times longer. The driver isn't the analysis. It's the coordination.
+>
+> The OFD tracker turns E.O. 13807's master schedule requirement into a live record view. Every cooperating agency's milestones — on the same ApplicationTimeline object, same system, same screen as the rest of the permit record."
+
+### Show — Step by Step
+
+1. **Navigate to IndividualApplication → ApplicationTimeline related list.** Filter to OFD tracks only (click the "OFD Coordination" view). Say: *"Four milestones pre-loaded from CMT — the standard OFD coordination sequence for a BLM mining action with USFWS and USACE coordination."*
+
+2. **Point to the NEPA_Lead row** — Scoping Notice Published, Completed, Day 30, target Day 45. Say: *"NEPA_Lead track. BLM's own milestones — scoping, public comment, EA publication. This is the primary review track."*
+
+3. **Point to the Agency_Consultation row** — ESA Section 7 Initiation, USFWS, In Progress. Say: *"Agency_Consultation track. USFWS is the coordinating agency. ESA Section 7 initiation was logged at Day 90. This is the sage-grouse PHMA consultation that the GIS check triggered at intake in Scene 1 — it didn't fall through the cracks, it became a tracked milestone."*
+
+4. **Point to the Permit_Milestone row** — USACE Section 404 Pre-Application Meeting, USACE, Scheduled, Day 120. Say: *"Permit_Milestone track. USACE Section 404 pre-application meeting scheduled for Day 120. The 1.47× federal-to-CEQA friction multiplier for Water and Coastal projects is traceable directly to this row — dual-track review with USACE is the primary driver. The meeting is on the calendar before the EA is drafted."*
+
+5. **Point to the Joint_ROD row** — Record of Decision, Pending, Day 243. Say: *"Joint_ROD track. Target decision at Day 243 — eight months from application. That's the milestone the Field Manager is managing to."*
+
+6. **Scroll to show the coordinating agency lookups.** Say: *"Each milestone is a structured record — track type, event type, coordinating agency, status, target date, completed date. When USACE or USFWS updates their status in their own system, the coordinator updates this record. No phone tag. No separate spreadsheet. One master schedule, in the case record."*
+
+### Screen Reference
+
+**Screen 5-A — ApplicationTimeline OFD Coordination View**
+*(Show steps 1–5: four OFD milestones across the four track types)*
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  ApplicationTimeline  IDI-38709  — OFD Coordination   [▾ Filter]│
+│  ─────────────────────────────────────────────────────────────  │
+│  Track              Event                        Agency   Status  │
+│  ─────────────────────────────────────────────────────────────  │
+│  NEPA_Lead          Scoping Notice Published      —        ✓ Completed  Day 30   ◄── POINT: BLM primary track
+│  Agency_Consultation ESA Section 7 Initiation    USFWS    ● In Progress Day 90  ◄── POINT: sage-grouse from Scene 1
+│  Permit_Milestone   USACE §404 Pre-App Meeting   USACE    ○ Scheduled   Day 120  ◄── POINT: 1.47× friction driver
+│  Joint_ROD          Record of Decision            —        ○ Pending     Day 243  ◄── POINT: 8-month target
+│  ─────────────────────────────────────────────────────────────  │
+│  4 milestones  ·  1 overdue  ·  2 on track  ·  1 pending        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+> **▲ Point to:** Permit_Milestone row while narrating. Say: *"This is the meeting that determines whether the USACE permit clock starts at Day 120 or Day 350. Showing up to this meeting is the difference between an 8-month permit and a 25-month permit."*
+
+### What You Are Demonstrating
+
+- **MFR #10 — Interoperable Services (Emerging):** `nepa_ofd_track__c` and `nepa_coordinating_agency__c` on `ApplicationTimeline` enable cross-agency milestone tracking within the standard CEQ entity structure. `NEPA_OFD_Milestone__mdt` pre-seeds 8 standard milestones from CMT — configurable without code.
+- **Service Delivery Standard 4 — Timeline Minimization:** The 1.45×–1.65× sector-specific friction multipliers (Stage 16) are operationalized here. The OFD tracker surfaces USACE Section 404 as a critical-path milestone at the right point in the review — before the EA is published, not after the decision.
+
+### Landing Tell
+
+> "E.O. 13807 exists because Congress recognized that the master schedule problem was structural. Agencies weren't coordinating because they had no shared place to put the milestones. This is that place. Four standard tracks, eight pre-loaded milestones from CMT, configurable without code. The coordinator opens the case record and the master schedule is already there."
+
+---
+
+## Scene 6: Cross-Agency Permit Dependency Status — Live, at Record Load
+
+> **Demonstrates:** MFR #10 — Interoperable Services · MFR #2 — Application Data Sharing
+
+### Data Context *(know this cold)*
+
+- The Stage 14 CourtListener bulk docket analysis (71M+ docket records) produced per-agency median litigation durations that are **independent of outcome**: BOEM 6.5 months median (100% win rate, short cases); FTA 33.4 months median; FHWA 26.1 months; BLM 17.5 months.
+- Duration is driven by case complexity and court schedule, not by who wins. A project sponsor choosing between a BLM permit and an FTA-involvement route based on win-probability alone was missing a 15.9-month gap in expected litigation duration.
+- The `nepaPermitDependencies` LWC surfaces this at the record level — not as a static table, but as live status fetched from each agency's own system.
+
+### Setup Tell *(say this before clicking)*
+
+> "Stage 14 of the risk model analysis looked at litigation duration separately from win rates. Here's what the data shows: BOEM has the shortest median litigation duration — 6.5 months. FTA has the longest — 33.4 months. BLM is in the middle at 17.5 months. These numbers are independent of outcome. The agencies that win frequently and the agencies that lose frequently share one characteristic: the cases take as long as they take, and the duration is driven by case complexity, not by outcome.
+>
+> The v3 risk score separates probability from cost. And the Permit Dependencies panel does the same thing at the permit level — it shows you which parallel permits are live right now, fetched from the agency's own system. Critical-path permits are flagged. You don't have to call anyone."
+
+### Show — Step by Step
+
+1. **Navigate to IndividualApplication → Permit Dependencies tab** (or the `nepaPermitDependencies` LWC panel on the record page). Say: *"Three dependent permits for this project. All fetched live at record load via the agency's own NEPA REST endpoint."*
+
+2. **Point to Section 404 row** — USACE, Pending, ★ Critical Path. Say: *"Section 404, USACE. Status: Pending — the pre-application meeting in Scene 5 is what drives this forward. Critical path flag is set. If this permit doesn't move, the project doesn't move."*
+
+3. **Point to ESA §7 row** — USFWS, In Review, ★ Critical Path. Say: *"ESA Section 7, USFWS. In Review — consultation is open, which we already knew from the Agency_Consultation milestone in Scene 5. Both tracks confirm the same status. The system is consistent."*
+
+4. **Point to ROW Grant row** — BLM, Approved. Say: *"ROW Grant, BLM. Approved. Not critical path. Green. Done."*
+
+5. **Click Refresh.** Say: *"Refresh fires the callout again. Each agency's status is fetched in real time. If USACE suspends the Section 404 application, this row turns red before anyone picks up the phone."*
+
+6. **Hover over the cached-data indicator** (if any row shows amber clock icon). Say: *"If an agency API is unreachable, the system degrades gracefully — it shows the last cached status with a timestamp and a warning. The coordinator knows the data is stale, not missing."*
+
+### Screen Reference
+
+**Screen 6-A — nepaPermitDependencies LWC: Cross-Agency Permit Status**
+*(Show steps 1–5: live permit status, critical path flags, graceful degradation)*
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Permit Dependencies  IDI-38709             [↻ Refresh]         │
+│  ─────────────────────────────────────────────────────────────  │
+│  Permit Type              Agency   Status      Stage       Path  │
+│  ─────────────────────────────────────────────────────────────  │
+│  CWA Section 404         USACE    ● Pending    Pre-App     ★    │  ◄── POINT: critical path
+│  ESA §7 Consultation     USFWS    ● In Review  Consultation ★   │  ◄── POINT: open from Scene 5
+│  ROW Grant               BLM      ✓ Approved   Issued      —    │  ◄── POINT: done, not blocking
+│  ─────────────────────────────────────────────────────────────  │
+│  ★ = critical path  ·  Last synced: just now                    │
+│  All 3 agencies responding — no cached data in use              │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+> **▲ Point to:** Section 404 row. Say: *"Critical-path permit, live status from USACE's own system. If this row turns red, the coordinator knows before anyone makes a phone call."*
+
+### What You Are Demonstrating
+
+- **MFR #10 — Interoperable Services (Emerging):** `NepaAgencyPermitService` calls each agency's `/services/apexrest/nepa/v1/processes/{federal_unique_id}` endpoint — the same CEQ REST endpoint shape this accelerator exposes. Cross-agency interoperability through a shared API contract, not custom middleware.
+- **MFR #2 — Application Data Sharing (Emerging):** Permit status data flows bidirectionally — the accelerator publishes via `NepaCeqExportService` and consumes via `NepaAgencyPermitService`. The same JSON payload shape serves both roles.
+
+### Landing Tell
+
+> "The permit dependency table fetches live status from USACE, USFWS, and BLM at record open. No phone calls. No emails to the applicant asking them to check. The critical-path flags are set automatically. When the status changes in the other agency's system, it changes here.
+>
+> That's MFR #10 — interoperable services, CEQ REST standard, every agency's data in one view. The accelerator publishes and consumes the same API shape. Any CEQ-standard NEPA deployment can join this network."
 
 ---
 
@@ -942,8 +1090,11 @@ Here's what the review actually required:
 | IDWR and EPA NPDES permits started after BLM decision | Parallel permit triggers fired automatically when hydrologist and geologist closed their work orders |
 | ICL and OSC comments sat in an inbox for 60+ days | Plaintiff Intelligence flagged both commenters; responses routed as work orders; resolved in 3 weeks |
 | Tribal consultation tracked in email; no stage gate | Tribal plaintiff flag auto-set when Shoshone-Paiute comment arrived; dual risk flags escalate score; Section 106 work order with hard gate before EA publication |
-| No visibility into agency litigation exposure | Agency Performance Tier (BLM = Legally Vulnerable) set from PermitTEC corpus data; Litigation Risk Score = 87 (Very High) computed from calibrated agency + circuit + statute weights |
+| No visibility into agency litigation exposure | Agency Performance Tier (BLM = Legally Vulnerable) set from PermitTEC corpus data; v3 Litigation Risk Score = 85 (Very High) — probability dimension (85%) + cost dimension (15%); BLM 17.5-month median litigation duration disclosed at record load |
+| ESA statute risk: opaque flat multiplier, no disclosure | Low-confidence ESA weight (1.48× flat, pending TAILS/PCTS linkage) disclosed at point-of-use in `nepaRiskIntelligenceCard`; OMB M-24-10 compliant |
 | Defensibility gaps discovered during litigation, post-decision | Defensibility Score = 91 at decision; all stage gates cleared and documented before Field Manager signature |
+| E.O. 13807 master schedule in a spreadsheet, outside the permitting system | OFD Coordination Tracker: 4 milestones across NEPA_Lead / Agency_Consultation / Permit_Milestone / Joint_ROD tracks on ApplicationTimeline; 1.47× federal-to-CEQA friction multiplier for Water/Coastal operationalized as a critical-path milestone |
+| Parallel permit status: unknown until applicant asks | `nepaPermitDependencies` LWC: live status from USACE, USFWS, BLM REST APIs at record load; critical-path flags set automatically; graceful degradation on API unavailability |
 | 25-month timeline; applicant called the field office 14 times | 8-month timeline; real-time status in self-service portal |
 
 ---
@@ -1450,7 +1601,7 @@ Then be quiet and let them do the math.
 ## Demo Environment Notes
 
 - All records use `DEMO_` external ID prefix — safe to load and clean up without touching production data.
-- Import files: `demo/import_data/` — load in numbered order (01 → 23), then load `24_decision_payload.csv` and `25_ar_export.csv`.
+- Import files: `demo/import_data/` — load in numbered order (01 → 23), then load `24_decision_payload.csv` and `25_ar_export.csv`, then run `27_ofd_milestones.apex` (Scene 5 OFD tracker data).
 - Cleanup: `sf data delete bulk --where "External_Id__c LIKE 'DEMO_%'"` per object, reverse order per `00_README.md`.
 
 ---

@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.txt)
 [![Platform: FedRAMP Authorized](https://img.shields.io/badge/Platform-FedRAMP%20Authorized-green.svg)](https://marketplace.fedramp.gov/)
 [![CEQ Standard: v1.2 Compliant](https://img.shields.io/badge/CEQ%20Standard-v1.2%20Compliant-brightgreen.svg)](https://permitting.innovation.gov/CEQ_NEPA_and_Permitting_Data_and_Technology_Standard.pdf)
-[![Apex Tests: 514+ passing](https://img.shields.io/badge/Apex%20Tests-514%2B%20passing-brightgreen.svg)](force-app/main/default/classes/)
+[![Apex Tests: 519+ passing](https://img.shields.io/badge/Apex%20Tests-519%2B%20passing-brightgreen.svg)](force-app/main/default/classes/)
 [![Section 508: WCAG 2.1 AA](https://img.shields.io/badge/Section%20508-WCAG%202.1%20AA-blue.svg)](https://www.salesforce.com/company/legal/508_accessibility/)
 
 > **CEQ Permitting Innovators submission (June 2, 2026):** This solution was developed as a direct response to the [CEQ Permitting Innovators Call for Solutions](https://www.whitehouse.gov/releases/2026/04/ceq-opens-permitting-innovators-call-for-solutions-to-industry-partners/). See [docs/SUBMISSION-NARRATIVE.md](docs/SUBMISSION-NARRATIVE.md) for the full narrative addressing all 5 evaluation criteria: Impact, User-centered design, Readiness, Multi-agency compatibility, and Team capacity.
@@ -35,15 +35,15 @@ Three categories of preventable delay drive most of the gap between the current 
 | CEQ entities implemented | 13 of 13 (6 standard + 7 extended, per PIC OpenAPI v1.2.0) |
 | MFRs addressed | 10 of 10 |
 | Service delivery standards addressed | 4 of 4 |
-| Declarative flows | 37 record-triggered, autolaunched, and scheduled |
+| Declarative flows | 38 record-triggered, autolaunched, and scheduled |
 | CE Library records | 2,105 categorical exclusions across 79 federal agencies |
 | GIS services at intake | 5 (FWS ECOS, EPA EJScreen, USGS NHD, BLM tribal cadastral, BLM PLSS) |
 | Litigation cases in risk model | 761 (PermitTEC v0.1, PNNL 2025) |
 | NEPA projects in baseline corpus | 61,881 (NETATEC v2.0, PNNL 2025) |
-| Custom Metadata Types | 20 |
+| Custom Metadata Types | 23 |
 | BRE Decision Matrices + Expression Sets | 8 DMs + 3 ESs (deterministic, not AI) |
 | Decision model exports | Published to GitHub `/docs/decision-models/` — machine-readable JSON |
-| Apex regression tests | 514+ across 37 test classes |
+| Apex regression tests | 519+ across 37 test classes |
 | Platform | Salesforce Agentforce for Public Sector (FedRAMP Authorized) |
 | Shield Field Audit Trail | Available on Gov Cloud — 10-year field-level history for NARA/litigation hold |
 | PIV/CAC authentication | Native Salesforce support via SAML 2.0 (PIV/CAC = Personal Identity Verification / Common Access Card, the U.S. federal smartcard standard) — no separate IdP required |
@@ -181,6 +181,14 @@ The BRE Litigation Risk Scorer evaluates seven dimensions at every record save a
 
 Scores ≥58 auto-create a Legal Review Task. All weights are traceable to specific PermitTEC case counts. Low-confidence weights (fewer than 20 cases) are flagged with `Low_Data_Confidence__c = true`.
 
+**v3 bifurcated score (IMP-001):** The composite score is split into a **Litigation Probability Score** (85% weight, 6 factors) and a **Litigation Cost Exposure** dimension (15% weight, normalized from per-agency/per-circuit median litigation durations). Per-agency median durations derived from CourtListener bulk docket analysis: BOEM 6.5 months (lowest), BLM 17.5 months, FHWA 26.1 months, FTA 33.4 months (highest). Duration is independent of outcome. Stored in `nepa_litigation_duration_cost__c` and displayed in the `nepaRiskIntelligenceCard` LWC with a low-confidence disclosure when ESA is a scoring factor (flat 1.48× multiplier pending TAILS/PCTS linkage, per OMB M-24-10).
+
+### One Federal Decision (OFD) Coordination Tracker (IMP-006)
+
+`ApplicationTimeline` extended with `nepa_ofd_track__c` (NEPA_Lead / Agency_Consultation / Permit_Milestone / Joint_ROD) and `nepa_coordinating_agency__c` (Lookup to Account). `NEPA_OFD_Milestone__mdt` pre-seeds 8 standard OFD milestones from CMT. Operationalizes E.O. 13807's master-schedule requirement as a live record view — every cooperating agency's milestones on the same `ApplicationTimeline` object, visible to coordinators without a separate spreadsheet.
+
+**Federal friction multipliers (IMP-005, Stage 16):** Sector-specific federal-to-CEQA overhead multipliers derived from CEQ EIS Timeline data vs. Holland & Knight 2024 / CEQAnet analysis: Military 1.65×, Water/Coastal 1.47×, Transportation 1.45×, Energy 1.09×. Primary driver of the Water/Coastal premium is CZMA consistency + EFH Magnuson-Stevens dual-track review. The OFD tracker surfaces USACE Section 404 as a critical-path milestone for Water/Coastal projects, making the causal relationship operationally visible.
+
 ### Administrative Record Management (MFR #9)
 
 `NEPA_Close_Administrative_Record` fires asynchronously when `nepa_review_type__c` transitions to ROD or FONSI. It assembles a machine-readable JSON manifest tagged to the application record, locked against modification (`nepa_ar_locked__c = true`), and immediately available through the CEQExport REST API. Salesforce Shield Field Audit Trail (available on Gov Cloud) provides 10-year field-level change history on risk scores, CE recommendations, and AR fields — satisfying NARA records retention and litigation hold requirements without custom logging infrastructure.
@@ -219,7 +227,7 @@ Scores ≥58 auto-create a Legal Review Task. All weights are traceable to speci
 
 | Standard | Coverage |
 |---|---|
-| **CEQ NEPA and Permitting Data and Technology Standard v1.2** | All 13 entities implemented (including Permits via `nepa_required_permit__c`); 5 required provenance fields on each; 514+ Apex tests verify field-level compliance |
+| **CEQ NEPA and Permitting Data and Technology Standard v1.2** | All 13 entities implemented (including Permits via `nepa_required_permit__c`); 5 required provenance fields on each; 519+ Apex tests verify field-level compliance |
 | **CEQ Permitting Technology Action Plan (May 2025) — all 10 MFRs** | MFR #1 Data Standards (Leading-Edge), #2 Data Sharing (Emerging), #3 Automated Screening (Leading-Edge), #4 Screening Criteria Access (Emerging), #5 Case Management (Emerging→Leading-Edge), #6 GIS Analysis (Emerging), #7 Document Management (Emerging), #8 Comment Compilation (Emerging), #9 Administrative Record (Emerging), #10 Interoperable Services (Emerging) — live cross-agency permit status via `NEPA_Agency_Endpoint__mdt` + `NepaAgencyPermitService` directly addresses MFR #10 |
 | **OMB M-25-21** | AI advisory-only; AI recommends, human confirms enforced in all flows; EJ/tribal gate non-negotiable |
 | **FAST-41** | Per-agency baseline durations pre-seeded; `nepa_milestone_variance_days__c` provides real-time variance against agency-specific statutory targets |
@@ -300,7 +308,7 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
       <li>Required Permit (<code>nepa_required_permit__c</code>) — cross-agency dependent permit tracking; live status via NEPA REST API</li>
     </ul>
   </li>
-  <li><strong>Custom Metadata Types</strong> (x20) — all agency-specific parameters externalized as configuration:
+  <li><strong>Custom Metadata Types</strong> (x23) — all agency-specific parameters externalized as configuration:
     <ul>
       <li><code>NEPA_Agency_Risk_Rate__mdt</code> — per-agency litigation loss rates (16 records)</li>
       <li><code>NEPA_Circuit_Risk_Weight__mdt</code> — per-circuit risk multipliers (13 records)</li>
@@ -317,6 +325,9 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
       <li><code>NEPA_Layer_Discipline__mdt</code> — GIS layer discipline routing rules for proximity analysis</li>
       <li><code>NEPA_ActionPlan_Config__mdt</code> — permit-type-specific NEPA action plan templates (36 records)</li>
       <li><code>NEPA_Agency_Endpoint__mdt</code> — cross-agency NEPA REST API registry (3 starter records: USACE, USFWS, BLM); add new agencies with a CMT record + Named Credential only</li>
+      <li><code>NEPA_Agency_Duration_Cost__mdt</code> — per-agency median litigation durations (16 records; BOEM 6.5mo → FTA 33.4mo) used in the v3 cost exposure dimension</li>
+      <li><code>NEPA_OFD_Milestone__mdt</code> — standard OFD coordination milestones (8 records: Scoping Notice, ESA §7 Initiation, USACE §404 Pre-Meeting, ROD, and 4 others) pre-seeded per E.O. 13807 coordination streams</li>
+      <li><code>NEPA_Risk_Threshold__mdt</code> — v3 score tier thresholds (LOW / MEDIUM / HIGH / VERY HIGH) and probability/cost weight splits configurable without code change</li>
     </ul>
   </li>
   <li><strong>BRE Decision Matrices</strong> (x8) and <strong>Expression Sets</strong> (x3):
@@ -326,7 +337,7 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
       <li>Permit Coordinator: Permit Matrix</li>
     </ul>
   </li>
-  <li><strong>Declarative Flows</strong> (x37) — all business logic is Flow-based; no custom Apex encodes business rules</li>
+  <li><strong>Declarative Flows</strong> (x38) — all business logic is Flow-based; no custom Apex encodes business rules</li>
   <li><strong>Agentforce Agent:</strong> <code>NEPA_Comment_Triage</code> — comment classification, deduplication, EJ/tribal routing, response task creation</li>
   <li><strong>OmniStudio:</strong> 15 DataRaptors (12 Extract, 2 Load, 1 Upsert) + <code>NEPA/CEQExport</code> Integration Procedure</li>
   <li><strong>Named Credentials:</strong> 12 total — 9 GIS services (FWS, EPA, USGS, BLM variants) + 3 agency NEPA APIs (USACE, USFWS, BLM) with placeholder endpoints for operator update post-deploy</li>
@@ -334,8 +345,13 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
   <li><strong>Lightning Record Pages:</strong> Pre-configured pages for IndividualApplication and PublicComplaint surfacing all key fields</li>
   <li><strong>CE Library:</strong> 2,105 categorical exclusions across 79 federal agencies (sourced from CEQ CE Explorer v2.0)</li>
   <li><strong>Decision Model Exports:</strong> <code>ce-screening-rules.json</code>, <code>litigation-risk-weights.json</code>, <code>gis-layers-inventory.json</code> published to <code>/docs/decision-models/</code></li>
-  <li><strong>Apex Test Suite:</strong> 514+ tests across 37 classes covering all 13 entities, REST export, BRE configuration, CE screening, stage gates, SLA escalation, plaintiff intelligence, EJ detection, GIS proximity, comment triage, AR management, cross-agency permit callouts, and error handling</li>
-  <li><strong>Lightning Web Components:</strong> <code>nepaPermitDependencies</code> — live cross-agency permit status on the IndividualApplication record page</li>
+  <li><strong>Apex Test Suite:</strong> 519+ tests across 37 classes covering all 13 entities, REST export, BRE configuration, CE screening, stage gates, SLA escalation, plaintiff intelligence, EJ detection, GIS proximity, comment triage, AR management, cross-agency permit callouts, and error handling</li>
+  <li><strong>Lightning Web Components (x2):</strong>
+    <ul>
+      <li><code>nepaPermitDependencies</code> — live cross-agency permit status table with critical-path flagging, colored status badges, and graceful degradation when an agency API is unreachable</li>
+      <li><code>nepaRiskIntelligenceCard</code> — bifurcated v3 risk score panel: Litigation Probability Score (0–100, tier badge, 6-factor disclosure) + Litigation Cost Exposure (normalized agency duration dimension, months median, percentile) + ESA low-confidence disclosure banner per OMB M-24-10</li>
+    </ul>
+  </li>
 </ol>
 
 ---
@@ -383,6 +399,20 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
 ---
 
 ## Revision History
+
+**3.3 (2026-05-18)** — IMP-001–010: v3 bifurcated risk score, OFD coordination tracker, federal friction multipliers, ESA low-confidence disclosure, agency duration CMT, sector-specific EC intake questions, `nepaRiskIntelligenceCard` LWC
+
+- **v3 litigation risk score (IMP-001):** Score bifurcated into Litigation Probability Score (85% weight, 6 factors) + Litigation Cost Exposure (15% weight, normalized agency duration dimension). Per-agency median durations from CourtListener bulk docket analysis (71M+ records): BOEM 6.5mo → FTA 33.4mo. Stored in `nepa_litigation_duration_cost__c`.
+- **ESA low-confidence disclosure (IMP-004):** `Low_Data_Confidence__c = true` on ESA `NEPA_Statute_Risk_Weight__mdt` record. `nepaRiskIntelligenceCard` LWC displays yellow warning banner when ESA is a scoring factor. OMB M-24-10 compliant.
+- **Federal friction multipliers (IMP-005):** Sector-specific federal-to-CEQA overhead multipliers: Military 1.65×, Water/Coastal 1.47×, Transportation 1.45×, Energy 1.09×. Derived from CEQ EIS Timeline data vs. California CEQA EIR baselines (Holland & Knight 2024; CEQAnet 2010–2024).
+- **OFD coordination tracker (IMP-006):** `ApplicationTimeline` extended with `nepa_ofd_track__c` (NEPA_Lead / Agency_Consultation / Permit_Milestone / Joint_ROD) and `nepa_coordinating_agency__c` (Lookup to Account). `NEPA_OFD_Milestone__mdt` CMT type pre-seeds 8 standard E.O. 13807 milestones.
+- **Agency duration CMT (IMP-007):** `NEPA_Agency_Duration_Cost__mdt` — 16 agency records with median duration and normalized cost dimension. Drives cost exposure component of v3 score.
+- **`nepaRiskIntelligenceCard` LWC (IMP-009):** Bifurcated v3 panel on IndividualApplication record page. Probability Score with tier badge + factor breakdown; Cost Exposure with agency/circuit duration display + percentile; ESA low-confidence banner.
+- **Sector-specific EC questions (IMP-008):** CE intake OmniScript extended with sector-specific extraordinary circumstances fields: `nepa_ec_multi_dod__c` (Military multi-installation DoD), `nepa_ec_usace_czma__c` (Water/Coastal CZMA + EFH dual-track). Both fields renamed from 45-char originals to comply with Salesforce 40-char API name limit.
+- **Test suite:** 514+ → 519+. 5 new test methods added for cost dimension, ESA disclosure, and OFD track validation.
+- **Custom Metadata Types:** 20 → 23 (`NEPA_Agency_Duration_Cost__mdt`, `NEPA_OFD_Milestone__mdt`, `NEPA_Risk_Threshold__mdt` added).
+- **LWC count:** 1 → 2 (`nepaRiskIntelligenceCard` added alongside `nepaPermitDependencies`).
+- **Flows:** 37 → 38.
 
 **3.2 (2026-05-17)** — Cross-agency permit dependency tracking and live NEPA REST API status
 

@@ -30,6 +30,8 @@ This solution addresses all four service delivery standards from CEQ's Permittin
 
 **Standard 4: Minimizing Timeline Uncertainty.** Analysis of 1,903 Final EIS records (CEQ EIS Timeline Data 2010–2024) shows that scoping is the universal bottleneck: 34 of 36 agencies have NOI→DEIS consuming 60–75% of total EIS time, yet most systems measure only total duration. The accelerator computes scoping overrun against 11 per-agency empirical baselines (FERC: 10 months; FAA: 47 months) rather than a government-wide average. The `ApplicationTimeline` object tracks all sub-milestones with SLA flags; coordinators see overrun risk before it materializes.
 
+One Federal Decision coordination tracking (IMP-006) operationalizes the Stage 16 finding that federal-state friction accounts for 1.09×–1.65× of timeline overhead by sector (Military 1.65×, Water/Coastal 1.47×, Transportation 1.45×, Energy 1.09× vs. California CEQA baseline). The OFD tracker converts E.O. 13807's master-schedule requirement into a live record view: each cooperating agency's milestones are tracked on the same `ApplicationTimeline` object, with track classification (NEPA_Lead, Agency_Consultation, Permit_Milestone, Joint_ROD) enabling dashboard filtering by bottleneck type. `NEPA_OFD_Milestone__mdt` pre-seeds 8 standard E.O. 13807 milestones — coordinators inherit a pre-structured master schedule at case creation and customize timing to their project. The Water/Coastal friction finding (1.47×) is operationalized as a pre-loaded Permit_Milestone for USACE Section 404 pre-application meeting, surfacing the CZMA/EFH dual-track review as a critical-path milestone before the EA is drafted.
+
 ---
 
 ## Minimum Functional Requirements
@@ -161,13 +163,15 @@ Analysis of 1,903 Final EIS records (CEQ EIS Timeline Data 2010–2024) shows a 
 
 **Late-stage litigation (2–5 years from a court-ordered remand).** PermitTEC v0.1 analysis (761 cases, PNNL) shows the conditions producing successful NEPA challenges are detectable before filing. Tribal Nation plaintiffs win 87.5% of NEPA cases. Energy projects in the 4th Circuit face a 28.6% agency win rate. The risk intelligence layer evaluates seven dimensions at every record save; scores ≥58 auto-create a legal review task; tribal consultation is a hard gate before EA/EIS publication. Note: the PermitTEC corpus captures projects that were litigated — communities that historically lacked resources to challenge decisions are structurally underrepresented in the data. The unconditional EJ/tribal routing gate compensates by flagging EJ-proximate projects for specialist review regardless of historical litigation frequency from that community.
 
+**Litigation cost exposure — independent of win probability.** CourtListener bulk docket analysis (71M+ records) produced per-agency median litigation durations that are independent of outcome: BOEM 6.5 months (lowest), BLM 17.5 months, FHWA 26.1 months, FTA 33.4 months (highest). Agencies with high win rates and agencies with low win rates share one characteristic — duration is driven by case complexity and court schedule, not outcome. Project sponsors making financing and sequencing decisions based on challenge-probability alone were missing a cost dimension. The v3 score (IMP-001) separates Litigation Probability Score (85% weight) from Litigation Cost Exposure (15% weight, normalized from these durations), so that a low-probability / high-duration agency (e.g., FTA at 33.4 months) receives appropriate risk weighting alongside a high-probability / short-duration agency. The `nepaRiskIntelligenceCard` LWC displays this bifurcated view on the IndividualApplication record page, with a low-confidence disclosure when ESA is a scoring factor (flat 1.48× multiplier pending TAILS/PCTS linkage), consistent with OMB M-24-10's requirement that automated scoring outputs disclose known limitations at point-of-use.
+
 **Demonstrated impact — Carrie Placer Mine (BLM-ID-B030-2019-0014-EA):** A real BLM Plan of Operations applied October 2017, decided November 2019 — 25 months. The same project, run through the accelerator's optimized workflow (parallel specialist coordination, seasonal survey scheduling, automated co-permit triggers, pre-submission CE screening), is modeled to resolve in approximately 8 months — a projection based on the optimized parallel workflow schedule applied to the same project record, not a measured outcome from a prior deployment. The accelerator does not change what the process requires; it removes the coordination failures that cause process time to accumulate.
 
 ---
 
 ## Readiness
 
-**Current state: production-ready.** The accelerator is fully deployed and verified against the CEQ PIC Standard v1.2.0. A 514-test Apex regression suite covers all 13 entities, the REST export API, BRE configuration integrity, CE screening, stage gate logic, SLA escalation, plaintiff intelligence, EJ detection, GIS proximity, comment agent routing, cross-agency permit callouts, and error handling. All tests pass. Code coverage exceeds 75%.
+**Current state: production-ready.** The accelerator is fully deployed and verified against the CEQ PIC Standard v1.2.0. A 519-test Apex regression suite covers all 13 entities, the REST export API, BRE configuration integrity, CE screening, stage gate logic, SLA escalation, plaintiff intelligence, EJ detection, GIS proximity, comment agent routing, cross-agency permit callouts, and error handling. All tests pass. Code coverage exceeds 75%.
 
 **Deployment in ~15 minutes:**
 ```
@@ -190,7 +194,7 @@ No infrastructure provisioning, no database migration, no vendor onboarding. The
 
 ## Multi-Agency Compatibility
 
-**Every agency-variable parameter is externalized to configuration.** All CE screening rules, risk weights, SLA targets, EIS scoping baselines, plaintiff profiles, and sector-circuit risk cells are stored in 19 Custom Metadata Types. Adding a new agency requires creating metadata records — no flow XML modifications, no Apex changes, no code deployment.
+**Every agency-variable parameter is externalized to configuration.** All CE screening rules, risk weights, SLA targets, EIS scoping baselines, plaintiff profiles, sector-circuit risk cells, OFD milestone templates, and agency litigation duration baselines are stored in 23 Custom Metadata Types. Adding a new agency requires creating metadata records — no flow XML modifications, no Apex changes, no code deployment.
 
 **CE Library by agency.** The `nepa_ce_library__c` object holds 2,105 categorical exclusions across 79 federal agencies from CEQ CE Explorer v2.0. BLM 516 DM citations, DOE 10 CFR 1021 Appendix B codes, Energy Policy Act Section 390 exclusions, and USFS 36 CFR 220.6 codes coexist without collision. Each record carries the CFR authority, plain-language description, acreage threshold, and GIS review requirement.
 

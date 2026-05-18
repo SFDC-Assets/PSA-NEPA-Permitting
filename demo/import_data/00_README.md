@@ -53,6 +53,7 @@ Load files strictly in number order. Each file's parent records must exist befor
 | 24 | `24_decision_payload.csv` | nepa_decision_payload__c | 1 | upsert via `nepa_process__r.nepa_federal_unique_id__c` | IndividualApplication (09) — load after step 23 |
 | 25 | `25_ar_export.csv` | nepa_ar_export__c | 1 | upsert via `nepa_process__r.nepa_federal_unique_id__c` | IndividualApplication (09) — load after step 24 |
 | 26 | `26_backfill_external_ids.apex` | **Apex script** | — | — | Run once against an org that has existing demo data without External_ID__c values. Deduplicates ApplicationTimeline (keeps oldest 25), deletes stale nepa_engagement__c records, backfills External_ID__c on PublicComplaint (2) and nepa_litigation__c (2). Safe to re-run (all DML is conditional on null). After running, re-upsert steps 11–12, 16–17 normally. |
+| 27 | `27_ofd_milestones.apex` | **Apex script** | — | — | Inserts 4 ApplicationTimeline OFD coordination milestone records for IDI-38709: Scoping Notice (NEPA_Lead/Completed), ESA §7 Initiation (Agency_Consultation/In Progress/USFWS), USACE Section 404 Pre-Application Meeting (Permit_Milestone/Scheduled/USACE), Record of Decision (Joint_ROD/Pending). Requires IndividualApplication and USFWS/USACE Account records to exist. Run after step 18. |
 
 ---
 
@@ -199,6 +200,7 @@ ServiceAppointment (14)
 | Field Manager issues Decision Record; applicant notified | ApplicationTimeline Decision Record event; `DEMO_TASK_008` |
 | Decision payload shows FONSI, Alt B, 3 alternatives, 5 mitigations | `nepa_decision_payload__c` (step 24) |
 | Administrative record package auto-generated at decision — 6 docs, 3 comments, status Completed | `nepa_ar_export__c` (step 25) |
+| OFD Coordination Tracker shows 4 milestones across NEPA_Lead / Agency_Consultation / Permit_Milestone / Joint_ROD tracks | `ApplicationTimeline` OFD records (step 27) |
 
 ---
 
@@ -239,7 +241,12 @@ sf data query --target-org $TARGET \
 
 sf data query --target-org $TARGET \
   --query "SELECT nepa_export_status__c, nepa_export_type__c, nepa_document_count__c, nepa_comment_count__c, nepa_completed_date__c FROM nepa_ar_export__c WHERE nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'"
+
+sf data query --target-org $TARGET \
+  --query "SELECT nepa_ofd_track__c, nepa_event_type__c, nepa_status__c, nepa_coordinating_agency__r.Name FROM ApplicationTimeline WHERE nepa_ofd_track__c != null AND nepa_related_process__r.nepa_federal_unique_id__c = 'IDI-38709' ORDER BY nepa_target_date__c"
 ```
+
+Expected for step 27 (OFD milestones): 4 rows — NEPA_Lead / Agency_Consultation / Permit_Milestone / Joint_ROD.
 
 ---
 
@@ -313,4 +320,7 @@ sf data delete bulk --sobject RegulatoryAuthority     --where "Name IN ('CEQ','D
 # Steps 24–25 cleanup
 sf data delete bulk --sobject nepa_ar_export__c       --where "nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
 sf data delete bulk --sobject nepa_decision_payload__c --where "nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
+
+# Step 27 cleanup (OFD milestones — run before ApplicationTimeline and IndividualApplication deletes above)
+sf data delete bulk --sobject ApplicationTimeline --where "nepa_ofd_track__c != null AND nepa_related_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
 ```
