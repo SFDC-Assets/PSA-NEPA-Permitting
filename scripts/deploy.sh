@@ -419,6 +419,21 @@ deploy "decision matrices" allow-failure \
     --source-dir force-app/main/default/decisionMatrixDefinition \
     --target-org "$TARGET_ORG"
 
+# ── phase 5c: bre expression sets ────────────────────────────────────────────
+# Deploy ESD metadata BEFORE DM rows are loaded and activated (Phase 5b-data).
+# Reason: the Metadata API snapshot validation for ESD deploys only fires when
+# the referenced DMs have been activated AND their snapshot was created via the
+# Setup UI. DMs deployed via Metadata API are Draft at this point — no snapshot
+# exists yet — so the ESD deploy succeeds. Activation happens after rows are
+# loaded in Phase 5c-activate below.
+phase_header "Phase 5c: BRE Expression Set definitions"
+# Deployed individually — batch ESD deploys trigger transient UNKNOWN_EXCEPTION.
+for esd in NEPA_CE_Screener NEPA_Permit_Coordinator NEPA_Litigation_Risk_Scorer; do
+    deploy "expression set: $esd" allow-failure \
+        --metadata "ExpressionSetDefinition:$esd" \
+        --target-org "$TARGET_ORG"
+done
+
 # ── phase 5b-data: bre decision matrix rows + activation ─────────────────────
 # Inserts CalculationMatrixRows from decision_matrix_rows/*.csv and activates
 # each DecisionMatrixDefinitionVersion via Tooling API PATCH (Metadata.status=Active).
@@ -429,6 +444,7 @@ deploy "decision matrices" allow-failure \
 #     atomically sets DMDV.Status=Active and CMV.IsEnabled=True
 #   - This is equivalent to clicking Activate in Setup → BRE → Decision Matrices
 #
+# Must run after Phase 5c (ESD deploy) and before Phase 5c-activate (ES activation).
 # Skipped in --check mode (no org writes during validation).
 if [[ "$DRY_RUN" == "false" ]]; then
     phase_header "Phase 5b-data: BRE Decision Matrix rows + activation"
@@ -442,24 +458,9 @@ else
     echo "    (skipped — dry-run mode; run: python3 scripts/load_decision_matrix_rows.py --org $TARGET_ORG --dry-run)"
 fi
 
-# ── phase 5c: bre expression sets ────────────────────────────────────────────
-# Must follow Phase 5b-data — ES definitions reference activated DM names.
-# ESDs are also activated programmatically by load_decision_matrix_rows.py
-# when --activate-es is passed. Here we deploy the metadata first, then
-# run activation in a second pass so the ES references resolve correctly.
-phase_header "Phase 5c: BRE Expression Set definitions"
-# Deployed individually — batch ESD deploys trigger transient UNKNOWN_EXCEPTION.
-for esd in NEPA_CE_Screener NEPA_Permit_Coordinator; do
-    deploy "expression set: $esd" allow-failure \
-        --metadata "ExpressionSetDefinition:$esd" \
-        --target-org "$TARGET_ORG"
-done
-# NEPA_Litigation_Risk_Scorer: deploy separately; requires DMs to be active first
-deploy "expression set: NEPA_Litigation_Risk_Scorer" allow-failure \
-    --metadata "ExpressionSetDefinition:NEPA_Litigation_Risk_Scorer" \
-    --target-org "$TARGET_ORG"
-
-# Activate Expression Set versions
+# ── phase 5c-activate: bre expression set activation ─────────────────────────
+# Activate ESDs after DMs are active. ESDs cannot be activated before their
+# referenced DMs are active (BRE runtime requirement).
 if [[ "$DRY_RUN" == "false" ]]; then
     phase_header "Phase 5c-activate: BRE Expression Set activation"
     python3 scripts/load_decision_matrix_rows.py \

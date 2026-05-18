@@ -12,7 +12,7 @@
         <rank>2</rank>
         <shouldShowExplExternally>false</shouldShowExplExternally>
         <startDate>2026-05-08T00:00:00.000Z</startDate>
-        <status>Active</status>
+        <status>Inactive</status>
 
         <!-- Step 1: Review Type points lookup -->
         <steps>

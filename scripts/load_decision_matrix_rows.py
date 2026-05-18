@@ -86,7 +86,7 @@ DM_CONFIG = {
 ES_VERSIONS = [
     "NEPA_CE_Screener_V3",
     "NEPA_Permit_Coordinator_V1",
-    "NEPA_Litigation_Risk_Scorer_V1",
+    "NEPA_Litigation_Risk_Scorer_V2",
 ]
 
 
