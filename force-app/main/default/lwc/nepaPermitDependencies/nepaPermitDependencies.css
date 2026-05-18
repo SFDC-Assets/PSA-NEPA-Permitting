@@ -2,6 +2,15 @@
     background-color: #fff3e0;
 }
 
+.nepa-col-permit-type { width: 18%; }
+.nepa-col-agency      { width: 9%;  }
+.nepa-col-status      { width: 14%; }
+.nepa-col-stage       { width: 11%; }
+.nepa-col-expected    { width: 12%; }
+.nepa-col-critical    { width: 10%; }
+.nepa-col-synced      { width: 14%; }
+.nepa-col-link        { width: 12%; }
+
 .slds-badge.slds-theme_success {
     background-color: #04844b;
     color: #ffffff;

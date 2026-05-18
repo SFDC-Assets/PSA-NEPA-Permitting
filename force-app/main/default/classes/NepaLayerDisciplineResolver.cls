@@ -8,6 +8,7 @@
  * The Flow handles deactivation/cancellation via filter-based recordUpdates,
  * then calls this action once per program to assemble the team and create WOs.
  */
+@SuppressWarnings('PMD.StdCyclomaticComplexity,PMD.NcssMethodCount')
 public with sharing class NepaLayerDisciplineResolver {
 
     /** Input variables for the invocable method. */

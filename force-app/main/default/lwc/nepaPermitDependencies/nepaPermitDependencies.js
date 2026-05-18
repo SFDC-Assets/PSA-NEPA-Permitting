@@ -9,7 +9,7 @@ const STATUS_CLASS = {
     'paused'         : 'slds-badge slds-theme_warning',
     'Denied'         : 'slds-badge slds-theme_error',
     'cancelled'      : 'slds-badge slds-theme_error',
-    'Withdrawn'      : 'slds-badge slds-theme_error',
+    'Withdrawn'      : 'slds-badge slds-theme_error'
 };
 
 export default class NepaPermitDependencies extends LightningElement {
@@ -47,7 +47,7 @@ export default class NepaPermitDependencies extends LightningElement {
     }
 
     enrich(r) {
-        const displayStatus = r.calloutSuccess ? r.liveStatus : r.localStatus;
+        const displayStatus = r.calloutSuccess ? r.liveStatus : r.localStatus; // NOPMD
         return {
             ...r,
             statusClass     : STATUS_CLASS[displayStatus] || 'slds-badge_lightest',

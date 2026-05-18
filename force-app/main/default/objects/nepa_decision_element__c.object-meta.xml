@@ -277,7 +277,7 @@
     <fields>
         <fullName>nepa_title__c</fullName>
         <description>Short descriptive name for this decision criterion or determination. Maps to the CEQ standard decision_element.title property.</description>
-        <inlineHelpText>Short name for this decision element (e.g., "CE Acreage Limit — BLM Oil & Gas").</inlineHelpText>
+        <inlineHelpText>Short name for this decision element (e.g., "CE Acreage Limit — BLM Oil &amp; Gas").</inlineHelpText>
         <label>Title</label>
         <length>255</length>
         <required>false</required>
