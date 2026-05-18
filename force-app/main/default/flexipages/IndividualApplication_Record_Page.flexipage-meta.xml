@@ -34,12 +34,6 @@
         <type>Region</type>
     </flexiPageRegions>
 
-    <!-- NEPA PROCESS PATH — subHeader region activates the PathAssistant when enabled in org -->
-    <flexiPageRegions>
-        <mode>Replace</mode>
-        <name>subHeader</name>
-        <type>Region</type>
-    </flexiPageRegions>
 
     <!-- SECTION 1: Process Overview — Column 1 -->
     <flexiPageRegions>
@@ -1807,10 +1801,6 @@
         </itemInstances>
         <itemInstances>
             <componentInstance>
-                <componentInstanceProperties>
-                    <name>recordId</name>
-                    <value>{!recordId}</value>
-                </componentInstanceProperties>
                 <componentName>c:nepaRiskIntelligenceCard</componentName>
                 <identifier>ia_nepa_risk_intelligence_card</identifier>
             </componentInstance>

@@ -8,6 +8,7 @@
     </targets>
     <targetConfigs>
         <targetConfig targets="lightning__RecordPage">
+            <property name="recordId" type="String" label="Record Id" />
             <objects>
                 <object>IndividualApplication</object>
             </objects>
