@@ -18,7 +18,8 @@
 #   3  Custom labels           — referenced by Apex and flows
 #   4  Permission set          — FLS grants require fields to exist first
 #   5  Custom metadata records — CMT records used by flow decision logic
-#   5b BRE Decision Matrices   — DecisionMatrixDefinition metadata (schema only; rows are UI-only)
+#   5b BRE Decision Matrices   — DecisionMatrixDefinition metadata schema deploy
+#   5b-data                   — row insertion + activation via Tooling API (replaces manual UI workflow)
 #   5c BRE Expression Sets     — ExpressionSetDefinition metadata (must follow DMs they reference)
 #   6  Remote sites + creds    — needed before any callout-capable flows compile
 #   7  Apex classes            — must precede flows that call @InvocableMethod actions
@@ -33,11 +34,10 @@
 #  15  FlexiPages              — depend on fields, layouts, LWC
 #  16  Lightning app           — depends on tabs
 #
-# NOTE: BRE Decision Matrix rows (decision_matrix_rows/*.csv) cannot be deployed
-# via Metadata API or CLI — this is a Salesforce platform limitation. After running
-# this script, import each CSV manually via Setup → Business Rules Engine →
-# Decision Matrices → open the matrix → V1 → Import CSV.
-# See decision_matrix_rows/README.md for the full import sequence.
+# NOTE: BRE Decision Matrix rows are loaded and activated automatically in
+# Phase 5b-data via scripts/load_decision_matrix_rows.py. No manual UI steps
+# are required. See decision_matrix_rows/README.md for the data reference and
+# manual re-run instructions if Phase 5b-data fails.
 #
 # Known deployment idiosyncrasies
 # ──────────────────────────────
@@ -412,42 +412,63 @@ deploy "custom metadata" \
     --target-org "$TARGET_ORG"
 
 # ── phase 5b: bre decision matrices ──────────────────────────────────────────
-# Schema-only deploy — rows and UI activation must follow via Setup UI.
-#
-# CRITICAL: After this script runs, each DM must be Activated via Setup UI
-# (Setup → BRE → Decision Matrices → open DM → Activate). Metadata API deploy
-# alone does NOT create the LatestVersionSnapshotId that the BRE runtime requires.
-# Without UI activation, the BRE runtime fails with:
-#   "Cannot invoke RulesEngineInputInterview.getDecisionInterviewMap() because
-#    rulesEngineInputInterview is null"
-# This is a Salesforce platform limitation — there is no CLI workaround.
-# See decision_matrix_rows/README.md for the full activation + import sequence.
+# Deploys DecisionMatrixDefinition schemas (columns + version structure only).
+# Rows and activation are handled in Phase 5b-data below.
 phase_header "Phase 5b: BRE Decision Matrix definitions"
 deploy "decision matrices" allow-failure \
     --source-dir force-app/main/default/decisionMatrixDefinition \
     --target-org "$TARGET_ORG"
 
-# ── phase 5c: bre expression sets ────────────────────────────────────────────
-# Must follow Phase 5b — ES definitions reference DM names in their step elements.
+# ── phase 5b-data: bre decision matrix rows + activation ─────────────────────
+# Inserts CalculationMatrixRows from decision_matrix_rows/*.csv and activates
+# each DecisionMatrixDefinitionVersion via Tooling API PATCH (Metadata.status=Active).
 #
-# CRITICAL: Same activation requirement as Phase 5b. After deploy, go to
-# Setup → BRE → Expression Sets → open each ES → Activate. Without this,
-# the ES version has no LatestVersionSnapshotId and the BRE runtime NPEs.
+# Why this works:
+#   - CalculationMatrixRow records can only be written while CMV.IsEnabled=False
+#   - Tooling API PATCH of DecisionMatrixDefinitionVersion.Metadata.status="Active"
+#     atomically sets DMDV.Status=Active and CMV.IsEnabled=True
+#   - This is equivalent to clicking Activate in Setup → BRE → Decision Matrices
+#
+# Skipped in --check mode (no org writes during validation).
+if [[ "$DRY_RUN" == "false" ]]; then
+    phase_header "Phase 5b-data: BRE Decision Matrix rows + activation"
+    python3 scripts/load_decision_matrix_rows.py \
+        --org "$TARGET_ORG" \
+        --skip-existing \
+        --csv-dir decision_matrix_rows \
+        || echo "    WARNING: DM row load encountered errors — check output above"
+else
+    phase_header "Phase 5b-data: BRE Decision Matrix rows + activation (SKIPPED in --check)"
+    echo "    (skipped — dry-run mode; run: python3 scripts/load_decision_matrix_rows.py --org $TARGET_ORG --dry-run)"
+fi
+
+# ── phase 5c: bre expression sets ────────────────────────────────────────────
+# Must follow Phase 5b-data — ES definitions reference activated DM names.
+# ESDs are also activated programmatically by load_decision_matrix_rows.py
+# when --activate-es is passed. Here we deploy the metadata first, then
+# run activation in a second pass so the ES references resolve correctly.
 phase_header "Phase 5c: BRE Expression Set definitions"
-# Deployed individually (not batched) so that the 2 working ESDs succeed even
-# when NEPA_Litigation_Risk_Scorer fails with LatestVersionSnapshotId on first
-# deploy. That ESD requires: UI creation of a snapshot via Setup → BRE →
-# Expression Sets → Activate, then a second deploy attempt.
-# allow-failure on each so the pipeline continues past the known blocker.
+# Deployed individually — batch ESD deploys trigger transient UNKNOWN_EXCEPTION.
 for esd in NEPA_CE_Screener NEPA_Permit_Coordinator; do
     deploy "expression set: $esd" allow-failure \
         --metadata "ExpressionSetDefinition:$esd" \
         --target-org "$TARGET_ORG"
 done
-# NEPA_Litigation_Risk_Scorer: deploy separately; known to fail until UI-activated
+# NEPA_Litigation_Risk_Scorer: deploy separately; requires DMs to be active first
 deploy "expression set: NEPA_Litigation_Risk_Scorer" allow-failure \
     --metadata "ExpressionSetDefinition:NEPA_Litigation_Risk_Scorer" \
     --target-org "$TARGET_ORG"
+
+# Activate Expression Set versions
+if [[ "$DRY_RUN" == "false" ]]; then
+    phase_header "Phase 5c-activate: BRE Expression Set activation"
+    python3 scripts/load_decision_matrix_rows.py \
+        --org "$TARGET_ORG" \
+        --activate-es \
+        --skip-existing \
+        --csv-dir decision_matrix_rows \
+        || echo "    WARNING: ES activation encountered errors — check output above"
+fi
 
 # ── phase 6: remote sites + named credentials ─────────────────────────────────
 phase_header "Phase 6: Remote site settings and named credentials"
@@ -792,28 +813,13 @@ else
     echo "       NEPA_Error_Event_Handler"
     echo "       NEPA_FlowError_CountIncrementer"
     echo ""
-    echo "    3. Activate BRE Decision Matrices and Expression Sets (REQUIRED — cannot be done via CLI):"
-    echo "       CRITICAL: Metadata API deploy alone does NOT create the LatestVersionSnapshotId"
-    echo "       the BRE runtime requires. Without UI activation the BRE fails with:"
-    echo "         'Cannot invoke RulesEngineInputInterview.getDecisionInterviewMap()'"
-    echo "       a) Setup > Business Rules Engine > Decision Matrices"
-    echo "          Open each DM below, click the active version, click Activate (if not already active):"
-    echo "            NEPA_Risk_ReviewType, NEPA_Risk_Agency, NEPA_Risk_Circuit"
-    echo "            NEPA_CE_Screener_NAICS, NEPA_CE_Screener_Tier1, NEPA_CE_Screener_Tier2"
-    echo "            NEPA_Permit_Matrix_BRE"
-    echo "       b) Import rows for each Risk Scorer DM (CSV in decision_matrix_rows/):"
-    echo "         NEPA_Risk_ReviewType       → NEPA_Risk_ReviewType.csv"
-    echo "         NEPA_Risk_Agency           → NEPA_Risk_Agency.csv  (uses abbreviations: USFS/BLM/FERC/USACE/USFWS)"
-    echo "         NEPA_Risk_Circuit          → NEPA_Risk_Circuit.csv"
-    echo "       c) Also import rows for CE Screener and Permit Matrix DMs:"
-    echo "         NEPA_CE_Screener_NAICS     → NEPA_CE_Screener_NAICS.csv"
-    echo "         NEPA_CE_Screener_Tier1     → NEPA_CE_Screener_Tier1.csv"
-    echo "         NEPA_CE_Screener_Tier2     → NEPA_CE_Screener_Tier2.csv"
-    echo "         NEPA_Permit_Matrix         → NEPA_Permit_Matrix_BRE.csv"
-    echo "       d) Setup > BRE > Expression Sets — Activate each ES:"
-    echo "            NEPA_Litigation_Risk_Scorer (V1), NEPA_CE_Screener (V3)"
-    echo "       e) Deactivate NEPA CE Screener V1 and V2 (leave V3 active only)."
-    echo "       See decision_matrix_rows/README.md for full activation + import sequence."
+    echo "    3. BRE Decision Matrices and Expression Sets — automated by Phase 5b-data above."
+    echo "       If Phase 5b-data reported errors, re-run manually:"
+    echo "         python3 scripts/load_decision_matrix_rows.py --org $TARGET_ORG --activate-es"
+    echo "       To reload specific DMs only:"
+    echo "         python3 scripts/load_decision_matrix_rows.py --org $TARGET_ORG --dm NEPA_Risk_Agency --no-skip"
+    echo "       To preview without writing:"
+    echo "         python3 scripts/load_decision_matrix_rows.py --org $TARGET_ORG --dry-run"
     echo ""
     echo "    4. Verify Custom Metadata records loaded:"
     echo "       Setup > Custom Metadata Types > each NEPA_* type > Manage Records"

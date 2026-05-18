@@ -22,17 +22,16 @@ Once your org is provisioned, note the **My Domain URL** from Setup → My Domai
 
 ## Known Manual Steps
 
-The deploy script automates nearly everything, but two steps **cannot** be scripted due to Salesforce platform limitations. Be ready for these before you start:
+The deploy script automates nearly everything. The following steps still require manual action:
 
 | Step | What you'll do | When |
 |---|---|---|
-| **BRE Decision Matrix row import** | Upload 8 CSV files via Setup → Business Rules Engine → Decision Matrices | After Step 3 (deploy), before Step 7 (verification) |
 | **Scheduled flow configuration** | Open `NEPA_SLA_Escalation_Monitor` in Flow Builder, set schedule to Daily 7 AM, activate | After Step 4c (Flow activation) |
 | **CE Library data load** | Run `python3 scripts/load_ce_library.py --org NEPADEV` to populate 314 CE reference records | After Step 3 (deploy), see Step 4e |
 | **Lightning Record Page assignment** | In Setup → Lightning App Builder, assign **8** custom pages as Org Default (IndividualApplication, Program, PublicComplaint, Engagement, Litigation, CE Library, Decision Payload, Decision Log) | After Step 3 (deploy), see Step 4d |
 | **Agency Named Credential URLs** | In Setup → Security → Named Credentials, update the 3 agency credentials (`NEPA_Agency_USACE`, `NEPA_Agency_USFWS`, `NEPA_Agency_BLM`) from placeholder hostnames to real agency NEPA API URLs | After Step 3 (deploy), see DEVELOPER_GUIDE.md Task 6 |
 
-The BRE import is the most common failure point. If you skip it, CE Screener and Risk Scorer will throw runtime errors. See [Step 4b](#4b-import-bre-decision-matrix-rows) for the full procedure.
+**BRE Decision Matrix rows and activation are now fully automated.** `deploy.sh` Phase 5b-data calls `scripts/load_decision_matrix_rows.py`, which inserts `CalculationMatrixRow` records from the CSVs and activates each Decision Matrix and Expression Set version via the Salesforce Tooling API. No Setup UI steps are required. If Phase 5b-data reports errors, re-run manually: `python3 scripts/load_decision_matrix_rows.py --org <alias> --activate-es`. See [Step 4b](#4b-bre-decision-matrix-verification) for verification queries.
 
 ---
 
@@ -144,8 +143,10 @@ The script deploys in dependency order:
 | 3 | Custom labels |
 | 4 | NEPA_Permitting permission set |
 | 5 | Custom metadata seed records (CE rules, risk weights, SLA configs, permit matrix, required docs, `NEPA_Process_Model__mdt` process type definitions) |
-| 5b | BRE Decision Matrix definitions (schema only — rows imported manually after deploy) |
+| 5b | BRE Decision Matrix definitions (schema deploy) |
+| 5b-data | BRE Decision Matrix rows loaded + versions activated via Tooling API (automated) |
 | 5c | BRE Expression Set definitions |
+| 5c-activate | BRE Expression Set versions activated via Tooling API (automated) |
 | 6 | Remote site settings and named credentials |
 | 7 | Apex classes (with RunLocalTests) |
 | 8 | Flows (deployed individually with retry) |
@@ -153,7 +154,7 @@ The script deploys in dependency order:
 | 8c | OmniStudio DataRaptors and Integration Procedures |
 | 9–16 | Tabs, report types, reports, dashboards, layouts, LWC, FlexiPages, Lightning app |
 
-Expected automated deploy time: 10–15 minutes. Add ~15 minutes for 4 required manual post-deploy steps (BRE activation, CSV import, field type conversion, record type setup) documented in DEVELOPER_GUIDE.md Post-Deploy Checklist. **Total end-to-end: ~30 minutes.**
+Expected automated deploy time: 10–15 minutes. Add ~10 minutes for manual post-deploy steps (flow activation, field type conversion, record type setup) documented in DEVELOPER_GUIDE.md Post-Deploy Checklist. BRE row loading and activation are handled automatically during deploy. **Total end-to-end: ~25 minutes.**
 
 ### Option B — Single-shot manifest deploy (re-deploy to existing org)
 
@@ -174,7 +175,7 @@ sf project deploy start \
 | `OmniDataTransform` / `OmniIntegrationProcedure` / `OmniScript` | Deployed via standard Metadata API in Phase 8c; excluded here because `DRUpsertDetectedLayer` requires a two-step deploy with globalKey patching that the phased script handles automatically |
 | `BotVersion` | Requires Agentforce agent publish workflow; deploy via Agent CLI |
 | `ConnectedApp:NEPA_CEQExport_API` | XML structure error (`oauthFlows` invalid in `oauthConfig`); fix before including |
-| `ExpressionSetDefinition` | Platform rejects deploy if a version is already active; manage versions via BRE UI |
+| `ExpressionSetDefinition` | Platform rejects deploy if a version is already active; activation handled by `scripts/load_decision_matrix_rows.py --activate-es` (Phase 5c-activate) |
 | `FlexiPage:Program_Record_Page` | Some orgs have this page pre-bound to `CGC_Program__c`; excluded to avoid sobjectType conflict |
 | `Flow:NEPA_EIS_Section_Assembler` + `NEPA_EIS_Section_Draft_Trigger` | Require Einstein Generative AI provisioning |
 
@@ -204,31 +205,33 @@ sf data query \
   --target-org NEPADEV
 ```
 
-### 4b. Import BRE Decision Matrix Rows
+### 4b. BRE Decision Matrix Verification
 
-The BRE (Business Rules Engine) Decision Matrix rows **cannot be deployed via CLI or Metadata API** — this is a Salesforce platform limitation (deploying the schema via Metadata API does not create the runtime snapshot required to execute rules). After deploy, import each CSV from `decision_matrix_rows/` manually:
+BRE row loading and version activation are handled automatically by `deploy.sh` Phase 5b-data. You should see output like this during deploy:
 
-1. Go to **Setup → Business Rules Engine → Decision Matrices**
-2. Open the matrix, click the **V1** version, then click **Import CSV**
-3. Upload the CSV — column headers match automatically
+```
+==> Phase 5b-data: BRE Decision Matrix rows + activation
+  NEPA_Risk_Agency_V1: 7 rows from NEPA_Risk_Agency.csv, DMDV.Status=Draft, CMV.IsEnabled=False
+    Inserted 7/7 rows (0 errors)
+    Activated DMDV NEPA_Risk_Agency_V1
+  ...
+  DM processing complete: 8/8 succeeded
+```
 
-| CSV file | Decision Matrix | Notes |
-|---|---|---|
-| `NEPA_CE_Screener_NAICS.csv` | NEPA CE Screener - NAICS Routing | |
-| `NEPA_CE_Screener_Tier1.csv` | NEPA CE Screener - Tier 1 Agency Sector Rules | |
-| `NEPA_CE_Screener_Tier2.csv` | NEPA CE Screener - Tier 2 Agency Action Type Rules | |
-| `NEPA_Risk_ReviewType.csv` | NEPA Risk Scorer - Review Type Points | |
-| `NEPA_Risk_Agency.csv` | NEPA Risk Scorer - Agency Risk Points | Calibrated from PermitTEC loss rates |
-| `NEPA_Risk_Circuit.csv` | NEPA Risk Scorer - Circuit Risk Points | Calibrated from Stage 7 multipliers |
-| `NEPA_Permit_Matrix_BRE.csv` | NEPA Permit Matrix | |
-| `NEPA_Risk_SectorCircuit.csv` | NEPA Risk Scorer - Sector Circuit Risk Points | **Import only after activating the DM.** Required for BRE V3. See [decision_matrix_rows/README.md](../decision_matrix_rows/README.md). |
+**If Phase 5b-data fails** or you need to re-run it:
 
-**Import order matters for one file:** Import the first 7 CSVs (all except `NEPA_Risk_SectorCircuit.csv`), then activate each Decision Matrix version in Setup → BRE → Decision Matrices. Then import `NEPA_Risk_SectorCircuit.csv` last — it requires the `NEPA Risk Scorer - Sector Circuit Risk Points` DM to already be active before rows are loaded.
+```bash
+# Re-run all DMs + activate Expression Sets
+python3 scripts/load_decision_matrix_rows.py --org <alias> --activate-es
 
-After all CSVs are imported and Decision Matrices are activated, go to **Setup → BRE → Expression Sets** and activate each Expression Set version:
-- **NEPA CE Screener**: activate V2 (the current active version)
-- **NEPA Litigation Risk Scorer**: activate V2 (V3 remains Draft until `NEPA_Risk_SectorCircuit` DM rows are loaded and validated in sandbox)
-- **NEPA Permit Coordinator**: activate V2
+# Re-run a specific DM (forces reload even if already active)
+python3 scripts/load_decision_matrix_rows.py --org <alias> --dm NEPA_Risk_Agency --no-skip
+
+# Preview without writing
+python3 scripts/load_decision_matrix_rows.py --org <alias> --dry-run
+```
+
+See [decision_matrix_rows/README.md](../decision_matrix_rows/README.md) for the full re-run reference.
 
 ### 4c. Activate Flows
 
@@ -704,7 +707,7 @@ This confirms the AI AUP guardrail is working: AI recommends, humans confirm.
 
 The Risk Scorer uses the **NEPA_Litigation_Risk_Scorer** BRE Expression Set, which looks up ReviewType, Agency, and Circuit points from Decision Matrices. Statute points (CWA, ESA, NHPA) are pre-computed in the flow before calling the ES.
 
-**Prerequisite:** The three Risk Scorer Decision Matrices must have rows loaded (Step 4b above) or the ES will return 0 for all DM lookups and the score will reflect only statute points.
+**Prerequisite:** The three Risk Scorer Decision Matrices must have rows loaded — handled automatically by `deploy.sh` Phase 5b-data. Without rows, DM lookups return 0 for ReviewType, Agency, and Circuit and the score will reflect only statute points. Verify with the SOQL query in Step 4b.
 
 1. Open the **Wind River Pipeline EIS** process record.
 2. Change **NEPA Review Type** to `EIS` (or if already set, change it to `EA` and back to `EIS`).
@@ -814,7 +817,15 @@ sf data query \
 
 Expected: 14 rows (13 circuits + Default).
 
-To confirm BRE Decision Matrix rows were imported correctly, check row counts in Setup → Business Rules Engine → Decision Matrices. Expected counts after importing all CSVs:
+To confirm BRE Decision Matrix rows were loaded correctly, query row counts via CLI:
+
+```bash
+sf data query \
+  --query "SELECT CalculationMatrixVersionId, COUNT(Id) cnt FROM CalculationMatrixRow GROUP BY CalculationMatrixVersionId" \
+  --target-org <alias>
+```
+
+Expected counts per active version:
 
 | Decision Matrix | Expected rows |
 |---|---|
@@ -825,7 +836,17 @@ To confirm BRE Decision Matrix rows were imported correctly, check row counts in
 | NEPA Risk Scorer - Agency Risk Points | 7 (BLM, USFS, FERC, USACE, USFWS, FHWA, Default) |
 | NEPA Risk Scorer - Circuit Risk Points | 13 (12 circuits + DEFAULT wildcard) |
 | NEPA Permit Matrix | 9 |
-| NEPA Risk Scorer - Sector Circuit Risk Points | 17 (16 sector\|circuit cells + `*` wildcard) — V3 only; import after activating DM |
+| NEPA Risk Scorer - Sector Circuit Risk Points | 17 (16 sector\|circuit cells + `*` wildcard) |
+
+Also verify all versions are Active:
+
+```bash
+sf data query \
+  --query "SELECT Name, IsEnabled FROM CalculationMatrixVersion WHERE Name LIKE 'NEPA%' ORDER BY Name" \
+  --target-org <alias>
+```
+
+Expected: all 8 versions show `IsEnabled=true`.
 
 Note: `NEPA_Permit_Matrix__mdt` CMT records remain in the repo as the authoritative source of truth for permit matrix data. The BRE Decision Matrix (`NEPA_Permit_Matrix_BRE`) mirrors these rows and is the runtime lookup used by the `NEPA_Permit_Coordinator` flow.
 
@@ -895,10 +916,10 @@ Expected: 1 or more CE Library records matching the term "pipeline" across exclu
 Verify the flow version that is Active is the correct one. Check Setup → Flows → click the flow name → confirm the Active version is the latest.
 
 **`CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY` on flow activation**
-Activate subflows before parent flows. The order in Step 4b is designed to prevent this. If you see it, check which subflow the error names and activate that first.
+Activate subflows before parent flows. The activation order in Step 4c is designed to prevent this. If you see it, check which subflow the error names and activate that first.
 
 **Risk score is 0 after setting `nepa_review_type__c`**
-The `NEPA_Litigation_Risk_Scorer` fires async (`AsyncAfterCommit`). Wait 5–10 seconds and refresh. If still 0, check two things: (1) the related project has `nepa_circuit__c` and `nepa_lead_agency__c` set — the scorer reads both from the parent Program; (2) the BRE Decision Matrices have rows loaded (Step 4b). Without rows, DM lookups return 0 for ReviewType, Agency, and Circuit — only statute points will appear.
+The `NEPA_Litigation_Risk_Scorer` fires async (`AsyncAfterCommit`). Wait 5–10 seconds and refresh. If still 0, check two things: (1) the related project has `nepa_circuit__c` and `nepa_lead_agency__c` set — the scorer reads both from the parent Program; (2) the BRE Decision Matrices have rows loaded (Phase 5b-data during deploy). Without rows, DM lookups return 0 for ReviewType, Agency, and Circuit — only statute points will appear. Verify with the SOQL query in Step 4b or re-run `python3 scripts/load_decision_matrix_rows.py --org <alias>`.
 
 **CE Screener does not fire**
 The screener fires when `nepa_action_type__c`, `nepa_disturbance_acres__c`, or `nepa_applicant_naics__c` changes on an IndividualApplication that has a related Program. Ensure the process is linked to a project.

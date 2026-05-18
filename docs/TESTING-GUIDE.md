@@ -2,7 +2,7 @@
 
 End-to-end test scenarios for the PSA-NEPA accelerator's live-integration and UI-dependent flows. Automated Apex tests cover logic correctness for all features; the steps in this guide verify production integration paths — async flow triggers, HTTP callouts, REST connectivity, BRE activation state, and UI-layer behavior that Apex cannot reach.
 
-**Prerequisites:** Solution deployed, permission set assigned, BRE Decision Matrix rows imported, 33 core flows active (see QUICKSTART.md Step 4c for the activation list; 4 flows are deferred and not required for testing), sample data loaded. See QUICKSTART.md Steps 3–5 if any of these are incomplete.
+**Prerequisites:** Solution deployed, permission set assigned, BRE Decision Matrix rows loaded (automated by Phase 5b-data in `deploy.sh`), 33 core flows active (see QUICKSTART.md Step 4c for the activation list; 4 flows are deferred and not required for testing), sample data loaded. See QUICKSTART.md Steps 3–5 if any of these are incomplete.
 
 **Test suite size:** 37 test classes, 519+ test methods across all feature areas. Run `sf apex run test --test-level RunLocalTests` to execute the full automated suite (see [Section 20](#20-apex-test-suite)).
 
@@ -129,7 +129,7 @@ Record all six IDs — they are referenced throughout this guide.
 
 **Pass criteria:** All four fields populated; tier = Very High; score factors string present.
 
-**If score is 0:** Check that (a) BRE Decision Matrix rows are loaded — go to Setup → Business Rules Engine → Decision Matrices and verify row counts per QUICKSTART Step 7g, and (b) the parent Program has `nepa_record_owner_agency__c` and `nepa_circuit__c` populated. The Risk Scorer reads both from the parent Program via a `Get_RelatedProject` query.
+**If score is 0:** Check that (a) BRE Decision Matrix rows are loaded — run the SOQL query below (Section 21a) to verify row counts, and (b) the parent Program has `nepa_record_owner_agency__c` and `nepa_circuit__c` populated. The Risk Scorer reads both from the parent Program via a `Get_RelatedProject` query.
 
 ---
 
@@ -508,30 +508,56 @@ sf apex run test \
 
 ### 21a. Decision Matrix Row Counts
 
-In the org, go to **Setup → Business Rules Engine → Decision Matrices** and verify:
+Run the following SOQL to verify row counts across all loaded Decision Matrix versions:
 
-| Decision Matrix | Expected row count |
+```bash
+sf data query \
+  --query "SELECT CalculationMatrixVersion.Name, COUNT(Id) cnt FROM CalculationMatrixRow GROUP BY CalculationMatrixVersion.Name ORDER BY CalculationMatrixVersion.Name" \
+  --target-org <alias>
+```
+
+Expected counts:
+
+| CalculationMatrixVersion.Name | Expected cnt |
 |---|---|
-| NEPA CE Screener - NAICS Routing | 7 |
-| NEPA CE Screener - Tier 1 Agency Sector Rules | 17 |
-| NEPA CE Screener - Tier 2 Agency Action Type Rules | 16 |
-| NEPA Risk Scorer - Review Type Points | 4 |
-| NEPA Risk Scorer - Agency Risk Points | 7 |
-| NEPA Risk Scorer - Circuit Risk Points | 13 |
-| NEPA Permit Matrix | 9 |
-| NEPA Risk Scorer - Sector Circuit Risk Points | 17 (V3 only) |
+| NEPA CE Screener - NAICS Routing V1 | 7 |
+| NEPA CE Screener - Tier 1 Agency Sector Rules V1 | 17 |
+| NEPA CE Screener - Tier 2 Agency Action Type Rules V1 | 16 |
+| NEPA Risk Scorer - Review Type Points V1 | 4 |
+| NEPA Risk Scorer - Agency Risk Points V1 | 7 |
+| NEPA Risk Scorer - Circuit Risk Points V1 | 13 |
+| NEPA Permit Matrix V1 | 9 |
+| NEPA Risk Scorer - Sector Circuit Risk Points V1 | 17 (V3 only) |
 
-If a matrix shows 0 rows, re-import the corresponding CSV from `decision_matrix_rows/` per QUICKSTART Step 4b.
+If a version shows 0 rows, re-run the load script:
+
+```bash
+python3 scripts/load_decision_matrix_rows.py --org <alias> --dm <DM_dev_name> --no-skip
+```
 
 ### 21b. Expression Set Activation Status
 
-Go to **Setup → Business Rules Engine → Expression Sets** and verify:
+Run the following SOQL to verify activation state:
+
+```bash
+sf data query \
+  --query "SELECT Name, IsEnabled FROM CalculationMatrixVersion WHERE Name LIKE 'NEPA%' ORDER BY Name" \
+  --target-org <alias>
+```
+
+All V1 versions should show `IsEnabled: true`. To re-activate Expression Sets if needed:
+
+```bash
+python3 scripts/load_decision_matrix_rows.py --org <alias> --activate-es --no-skip
+```
+
+Expected active Expression Set versions:
 
 | Expression Set | Active version |
 |---|---|
-| NEPA CE Screener | V2 Active |
-| NEPA Litigation Risk Scorer | V2 Active (V3 Draft) |
-| NEPA Permit Coordinator | V2 Active |
+| NEPA CE Screener | V3 Active |
+| NEPA Litigation Risk Scorer | V1 Active |
+| NEPA Permit Coordinator | V1 Active |
 
 ---
 
@@ -570,7 +596,7 @@ Use this matrix to track test execution. Mark each test ✅ Pass, ❌ Fail, or �
 
 | Symptom | Likely cause | Resolution |
 |---|---|---|
-| Risk score = 0 after save | BRE DM rows not loaded | Import CSVs per QUICKSTART Step 4b |
+| Risk score = 0 after save | BRE DM rows not loaded | Re-run `python3 scripts/load_decision_matrix_rows.py --org <alias> --no-skip` then verify row counts per Section 21a |
 | Risk score = 0 after 30+ seconds | Parent Program missing `nepa_circuit__c` or `nepa_record_owner_agency__c` | Populate both fields on the Program |
 | Tribal flag not set | `NEPA_Plaintiff_Profile__mdt` has no entry for the commenter org | Add org to CMT or check spelling exactly matches `nepa_organization__c` |
 | Agency tier not updating | `NEPA_Agency_Tier_Setter` flow not active | Activate per QUICKSTART Step 4c item 25 |

@@ -9,16 +9,19 @@ This guide covers build tasks and the demo validation sprint, in priority order.
 
 ## Post-Deploy Checklist (Required After Every Deployment to a New Org)
 
-The `sf project deploy start` command deploys all metadata — but four items require manual Setup steps that the Metadata API cannot automate. **Do not skip these.** The CE Screener and Administrative Record flows will not work until all four are complete.
+The `sf project deploy start` command (via `deploy.sh`) deploys all metadata and automates BRE row loading and activation. The following items still require manual Setup steps:
 
 | # | Step | Where in Setup | Time |
 |---|---|---|---|
-| **1** | **Activate each BRE Decision Matrix** | Setup → Business Rules Engine → Decision Tables. Open each table → click **Activate**. Repeat for all Expression Sets. | ~5 min |
-| **2** | **Import Decision Matrix row CSVs** | Setup → Business Rules Engine → [table name] → Import. Upload the corresponding CSV from `/decision_matrix_rows/`. Activate after import. | ~5 min |
-| **3** | **Convert `nepa_process_stage__c` from Text to Picklist** (first-time only, or if deploying to an org with existing records) | Setup → Object Manager → IndividualApplication → Fields and Relationships → `nepa_process_stage__c` → Edit → change type to Picklist → Save. Then re-deploy the field. | ~3 min |
-| **4** | **Add ROD and FONSI record types** | Setup → Object Manager → IndividualApplication → Record Types → New. Add `ROD` and `FONSI` record types. Required for the `NEPA_Close_Administrative_Record` flow entry condition. | ~2 min |
+| **1** | **Convert `nepa_process_stage__c` from Text to Picklist** (first-time only, or if deploying to an org with existing records) | Setup → Object Manager → IndividualApplication → Fields and Relationships → `nepa_process_stage__c` → Edit → change type to Picklist → Save. Then re-deploy the field. | ~3 min |
+| **2** | **Add ROD and FONSI record types** | Setup → Object Manager → IndividualApplication → Record Types → New. Add `ROD` and `FONSI` record types. Required for the `NEPA_Close_Administrative_Record` flow entry condition. | ~2 min |
 
-**Total: ~15 minutes of automated deployment + ~15 minutes of manual post-deploy steps ≈ 30 minutes end-to-end.**
+**BRE Decision Matrix rows and Expression Set activation are automated** by `deploy.sh` Phase 5b-data. No Setup UI steps are needed. If Phase 5b-data fails, re-run:
+```bash
+python3 scripts/load_decision_matrix_rows.py --org <alias> --activate-es
+```
+
+**Total: ~15 minutes of automated deployment + ~5 minutes of manual post-deploy steps ≈ 20 minutes end-to-end.**
 
 ---
 

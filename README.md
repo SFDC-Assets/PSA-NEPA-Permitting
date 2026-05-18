@@ -89,7 +89,7 @@ sf org login web --alias nepademo    # replace 'nepademo' with any alias you cho
 ./scripts/deploy.sh nepademo         # use the same alias you chose above
 ```
 
-No infrastructure provisioning, no database migration, no middleware configuration. For the complete post-deploy sequence (BRE activation, Decision Matrix CSV import, flow activation, permission set assignment, sample data load), see **[docs/QUICKSTART.md](docs/QUICKSTART.md)**.
+No infrastructure provisioning, no database migration, no middleware configuration. For the complete post-deploy sequence (flow activation, permission set assignment, sample data load), see **[docs/QUICKSTART.md](docs/QUICKSTART.md)**.
 
 **For agencies already on Salesforce APS:** this accelerator represents zero incremental software licensing cost — it deploys into an existing org as a package of standard metadata, leveraging the enterprise agreement already in place.
 
@@ -204,7 +204,7 @@ Scores ≥58 auto-create a Legal Review Task. All weights are traceable to speci
 | `force-app/main/default/agents/` | `NEPA_Comment_Triage.agent` | Agentforce comment classification and routing agent |
 | `force-app/main/default/expressionSetDefinition/` | 3 BRE Expression Set definitions | The deterministic scoring engines (CE Screener, Litigation Risk Scorer, Permit Coordinator) |
 | `force-app/main/default/decisionMatrixDefinition/` | 8 BRE Decision Matrix definitions | Rule tables that feed the Expression Sets |
-| `decision_matrix_rows/` | CSV files for each Decision Matrix + import instructions | **BRE row data cannot be deployed via CLI — must be imported via Setup UI. Read [README](decision_matrix_rows/README.md) first.** |
+| `decision_matrix_rows/` | CSV files for each Decision Matrix + load script | Row data loaded and DMs activated automatically by `scripts/load_decision_matrix_rows.py` during Phase 5b-data of `deploy.sh`. See [README](decision_matrix_rows/README.md) for re-run instructions. |
 | `force-app/main/default/customMetadata/` | Pre-seeded risk weights, CE screening rules, plaintiff profiles, scoping baselines, sector-circuit matrix | The empirically calibrated data that powers the intelligence layer |
 | `force-app/main/default/namedCredentials/` | 12 named credentials: 9 GIS services (NHD, Tribal, PLSS + EPA, USGS, BLM variants) + 3 agency NEPA APIs (USACE, USFWS, BLM) | Required for GIS proximity calls at intake and live cross-agency permit status |
 | `force-app/main/default/omniProcesses/` | `NEPA_CEQExport` Integration Procedure | CEQ-standard JSON export (MFR #2 compliance) |
@@ -344,7 +344,7 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
   <li><strong>Permission Set:</strong> <code>NEPA_Permitting</code> with FLS configured for all custom fields</li>
   <li><strong>Lightning Record Pages:</strong> Pre-configured pages for IndividualApplication and PublicComplaint surfacing all key fields</li>
   <li><strong>CE Library:</strong> 2,105 categorical exclusions across 79 federal agencies (sourced from CEQ CE Explorer v2.0)</li>
-  <li><strong>Decision Model Exports:</strong> <code>ce-screening-rules.json</code>, <code>litigation-risk-weights.json</code>, <code>gis-layers-inventory.json</code> published to <code>/docs/decision-models/</code></li>
+  <li><strong>Decision Model Exports:</strong> DMN 1.3 XML files for all 8 Decision Matrices plus <code>litigation-risk-weights.json</code>, <code>ce-screening-rules.json</code>, <code>gis-layers-inventory.json</code> published to <code>/docs/decision-models/</code></li>
   <li><strong>Apex Test Suite:</strong> 519+ tests across 37 classes covering all 13 entities, REST export, BRE configuration, CE screening, stage gates, SLA escalation, plaintiff intelligence, EJ detection, GIS proximity, comment triage, AR management, cross-agency permit callouts, and error handling</li>
   <li><strong>Lightning Web Components (x2):</strong>
     <ul>
@@ -378,7 +378,7 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
 
 **`nepa_process_stage__c` field type and Salesforce Path:** This field was converted from Text to Picklist (18 canonical values spanning CE/EA/EIS pathways). A `PathAssistant` (`IndividualApplication_NEPA_Process_Path`) provides stage-specific Key Fields and guidance text for all 18 stages. **Deploy prerequisite:** Salesforce blocks a Text→Picklist field type change via API when records exist in the org. Before deploying the PathAssistant and updated FlexiPage, convert `nepa_process_stage__c` manually in Setup → Object Manager → IndividualApplication → Fields and Relationships. See QUICKSTART.md Step 4 for the full sequence.
 
-**BRE activation requirement:** Deploying Decision Matrix and Expression Set metadata via CLI does not create the `LatestVersionSnapshotId` required by the BRE runtime. After every deploy, open each DM and ES in Setup → Business Rules Engine and click **Activate**. See [decision_matrix_rows/README.md](decision_matrix_rows/README.md) for the full sequence including CSV import.
+**BRE row loading and activation:** `deploy.sh` Phase 5b-data automatically loads `CalculationMatrixRow` records from the CSVs in `decision_matrix_rows/` and activates each `DecisionMatrixDefinitionVersion` and `ExpressionSetDefinitionVersion` via the Salesforce Tooling API. No manual UI steps are required. If the phase reports errors, re-run: `python3 scripts/load_decision_matrix_rows.py --org <alias> --activate-es`.
 
 **ROD/FONSI record type setup:** After deploying, go to Setup → Object Manager → IndividualApplication → Record Types → Individual Application → Edit → `nepa_review_type__c` and add ROD and FONSI to the available values. This is required for the `NEPA_Close_Administrative_Record` flow trigger to fire.
 
@@ -444,7 +444,7 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
 - **Administrative record management (MFR #9):** `NEPA_Close_Administrative_Record` async flow assembles machine-readable JSON manifest at ROD/FONSI, creates tagged ContentVersion, sets `nepa_ar_locked__c = true` to prevent re-entry. CEQ standard + NARA/litigation hold compliant.
 - **Schema additions:** `nepa_ar_locked__c`, GIS proximity flags, `nepa_record_completeness__c` on IndividualApplication. ROD and FONSI added as valid `nepa_review_type__c` picklist values.
 - **FlexiPage updates:** 22 missing fields added across both Lightning record pages (IndividualApplication and PublicComplaint).
-- **Decision model exports:** `ce-screening-rules.json`, `litigation-risk-weights.json`, `gis-layers-inventory.json`, `NEPA_Litigation_Risk_ES.json` published to `/docs/decision-models/`.
+- **Decision model exports:** DMN 1.3 XML files for all 8 Decision Matrices plus `ce-screening-rules.json`, `litigation-risk-weights.json`, `gis-layers-inventory.json`, `NEPA_Litigation_Risk_ES.json` published to `/docs/decision-models/`.
 - **Test suite expanded to 36 classes / 385+ tests:** New classes — `NepaCommentAIRouterTest`, `NepaCommentDuplicateCheckTest`, `NepaEJTribalRouterTest`, `NepaCommentResponseTaskTest`, `NepaGISProximityCheckTest`, `NepaActionPlanLauncherTest`, `NepaLayerDisciplineResolverTest`, `NepaCloseAdminRecordFlowTest`, plus prior Phase D classes.
 - **Fixed 6 flow XML errors** from Phase B/C that blocked NEPADEMO deploy: non-contiguous element ordering, missing `<start>` elements, invalid `dataRaptorExtract` actionType, invalid `<limit>` element, missing connectors, invalid storeOutputAutomatically reference.
 - **DEVELOPER_GUIDE.md** added — comprehensive post-deploy configuration guide including BRE activation sequence, Decision Matrix CSV import, smoke test scripts, and troubleshooting.

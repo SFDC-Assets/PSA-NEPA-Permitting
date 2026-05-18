@@ -29,10 +29,31 @@ The backing CMT types:
 
 ## Files in This Directory
 
+### DMN Decision Tables (OMG DMN 1.3)
+
+These XML files follow the [OMG Decision Model and Notation (DMN) 1.3](https://www.omg.org/spec/DMN/1.3/) standard. They can be opened and edited visually in [Camunda Modeler](https://camunda.com/download/modeler/) or any DMN-compatible tool, and serve as the authoritative human-readable representation of each Decision Matrix's row data. The row data in these files is the source of truth for the CSVs in `decision_matrix_rows/` that are loaded into the BRE at deploy time.
+
+| File | Decision Matrix | Rows |
+|---|---|---|
+| `NEPA_CE_Screener_NAICS_Routing.xml` | NEPA CE Screener - NAICS Routing | 7 |
+| `NEPA_CE_Screener_Tier1_Agency_Sector_Rules.xml` | NEPA CE Screener - Tier 1 Agency Sector Rules | 17 |
+| `NEPA_CE_Screener_Tier2_Agency_Action_Type_Rules.xml` | NEPA CE Screener - Tier 2 Agency Action Type Rules | 16 |
+| `NEPA_Permit_Matrix.xml` | NEPA Permit Matrix | 9 |
+| `NEPA_Risk_Scorer_Agency_Risk_Points.xml` | NEPA Risk Scorer - Agency Risk Points | 7 |
+| `NEPA_Risk_Scorer_Circuit_Risk_Points.xml` | NEPA Risk Scorer - Circuit Risk Points | 13 |
+| `NEPA_Risk_Scorer_Review_Type_Points.xml` | NEPA Risk Scorer - Review Type Points | 4 |
+| `NEPA_Risk_Scorer_Sector_Circuit_Risk_Points.xml` | NEPA Risk Scorer - Sector Circuit Risk Points | 17 |
+
+### JSON Design Snapshots (legacy)
+
+These pre-date the DMN exports and capture the broader BRE topology including Expression Set scoring weights. Retained for reference; the DMN files above supersede them for Decision Matrix content.
+
 | File | Description |
 |---|---|
-| `NEPA_CE_Screener_DM1_ActionTypeMatrix.json` | Decision Matrix 1: CE/EA/EIS routing by action type and surface disturbance acreage |
 | `NEPA_Litigation_Risk_ES.json` | Expression Set: 0–100 litigation risk score formula with agency, circuit, statute, and plaintiff weights |
+| `ce-screening-rules.json` | CE authority rules snapshot (2,105 records across 79 agencies) |
+| `gis-layers-inventory.json` | GIS proximity layer inventory with API endpoints |
+| `litigation-risk-weights.json` | Per-agency and per-circuit litigation duration and win-rate weights |
 
 ---
 

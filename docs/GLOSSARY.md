@@ -86,7 +86,7 @@ Terms, acronyms, and concepts used throughout the NEPA and Permitting Data Model
 
 **DataRaptor** — An OmniStudio component for reading or writing Salesforce data. This Accelerator includes 6 DataRaptor Extracts (`DR_Extract_NEPA_*`) used by the CEQ export Integration Procedure.
 
-**Decision Matrix (DM)** — A BRE component that evaluates input values against a table of rows and returns output values. BRE Decision Matrix rows must be loaded via Setup UI — they cannot be deployed via Metadata API or CLI.
+**Decision Matrix (DM)** — A BRE component that evaluates input values against a table of rows and returns output values. Decision Matrix rows are loaded automatically by `scripts/load_decision_matrix_rows.py` (Phase 5b-data in `scripts/deploy.sh`) — no manual Setup UI import is required.
 
 **Expression Set (ES)** — A BRE component that orchestrates one or more Decision Matrices into a rule evaluation pipeline with weighted scoring.
 

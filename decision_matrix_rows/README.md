@@ -2,40 +2,47 @@
 
 A **Decision Matrix** is a Salesforce Business Rules Engine (BRE) component that maps input conditions to output values using a table of rows — similar to a lookup table with multiple condition columns. The BRE (Business Rules Engine) evaluates these rows at runtime to produce recommendations like CE/EA/EIS review type or risk scores.
 
-BRE Decision Matrix rows cannot be deployed via Metadata API or CLI. Use the Salesforce Setup UI to import these CSV files into the corresponding Decision Matrix versions.
+## Automated Loading (Recommended)
 
-## Activation Requirement (CRITICAL)
+Row loading and version activation are automated by `scripts/load_decision_matrix_rows.py`. This script runs as **Phase 5b-data** within `scripts/deploy.sh` — no manual UI steps are required.
 
-Deploying DM or Expression Set metadata via Metadata API does **not** create the `LatestVersionSnapshotId` that the BRE runtime requires. Without this snapshot the BRE engine fails at runtime with:
+```bash
+# Load all DMs and activate (idempotent — skips already-active versions by default)
+python3 scripts/load_decision_matrix_rows.py --org NEPA_INNOVATOR --activate-es
 
+# Preview what would happen
+python3 scripts/load_decision_matrix_rows.py --org NEPA_INNOVATOR --dry-run
+
+# Reload a specific DM (forces re-load even if already active)
+python3 scripts/load_decision_matrix_rows.py --org NEPA_INNOVATOR --dm NEPA_Risk_Agency --no-skip
+
+# Activate Expression Sets only (after DMs are already loaded)
+python3 scripts/load_decision_matrix_rows.py --org NEPA_INNOVATOR --activate-es --csv-dir decision_matrix_rows
 ```
-Cannot invoke "RulesEngineInputInterview.getDecisionInterviewMap()" because
-"rulesEngineInputInterview" is null
-```
 
-This is a Salesforce platform limitation — there is no CLI workaround.
+## How Programmatic Activation Works
 
-**After every Metadata API deploy of BRE assets, you must:**
+Deploying DM or Expression Set metadata via Metadata API creates the version in Draft state. The script activates each version by:
 
-1. Go to **Setup → Business Rules Engine → Decision Matrices**
-2. Open each DM, click the deployed version, and click **Activate**
-3. Go to **Setup → Business Rules Engine → Expression Sets**
-4. Open each ES, click the deployed version, and click **Activate**
+1. Inserting `CalculationMatrixRow` records via the Data REST API while the version is inactive (`CMV.IsEnabled=False`)
+2. PATCHing `DecisionMatrixDefinitionVersion.Metadata.status = "Active"` via the Tooling API
 
-Only after UI activation will the BRE runtime initialize correctly.
+This atomically sets `DMDV.Status=Active` and `CMV.IsEnabled=True` — the same result as clicking **Activate** in Setup → BRE → Decision Matrices.
 
-## Import Instructions
+> **Note:** If the BRE runtime returns `Cannot invoke "RulesEngineInputInterview.getDecisionInterviewMap()" because "rulesEngineInputInterview" is null`, the DMDV has not been activated. Run the load script or check its output for errors.
 
-For each CSV file:
+## Manual Import Instructions (Fallback)
+
+If the automated script fails for a specific DM, use the Setup UI:
 
 1. Go to **Setup → Business Rules Engine → Decision Matrices**
 2. Open the corresponding Decision Matrix
-3. Click the active version (V1)
+3. Click the deployed version (V1)
 4. Click **Import CSV**
 5. Upload the CSV from this directory (`decision_matrix_rows/`)
-6. Map columns (they match by header name — column headers are case-sensitive and must exactly match the Decision Matrix input column names listed in the table below)
+6. Column headers are case-sensitive — they must exactly match the DM input column names in the table below
 7. Click **Import**
-8. Verify the import succeeded by checking the row count in the Decision Matrix version matches the CSV row count (minus the header row)
+8. Click **Activate**
 
 ## Files
 
