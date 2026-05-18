@@ -2688,4 +2688,8 @@
         <tab>standard-WorkOrder</tab>
         <visibility>Available</visibility>
     </tabSettings>
+    <applicationVisibilities>
+        <application>NEPA_Permitting</application>
+        <visible>true</visible>
+    </applicationVisibilities>
 </PermissionSet>

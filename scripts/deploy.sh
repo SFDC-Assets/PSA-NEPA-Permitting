@@ -32,7 +32,7 @@
 #  13  Layouts                 — compact layouts for related-list display
 #  14  LWC                     — custom components referenced by FlexiPages
 #  15  FlexiPages              — depend on fields, layouts, LWC
-#  16  Lightning app           — depends on tabs
+#  16  Lightning app           — depends on tabs; app visibility granted via NEPA_Permitting permset (Phase 4b)
 #
 # NOTE: BRE Decision Matrix rows are loaded and activated automatically in
 # Phase 5b-data via scripts/load_decision_matrix_rows.py. No manual UI steps
@@ -774,8 +774,10 @@ else
     echo ""
     echo "    Post-deploy checklist:"
     echo ""
-    echo "    1. Assign permission set:"
+    echo "    1. Assign permission set (grants field access, tab visibility, and NEPA Permitting app access):"
     echo "       sf org assign permset --name NEPA_Permitting --target-org $TARGET_ORG"
+    echo "       Or assign to a specific user:"
+    echo "       sf org assign permset --name NEPA_Permitting --on-behalf-of user@example.com --target-org $TARGET_ORG"
     echo ""
     echo "    2. Activate flows (Setup > Flows). Recommended order:"
     echo "       NEPA_Litigation_Risk_Scorer"
