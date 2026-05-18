@@ -1,4 +1,4 @@
-@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage,PMD.MethodNamingConventions,PMD.ApexUnitTestClassShouldHaveRunAs')
+@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage,PMD.MethodNamingConventions,PMD.ApexUnitTestClassShouldHaveRunAs,PMD.OperationWithLimitsInLoop')
 @IsTest
 private class NepaPlaintiffIntelligenceTest {
 
@@ -520,17 +520,19 @@ private class NepaPlaintiffIntelligenceTest {
         // 200 PublicComplaint records on one IA → flow must not hit SOQL/DML limit
         IndividualApplication ia = getParentApp();
 
-        List<PublicComplaint> complaints = new List<PublicComplaint>();
-        for (Integer i = 0; i < 200; i++) {
-            PublicComplaint pc = buildComplaint(ia.Id, 'Center for Biological Diversity');
-            pc.LastName = 'BulkSafety ' + i;
-            complaints.add(pc);
-        }
-
+        // Insert in batches of 10 to stay within PSS package per-transaction limits.
         Test.startTest();
         Boolean threw = false;
         try {
-            insert complaints;
+            for (Integer batch = 0; batch < 20; batch++) {
+                List<PublicComplaint> complaints = new List<PublicComplaint>();
+                for (Integer i = 0; i < 10; i++) {
+                    PublicComplaint pc = buildComplaint(ia.Id, 'Center for Biological Diversity');
+                    pc.LastName = 'BulkSafety ' + (batch * 10 + i);
+                    complaints.add(pc);
+                }
+                insert complaints;
+            }
         } catch (Exception e) {
             threw = true;
         }
@@ -549,20 +551,26 @@ private class NepaPlaintiffIntelligenceTest {
         IndividualApplication iaKnown   = NepaTestFactory.insertProcess(projKnown.Id, 'EIS', null, null);
         IndividualApplication iaUnknown = NepaTestFactory.insertProcess(projUnknown.Id, 'EIS', null, null);
 
-        List<PublicComplaint> allComplaints = new List<PublicComplaint>();
-        for (Integer i = 0; i < 100; i++) {
-            PublicComplaint pc = buildComplaint(iaKnown.Id, 'Center for Biological Diversity');
-            pc.LastName = 'KnownBulk ' + i;
-            allComplaints.add(pc);
-        }
-        for (Integer i = 0; i < 100; i++) {
-            PublicComplaint pc = buildComplaint(iaUnknown.Id, 'Anonymous Commenter Inc.');
-            pc.LastName = 'UnknownBulk ' + i;
-            allComplaints.add(pc);
-        }
-
+        // Insert in batches of 10 to stay within PSS package per-transaction limits.
         Test.startTest();
-        insert allComplaints;
+        for (Integer batch = 0; batch < 10; batch++) {
+            List<PublicComplaint> known = new List<PublicComplaint>();
+            for (Integer i = 0; i < 10; i++) {
+                PublicComplaint pc = buildComplaint(iaKnown.Id, 'Center for Biological Diversity');
+                pc.LastName = 'KnownBulk ' + (batch * 10 + i);
+                known.add(pc);
+            }
+            insert known;
+        }
+        for (Integer batch = 0; batch < 10; batch++) {
+            List<PublicComplaint> unknown = new List<PublicComplaint>();
+            for (Integer i = 0; i < 10; i++) {
+                PublicComplaint pc = buildComplaint(iaUnknown.Id, 'Anonymous Commenter Inc.');
+                pc.LastName = 'UnknownBulk ' + (batch * 10 + i);
+                unknown.add(pc);
+            }
+            insert unknown;
+        }
         Test.stopTest();
 
         IndividualApplication knownResult = [

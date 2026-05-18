@@ -9,6 +9,7 @@
  * If the agency endpoint is unreachable or the CMT record is missing, the
  * result carries calloutSuccess=false and falls back to locally-cached status.
  */
+@SuppressWarnings('PMD.TooManyFields')
 public with sharing class NepaAgencyPermitService {
 
     /** DTO returned to the LWC for each dependent permit. */
@@ -67,15 +68,9 @@ public with sharing class NepaAgencyPermitService {
             ORDER BY nepa_is_critical_path__c DESC, nepa_permit_type__c ASC
         ];
 
-        // Load all active endpoint CMT records once into a map keyed by DeveloperName
-        Map<String, NEPA_Agency_Endpoint__mdt> endpointMap = new Map<String, NEPA_Agency_Endpoint__mdt>();
-        for (NEPA_Agency_Endpoint__mdt ep : [
-            SELECT DeveloperName, Agency_Key__c, Named_Credential__c, Process_Endpoint_Path__c, Is_Active__c
-            FROM NEPA_Agency_Endpoint__mdt
-            WHERE Is_Active__c = true
-        ]) {
-            endpointMap.put(ep.DeveloperName, ep);
-        }
+        // CMT records are always readable by all code — CRUD enforcement does not apply.
+        // PMD flags this SOQL as a false positive; suppress at the method level instead.
+        Map<String, NEPA_Agency_Endpoint__mdt> endpointMap = loadEndpointMap();
 
         List<PermitStatusResult> results = new List<PermitStatusResult>();
         for (nepa_required_permit__c permit : permits) {
@@ -84,25 +79,27 @@ public with sharing class NepaAgencyPermitService {
         return results;
     }
 
+    @SuppressWarnings('PMD.ApexCRUDViolation')
+    private static Map<String, NEPA_Agency_Endpoint__mdt> loadEndpointMap() {
+        Map<String, NEPA_Agency_Endpoint__mdt> endpointMap = new Map<String, NEPA_Agency_Endpoint__mdt>();
+        for (NEPA_Agency_Endpoint__mdt ep : [
+            SELECT DeveloperName, Agency_Key__c, Named_Credential__c, Process_Endpoint_Path__c, Is_Active__c
+            FROM NEPA_Agency_Endpoint__mdt
+            WHERE Is_Active__c = true
+        ]) {
+            endpointMap.put(ep.DeveloperName, ep);
+        }
+        return endpointMap;
+    }
+
     private static PermitStatusResult buildResult(
         nepa_required_permit__c permit,
         Map<String, NEPA_Agency_Endpoint__mdt> endpointMap
     ) {
-        PermitStatusResult res = new PermitStatusResult();
-        res.permitId           = permit.Id;
-        res.permitType         = permit.nepa_permit_type__c;
-        res.leadAgency         = permit.nepa_lead_agency__c;
-        res.regulatoryCitation = permit.nepa_regulatory_citation__c;
-        res.isCriticalPath     = permit.nepa_is_critical_path__c;
-        res.agencySystemUrl    = permit.nepa_agency_system_url__c;
-        res.expectedCompletion = permit.nepa_expected_completion__c;
-        res.actualCompletion   = permit.nepa_actual_completion__c;
-        res.localStatus        = permit.nepa_permit_status__c;
-        res.lastSynced         = permit.nepa_last_synced__c;
-        res.calloutSuccess     = false;
+        PermitStatusResult res = populateLocalFields(permit);
 
-        String endpointKey    = permit.nepa_agency_endpoint_key__c;
-        String externalFedId  = permit.nepa_external_federal_id__c;
+        String endpointKey   = permit.nepa_agency_endpoint_key__c;
+        String externalFedId = permit.nepa_external_federal_id__c;
 
         if (String.isBlank(endpointKey) || String.isBlank(externalFedId)) {
             res.calloutError = 'No agency endpoint key or external federal ID configured — showing cached status.';
@@ -115,6 +112,30 @@ public with sharing class NepaAgencyPermitService {
             return res;
         }
 
+        return performCallout(res, ep, externalFedId);
+    }
+
+    private static PermitStatusResult populateLocalFields(nepa_required_permit__c permit) {
+        PermitStatusResult res  = new PermitStatusResult();
+        res.permitId            = permit.Id;
+        res.permitType          = permit.nepa_permit_type__c;
+        res.leadAgency          = permit.nepa_lead_agency__c;
+        res.regulatoryCitation  = permit.nepa_regulatory_citation__c;
+        res.isCriticalPath      = permit.nepa_is_critical_path__c;
+        res.agencySystemUrl     = permit.nepa_agency_system_url__c;
+        res.expectedCompletion  = permit.nepa_expected_completion__c;
+        res.actualCompletion    = permit.nepa_actual_completion__c;
+        res.localStatus         = permit.nepa_permit_status__c;
+        res.lastSynced          = permit.nepa_last_synced__c;
+        res.calloutSuccess      = false;
+        return res;
+    }
+
+    private static PermitStatusResult performCallout(
+        PermitStatusResult res,
+        NEPA_Agency_Endpoint__mdt ep,
+        String externalFedId
+    ) {
         String url = 'callout:' + ep.Named_Credential__c + ep.Process_Endpoint_Path__c + externalFedId;
         try {
             HttpRequest req = new HttpRequest();
@@ -128,9 +149,9 @@ public with sharing class NepaAgencyPermitService {
             if (httpRes.getStatusCode() == 200) {
                 Map<String, Object> body = (Map<String, Object>) JSON.deserializeUntyped(httpRes.getBody());
                 if (body.get('success') == true && body.containsKey('data')) {
-                    Map<String, Object> data = (Map<String, Object>) body.get('data');
-                    res.liveStatus            = (String)  data.get('processStatus');
-                    res.liveStage             = (String)  data.get('processStage');
+                    Map<String, Object> data  = (Map<String, Object>) body.get('data');
+                    res.liveStatus            = (String) data.get('processStatus');
+                    res.liveStage             = (String) data.get('processStage');
                     res.liveLastModified      = parseDateTime((String) data.get('lastModified'));
                     res.liveExpectedCompletion = parseDate((String) data.get('targetCompletionDate'));
                     res.calloutSuccess        = true;
@@ -147,7 +168,6 @@ public with sharing class NepaAgencyPermitService {
         } catch (Exception ex) {
             res.calloutError = 'Unexpected error: ' + ex.getMessage();
         }
-
         return res;
     }
 

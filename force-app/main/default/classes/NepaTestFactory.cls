@@ -137,6 +137,14 @@ public class NepaTestFactory {
         return ia;
     }
 
+    /**
+     * Builds an unsaved IndividualApplication with extraordinary circumstance flags.
+     * @param projectId Parent Program Id
+     * @param multiDod  True when project spans multiple DoD installations (Military sector)
+     * @param usaczma   True when project crosses jurisdictional waters (Water/Coastal sector)
+     * @return Unsaved IndividualApplication with CE review type and EC flags set
+     */
+    @SuppressWarnings('PMD.AvoidBooleanMethodParameters')
     public static IndividualApplication makeProcessWithExtraordinaryCircumstances(
         Id projectId, Boolean multiDod, Boolean usaczma
     ) {
@@ -152,6 +160,14 @@ public class NepaTestFactory {
         return ia;
     }
 
+    /**
+     * Inserts and returns an IndividualApplication with extraordinary circumstance flags set.
+     * @param projectId Parent Program Id
+     * @param multiDod  True when project spans multiple DoD installations
+     * @param usaczma   True when project crosses jurisdictional waters
+     * @return Saved IndividualApplication with EC flags populated
+     */
+    @SuppressWarnings('PMD.AvoidBooleanMethodParameters')
     public static IndividualApplication insertProcessWithExtraordinaryCircumstances(
         Id projectId, Boolean multiDod, Boolean usaczma
     ) {
@@ -290,6 +306,12 @@ public class NepaTestFactory {
         return evt;
     }
 
+    /**
+     * Inserts an ApplicationTimeline event with an OFD track value set.
+     * @param processId Parent IndividualApplication Id
+     * @param ofdTrack  Value for nepa_ofd_track__c (NEPA_Lead / Agency_Consultation / Permit_Milestone / Joint_ROD)
+     * @return Saved ApplicationTimeline record with nepa_ofd_track__c populated
+     */
     public static ApplicationTimeline insertTimelineEventWithOFDTracking(Id processId, String ofdTrack) {
         ApplicationTimeline evt = new ApplicationTimeline();
         evt.Name                    = 'NEPA OFD Test Event';

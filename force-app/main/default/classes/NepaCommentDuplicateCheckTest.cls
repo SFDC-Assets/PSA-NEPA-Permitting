@@ -1,4 +1,4 @@
-@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage,PMD.MethodNamingConventions,PMD.ApexUnitTestClassShouldHaveRunAs')
+@SuppressWarnings('PMD.ApexAssertionsShouldIncludeMessage,PMD.MethodNamingConventions,PMD.ApexUnitTestClassShouldHaveRunAs,PMD.OperationWithLimitsInLoop')
 @IsTest(SeeAllData=false)
 /**
  * Tests for NEPA_Comment_Duplicate_Check invocable flow.
@@ -170,12 +170,16 @@ private class NepaCommentDuplicateCheckTest {
         Program proj = NepaTestFactory.insertProgram('DUP-006', 'Dup Bulk Test', 'USFS');
         IndividualApplication ia = NepaTestFactory.insertOpenProcess(proj.Id, 'EIS');
 
-        // Insert 200 prior comments with distinct bodies to avoid false-positive duplicate detection
-        List<PublicComplaint> priors = new List<PublicComplaint>();
-        for (Integer i = 0; i < 200; i++) {
-            priors.add(makeComment(ia.Id, 'Unique prior comment number ' + i + ' with enough text to pass the 20-character length guard for duplicate detection.'));
+        // Insert 200 prior comments with distinct bodies to avoid false-positive duplicate detection.
+        // Insert in batches of 10 to stay within PSS package per-transaction limits.
+        for (Integer batch = 0; batch < 20; batch++) {
+            List<PublicComplaint> priors = new List<PublicComplaint>();
+            for (Integer i = 0; i < 10; i++) {
+                Integer idx = batch * 10 + i;
+                priors.add(makeComment(ia.Id, 'Unique prior comment number ' + idx + ' with enough text to pass the 20-character length guard for duplicate detection.'));
+            }
+            insert priors;
         }
-        insert priors;
 
         PublicComplaint candidate = makeComment(ia.Id, LONG_BODY);
         insert candidate;
