@@ -43,7 +43,7 @@ Three categories of preventable delay drive most of the gap between the current 
 | Custom Metadata Types | 23 |
 | BRE Decision Matrices + Expression Sets | 8 DMs + 3 ESs (deterministic, not AI) |
 | Decision model exports | Published to GitHub `/docs/decision-models/` — machine-readable JSON |
-| Apex regression tests | 519+ across 37 test classes |
+| Apex regression tests | 519+ across 38 test classes |
 | Platform | Salesforce Agentforce for Public Sector (FedRAMP Authorized) |
 | Shield Field Audit Trail | Available on Gov Cloud — 10-year field-level history for NARA/litigation hold |
 | PIV/CAC authentication | Native Salesforce support via SAML 2.0 (PIV/CAC = Personal Identity Verification / Common Access Card, the U.S. federal smartcard standard) — no separate IdP required |
@@ -200,7 +200,7 @@ Scores ≥58 auto-create a Legal Review Task. All weights are traceable to speci
 | Path | Contents | Why It Matters |
 |---|---|---|
 | `force-app/main/default/objects/` | 13 CEQ entity object definitions + 15 custom metadata type schemas | The complete data model — start here to understand the schema |
-| `force-app/main/default/flows/` | 37 flow XML files | All automation: stage gates, risk scoring, CE screening, comment triage, AR close, plaintiff intelligence, scoping baselines, error logging |
+| `force-app/main/default/flows/` | 38 flow XML files | All automation: stage gates, risk scoring, CE screening, comment triage, AR close, plaintiff intelligence, scoping baselines, error logging, AI EIS section drafting |
 | `force-app/main/default/agents/` | `NEPA_Comment_Triage.agent` | Agentforce comment classification and routing agent |
 | `force-app/main/default/expressionSetDefinition/` | 3 BRE Expression Set definitions | The deterministic scoring engines (CE Screener, Litigation Risk Scorer, Permit Coordinator) |
 | `force-app/main/default/decisionMatrixDefinition/` | 8 BRE Decision Matrix definitions | Rule tables that feed the Expression Sets |
@@ -210,8 +210,8 @@ Scores ≥58 auto-create a Legal Review Task. All weights are traceable to speci
 | `force-app/main/default/omniProcesses/` | `NEPA_CEQExport` Integration Procedure | CEQ-standard JSON export (MFR #2 compliance) |
 | `force-app/main/default/omniDataTransforms/` | 15 DataRaptor files (Extract, Load, Upsert) | OmniStudio data transformation layer |
 | `force-app/main/default/flexipages/` | Lightning record pages for IndividualApplication and PublicComplaint | Pre-configured UI pages surfacing all key fields |
-| `force-app/main/default/lwc/` | `nepaPermitDependencies` LWC — live cross-agency permit status component | Displayed on the IndividualApplication record page |
-| `force-app/main/default/classes/` | 37 Apex test classes (514+ tests total) including `NepaAgencyPermitServiceTest` | Compliance verification — run `sf apex run test` against your org |
+| `force-app/main/default/lwc/` | `nepaPermitDependencies` + `nepaRiskIntelligenceCard` LWCs | Live cross-agency permit status and bifurcated v3 risk score panel — displayed on the IndividualApplication record page |
+| `force-app/main/default/classes/` | 38 Apex test classes (519+ tests total) including `NepaAgencyPermitServiceTest` | Compliance verification — run `sf apex run test` against your org |
 | `docs/decision-models/` | Machine-readable JSON exports of CE rules, GIS layers, litigation risk weights | MFR #4 — screening criteria publicly accessible and version-controlled |
 | `demo/` | Demo story + import data CSVs + Apex scripts | Carrie's Placer Mine scenario — full end-to-end walkthrough |
 | `docs/QUICKSTART.md` | Complete end-to-end setup guide (Step 0 through smoke tests) | Start here |
@@ -345,7 +345,7 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
   <li><strong>Lightning Record Pages:</strong> Pre-configured pages for IndividualApplication and PublicComplaint surfacing all key fields</li>
   <li><strong>CE Library:</strong> 2,105 categorical exclusions across 79 federal agencies (sourced from CEQ CE Explorer v2.0)</li>
   <li><strong>Decision Model Exports:</strong> DMN 1.3 XML files for all 8 Decision Matrices plus <code>litigation-risk-weights.json</code>, <code>ce-screening-rules.json</code>, <code>gis-layers-inventory.json</code> published to <code>/docs/decision-models/</code></li>
-  <li><strong>Apex Test Suite:</strong> 519+ tests across 37 classes covering all 13 entities, REST export, BRE configuration, CE screening, stage gates, SLA escalation, plaintiff intelligence, EJ detection, GIS proximity, comment triage, AR management, cross-agency permit callouts, and error handling</li>
+  <li><strong>Apex Test Suite:</strong> 519+ tests across 38 classes covering all 13 entities, REST export, BRE configuration, CE screening, stage gates, SLA escalation, plaintiff intelligence, EJ detection, GIS proximity, comment triage, AR management, cross-agency permit callouts, and error handling</li>
   <li><strong>Lightning Web Components (x2):</strong>
     <ul>
       <li><code>nepaPermitDependencies</code> — live cross-agency permit status table with critical-path flagging, colored status badges, and graceful degradation when an agency API is unreachable</li>
