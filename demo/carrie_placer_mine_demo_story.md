@@ -577,7 +577,7 @@ Here's what the review actually required:
    Say: *"Two flags simultaneously. The system recognized this as a Tribal Nation commenter — the category with the 87.5% win rate. Both flags fire unconditionally. The EJ/Tribal gate cannot be bypassed by configuration."*
    Show the auto-created Legal Task: *"Government-to-government consultation — verify compliance with NHPA Section 106 and E.O. 13175 before advancing"* — assigned to BLM Field Solicitor. Say: *"That task fired before anyone in the field office made a judgment call."*
 
-5. **Navigate to IndividualApplication → Risk Intelligence panel.** Show Litigation Risk Score update: `nepa_risk_score__c = 87` / `nepa_risk_tier__c = Very High`. Say: *"Tribal plaintiff flag is a 15-point input — one of the highest weights in the model. The score ticked up the moment that comment was classified."*
+5. **Navigate to IndividualApplication → Risk Intelligence panel.** Show Litigation Risk Score update: `nepa_risk_score__c = 85` / `nepa_risk_tier__c = Very High`. Say: *"Tribal plaintiff flag is an 8-point input in the v3 probability dimension — it ticked the score up the moment that comment was classified."*
 
 6. **Show Work Orders auto-created from substantive comments:**
    - ICL: *"Add dust mitigation analysis to Air Quality section — mercury particulate"* — 17-day SLA
@@ -651,8 +651,8 @@ Here's what the review actually required:
 ┌─────────────────────────────────────────────────────────────────┐
 │  IndividualApplication  IA-0000000432  — Risk Intelligence       │
 │  ─────────────────────────────────────────────────────────────  │
-│  ┌─── Litigation Risk Score ───────────────────────────────┐    │
-│  │  Risk Score:          87           ◄────────────────── │────── POINT: ticked up on save
+│  ┌─── Litigation Probability Score (v3) ──────────────────┐    │
+│  │  Risk Score:          85           ◄────────────────── │────── POINT: ticked up on save
 │  │  Risk Tier:           Very High                         │    │
 │  │  Plaintiff Flag:      ✓ TRUE  (ICL)              ◄──── │────── ICL plaintiff
 │  │  Tribal Flag:         ✓ TRUE  (Shoshone-Paiute)  ◄──── │────── tribal plaintiff
@@ -668,7 +668,7 @@ Here's what the review actually required:
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-> **▲ Point to:** `Risk Score = 87`, then WO-00046 and the `⛔` line. Say: *"Every substantive comment became a tracked work order with an SLA. Not an inbox item — a deliverable with a deadline and an assigned owner."*
+> **▲ Point to:** `Risk Score = 85`, then WO-00046 and the `⛔` line. Say: *"Every substantive comment became a tracked work order with an SLA. Not an inbox item — a deliverable with a deadline and an assigned owner."*
 
 ### What You Are Demonstrating
 
@@ -727,7 +727,7 @@ Here's what the review actually required:
 3b. **Click `nepa_challenge_prediction_basis__c`.** Show the two rules that fired for this project:
    - ESA Section 7 Consultation — **Cleared** (consultation closed; documented in tribal certification)
    - Government-to-Government Consultation — **Cleared** (Shoshone-Paiute hard gate closed from Scene 3)
-   Say: *"The Challenge Predictor runs 10 rules against this record, derived from the PermitTEC corpus. Two fired for this project: ESA Section 7 — because sage-grouse PHMA was detected at intake — and tribal consultation. Both are cleared. That's why the defensibility score is 91 even with a risk score of 87. High-risk project, fully documented mitigation. The system can tell the difference between a dangerous project and a dangerous project that's been handled correctly."*
+   Say: *"The Challenge Predictor runs 10 rules against this record, derived from the PermitTEC corpus. Two fired for this project: ESA Section 7 — because sage-grouse PHMA was detected at intake — and tribal consultation. Both are cleared. That's why the defensibility score is 91 even with a risk score of 85. High-risk project, fully documented mitigation. The system can tell the difference between a dangerous project and a dangerous project that's been handled correctly."*
 
 4. **Navigate to Required Document Registry related list.** All five documents shown with ✓:
    - Environmental Assessment ✓
@@ -1116,6 +1116,7 @@ flowchart TB
         TRIBES["🤝 Shoshone-Paiute Tribes\nSection 106 Consultation"]
         IDWR["🏛️ IDWR\nWater Permit"]
         EPA["🏛️ EPA NPDES\nIDG370000"]
+        AGCY["🏛️ Agency NEPA APIs\nUSACE · USFWS · BLM\n(live permit status)"]
     end
 
     subgraph CHANNEL["Engagement Layer"]
@@ -1139,7 +1140,7 @@ flowchart TB
         direction TB
         PROG["Program\n(Project Container)\n• Lead agency\n• Circuit\n• State\n• Sector"]
         APP2["IndividualApplication\n• NEPA Pathway\n• Litigation Risk Score\n• Plaintiff Risk Flag\n• Defensibility Score\n• Co-Permits Required"]
-        TL["ApplicationTimeline\n25 milestones\n4 hard stage gates"]
+        TL["ApplicationTimeline\n25 milestones + OFD tracks\n4 hard stage gates\n(OFD: NEPA_Lead / Agency_Consultation\n/ Permit_Milestone / Joint_ROD)"]
         CV["ContentVersion\nRequired Document Registry\n• EA  • FONSI  • DR\n• Affected Resources\n• Tribal Cert"]
         PC["PublicComplaint\n• Commenter org\n• Substantive flag\n• Risk tier"]
         ENG["nepa_engagement__c\n• Pre-app consultation\n• Tribal consultation\n• Public comment period"]
@@ -1151,13 +1152,15 @@ flowchart TB
         CE["NEPA_CE_Screener\nRoutes CE / EA / EIS\nat intake"]
         TRA["NEPA_Timeline_\nRisk_Assessor\nFlags outliers\nat intake"]
         PI["NEPA_Plaintiff_\nIntelligence\nOrg match →\nrisk tier →\nwork order"]
-        LRS["NEPA_Litigation_\nRisk_Scorer\nAgency + circuit +\nstatute + state\n+ plaintiff weights"]
+        LRS["NEPA_Litigation_\nRisk_Scorer\nv3: Probability (85%) +\nCost Exposure (15%)\n+ ESA disclosure"]
         PPT["Parallel Permit\nTrigger Automation\nWork order close →\nIDWR / NPDES tasks"]
+        RIC["nepaRiskIntelligenceCard\n(LWC)\nBifurcated score panel\n+ ESA warning banner"]
+        NPD["nepaPermitDependencies\n(LWC)\nLive permit status\nUSACE · USFWS · BLM"]
     end
 
     subgraph DATA["Data & Metadata Foundation"]
         direction LR
-        MDT["Custom Metadata Types\n• CE_Code_Catalog__mdt\n• CE_Screening_Rules__mdt\n• Agency_Risk_Rates__mdt\n• Circuit_Court_Risk_Weights__mdt\n• Statute_Risk_Weights__mdt\n• Required_Document_Registry__mdt\n• Plaintiff_Profiles__mdt\n• Agency_Scoping_Baseline__mdt\n• Challenge_Prediction_Rules__mdt"]
+        MDT["Custom Metadata Types (23)\n• CE_Code + CE_Screening_Rules\n• Agency_Risk_Rate (16 agencies)\n• Circuit_Risk_Weight (13 circuits)\n• Statute_Risk_Weight (ESA/NFMA/CWA…)\n• Sector_Circuit_Risk (23 cells)\n• Plaintiff_Profile (16 orgs)\n• Challenge_Prediction_Rule (10 rules)\n• Agency_Duration_Cost (16 agencies)\n• OFD_Milestone (8 standard milestones)\n• Agency_Endpoint (USACE/USFWS/BLM)\n• + 13 process config types"]
         CORPUS["NEPATEC 2.0 Corpus\n61,881 projects\n142,083 documents\n6.9M pages\n60+ agencies"]
         CEQ["CEQ Metadata Standards\nProject / Process /\nDocument entities"]
     end
@@ -1209,6 +1212,10 @@ flowchart TB
     PPT -->|"30-day SLA task\nauto-created"| IDWR
     PPT -->|"60-day clock\nauto-started"| EPA
     ENG -->|"Section 106\n30-day response window"| TRIBES
+    NPD -->|"Live permit status\nat record load"| AGCY
+    LRS -->|"Probability + Cost\nExposure score"| RIC
+    RIC -->|"Displays on\nIA record page"| APP2
+    NPD -->|"Displays on\nIA record page"| APP2
 
     %% Styling
     classDef external fill:#e8f4fd,stroke:#2196F3,color:#0d47a1
@@ -1218,19 +1225,19 @@ flowchart TB
     classDef intel fill:#fce4ec,stroke:#E91E63,color:#880e4f
     classDef data fill:#e3f2fd,stroke:#1565C0,color:#0d47a1
 
-    class APP,FIELD,TRIBES,IDWR,EPA external
+    class APP,FIELD,TRIBES,IDWR,EPA,AGCY external
     class PORTAL,MOBILE channel
     class OPT,WO,SA,SR,ST,WT,AR fsl
     class PROG,APP2,TL,CV,PC,ENG,LIT pss
-    class CE,TRA,PI,LRS,PPT intel
+    class CE,TRA,PI,LRS,PPT,RIC,NPD intel
     class MDT,CORPUS,CEQ data
 ```
 
 **Architecture notes:**
 - **Orange (Field Service):** The optimization engine is the scheduling brain — it reads WorkType seasonal constraints and gate availability, sequences all six work orders, and prevents double-booking.
-- **Purple (APS Case Management):** IndividualApplication is the central record. Every specialist survey, every document, every comment, every milestone hangs off it. Key risk intelligence fields include `nepa_risk_score__c`, `nepa_risk_tier__c`, `nepa_plaintiff_risk_flag__c`, `nepa_tribal_plaintiff_flag__c`, `nepa_challenge_risk_delta__c`, and `nepa_scoping_overrun_flag__c`.
-- **Pink (Intelligence):** All flows read from Custom Metadata Types — **15 types** covering: `NEPA_CE_Code`, `NEPA_CE_Screening_Rule` (71 records), `NEPA_Challenge_Prediction_Rule` (10 records), `NEPA_Circuit_Risk_Weight` (13 circuits), `NEPA_Sector_Circuit_Risk`, `NEPA_Agency_Risk_Rate` (16 agencies), `NEPA_Stage_Baseline_Duration`, `NEPA_Plaintiff_Profile` (**16 records** including Shoshone-Paiute Tribes and Navajo Nation with 100% win rates), `NEPA_Statute_Risk_Weight`, `NEPA_Required_Document`, `NEPA_Process_Model`, `NEPA_Permit_Matrix`, `NEPA_ActionPlan_Config` (36 records), `NEPA_Doc_Count_Threshold`, `NEPA_MFR_Assessment`. **10 challenge prediction rules including Connected Actions at Priority 1 (42.7% of challenged decisions)**. Changing any weight, adding a plaintiff org, or updating an agency baseline requires zero code change.
-- **Blue (Data Foundation):** The NEPATEC 2.0 corpus (61,881 projects) and PermitTEC v0.1 (761 litigation cases) are the empirical basis for every weight and threshold. The Litigation Risk Scorer uses PermitTEC-derived weights: agency points = loss_rate × 1.0, circuit points = (multiplier − 0.30) × 37.5, statute points = (multiplier − 1.00) × 20. The 10th Circuit (43 pts) is now the highest-risk circuit; BLM (39 pts) is the highest-risk agency.
+- **Purple (APS Case Management):** IndividualApplication is the central record. Every specialist survey, every document, every comment, every milestone hangs off it. Key risk intelligence fields include `nepa_risk_score__c`, `nepa_risk_tier__c`, `nepa_litigation_duration_cost__c`, `nepa_plaintiff_risk_flag__c`, `nepa_tribal_plaintiff_flag__c`, `nepa_challenge_risk_delta__c`, and `nepa_scoping_overrun_flag__c`. `ApplicationTimeline` is extended with `nepa_ofd_track__c` and `nepa_coordinating_agency__c` for E.O. 13807 master-schedule tracking.
+- **Pink (Intelligence):** All flows and LWCs read from **23 Custom Metadata Types** covering: `NEPA_CE_Code`, `NEPA_CE_Screening_Rule` (71 records), `NEPA_Challenge_Prediction_Rule` (10 rules — Connected Actions at Priority 1: 42.7% of challenged decisions), `NEPA_Circuit_Risk_Weight` (13 circuits), `NEPA_Sector_Circuit_Risk` (23 cells), `NEPA_Agency_Risk_Rate` (16 agencies), `NEPA_Agency_Duration_Cost` (16 agencies; BOEM 6.5mo → FTA 33.4mo for v3 cost dimension), `NEPA_Plaintiff_Profile` (**16 records** including Shoshone-Paiute Tribes and Navajo Nation with 100% win rates), `NEPA_Statute_Risk_Weight` (ESA low-confidence flagged), `NEPA_OFD_Milestone` (8 standard E.O. 13807 milestones), `NEPA_Agency_Endpoint` (USACE/USFWS/BLM REST API registry), and 12 additional process config types. Changing any weight, adding a plaintiff org, or updating an agency baseline requires zero code change. Two LWCs (`nepaRiskIntelligenceCard`, `nepaPermitDependencies`) surface intelligence directly on the record page.
+- **Blue (Data Foundation):** The NETATEC 2.0 corpus (61,881 projects), PermitTEC v0.1 (761 litigation cases), and CourtListener bulk dockets (71M+ records for Stage 14 duration profiling) are the empirical basis for every weight and threshold. v3 Litigation Risk Scorer: agency probability points = loss_rate × 1.0; circuit points = (multiplier − 0.30) × 37.5; statute points = (multiplier − 1.00) × 20; cost dimension = normalized per-agency median litigation duration (BOEM 6.5mo → FTA 33.4mo). The 10th Circuit (43 pts) is the highest-risk circuit; BLM (39 pts) is the highest-risk agency. Federal friction multipliers (Stage 16 vs. California CEQA): Military 1.65×, Water/Coastal 1.47×, Transportation 1.45×, Energy 1.09×.
 
 ---
 
