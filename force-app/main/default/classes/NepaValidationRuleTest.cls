@@ -392,6 +392,9 @@ private class NepaValidationRuleTest {
     @IsTest
     static void phase2Setter_eaReviewType_autoSetsFlags() {
         IndividualApplication ia = getProcess();
+        // Setup creates EA; change to CE first so the subsequent change to EA triggers IsChanged.
+        ia.nepa_review_type__c = 'CE';
+        update ia;
         ia.nepa_review_type__c = 'EA';
         update ia;
         IndividualApplication saved = [
