@@ -2335,12 +2335,12 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_extraordinary_circumstance_multi_dod__c</field>
+        <field>IndividualApplication.nepa_ec_multi_dod__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>IndividualApplication.nepa_extraordinary_circumstance_usace_czma__c</field>
+        <field>IndividualApplication.nepa_ec_usace_czma__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

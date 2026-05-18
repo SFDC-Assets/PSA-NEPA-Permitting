@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>nepa_extraordinary_circumstance_multi_dod__c</fullName>
+    <fullName>nepa_ec_multi_dod__c</fullName>
     <description>Set to true by the CE Intake OmniScript when the project sector is Military and the project affects more than one DoD installation. Triggers additional extraordinary circumstances screening in NEPA_CE_Screener. Stage 16 finding: Military sector carries 1.65x federal friction multiplier driven by NHPA Section 106 multi-installation coordination — detectable at intake.</description>
     <defaultValue>false</defaultValue>
     <externalId>false</externalId>

@@ -7,8 +7,6 @@
     <referenceTo>Account</referenceTo>
     <relationshipLabel>OFD Coordination Timeline Events</relationshipLabel>
     <relationshipName>OFD_Coordinating_Timeline_Events</relationshipName>
-    <relationshipOrder>0</relationshipOrder>
-    <reparentableMasterDetail>false</reparentableMasterDetail>
     <trackHistory>false</trackHistory>
     <type>Lookup</type>
     <deleteConstraint>SetNull</deleteConstraint>

@@ -361,7 +361,7 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_extraordinary_circumstance_multi_dod__c</fieldItem>
+                <fieldItem>Record.nepa_ec_multi_dod__c</fieldItem>
                 <identifier>ia_ce_ec_multi_dod</identifier>
             </fieldInstance>
         </itemInstances>
@@ -371,7 +371,7 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_extraordinary_circumstance_usace_czma__c</fieldItem>
+                <fieldItem>Record.nepa_ec_usace_czma__c</fieldItem>
                 <identifier>ia_ce_ec_usace_czma</identifier>
             </fieldInstance>
         </itemInstances>

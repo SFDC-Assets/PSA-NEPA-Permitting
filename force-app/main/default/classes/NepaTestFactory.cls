@@ -155,8 +155,8 @@ public class NepaTestFactory {
         ia.nepa_review_type__c                                = 'CE';
         ia.nepa_process_status__c                             = 'in progress';
         ia.nepa_process_stage__c                              = 'Scoping';
-        ia.nepa_extraordinary_circumstance_multi_dod__c       = multiDod;
-        ia.nepa_extraordinary_circumstance_usace_czma__c      = usaczma;
+        ia.nepa_ec_multi_dod__c                               = multiDod;
+        ia.nepa_ec_usace_czma__c                              = usaczma;
         return ia;
     }
 

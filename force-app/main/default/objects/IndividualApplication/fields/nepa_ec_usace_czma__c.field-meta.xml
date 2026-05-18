@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>nepa_extraordinary_circumstance_usace_czma__c</fullName>
+    <fullName>nepa_ec_usace_czma__c</fullName>
     <description>Set to true by the CE Intake OmniScript when the project sector is Water/Coastal and the project crosses jurisdictional waters. Triggers USACE Section 404 and CZMA federal consistency pre-consultation flags in NEPA_CE_Screener. Stage 16 finding: Water/Coastal sector carries 1.47x federal friction multiplier driven by CZMA consistency, EFH Magnuson-Stevens, and dual-track 404 review.</description>
     <defaultValue>false</defaultValue>
     <externalId>false</externalId>

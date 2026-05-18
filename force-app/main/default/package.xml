@@ -203,8 +203,8 @@
         <!-- IMP-007: Litigation duration cost field -->
         <members>IndividualApplication.nepa_litigation_duration_cost__c</members>
         <!-- IMP-008: Sector-specific extraordinary circumstances flags -->
-        <members>IndividualApplication.nepa_extraordinary_circumstance_multi_dod__c</members>
-        <members>IndividualApplication.nepa_extraordinary_circumstance_usace_czma__c</members>
+        <members>IndividualApplication.nepa_ec_multi_dod__c</members>
+        <members>IndividualApplication.nepa_ec_usace_czma__c</members>
         <!-- Phase 2: Plaintiff / tribal risk flags -->
         <members>IndividualApplication.nepa_plaintiff_risk_flag__c</members>
         <members>IndividualApplication.nepa_tribal_plaintiff_flag__c</members>

@@ -73,11 +73,11 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>nepa_extraordinary_circumstance_multi_dod__c</field>
+                <field>nepa_ec_multi_dod__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>nepa_extraordinary_circumstance_usace_czma__c</field>
+                <field>nepa_ec_usace_czma__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns/>

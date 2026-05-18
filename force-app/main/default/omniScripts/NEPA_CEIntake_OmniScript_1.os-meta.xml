@@ -270,7 +270,7 @@
         <isActive>true</isActive>
         <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
         <level>2.0</level>
-        <name>nepa_extraordinary_circumstance_multi_dod__c</name>
+        <name>nepa_ec_multi_dod__c</name>
         <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
         <propertySetConfig>{
   &quot;label&quot;: &quot;Does this project affect more than one DoD installation?&quot;,
@@ -304,7 +304,7 @@
         <isActive>true</isActive>
         <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
         <level>2.0</level>
-        <name>nepa_extraordinary_circumstance_usace_czma__c</name>
+        <name>nepa_ec_usace_czma__c</name>
         <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
         <propertySetConfig>{
   &quot;label&quot;: &quot;Does the project cross jurisdictional waters?&quot;,
