@@ -17,6 +17,7 @@
     <tabs>standard-PublicComplaint</tabs>
     <tabs>nepa_engagement__c</tabs>
     <tabs>nepa_litigation__c</tabs>
+    <tabs>nepa_required_permit__c</tabs>
     <tabs>nepa_gis_data_element__c</tabs>
     <tabs>nepa_ar_export__c</tabs>
     <tabs>nepa_process_team_member__c</tabs>
