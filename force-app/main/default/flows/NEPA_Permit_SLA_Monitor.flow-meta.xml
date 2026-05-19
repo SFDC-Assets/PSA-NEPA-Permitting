@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>Daily scheduled flow (06:00 UTC). Queries nepa_required_permit__c records where nepa_sla_due_date__c is past, nepa_is_critical_path__c is true, and status is not Issued/Denied/Withdrawn. Bulk-creates one overdue Task per permit, owned by the parent IA owner. No write-back to permit records — nepa_sla_overdue__c is a formula field. Fault connector routes to NEPA_Error_Logger per ADR 003.</description>
+    <label>NEPA Permit SLA Monitor</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Active</status>
+
+    <!-- RECORD LOOKUPS -->
+    <recordLookups>
+        <name>Get_OverduePermits</name>
+        <label>Get Overdue Critical-Path Permits</label>
+        <locationX>176</locationX>
+        <locationY>107</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_PermitsFound</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>1 AND 2 AND 3 AND 4 AND 5</filterLogic>
+        <filters>
+            <field>nepa_sla_due_date__c</field>
+            <operator>LessThan</operator>
+            <value>
+                <elementReference>formula_Today</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_is_critical_path__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_permit_status__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Issued</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_permit_status__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Denied</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_permit_status__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Withdrawn</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <limit>2000</limit>
+        <object>nepa_required_permit__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+
+    <!-- DECISIONS -->
+    <decisions>
+        <name>Decision_PermitsFound</name>
+        <label>Overdue Permits Found?</label>
+        <locationX>176</locationX>
+        <locationY>215</locationY>
+        <defaultConnectorLabel>No overdue permits — exit</defaultConnectorLabel>
+        <rules>
+            <name>Permits_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_OverduePermits</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Loop_BuildTasks</targetReference>
+            </connector>
+            <label>Overdue Permits Found</label>
+        </rules>
+    </decisions>
+
+    <!-- LOOPS -->
+    <loops>
+        <name>Loop_BuildTasks</name>
+        <label>Build Task Record for Each Overdue Permit</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <collectionReference>Get_OverduePermits</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_TaskSubject</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Decision_TasksToCreate</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+
+    <!-- ASSIGNMENTS -->
+    <assignments>
+        <name>Assign_TaskSubject</name>
+        <label>Build Task Subject from Permit Name</label>
+        <locationX>176</locationX>
+        <locationY>431</locationY>
+        <assignmentItems>
+            <assignToReference>var_TaskSubject</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Permit SLA Overdue: </stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_TaskSubject</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Loop_BuildTasks.Name</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Assign_SetTaskFields</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_SetTaskFields</name>
+        <label>Populate Task Fields from Current Permit</label>
+        <locationX>176</locationX>
+        <locationY>431</locationY>
+        <assignmentItems>
+            <assignToReference>var_NewTask.WhatId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_BuildTasks.nepa_process__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewTask.Subject</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_TaskSubject</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewTask.OwnerId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_BuildTasks.nepa_process__r.OwnerId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewTask.Priority</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>High</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewTask.Status</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Not Started</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Assign_AddTaskToCollection</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_AddTaskToCollection</name>
+        <label>Add Task to Collection</label>
+        <locationX>176</locationX>
+        <locationY>539</locationY>
+        <assignmentItems>
+            <assignToReference>col_TasksToCreate</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>var_NewTask</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_BuildTasks</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Handle_Error</name>
+        <label>Handle Error</label>
+        <locationX>352</locationX>
+        <locationY>107</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- DECISIONS -->
+    <decisions>
+        <name>Decision_TasksToCreate</name>
+        <label>Tasks Collection Populated?</label>
+        <locationX>176</locationX>
+        <locationY>647</locationY>
+        <defaultConnectorLabel>No tasks — exit</defaultConnectorLabel>
+        <rules>
+            <name>Tasks_Present</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>col_TasksToCreate</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_OverdueTasks</targetReference>
+            </connector>
+            <label>Tasks Present</label>
+        </rules>
+    </decisions>
+
+    <!-- RECORD CREATES -->
+    <recordCreates>
+        <name>Create_OverdueTasks</name>
+        <label>Bulk Create Overdue Permit Tasks</label>
+        <locationX>176</locationX>
+        <locationY>755</locationY>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputReference>col_TasksToCreate</inputReference>
+    </recordCreates>
+
+    <!-- SUBFLOWS -->
+    <subflows>
+        <name>Call_ErrorLogger</name>
+        <label>Log Flow Error</label>
+        <locationX>352</locationX>
+        <locationY>215</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value>
+                <stringValue>NEPA_Permit_SLA_Monitor</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value>
+                <elementReference>var_ErrorMessage</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RunningUserId</name>
+            <value>
+                <elementReference>$User.Id</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+
+    <!-- FORMULAS -->
+    <formulas>
+        <name>formula_Today</name>
+        <dataType>Date</dataType>
+        <expression>TODAY()</expression>
+    </formulas>
+
+    <!-- TRIGGER: Scheduled daily at 06:00 UTC -->
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_OverduePermits</targetReference>
+        </connector>
+        <schedule>
+            <frequency>Daily</frequency>
+            <startDate>2026-05-20</startDate>
+            <startTime>06:00:00.000Z</startTime>
+        </schedule>
+        <triggerType>Scheduled</triggerType>
+    </start>
+
+    <!-- VARIABLES -->
+    <variables>
+        <name>col_TasksToCreate</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Task</objectType>
+    </variables>
+
+    <variables>
+        <name>var_NewTask</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Task</objectType>
+    </variables>
+
+    <variables>
+        <name>var_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <variables>
+        <name>var_TaskSubject</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+</Flow>
