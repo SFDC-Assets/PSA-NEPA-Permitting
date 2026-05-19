@@ -223,7 +223,7 @@ Design notes:
             <targetReference>Assign_CurrentRequired</targetReference>
         </nextValueConnector>
         <noMoreValuesConnector>
-            <targetReference>Decision_AnyMissing</targetReference>
+            <targetReference>Decision_IsRODOrFONSI</targetReference>
         </noMoreValuesConnector>
     </loops>
 
@@ -374,6 +374,154 @@ Design notes:
             <targetReference>Get_RequiredDocs</targetReference>
         </connector>
     </start>
+
+    <!-- ============================================================
+         STEP 4b: At ROD/FONSI gates, check for uninitiated critical-path permits
+         Queries nepa_required_permit__c children of the related IA where
+         is_critical_path__c = true AND nepa_permit_status__c = 'Not Started'.
+         Appends to var_MissingDocs so the existing Block_Save path handles it.
+    ============================================================ -->
+    <decisions>
+        <name>Decision_IsRODOrFONSI</name>
+        <label>Is this a ROD or FONSI Gate?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Decision_AnyMissing</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Not ROD/FONSI — skip permit check</defaultConnectorLabel>
+        <rules>
+            <name>IsROD</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_event_type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>ROD</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_UninitatedCriticalPermits</targetReference>
+            </connector>
+            <label>ROD</label>
+        </rules>
+        <rules>
+            <name>IsFONSI</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_event_type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>FONSI</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_UninitatedCriticalPermits</targetReference>
+            </connector>
+            <label>FONSI</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_UninitiatedPermitsExist</name>
+        <label>Uninitiated Critical Permits Found?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Decision_AnyMissing</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No uninitiated permits — proceed</defaultConnectorLabel>
+        <rules>
+            <name>UninitiatedPermits_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>col_UninitatedCriticalPermits</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Append_PermitGapToMissingDocs</targetReference>
+            </connector>
+            <label>Uninitiated Permits Exist</label>
+        </rules>
+    </decisions>
+
+    <assignments>
+        <name>Append_PermitGapToMissingDocs</name>
+        <label>Append Permit Gap to Missing Docs Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_MissingDocs</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula_AppendPermitGap</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_AnyMissing</targetReference>
+        </connector>
+    </assignments>
+
+    <recordLookups>
+        <name>Get_UninitatedCriticalPermits</name>
+        <label>Get Uninitiated Critical-Path Permits</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_UninitiatedPermitsExist</targetReference>
+        </connector>
+        <filterLogic>1 AND 2 AND 3</filterLogic>
+        <filters>
+            <field>nepa_process__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.nepa_related_process__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_is_critical_path__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_permit_status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Not Started</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>nepa_required_permit__c</object>
+        <outputReference>col_UninitatedCriticalPermits</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Name</queriedFields>
+    </recordLookups>
+
+    <formulas>
+        <name>formula_AppendPermitGap</name>
+        <dataType>String</dataType>
+        <!-- Uses cross-object reference to the IA rollup rather than collection.size() which Flow does not support natively -->
+        <expression>IF(
+  ISBLANK({!var_MissingDocs}),
+  "Critical-path permit(s) not yet initiated (" &amp; TEXT({!$Record.nepa_related_process__r.nepa_blocked_permit_count__c}) &amp; " permit(s) in Not Started status)",
+  {!var_MissingDocs} &amp; ", Critical-path permit(s) not yet initiated (" &amp; TEXT({!$Record.nepa_related_process__r.nepa_blocked_permit_count__c}) &amp; " permit(s) in Not Started status)"
+)</expression>
+    </formulas>
+
+    <variables>
+        <name>col_UninitatedCriticalPermits</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>nepa_required_permit__c</objectType>
+    </variables>
 
     <!-- ============================================================
          VARIABLES
