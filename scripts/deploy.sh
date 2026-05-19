@@ -364,6 +364,7 @@ deploy "object schemas" \
     --metadata "CustomObject:nepa_gis_data__c" \
     --metadata "CustomObject:NEPA_Agency_Scoping_Baseline__mdt" \
     --metadata "CustomObject:NEPA_Sector_Circuit_Risk__mdt" \
+    --metadata "CustomObject:NEPA_Permit_Type_Catalog__mdt" \
     --target-org "$TARGET_ORG"
 
 # ── phase 2: custom fields on all objects ─────────────────────────────────────
@@ -471,6 +472,79 @@ if [[ "$DRY_RUN" == "false" ]]; then
         || echo "    WARNING: ES activation encountered errors — check output above"
 fi
 
+# ── phase 5d: regulatory code seed data ──────────────────────────────────────
+# Imports RegulatoryAuthorizationType and RegulatoryCode records from data/seed/.
+# These are runtime data dependencies, not metadata:
+#   - RegulatoryAuthorizationType: the records that NEPA_Permit_Record_Creator
+#     queries by Name for each permit token. Without these, every permit instance
+#     falls back to label-only mode (no critical-path flag, no SLA, no lead agency).
+#   - RegulatoryCode: CEQ Entity 9 statutory text records (audit trail / future
+#     AI-driven regulatory text matching). Non-blocking — import failure is warned.
+#
+# Uses sf data import --json (tree/records format). Idempotent when RAType records
+# already exist, because sf data import is insert-only — run sf data upsert bulk
+# with Name as external ID to refresh existing records.
+#
+# Skipped in --check mode (no org writes during validation).
+if [[ "$DRY_RUN" == "false" ]]; then
+    phase_header "Phase 5d: Regulatory code seed data (RegulatoryAuthorizationType + RegulatoryCode)"
+
+    if [[ -f data/seed/regulatory_authorization_type_seed.json ]]; then
+        echo "    Importing RegulatoryAuthorizationType records (49 permit type catalog entries)..."
+        sf data import tree \
+            --files data/seed/regulatory_authorization_type_seed.json \
+            --target-org "$TARGET_ORG" \
+            --json 2>/dev/null \
+            | python3 -c "
+import sys, json
+try:
+    d = json.load(sys.stdin)
+    results = d.get('result', {}).get('results', [])
+    ok  = sum(1 for r in results if not r.get('errors'))
+    bad = sum(1 for r in results if r.get('errors'))
+    print('    [Imported] RegulatoryAuthorizationType: {} succeeded, {} failed'.format(ok, bad))
+    for r in results:
+        for e in r.get('errors', []):
+            if 'duplicate' not in str(e).lower():
+                print('    WARN:', e)
+except Exception as ex:
+    print('    (could not parse import result):', ex)
+" 2>&1 || echo "    WARNING: RegulatoryAuthorizationType import failed — check data/seed/regulatory_authorization_type_seed.json"
+    else
+        echo "    (data/seed/regulatory_authorization_type_seed.json not found — skipping)"
+    fi
+
+    if [[ -f data/seed/regulatory_code_seed.json ]]; then
+        echo "    Importing RegulatoryCode records (24 statutory text entries)..."
+        sf data import tree \
+            --files data/seed/regulatory_code_seed.json \
+            --target-org "$TARGET_ORG" \
+            --json 2>/dev/null \
+            | python3 -c "
+import sys, json
+try:
+    d = json.load(sys.stdin)
+    results = d.get('result', {}).get('results', [])
+    ok  = sum(1 for r in results if not r.get('errors'))
+    bad = sum(1 for r in results if r.get('errors'))
+    print('    [Imported] RegulatoryCode: {} succeeded, {} failed'.format(ok, bad))
+    for r in results:
+        for e in r.get('errors', []):
+            if 'duplicate' not in str(e).lower():
+                print('    WARN:', e)
+except Exception as ex:
+    print('    (could not parse import result):', ex)
+" 2>&1 || echo "    WARNING: RegulatoryCode import failed — non-blocking, continuing"
+    else
+        echo "    (data/seed/regulatory_code_seed.json not found — skipping)"
+    fi
+else
+    phase_header "Phase 5d: Regulatory code seed data (SKIPPED in --check)"
+    echo "    (skipped — dry-run mode; run manually after deploy:)"
+    echo "      sf data import tree --files data/seed/regulatory_authorization_type_seed.json --target-org <org>"
+    echo "      sf data import tree --files data/seed/regulatory_code_seed.json --target-org <org>"
+fi
+
 # ── phase 6: remote sites + named credentials ─────────────────────────────────
 phase_header "Phase 6: Remote site settings and named credentials"
 REMOTE_DIRS=()
@@ -550,6 +624,8 @@ FLOWS=(
     NEPA_Administrative_Record_Checker
     NEPA_Plaintiff_Intelligence
     NEPA_Permit_Coordinator
+    NEPA_Permit_Record_Creator
+    NEPA_Permit_SLA_Monitor
     NEPA_AdminRecord_AutoCreate
     NEPA_Team_Assembly_Orchestrator
     NEPA_Close_Administrative_Record
@@ -800,6 +876,8 @@ else
     echo "       NEPA_Comment_Triage_Save"
     echo "       NEPA_Plaintiff_Intelligence"
     echo "       NEPA_Permit_Coordinator"
+    echo "       NEPA_Permit_Record_Creator"
+    echo "       NEPA_Permit_SLA_Monitor"
     echo "       NEPA_FRA_Page_Limit_Setter"
     echo "       NEPA_GIS_Proximity_Check"
     echo "       NEPA_Team_Assembly_Orchestrator"
@@ -826,6 +904,15 @@ else
     echo ""
     echo "    4. Verify Custom Metadata records loaded:"
     echo "       Setup > Custom Metadata Types > each NEPA_* type > Manage Records"
+    echo "       Key types to verify: NEPA_Permit_Matrix__mdt (25 records), NEPA_Permit_Type_Catalog__mdt (49 records)"
+    echo ""
+    echo "    4b. Verify regulatory code seed data (Phase 5d):"
+    echo "       sf data query --query \"SELECT COUNT() FROM RegulatoryAuthorizationType WHERE Name LIKE 'CWA%' OR Name LIKE 'ESA%'\" --target-org $TARGET_ORG"
+    echo "       sf data query --query \"SELECT COUNT() FROM RegulatoryCode\" --target-org $TARGET_ORG"
+    echo "       Expected: 49 RegulatoryAuthorizationType records, 24 RegulatoryCode records."
+    echo "       If Phase 5d was skipped or failed, re-run manually:"
+    echo "         sf data import tree --files data/seed/regulatory_authorization_type_seed.json --target-org $TARGET_ORG"
+    echo "         sf data import tree --files data/seed/regulatory_code_seed.json --target-org $TARGET_ORG"
     echo ""
     echo "    5. Load CE Library reference data (314 priority-agency records from CEQ CE Explorer v2.0):"
     echo "       python3 scripts/load_ce_library.py --org $TARGET_ORG"

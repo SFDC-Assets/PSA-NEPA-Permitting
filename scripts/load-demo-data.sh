@@ -216,6 +216,11 @@ upsert_csv "Program" "Program" "08_Program.csv" "nepa_project_id__c"
 # LicenseTypeId is a required PSS field linking to RegulatoryAuthorizationType.
 # Its ID is org-specific, so IndividualApplication is created in step 18 Apex
 # which queries or creates the RegulatoryAuthorizationType at runtime.
+#
+# PREREQUISITE: Phase 5d of deploy.sh must have imported data/seed/regulatory_authorization_type_seed.json
+# (49 RegulatoryAuthorizationType records). NEPA_Permit_Record_Creator queries these by Name to populate
+# nepa_required_permit__c child records. If the seed was not imported, permit records will create with
+# label text only — no critical-path flag, lead agency, or SLA due dates.
 step_header "Step 09: IndividualApplication (via post-load Apex)"
 echo "    Skipping CSV — IndividualApplication created in step 18 (LicenseTypeId requires runtime ID)"
 
@@ -312,6 +317,13 @@ echo "    sf data query --query \"SELECT Id, Name, nepa_risk_score__c, nepa_risk
 echo "    sf data query --query \"SELECT COUNT() FROM ApplicationTimeline WHERE nepa_related_process__r.nepa_federal_unique_id__c = 'IDI-38709'\" --target-org $TARGET_ORG"
 echo "    sf data query --query \"SELECT COUNT() FROM ContentVersion WHERE nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709' AND IsLatest = true\" --target-org $TARGET_ORG"
 echo "    sf data query --query \"SELECT COUNT() FROM PublicComplaint WHERE nepa_related_process__r.nepa_federal_unique_id__c = 'IDI-38709'\" --target-org $TARGET_ORG"
+echo "    sf data query --query \"SELECT COUNT() FROM nepa_required_permit__c WHERE nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'\" --target-org $TARGET_ORG"
+echo ""
+echo "    Expected: 6+ nepa_required_permit__c records for the Carrie Placer Mine demo."
+echo "    Permit types should include: BLM Application for Permit to Drill, ESA Section 7 Consultation,"
+echo "    NHPA Section 106 Consultation, CWA Section 404 Permit (GIS-triggered by NHD proximity flag)."
+echo "    If count is 0: NEPA_Permit_Record_Creator flow did not fire OR RegulatoryAuthorizationType seed"
+echo "    is missing. Re-run seed: sf data import tree --files data/seed/regulatory_authorization_type_seed.json --target-org $TARGET_ORG"
 echo ""
 echo "    To clean up all demo records:"
 echo "      sf data delete bulk --sobject Task --where \"External_ID__c LIKE 'DEMO_TASK_%'\" --target-org $TARGET_ORG --async"
