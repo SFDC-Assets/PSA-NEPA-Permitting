@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>FEMA National Flood Hazard Layer</label>
+    <label>BLM Areas of Critical Environmental Concern</label>
     <protected>false</protected>
     <values>
         <field>Service_URL__c</field>
-        <value xsi:type="xsd:string">https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Flood_Hazard_Reduced_Set_gdb/FeatureServer</value>
+        <value xsi:type="xsd:string">https://services1.arcgis.com/IAQQkLXctKHrf8Av/ArcGIS/rest/services/Area_of_Critical_Environmental_Concern/FeatureServer</value>
     </values>
     <values>
         <field>Layer_Number__c</field>
@@ -16,11 +16,11 @@
     </values>
     <values>
         <field>Layer_Label__c</field>
-        <value xsi:type="xsd:string">FEMA Flood Hazard Zone</value>
+        <value xsi:type="xsd:string">BLM Area of Critical Environmental Concern</value>
     </values>
     <values>
         <field>Result_Key_Field__c</field>
-        <value xsi:type="xsd:string">FLD_ZONE</value>
+        <value xsi:type="xsd:string">ACEC_NAME</value>
     </values>
     <values>
         <field>Query_Template__c</field>
@@ -28,15 +28,15 @@
     </values>
     <values>
         <field>Named_Credential__c</field>
-        <value xsi:type="xsd:string">NEPA_GIS_FEMA</value>
+        <value xsi:type="xsd:string">NEPA_GIS_BLM_ACEC</value>
     </values>
     <values>
         <field>Extraordinary_Circumstances_Keyword__c</field>
-        <value xsi:type="xsd:string">ZONE A,ZONE AE,ZONE VE,FLOODWAY,SFHA</value>
+        <value xsi:type="xsd:string">ACEC,CRITICAL ENVIRONMENTAL CONCERN</value>
     </values>
     <values>
         <field>Priority__c</field>
-        <value xsi:type="xsd:decimal">15</value>
+        <value xsi:type="xsd:decimal">35</value>
     </values>
     <values>
         <field>Active__c</field>

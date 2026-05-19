@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_blm_acec_flag__c</fullName>
+    <description>Set to true by NEPA_GIS_Proximity_Check when the project location intersects a BLM Area of Critical Environmental Concern (ACEC). Triggers FLPMA extraordinary circumstances review and may require additional BLM resource management plan consistency analysis. ACEC designation signals land of special management importance. Source: BLM ACEC FeatureServer.</description>
+    <inlineHelpText>Project intersects a BLM Area of Critical Environmental Concern. FLPMA extraordinary circumstances review and RMP consistency analysis required.</inlineHelpText>
+    <defaultValue>false</defaultValue>
+    <label>BLM ACEC Flag</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

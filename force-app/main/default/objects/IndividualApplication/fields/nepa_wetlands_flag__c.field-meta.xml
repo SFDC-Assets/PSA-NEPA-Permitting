@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_wetlands_flag__c</fullName>
+    <description>Set to true by NEPA_GIS_Proximity_Check when FWS National Wetlands Inventory (NWI) polygon intersects the project buffer (1.0 mile). More precise than NHD waterway proximity for CWA Section 404 triggering — NHD identifies waterways, NWI identifies wetland extent. Used by NEPA_Permit_Coordinator GIS augmentation and NEPA_Permit_Record_Creator GIS bridge.</description>
+    <inlineHelpText>FWS NWI wetland polygon within 1.0 mile of project. CWA Section 404 permit required. More specific than NHD waterway flag — triggers only on mapped wetland extent.</inlineHelpText>
+    <defaultValue>false</defaultValue>
+    <label>Wetlands Proximity Flag (NWI)</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

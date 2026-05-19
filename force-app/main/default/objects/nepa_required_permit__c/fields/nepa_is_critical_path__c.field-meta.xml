@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_is_critical_path__c</fullName>
+    <description>True when this permit is on the critical path — its absence blocks ROD/FONSI issuance. Drives nepa_blocked_permit_count__c rollup on IndividualApplication, which feeds NEPA_Litigation_Risk_Scorer permit gap penalty. Populated from RegulatoryAuthorizationType at record creation.</description>
+    <inlineHelpText>When checked, this permit must be issued before ROD or FONSI can be signed. Delays here directly extend the NEPA clock.</inlineHelpText>
+    <defaultValue>false</defaultValue>
+    <label>Critical Path Permit</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

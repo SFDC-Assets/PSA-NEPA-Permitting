@@ -42,4 +42,12 @@
         <field>Active__c</field>
         <value xsi:type="xsd:boolean">true</value>
     </values>
+    <values>
+        <field>GIS_Trigger_Layers__c</field>
+        <value xsi:type="xsd:string">NHD; NWI_WETLANDS; WILD_SCENIC_RIVERS; USACE_FUDS</value>
+    </values>
+    <values>
+        <field>Initiation_Gate__c</field>
+        <value xsi:type="xsd:string">Pre-Application</value>
+    </values>
 </CustomMetadata>

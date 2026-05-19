@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_permit_notes__c</fullName>
+    <description>Free-text coordination history, agency contact notes, outstanding issues, and action items for this permit. Writable by the permit coordinator and by Agentforce Permit Coordinator action. Not used in scoring or logic — informational only.</description>
+    <inlineHelpText>Coordination history, agency contacts, and outstanding issues for this permit requirement.</inlineHelpText>
+    <label>Permit Notes</label>
+    <length>2000</length>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>LongTextArea</type>
+    <visibleLines>4</visibleLines>
+</CustomField>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>GIS_Trigger_Layers__c</fullName>
+    <description>Semicolon-delimited NEPA_GIS_Layer__mdt DeveloperName keys that, when a positive GIS intersection is detected at intake, ensure the corresponding permits in Required_Permits__c are included regardless of sector/project-type match. Evaluated by NEPA_Permit_Record_Creator GIS bridge. Example: NHD; NWI_WETLANDS for water-adjacent sectors.</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>GIS layer keys that trigger permits in this matrix row regardless of sector match (e.g., NHD; NWI_WETLANDS; EPA_TRIBAL_LANDS).</inlineHelpText>
+    <label>GIS Trigger Layers</label>
+    <length>255</length>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

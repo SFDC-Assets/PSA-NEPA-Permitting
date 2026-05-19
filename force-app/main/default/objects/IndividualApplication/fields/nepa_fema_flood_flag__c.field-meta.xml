@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_fema_flood_flag__c</fullName>
+    <description>Set to true by NEPA_GIS_Proximity_Check when the project location intersects a FEMA Special Flood Hazard Area (SFHA). Triggers E.O. 11988 floodplain management compliance, CWA 404(b)(1) alternatives analysis requirement, and may trigger CZMA coastal zone review. Source: ESRI-hosted USA Flood Hazard Reduced Set FeatureServer.</description>
+    <inlineHelpText>Project intersects a FEMA Special Flood Hazard Area. E.O. 11988 floodplain compliance and CWA 404(b)(1) alternatives analysis required.</inlineHelpText>
+    <defaultValue>false</defaultValue>
+    <label>FEMA Flood Hazard Flag</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

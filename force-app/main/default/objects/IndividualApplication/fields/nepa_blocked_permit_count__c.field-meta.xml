@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_blocked_permit_count__c</fullName>
+    <description>Rollup count of critical-path nepa_required_permit__c child records in an active (non-terminal) status. When this value is greater than zero, NEPA_Litigation_Risk_Scorer applies a permit gap penalty. When a permit flips to Issued/Denied/Withdrawn the rollup decrements and the scorer re-fires automatically via the field change trigger.</description>
+    <inlineHelpText>Number of critical-path permits not yet issued, denied, or withdrawn. Drives the permit gap penalty in the litigation risk score.</inlineHelpText>
+    <label>Blocked Critical Permits</label>
+    <summarizedField>nepa_required_permit__c.nepa_is_critical_path__c</summarizedField>
+    <summaryFilterItems>
+        <field>nepa_required_permit__c.nepa_is_critical_path__c</field>
+        <operation>equals</operation>
+        <value>True</value>
+    </summaryFilterItems>
+    <summaryFilterItems>
+        <field>nepa_required_permit__c.nepa_permit_status__c</field>
+        <operation>notEqual</operation>
+        <value>Issued</value>
+    </summaryFilterItems>
+    <summaryFilterItems>
+        <field>nepa_required_permit__c.nepa_permit_status__c</field>
+        <operation>notEqual</operation>
+        <value>Denied</value>
+    </summaryFilterItems>
+    <summaryFilterItems>
+        <field>nepa_required_permit__c.nepa_permit_status__c</field>
+        <operation>notEqual</operation>
+        <value>Withdrawn</value>
+    </summaryFilterItems>
+    <summaryForeignKey>nepa_required_permit__c.nepa_process__c</summaryForeignKey>
+    <summaryOperation>COUNT</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <type>Summary</type>
+</CustomField>

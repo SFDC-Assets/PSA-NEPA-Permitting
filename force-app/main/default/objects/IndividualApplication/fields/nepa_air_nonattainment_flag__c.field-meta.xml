@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_air_nonattainment_flag__c</fullName>
+    <description>Set to true by NEPA_GIS_Proximity_Check when the project location falls within an EPA ozone nonattainment or maintenance area (2015 NAAQS standard). Triggers Clean Air Act General Conformity determination requirement for federal actions in nonattainment areas. Source: EPA ArcGIS Nonattainment Areas and Designations FeatureServer.</description>
+    <inlineHelpText>Project is in an EPA air quality nonattainment or maintenance area. Clean Air Act General Conformity determination required for federal actions.</inlineHelpText>
+    <defaultValue>false</defaultValue>
+    <label>Air Quality Nonattainment Flag</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

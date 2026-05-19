@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_fuds_flag__c</fullName>
+    <description>Set to true by NEPA_GIS_Proximity_Check when the project location intersects a USACE Formerly Used Defense Sites (FUDS) Munitions Response Site. Triggers RCRA and/or CERCLA hazardous waste review requirement and Army Corps coordination. Projects near FUDS sites may face remediation obligations before construction can proceed. Source: USACE FUDS FeatureServer.</description>
+    <inlineHelpText>Project intersects a USACE Formerly Used Defense Site (FUDS) with munitions or hazardous waste. RCRA/CERCLA review and Army Corps coordination required.</inlineHelpText>
+    <defaultValue>false</defaultValue>
+    <label>USACE FUDS Hazardous Site Flag</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Tracks individual federal permit and authorization requirements for a NEPA process. One record per required permit per IndividualApplication. Populated by NEPA_Permit_Record_Creator flow; status updated by agency callout or coordinator. Provides the data backing for the nepaPermitDependencies LWC.</description>
+    <label>Required Permit</label>
+    <pluralLabel>Required Permits</pluralLabel>
+    <nameField>
+        <label>Permit Name</label>
+        <type>Text</type>
+    </nameField>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <sharingModel>ControlledByParent</sharingModel>
+</CustomObject>

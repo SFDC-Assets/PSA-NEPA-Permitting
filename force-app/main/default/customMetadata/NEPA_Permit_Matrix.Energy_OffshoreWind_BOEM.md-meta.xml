@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>Energy | Solar | BLM Federal Land</label>
+    <label>Energy | Offshore Wind | BOEM</label>
     <protected>false</protected>
     <values>
         <field>Sector__c</field>
@@ -8,35 +8,35 @@
     </values>
     <values>
         <field>Project_Type__c</field>
-        <value xsi:type="xsd:string">Renewable Energy Production - Solar</value>
+        <value xsi:type="xsd:string">Offshore Wind Energy</value>
     </values>
     <values>
         <field>Lead_Agency_Key__c</field>
-        <value xsi:type="xsd:string">BLM</value>
+        <value xsi:type="xsd:string">BOEM</value>
     </values>
     <values>
         <field>Location_Type__c</field>
-        <value xsi:type="xsd:string">Federal Land</value>
+        <value xsi:type="xsd:string">Water</value>
     </values>
     <values>
         <field>Cooperating_Agencies__c</field>
-        <value xsi:type="xsd:string">USFWS; EPA; SHPO; State Wildlife Agency; WAPA/BPA</value>
+        <value xsi:type="xsd:string">USACE; USFWS; NMFS; EPA; USCG; FAA; DOD; State CZM; Tribes</value>
     </values>
     <values>
         <field>Required_Permits__c</field>
-        <value xsi:type="xsd:string">FLPMA Title V ROW Grant (43 USC 1761); ESA Section 7 Consultation; NHPA Section 106 Review; CWA Section 404 (if wetlands present)</value>
+        <value xsi:type="xsd:string">BOEM Outer Continental Shelf Lease (OCSLA); CZMA Federal Consistency Determination; ESA Section 7 Consultation; NHPA Section 106 Review; CWA Section 404 Permit (cable landfall); Rivers and Harbors Act Section 10 Permit; USCG Navigation Safety Approval; FAA Obstruction Evaluation</value>
     </values>
     <values>
         <field>Adjacent_Reviews__c</field>
-        <value xsi:type="xsd:string">MBTA; Bald and Golden Eagle Protection Act; EO 13186; DOE Interconnection Approval</value>
+        <value xsi:type="xsd:string">Magnuson-Stevens EFH Consultation; Marine Mammal Protection Act Incidental Take Authorization; Migratory Bird Treaty Act; Visual Impact Assessment; Radar/Aviation Impact Study; Tribal Treaty Rights Review</value>
     </values>
     <values>
         <field>Typical_Timeline_Months__c</field>
-        <value xsi:type="xsd:decimal">18</value>
+        <value xsi:type="xsd:decimal">60</value>
     </values>
     <values>
         <field>EIS_Likelihood_Pct__c</field>
-        <value xsi:type="xsd:decimal">60</value>
+        <value xsi:type="xsd:decimal">95</value>
     </values>
     <values>
         <field>Active__c</field>
@@ -44,10 +44,10 @@
     </values>
     <values>
         <field>GIS_Trigger_Layers__c</field>
-        <value xsi:type="xsd:string">BLM_ACEC; EPA_AIR_NONATTAINMENT</value>
+        <value xsi:type="xsd:string">NHD; NWI_WETLANDS; EPA_TRIBAL_LANDS; FEMA_FLOOD</value>
     </values>
     <values>
         <field>Initiation_Gate__c</field>
-        <value xsi:type="xsd:string">Scoping</value>
+        <value xsi:type="xsd:string">Pre-Application</value>
     </values>
 </CustomMetadata>

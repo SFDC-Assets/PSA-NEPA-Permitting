@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_lead_agency__c</fullName>
+    <description>Federal agency responsible for issuing this permit or authorization (e.g., USACE, EPA, USFWS, FERC). Populated from RegulatoryAuthorizationType.IssuingDepartmentId at record creation. Used by the nepaPermitDependencies LWC for agency badge display.</description>
+    <inlineHelpText>Federal agency responsible for issuing this permit (e.g., USACE, EPA, USFWS).</inlineHelpText>
+    <label>Lead Agency</label>
+    <length>80</length>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

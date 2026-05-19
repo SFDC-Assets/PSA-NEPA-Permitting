@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_process__c</fullName>
+    <description>Master-detail relationship to the IndividualApplication (NEPA process) that requires this permit. Cascade-deletes child permit records when the process is deleted. Required for rollup summaries on IndividualApplication.</description>
+    <inlineHelpText>The NEPA process (IndividualApplication) that requires this permit or federal authorization.</inlineHelpText>
+    <label>NEPA Process</label>
+    <referenceTo>IndividualApplication</referenceTo>
+    <relationshipLabel>Required Permits</relationshipLabel>
+    <relationshipName>Required_Permits</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

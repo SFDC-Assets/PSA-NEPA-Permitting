@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_wild_scenic_river_flag__c</fullName>
+    <description>Set to true by NEPA_GIS_Proximity_Check when the project location intersects or is within the buffer of a designated Wild and Scenic River segment. Triggers Wild and Scenic Rivers Act Section 7 compliance review and Rivers and Harbors Act Section 10 permit requirement. Source: USFS EDW Wild and Scenic River Segments MapServer.</description>
+    <inlineHelpText>Project intersects a Wild and Scenic River corridor. Wild and Scenic Rivers Act Section 7 compliance and Rivers and Harbors Act Section 10 permit required.</inlineHelpText>
+    <defaultValue>false</defaultValue>
+    <label>Wild and Scenic River Flag</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

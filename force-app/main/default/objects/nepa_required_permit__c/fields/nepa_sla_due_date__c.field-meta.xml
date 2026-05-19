@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_sla_due_date__c</fullName>
+    <description>Calculated SLA deadline: process start date + nepa_statutory_deadline_days__c. Populated at record creation by NEPA_Permit_Record_Creator flow. Evaluated nightly by NEPA_Permit_SLA_Monitor to create overdue Tasks on critical-path permits past this date.</description>
+    <inlineHelpText>SLA deadline for this permit (process start + statutory deadline days). Used by the nightly SLA monitor for overdue alerts.</inlineHelpText>
+    <label>SLA Due Date</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Date</type>
+</CustomField>

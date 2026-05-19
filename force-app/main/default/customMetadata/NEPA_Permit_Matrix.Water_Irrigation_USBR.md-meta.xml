@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>Agri | Land Mgmt | BLM/USFS</label>
+    <label>Water Resources | Irrigation / Water Supply | USBR</label>
     <protected>false</protected>
     <values>
         <field>Sector__c</field>
-        <value xsi:type="xsd:string">Agriculture and Natural Resource Management</value>
+        <value xsi:type="xsd:string">Water Resources</value>
     </values>
     <values>
         <field>Project_Type__c</field>
-        <value xsi:type="xsd:string">Land Use or Forest Management Plan</value>
+        <value xsi:type="xsd:string">Irrigation and Water Supply</value>
     </values>
     <values>
         <field>Lead_Agency_Key__c</field>
-        <value xsi:type="xsd:string">BLM/USFS</value>
+        <value xsi:type="xsd:string">USBR</value>
     </values>
     <values>
         <field>Location_Type__c</field>
-        <value xsi:type="xsd:string">Federal Land</value>
+        <value xsi:type="xsd:string">Mixed</value>
     </values>
     <values>
         <field>Cooperating_Agencies__c</field>
-        <value xsi:type="xsd:string">USFWS; EPA; SHPO; State Wildlife Agency; Tribal Governments</value>
+        <value xsi:type="xsd:string">USACE; USFWS; NMFS; EPA; BLM; State Water Rights Agency; Tribes</value>
     </values>
     <values>
         <field>Required_Permits__c</field>
-        <value xsi:type="xsd:string">FLPMA Plan Approval (43 USC 1712); NFMA Forest Plan (16 USC 1604); ESA Section 7 Consultation; NHPA Section 106</value>
+        <value xsi:type="xsd:string">USBR Water Service Contract; CWA Section 404 Permit; CWA Section 401 Water Quality Certification; ESA Section 7 Consultation; NHPA Section 106 Review; Rivers and Harbors Act Section 10 Permit; State Water Rights Permit</value>
     </values>
     <values>
         <field>Adjacent_Reviews__c</field>
-        <value xsi:type="xsd:string">Wild and Scenic Rivers Act; Wilderness Act; MBTA; ANILCA (Alaska)</value>
+        <value xsi:type="xsd:string">Magnuson-Stevens EFH Consultation; Wild and Scenic Rivers Act Section 7; EO 11990 Wetlands; EO 11988 Floodplains; Migratory Bird Treaty Act; Tribal Water Rights; Clean Air Act General Conformity (if pumping)</value>
     </values>
     <values>
         <field>Typical_Timeline_Months__c</field>
@@ -36,7 +36,7 @@
     </values>
     <values>
         <field>EIS_Likelihood_Pct__c</field>
-        <value xsi:type="xsd:decimal">90</value>
+        <value xsi:type="xsd:decimal">55</value>
     </values>
     <values>
         <field>Active__c</field>
@@ -44,10 +44,10 @@
     </values>
     <values>
         <field>GIS_Trigger_Layers__c</field>
-        <value xsi:type="xsd:string">NHD; NWI_WETLANDS; BLM_ACEC; WILD_SCENIC_RIVERS</value>
+        <value xsi:type="xsd:string">NHD; NWI_WETLANDS; WILD_SCENIC_RIVERS; FEMA_FLOOD; EPA_TRIBAL_LANDS; BLM_ACEC</value>
     </values>
     <values>
         <field>Initiation_Gate__c</field>
-        <value xsi:type="xsd:string">Scoping</value>
+        <value xsi:type="xsd:string">Pre-Application</value>
     </values>
 </CustomMetadata>
