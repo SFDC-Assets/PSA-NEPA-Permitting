@@ -81,7 +81,19 @@ global with sharing class NepaCeqExportService {
                    nepa_risk_tier__c,
                    nepa_record_completeness__c,
                    nepa_last_stage_transition__c,
-                   LastModifiedDate
+                   LastModifiedDate,
+                   (SELECT Id, Name,
+                           nepa_permit_status__c,
+                           nepa_lead_agency__c,
+                           nepa_regulatory_citation__c,
+                           nepa_is_critical_path__c,
+                           nepa_sla_due_date__c,
+                           nepa_expected_completion__c,
+                           nepa_actual_completion__c,
+                           nepa_external_federal_id__c,
+                           nepa_last_synced__c
+                    FROM nepa_required_permits__r
+                    ORDER BY nepa_is_critical_path__c DESC, Name ASC)
             FROM IndividualApplication
             WHERE Id = :idOrFuid
                OR nepa_federal_unique_id__c = :idOrFuid
@@ -169,7 +181,19 @@ global with sharing class NepaCeqExportService {
             + ' nepa_risk_tier__c,'
             + ' nepa_record_completeness__c,'
             + ' nepa_last_stage_transition__c,'
-            + ' LastModifiedDate'
+            + ' LastModifiedDate,'
+            + ' (SELECT Id, Name,'
+            + '         nepa_permit_status__c,'
+            + '         nepa_lead_agency__c,'
+            + '         nepa_regulatory_citation__c,'
+            + '         nepa_is_critical_path__c,'
+            + '         nepa_sla_due_date__c,'
+            + '         nepa_expected_completion__c,'
+            + '         nepa_actual_completion__c,'
+            + '         nepa_external_federal_id__c,'
+            + '         nepa_last_synced__c'
+            + '  FROM nepa_required_permits__r'
+            + '  ORDER BY nepa_is_critical_path__c DESC, Name ASC)'
             + ' FROM IndividualApplication'
             + whereClause
             + ' ORDER BY nepa_start_date__c DESC NULLS LAST, Id ASC'
@@ -213,8 +237,30 @@ global with sharing class NepaCeqExportService {
             'riskTier'             => r.nepa_risk_tier__c,
             'recordCompleteness'   => r.nepa_record_completeness__c,
             'lastStageTransition'  => r.nepa_last_stage_transition__c,
-            'lastModified'         => r.LastModifiedDate
+            'lastModified'         => r.LastModifiedDate,
+            'permits'              => toPermitDtos(r.nepa_required_permits__r)
         };
+    }
+
+    private static List<Map<String, Object>> toPermitDtos(List<nepa_required_permit__c> permits) {
+        List<Map<String, Object>> dtos = new List<Map<String, Object>>();
+        if (permits == null) { return dtos; }
+        for (nepa_required_permit__c p : permits) {
+            dtos.add(new Map<String, Object>{
+                'id'                 => p.Id,
+                'name'               => p.Name,
+                'permitStatus'       => p.nepa_permit_status__c,
+                'leadAgency'         => p.nepa_lead_agency__c,
+                'regulatoryCitation' => p.nepa_regulatory_citation__c,
+                'isCriticalPath'     => p.nepa_is_critical_path__c,
+                'slaDueDate'         => p.nepa_sla_due_date__c,
+                'expectedCompletion' => p.nepa_expected_completion__c,
+                'actualCompletion'   => p.nepa_actual_completion__c,
+                'externalFederalId'  => p.nepa_external_federal_id__c,
+                'lastSynced'         => p.nepa_last_synced__c
+            });
+        }
+        return dtos;
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

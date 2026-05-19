@@ -437,7 +437,8 @@ private class NepaCeqExportServiceTest {
         Set<String> requiredKeys = new Set<String>{
             'id', 'federalUniqueId', 'reviewType', 'processStatus', 'processStage',
             'agencyId', 'startDate', 'targetCompletionDate', 'slaDueDate', 'slaOverdue',
-            'riskScore', 'riskTier', 'recordCompleteness', 'lastStageTransition', 'lastModified'
+            'riskScore', 'riskTier', 'recordCompleteness', 'lastStageTransition', 'lastModified',
+            'permits'
         };
         List<String> missing = new List<String>();
         for (String key : requiredKeys) {
@@ -445,6 +446,86 @@ private class NepaCeqExportServiceTest {
         }
         System.assertEquals(0, missing.size(),
             'DTO is missing PIC v1.2 required keys: ' + String.join(missing, ', '));
+    }
+
+    // ── permits[] subresource ─────────────────────────────────────────────────
+
+    @IsTest
+    static void getSingle_withPermits_permitsArrayPresent() {
+        IndividualApplication ia = [
+            SELECT Id FROM IndividualApplication
+            WHERE nepa_federal_unique_id__c = 'FUID-001' LIMIT 1
+        ];
+        NepaTestFactory.insertRequiredPermit(ia.Id, 'In Progress', true, Date.today().addDays(30));
+        NepaTestFactory.insertRequiredPermit(ia.Id, 'Not Started', false, null);
+
+        RestContext.request  = buildRequest('GET', '/services/apexrest/nepa/v1/processes/' + ia.Id, null);
+        RestContext.response = new RestResponse();
+
+        Test.startTest();
+        NepaCeqExportService.doGet();
+        Test.stopTest();
+
+        System.assertEquals(200, RestContext.response.statusCode);
+        Map<String, Object> dto = (Map<String, Object>) parseBody().get('data');
+        System.assert(dto.containsKey('permits'), 'DTO must contain permits key');
+        List<Object> permits = (List<Object>) dto.get('permits');
+        System.assertEquals(2, permits.size(), 'permits array must contain both child permit records');
+
+        Map<String, Object> firstPermit = (Map<String, Object>) permits[0];
+        System.assert(firstPermit.containsKey('id'), 'permit DTO must contain id');
+        System.assert(firstPermit.containsKey('permitStatus'), 'permit DTO must contain permitStatus');
+        System.assert(firstPermit.containsKey('leadAgency'), 'permit DTO must contain leadAgency');
+        System.assert(firstPermit.containsKey('isCriticalPath'), 'permit DTO must contain isCriticalPath');
+        System.assert(firstPermit.containsKey('slaDueDate'), 'permit DTO must contain slaDueDate');
+    }
+
+    @IsTest
+    static void getSingle_noPermits_permitsArrayEmpty() {
+        IndividualApplication ia = [
+            SELECT Id FROM IndividualApplication
+            WHERE nepa_federal_unique_id__c = 'FUID-001' LIMIT 1
+        ];
+
+        RestContext.request  = buildRequest('GET', '/services/apexrest/nepa/v1/processes/' + ia.Id, null);
+        RestContext.response = new RestResponse();
+
+        Test.startTest();
+        NepaCeqExportService.doGet();
+        Test.stopTest();
+
+        System.assertEquals(200, RestContext.response.statusCode);
+        Map<String, Object> dto = (Map<String, Object>) parseBody().get('data');
+        System.assert(dto.containsKey('permits'), 'permits key must be present even when no child permits exist');
+        List<Object> permits = (List<Object>) dto.get('permits');
+        System.assertNotEquals(null, permits, 'permits must not be null — must be an empty array');
+        System.assertEquals(0, permits.size(), 'permits array must be empty when no child permits exist');
+    }
+
+    @IsTest
+    static void getList_withPermits_permitsArrayPresentOnEachRecord() {
+        IndividualApplication ia = [
+            SELECT Id FROM IndividualApplication
+            WHERE nepa_federal_unique_id__c = 'FUID-001' LIMIT 1
+        ];
+        NepaTestFactory.insertRequiredPermit(ia.Id, 'Issued', true, Date.today().addDays(-10));
+
+        RestContext.request  = buildRequest('GET', '/services/apexrest/nepa/v1/processes/', null);
+        RestContext.response = new RestResponse();
+
+        Test.startTest();
+        NepaCeqExportService.doGet();
+        Test.stopTest();
+
+        System.assertEquals(200, RestContext.response.statusCode);
+        List<Object> records = (List<Object>) parseBody().get('data');
+        for (Object rec : records) {
+            Map<String, Object> row = (Map<String, Object>) rec;
+            System.assert(row.containsKey('permits'),
+                'Every record in list response must contain permits key');
+            System.assert(row.get('permits') instanceof List<Object>,
+                'permits must be an array on every list record');
+        }
     }
 
     @IsTest
