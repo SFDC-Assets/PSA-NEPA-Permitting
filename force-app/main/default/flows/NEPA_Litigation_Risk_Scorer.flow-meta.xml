@@ -8,7 +8,7 @@
         <actionName>NEPA_Litigation_Risk_Scorer</actionName>
         <actionType>runExpressionSet</actionType>
         <connector>
-            <targetReference>Build_Score_Factors</targetReference>
+            <targetReference>Decision_PermitGapPenalty</targetReference>
         </connector>
         <faultConnector>
             <targetReference>Handle_Error</targetReference>
@@ -108,6 +108,54 @@
         </assignmentItems>
         <connector>
             <targetReference>Loop_StatuteWeights</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_GapPoints_High</name>
+        <label>Set Permit Gap Points — High (3+)</label>
+        <locationX>176</locationX>
+        <locationY>647</locationY>
+        <assignmentItems>
+            <assignToReference>var_PermitGapPoints</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <numberValue>15</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Assign_FinalRiskScore</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_GapPoints_Low</name>
+        <label>Set Permit Gap Points — Low (1-2)</label>
+        <locationX>352</locationX>
+        <locationY>647</locationY>
+        <assignmentItems>
+            <assignToReference>var_PermitGapPoints</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <numberValue>8</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Assign_FinalRiskScore</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_FinalRiskScore</name>
+        <label>Compute Final Risk Score</label>
+        <locationX>176</locationX>
+        <locationY>755</locationY>
+        <assignmentItems>
+            <assignToReference>var_FinalRiskScore</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula_FinalRiskScore</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Build_Score_Factors</targetReference>
         </connector>
     </assignments>
     <assignments>
@@ -233,6 +281,46 @@
         </connector>
     </assignments>
     <decisions>
+        <name>Decision_PermitGapPenalty</name>
+        <label>Permit Gap Penalty Level?</label>
+        <locationX>176</locationX>
+        <locationY>647</locationY>
+        <defaultConnector>
+            <targetReference>Assign_FinalRiskScore</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Gap — 0 pts</defaultConnectorLabel>
+        <rules>
+            <name>Gap_High</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_blocked_permit_count__c</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>3</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_GapPoints_High</targetReference>
+            </connector>
+            <label>3+ Blocked Permits — 15 pts</label>
+        </rules>
+        <rules>
+            <name>Gap_Low</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_blocked_permit_count__c</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>1</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_GapPoints_Low</targetReference>
+            </connector>
+            <label>1-2 Blocked Permits — 8 pts</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Decision_AgencyDurationFound</name>
         <label>Agency Duration Record Found?</label>
         <locationX>176</locationX>
@@ -326,9 +414,15 @@
         <expression>ISPICKVAL({!$Record.nepa_review_timeline_type__c}, &quot;Expedited/Emergency&quot;)</expression>
     </formulas>
     <formulas>
+        <name>formula_FinalRiskScore</name>
+        <dataType>Number</dataType>
+        <scale>1</scale>
+        <expression>{!Call_NEPA_Risk_Scorer.RiskScore} + {!var_PermitGapPoints}</expression>
+    </formulas>
+    <formulas>
         <name>formula_RiskTier</name>
         <dataType>String</dataType>
-        <expression>IF( {!Call_NEPA_Risk_Scorer.RiskScore} &gt;= {!var_ThresholdVeryHigh}, &quot;Very High&quot;, IF( {!Call_NEPA_Risk_Scorer.RiskScore} &gt;= {!var_ThresholdHigh}, &quot;High&quot;, IF( {!Call_NEPA_Risk_Scorer.RiskScore} &gt;= {!var_ThresholdModerate}, &quot;Moderate&quot;, &quot;Low&quot; ) ) )</expression>
+        <expression>IF( {!var_FinalRiskScore} &gt;= {!var_ThresholdVeryHigh}, &quot;Very High&quot;, IF( {!var_FinalRiskScore} &gt;= {!var_ThresholdHigh}, &quot;High&quot;, IF( {!var_FinalRiskScore} &gt;= {!var_ThresholdModerate}, &quot;Moderate&quot;, &quot;Low&quot; ) ) )</expression>
     </formulas>
     <formulas>
         <name>formula_ScoreFactorsSummary</name>
@@ -338,6 +432,9 @@
 &quot;; ReviewType+Agency+Circuit scored via BRE DM; Statutes:&quot; &amp; TEXT({!var_StatutePoints}) &amp; &quot;pts&quot; &amp;
 IF(CONTAINS({!Get_RelatedProject.nepa_adjacent_statutes__c}, &quot;ESA&quot;),
    &quot;; ESA Section 7: +10pts [LOW CONFIDENCE: ECOS API unavailable — flat 1.48x multiplier, cannot decompose consultation-duration vs. jeopardy-finding drivers. Pending TAILS/PCTS linkage.]&quot;,
+   &quot;&quot;) &amp;
+IF({!var_PermitGapPoints} &gt; 0,
+   &quot;; PERMIT GAP: &quot; &amp; TEXT({!$Record.nepa_blocked_permit_count__c}) &amp; &quot; critical-path permit(s) not yet Issued — +&quot; &amp; TEXT({!var_PermitGapPoints}) &amp; &quot;pts&quot;,
    &quot;&quot;) &amp;
 &quot;; == LITIGATION COST EXPOSURE ==&quot; &amp;
 &quot;; Expected litigation duration: ~&quot; &amp; TEXT({!var_ResolvedDurationMonths}) &amp; &quot; months (&quot; &amp; {!var_ResolvedDurationPathway} &amp; &quot;)&quot; &amp;
@@ -513,7 +610,7 @@ IF(CONTAINS({!Get_RelatedProject.nepa_adjacent_statutes__c}, &quot;ESA&quot;),
         <inputAssignments>
             <field>nepa_risk_score__c</field>
             <value>
-                <elementReference>Call_NEPA_Risk_Scorer.RiskScore</elementReference>
+                <elementReference>var_FinalRiskScore</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -539,7 +636,7 @@ IF(CONTAINS({!Get_RelatedProject.nepa_adjacent_statutes__c}, &quot;ESA&quot;),
     <start>
         <locationX>50</locationX>
         <locationY>0</locationY>
-        <filterLogic>1 OR 2</filterLogic>
+        <filterLogic>1 OR 2 OR 3</filterLogic>
         <filters>
             <field>nepa_review_type__c</field>
             <operator>IsChanged</operator>
@@ -549,6 +646,13 @@ IF(CONTAINS({!Get_RelatedProject.nepa_adjacent_statutes__c}, &quot;ESA&quot;),
         </filters>
         <filters>
             <field>nepa_record_completeness__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_blocked_permit_count__c</field>
             <operator>IsChanged</operator>
             <value>
                 <booleanValue>true</booleanValue>
@@ -661,6 +765,28 @@ IF(CONTAINS({!Get_RelatedProject.nepa_adjacent_statutes__c}, &quot;ESA&quot;),
     </variables>
     <variables>
         <name>var_StatutePoints</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>1</scale>
+        <value>
+            <numberValue>0.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <name>var_PermitGapPoints</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+        <value>
+            <numberValue>0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <name>var_FinalRiskScore</name>
         <dataType>Number</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
