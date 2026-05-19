@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>After-save async flow on IndividualApplication. Fires when nepa_co_permits_required__c is set or changes (written by NEPA_Permit_Coordinator). Converts the semicolon-delimited permit string into individual nepa_required_permit__c child records: (1) builds GIS-augmented permit string, (2) deletes existing Not Started permits for safe re-run, (3) splits the string via NepaStringSplitter invocable, (4) loops tokens and looks up matching RegulatoryAuthorizationType records, (5) bulk-creates all permit records in a single DML call. SLA due dates are calculated from statutory deadline days on the RA type. Fault paths delegate to NEPA_Error_Logger per ADR-003.</description>
+    <label>NEPA Permit Record Creator</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Active</status>
+
+    <!-- ═══════════════════════════════════════════
+         VARIABLES
+         ═══════════════════════════════════════════ -->
+    <variables>
+        <name>var_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value><stringValue></stringValue></value>
+    </variables>
+    <variables>
+        <name>var_PermitTokens</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_CurrentToken</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_PermitRecords</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>nepa_required_permit__c</objectType>
+    </variables>
+    <variables>
+        <name>var_NewPermit</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>nepa_required_permit__c</objectType>
+    </variables>
+    <variables>
+        <name>var_MatchedRATypeId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_MatchedRATypeName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_MatchedLeadAgency</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_MatchedIsCritical</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value><booleanValue>false</booleanValue></value>
+    </variables>
+    <variables>
+        <name>var_MatchedDeadlineDays</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+    </variables>
+    <variables>
+        <name>var_MatchedCitation</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_AugmentedPermitString</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <!-- ═══════════════════════════════════════════
+         FORMULAS
+         ═══════════════════════════════════════════ -->
+    <formulas>
+        <name>formula_ErrorContext</name>
+        <dataType>String</dataType>
+        <expression>"IA:" &amp; {!$Record.Id} &amp; "|Permits:" &amp; LEFT({!$Record.nepa_co_permits_required__c}, 100)</expression>
+    </formulas>
+    <formulas>
+        <name>formula_GISAugmentedPermits</name>
+        <dataType>String</dataType>
+        <expression>{!$Record.nepa_co_permits_required__c} &amp;
+IF(
+  {!$Record.nepa_wetlands_flag__c} &amp;&amp;
+  NOT(CONTAINS({!$Record.nepa_co_permits_required__c}, "CWA Section 404")),
+  "; CWA Section 404 Permit",
+  ""
+) &amp;
+IF(
+  {!$Record.nepa_nhd_proximity_flag__c} &amp;&amp;
+  NOT(CONTAINS({!$Record.nepa_co_permits_required__c}, "CWA Section 401")),
+  "; CWA Section 401 Water Quality Certification",
+  ""
+) &amp;
+IF(
+  {!$Record.nepa_tribal_lands_flag__c} &amp;&amp;
+  NOT(CONTAINS({!$Record.nepa_co_permits_required__c}, "NHPA Section 106")),
+  "; NHPA Section 106 Consultation",
+  ""
+) &amp;
+IF(
+  {!$Record.nepa_ec_usace_czma__c} &amp;&amp;
+  NOT(CONTAINS({!$Record.nepa_co_permits_required__c}, "CZMA")),
+  "; CZMA Federal Consistency Determination",
+  ""
+) &amp;
+IF(
+  {!$Record.nepa_air_nonattainment_flag__c} &amp;&amp;
+  NOT(CONTAINS({!$Record.nepa_co_permits_required__c}, "Clean Air Act General Conformity")),
+  "; Clean Air Act General Conformity Determination",
+  ""
+) &amp;
+IF(
+  {!$Record.nepa_wild_scenic_river_flag__c} &amp;&amp;
+  NOT(CONTAINS({!$Record.nepa_co_permits_required__c}, "Wild and Scenic")),
+  "; Wild and Scenic Rivers Act Section 7 Compliance",
+  ""
+) &amp;
+IF(
+  {!$Record.nepa_blm_acec_flag__c} &amp;&amp;
+  NOT(CONTAINS({!$Record.nepa_co_permits_required__c}, "FLPMA")),
+  "; FLPMA Title V ROW Permit",
+  ""
+) &amp;
+IF(
+  {!$Record.nepa_fuds_flag__c} &amp;&amp;
+  NOT(CONTAINS({!$Record.nepa_co_permits_required__c}, "RCRA")),
+  "; RCRA Hazardous Waste Site Review",
+  ""
+)</expression>
+    </formulas>
+    <formulas>
+        <name>formula_SLADueDate</name>
+        <dataType>Date</dataType>
+        <expression>IF(
+  NOT(ISBLANK({!$Record.nepa_start_date__c})) &amp;&amp;
+  {!var_MatchedDeadlineDays} &gt; 0,
+  {!$Record.nepa_start_date__c} + {!var_MatchedDeadlineDays},
+  NULL
+)</expression>
+    </formulas>
+
+    <!-- ═══════════════════════════════════════════
+         ASSIGNMENTS
+         ═══════════════════════════════════════════ -->
+    <assignments>
+        <name>Handle_Error</name>
+        <label>Capture Error</label>
+        <locationX>638</locationX>
+        <locationY>323</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value><elementReference>$Flow.FaultMessage</elementReference></value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Assign_AugmentedString</name>
+        <label>Build GIS-Augmented Permit String</label>
+        <locationX>176</locationX>
+        <locationY>431</locationY>
+        <assignmentItems>
+            <assignToReference>var_AugmentedPermitString</assignToReference>
+            <operator>Assign</operator>
+            <value><elementReference>formula_GISAugmentedPermits</elementReference></value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Delete_NotStartedPermits</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Build_PermitRecord_WithType</name>
+        <label>Build Permit Record — RA Type Matched</label>
+        <locationX>176</locationX>
+        <locationY>971</locationY>
+        <assignmentItems>
+            <assignToReference>var_NewPermit.nepa_process__c</assignToReference>
+            <operator>Assign</operator>
+            <value><elementReference>$Record.Id</elementReference></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewPermit.Name</assignToReference>
+            <operator>Assign</operator>
+            <value><elementReference>var_MatchedRATypeName</elementReference></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewPermit.nepa_permit_type__c</assignToReference>
+            <operator>Assign</operator>
+            <value><elementReference>var_MatchedRATypeId</elementReference></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewPermit.nepa_lead_agency__c</assignToReference>
+            <operator>Assign</operator>
+            <value><elementReference>var_MatchedLeadAgency</elementReference></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewPermit.nepa_regulatory_citation__c</assignToReference>
+            <operator>Assign</operator>
+            <value><elementReference>var_MatchedCitation</elementReference></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewPermit.nepa_is_critical_path__c</assignToReference>
+            <operator>Assign</operator>
+            <value><elementReference>var_MatchedIsCritical</elementReference></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewPermit.nepa_statutory_deadline_days__c</assignToReference>
+            <operator>Assign</operator>
+            <value><elementReference>var_MatchedDeadlineDays</elementReference></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewPermit.nepa_sla_due_date__c</assignToReference>
+            <operator>Assign</operator>
+            <value><elementReference>formula_SLADueDate</elementReference></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewPermit.nepa_permit_status__c</assignToReference>
+            <operator>Assign</operator>
+            <value><stringValue>Not Started</stringValue></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_PermitRecords</assignToReference>
+            <operator>Add</operator>
+            <value><elementReference>var_NewPermit</elementReference></value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_PermitTokens</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Build_PermitRecord_LabelOnly</name>
+        <label>Build Permit Record — Label Only (no RA Type match)</label>
+        <locationX>440</locationX>
+        <locationY>971</locationY>
+        <assignmentItems>
+            <assignToReference>var_NewPermit.nepa_process__c</assignToReference>
+            <operator>Assign</operator>
+            <value><elementReference>$Record.Id</elementReference></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewPermit.Name</assignToReference>
+            <operator>Assign</operator>
+            <value><elementReference>var_CurrentToken</elementReference></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewPermit.nepa_lead_agency__c</assignToReference>
+            <operator>Assign</operator>
+            <value><stringValue>TBD</stringValue></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewPermit.nepa_permit_status__c</assignToReference>
+            <operator>Assign</operator>
+            <value><stringValue>Not Started</stringValue></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_PermitRecords</assignToReference>
+            <operator>Add</operator>
+            <value><elementReference>var_NewPermit</elementReference></value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_PermitTokens</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- ═══════════════════════════════════════════
+         DECISIONS
+         ═══════════════════════════════════════════ -->
+    <decisions>
+        <name>Decision_PermitsStringPopulated</name>
+        <label>Permits String Populated?</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <defaultConnectorLabel>No Permits — Exit</defaultConnectorLabel>
+        <rules>
+            <name>Permits_Populated</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_co_permits_required__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_AugmentedString</targetReference>
+            </connector>
+            <label>Permits String Populated</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_RATypeFound</name>
+        <label>RA Type Matched?</label>
+        <locationX>176</locationX>
+        <locationY>863</locationY>
+        <defaultConnectorLabel>No Match — Use Label Only</defaultConnectorLabel>
+        <rules>
+            <name>RAType_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_MatchedRATypeId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Build_PermitRecord_WithType</targetReference>
+            </connector>
+            <label>RA Type Matched</label>
+        </rules>
+        <defaultConnector>
+            <targetReference>Build_PermitRecord_LabelOnly</targetReference>
+        </defaultConnector>
+    </decisions>
+
+    <decisions>
+        <name>Decision_CollectionPopulated</name>
+        <label>Permit Records to Create?</label>
+        <locationX>176</locationX>
+        <locationY>1187</locationY>
+        <defaultConnectorLabel>Nothing to Create — Exit</defaultConnectorLabel>
+        <rules>
+            <name>Collection_Populated</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_PermitRecords</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_PermitRecords</targetReference>
+            </connector>
+            <label>Records Ready</label>
+        </rules>
+    </decisions>
+
+    <!-- ═══════════════════════════════════════════
+         RECORD DELETES
+         ═══════════════════════════════════════════ -->
+    <recordDeletes>
+        <name>Delete_NotStartedPermits</name>
+        <label>Delete Existing Not Started Permits</label>
+        <locationX>176</locationX>
+        <locationY>539</locationY>
+        <connector>
+            <targetReference>Call_SplitPermitString</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>nepa_process__c</field>
+            <operator>EqualTo</operator>
+            <value><elementReference>$Record.Id</elementReference></value>
+        </filters>
+        <filters>
+            <field>nepa_permit_status__c</field>
+            <operator>EqualTo</operator>
+            <value><stringValue>Not Started</stringValue></value>
+        </filters>
+        <object>nepa_required_permit__c</object>
+    </recordDeletes>
+
+    <!-- ═══════════════════════════════════════════
+         ACTION CALLS
+         ═══════════════════════════════════════════ -->
+    <actionCalls>
+        <name>Call_SplitPermitString</name>
+        <label>Split Permit String to Tokens</label>
+        <locationX>176</locationX>
+        <locationY>647</locationY>
+        <actionName>NepaStringSplitter</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Loop_PermitTokens</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputParameters>
+            <name>inputString</name>
+            <value><elementReference>var_AugmentedPermitString</elementReference></value>
+        </inputParameters>
+        <outputParameters>
+            <assignToReference>var_PermitTokens</assignToReference>
+            <name>tokens</name>
+        </outputParameters>
+    </actionCalls>
+
+    <!-- ═══════════════════════════════════════════
+         LOOPS
+         ═══════════════════════════════════════════ -->
+    <loops>
+        <name>Loop_PermitTokens</name>
+        <label>Loop Permit Tokens</label>
+        <locationX>176</locationX>
+        <locationY>755</locationY>
+        <collectionReference>var_PermitTokens</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Get_RAType_For_Token</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Decision_CollectionPopulated</targetReference>
+        </noMoreValuesConnector>
+        <assignNextValueToReference>var_CurrentToken</assignNextValueToReference>
+    </loops>
+
+    <!-- ═══════════════════════════════════════════
+         RECORD LOOKUPS
+         ═══════════════════════════════════════════ -->
+    <recordLookups>
+        <name>Get_RAType_For_Token</name>
+        <label>Lookup RegulatoryAuthorizationType by Name</label>
+        <locationX>176</locationX>
+        <locationY>863</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_RATypeFound</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Name</field>
+            <operator>EqualTo</operator>
+            <value><elementReference>var_CurrentToken</elementReference></value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>RegulatoryAuthorizationType</object>
+        <outputAssignments>
+            <assignToReference>var_MatchedRATypeId</assignToReference>
+            <field>Id</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>var_MatchedRATypeName</assignToReference>
+            <field>Name</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>var_MatchedLeadAgency</assignToReference>
+            <field>nepa_default_lead_agency__c</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>var_MatchedIsCritical</assignToReference>
+            <field>nepa_is_critical_path__c</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>var_MatchedDeadlineDays</assignToReference>
+            <field>nepa_statutory_deadline_days__c</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>var_MatchedCitation</assignToReference>
+            <field>Description</field>
+        </outputAssignments>
+    </recordLookups>
+
+    <!-- ═══════════════════════════════════════════
+         RECORD CREATES
+         ═══════════════════════════════════════════ -->
+    <recordCreates>
+        <name>Create_PermitRecords</name>
+        <label>Bulk Create Permit Records</label>
+        <locationX>176</locationX>
+        <locationY>1295</locationY>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputReference>var_PermitRecords</inputReference>
+    </recordCreates>
+
+    <!-- ═══════════════════════════════════════════
+         SUBFLOWS
+         ═══════════════════════════════════════════ -->
+    <subflows>
+        <name>Call_ErrorLogger</name>
+        <label>Log Flow Error</label>
+        <locationX>638</locationX>
+        <locationY>431</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value><stringValue>NEPA_Permit_Record_Creator</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value><elementReference>var_ErrorMessage</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value><elementReference>$Record.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RunningUserId</name>
+            <value><elementReference>$User.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorContext</name>
+            <value><elementReference>formula_ErrorContext</elementReference></value>
+        </inputAssignments>
+    </subflows>
+
+    <!-- ═══════════════════════════════════════════
+         START
+         ═══════════════════════════════════════════ -->
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <object>IndividualApplication</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+        <scheduledPaths>
+            <connector>
+                <targetReference>Decision_PermitsStringPopulated</targetReference>
+            </connector>
+            <pathType>AsyncAfterCommit</pathType>
+        </scheduledPaths>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>nepa_co_permits_required__c</field>
+            <operator>IsChanged</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </filters>
+        <filters>
+            <field>nepa_co_permits_required__c</field>
+            <operator>IsNull</operator>
+            <value><booleanValue>false</booleanValue></value>
+        </filters>
+    </start>
+
+    <interviewLabel>NEPA Permit Record Creator {!$Flow.CurrentDateTime}</interviewLabel>
+
+</Flow>
