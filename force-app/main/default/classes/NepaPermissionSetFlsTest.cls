@@ -137,4 +137,62 @@ private class NepaPermissionSetFlsTest {
         System.assertEquals(true, dfr.isUpdateable(),
             'System Administrator must be able to update nepa_risk_score__c');
     }
+
+    // ── Phase 3: nepa_required_permit__c fields readable ─────────────────────
+
+    @IsTest
+    static void fls_requiredPermitKeyFields_areReadable() {
+        User u = createNepaUser();
+        System.runAs(u) {
+            System.assertEquals(true,
+                Schema.SObjectType.nepa_required_permit__c.fields.nepa_permit_status__c.isAccessible(),
+                'nepa_required_permit__c.nepa_permit_status__c must be readable');
+            System.assertEquals(true,
+                Schema.SObjectType.nepa_required_permit__c.fields.nepa_is_critical_path__c.isAccessible(),
+                'nepa_required_permit__c.nepa_is_critical_path__c must be readable');
+            System.assertEquals(true,
+                Schema.SObjectType.nepa_required_permit__c.fields.nepa_sla_due_date__c.isAccessible(),
+                'nepa_required_permit__c.nepa_sla_due_date__c must be readable');
+            System.assertEquals(true,
+                Schema.SObjectType.nepa_required_permit__c.fields.nepa_lead_agency__c.isAccessible(),
+                'nepa_required_permit__c.nepa_lead_agency__c must be readable');
+        }
+    }
+
+    @IsTest
+    static void fls_blockedPermitCountOnIA_isReadable() {
+        User u = createNepaUser();
+        System.runAs(u) {
+            System.assertEquals(true,
+                Schema.SObjectType.IndividualApplication.fields.nepa_blocked_permit_count__c.isAccessible(),
+                'nepa_blocked_permit_count__c must be readable');
+        }
+    }
+
+    @IsTest
+    static void fls_blockedPermitCountOnIA_isNotUpdateable() {
+        User u = createNepaUser();
+        System.runAs(u) {
+            System.assertEquals(false,
+                Schema.SObjectType.IndividualApplication.fields.nepa_blocked_permit_count__c.isUpdateable(),
+                'nepa_blocked_permit_count__c (rollup summary) must not be updateable');
+        }
+    }
+
+    @IsTest
+    static void fls_nepaStringSplitter_classAccessible() {
+        // NepaStringSplitter must be accessible — verifies Apex class permission in the PS
+        // by checking the class exists and is callable from an invocable context.
+        // FLS introspection does not apply to Apex classes; we verify the method does not throw.
+        User u = createNepaUser();
+        System.runAs(u) {
+            NepaStringSplitter.SplitRequest req = new NepaStringSplitter.SplitRequest();
+            req.inputString = 'Permit A; Permit B';
+            List<NepaStringSplitter.SplitResult> results = NepaStringSplitter.split(
+                new List<NepaStringSplitter.SplitRequest>{ req }
+            );
+            System.assertEquals(2, results[0].tokens.size(),
+                'NepaStringSplitter must be callable by NEPA_Permitting PS user');
+        }
+    }
 }

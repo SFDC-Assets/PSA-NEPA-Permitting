@@ -593,4 +593,48 @@ public class NepaTestFactory {
         cv = [SELECT Id, ContentDocumentId FROM ContentVersion WHERE Id = :cv.Id];
         return cv;
     }
+
+    // ── nepa_required_permit__c ───────────────────────────────────────────────
+
+    /**
+     * Builds an unsaved nepa_required_permit__c child of the given process.
+     * @param processId  Parent IndividualApplication Id (required — MasterDetail)
+     * @param permitType nepa_permit_status__c value (e.g. 'Not Started', 'Issued')
+     * @param isCritical nepa_is_critical_path__c flag
+     * @param slaDate    nepa_sla_due_date__c; null to leave blank
+     * @return Unsaved nepa_required_permit__c record
+     */
+    @SuppressWarnings('PMD.ExcessiveParameterList,PMD.AvoidBooleanMethodParameters')
+    public static nepa_required_permit__c makeRequiredPermit(
+        Id processId, String status, Boolean isCritical, Date slaDate
+    ) {
+        nepa_required_permit__c p = new nepa_required_permit__c();
+        p.Name                      = 'Test Permit ' + status;
+        p.nepa_process__c           = processId;
+        p.nepa_permit_status__c     = status != null ? status : 'Not Started';
+        p.nepa_is_critical_path__c  = isCritical != null ? isCritical : false;
+        p.nepa_lead_agency__c       = 'USACE';
+        p.nepa_regulatory_citation__c = '33 USC 1344';
+        if (slaDate != null) {
+            p.nepa_sla_due_date__c = slaDate;
+        }
+        return p;
+    }
+
+    /**
+     * Inserts and returns a nepa_required_permit__c child of the given process.
+     * @param processId  Parent IndividualApplication Id (required — MasterDetail)
+     * @param status     nepa_permit_status__c value
+     * @param isCritical nepa_is_critical_path__c flag
+     * @param slaDate    nepa_sla_due_date__c; null to leave blank
+     * @return Saved nepa_required_permit__c record
+     */
+    @SuppressWarnings('PMD.ExcessiveParameterList,PMD.AvoidBooleanMethodParameters')
+    public static nepa_required_permit__c insertRequiredPermit(
+        Id processId, String status, Boolean isCritical, Date slaDate
+    ) {
+        nepa_required_permit__c p = makeRequiredPermit(processId, status, isCritical, slaDate);
+        insert p;
+        return p;
+    }
 }
