@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Materials | Manufacturing / Industrial | DOE</label>
+    <protected>false</protected>
+    <values>
+        <field>Sector__c</field>
+        <value xsi:type="xsd:string">Materials and Manufacturing</value>
+    </values>
+    <values>
+        <field>Project_Type__c</field>
+        <value xsi:type="xsd:string">Manufacturing and Industrial Facilities</value>
+    </values>
+    <values>
+        <field>Lead_Agency_Key__c</field>
+        <value xsi:type="xsd:string">DOE</value>
+    </values>
+    <values>
+        <field>Location_Type__c</field>
+        <value xsi:type="xsd:string">Land</value>
+    </values>
+    <values>
+        <field>Cooperating_Agencies__c</field>
+        <value xsi:type="xsd:string">EPA; USFWS; USACE; State Environmental Agency; SHPO; Tribes</value>
+    </values>
+    <values>
+        <field>Required_Permits__c</field>
+        <value xsi:type="xsd:string">Clean Air Act Title V Operating Permit; CWA Section 402 NPDES; RCRA Hazardous Waste Permit; SDWA UIC Permit; ESA Section 7 Consultation; NHPA Section 106; CWA Section 404 Permit (if wetlands); EO 12898 Environmental Justice</value>
+    </values>
+    <values>
+        <field>Adjacent_Reviews__c</field>
+        <value xsi:type="xsd:string">TSCA Chemical Review; EPCRA Reporting; EO 11990 Wetlands; EO 11988 Floodplains; CERCLA Liability Review</value>
+    </values>
+    <values>
+        <field>Typical_Timeline_Months__c</field>
+        <value xsi:type="xsd:decimal">18</value>
+    </values>
+    <values>
+        <field>EIS_Likelihood_Pct__c</field>
+        <value xsi:type="xsd:decimal">35</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>GIS_Trigger_Layers__c</field>
+        <value xsi:type="xsd:string">NHD; NWI_WETLANDS; EPA_TRIBAL_LANDS; AIR_NONATTAINMENT</value>
+    </values>
+    <values>
+        <field>Initiation_Gate__c</field>
+        <value xsi:type="xsd:string">Scoping</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Water | Flood Risk and Levees | USACE</label>
+    <protected>false</protected>
+    <values>
+        <field>Sector__c</field>
+        <value xsi:type="xsd:string">Water and Waste Management</value>
+    </values>
+    <values>
+        <field>Project_Type__c</field>
+        <value xsi:type="xsd:string">Flood Risk Management</value>
+    </values>
+    <values>
+        <field>Lead_Agency_Key__c</field>
+        <value xsi:type="xsd:string">USACE</value>
+    </values>
+    <values>
+        <field>Location_Type__c</field>
+        <value xsi:type="xsd:string">Water</value>
+    </values>
+    <values>
+        <field>Cooperating_Agencies__c</field>
+        <value xsi:type="xsd:string">USACE; USFWS; NMFS; EPA; FEMA; State Water Agency; Tribes</value>
+    </values>
+    <values>
+        <field>Required_Permits__c</field>
+        <value xsi:type="xsd:string">USACE Civil Works Authorization; CWA Section 404 Permit; CWA Section 401 Water Quality Certification; Rivers and Harbors Act Section 10 Permit; ESA Section 7 Consultation; NHPA Section 106; CZMA Federal Consistency (coastal); NFIP Floodplain Development Permit; Wild and Scenic Rivers Act Section 7 Compliance</value>
+    </values>
+    <values>
+        <field>Adjacent_Reviews__c</field>
+        <value xsi:type="xsd:string">EO 11988 Floodplains; EO 11990 Wetlands; UMRA; EO 12898 Environmental Justice; Tribal Trust Resources Review</value>
+    </values>
+    <values>
+        <field>Typical_Timeline_Months__c</field>
+        <value xsi:type="xsd:decimal">48</value>
+    </values>
+    <values>
+        <field>EIS_Likelihood_Pct__c</field>
+        <value xsi:type="xsd:decimal">75</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>GIS_Trigger_Layers__c</field>
+        <value xsi:type="xsd:string">NHD; NWI_WETLANDS; FEMA_FLOOD; WILD_SCENIC_RIVERS; COASTAL; EPA_TRIBAL_LANDS</value>
+    </values>
+    <values>
+        <field>Initiation_Gate__c</field>
+        <value xsi:type="xsd:string">Pre-Application</value>
+    </values>
+</CustomMetadata>

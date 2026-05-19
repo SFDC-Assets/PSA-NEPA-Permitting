@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Water | Non-Nuclear Waste Management | EPA</label>
+    <protected>false</protected>
+    <values>
+        <field>Sector__c</field>
+        <value xsi:type="xsd:string">Water and Waste Management</value>
+    </values>
+    <values>
+        <field>Project_Type__c</field>
+        <value xsi:type="xsd:string">Waste Management - Non-Nuclear</value>
+    </values>
+    <values>
+        <field>Lead_Agency_Key__c</field>
+        <value xsi:type="xsd:string">EPA</value>
+    </values>
+    <values>
+        <field>Location_Type__c</field>
+        <value xsi:type="xsd:string">Land</value>
+    </values>
+    <values>
+        <field>Cooperating_Agencies__c</field>
+        <value xsi:type="xsd:string">EPA; USFWS; USACE; State Environmental Agency; SHPO; Tribes</value>
+    </values>
+    <values>
+        <field>Required_Permits__c</field>
+        <value xsi:type="xsd:string">RCRA Subtitle C Hazardous Waste Permit; CWA Section 402 NPDES; CWA Section 404 Permit; SDWA UIC Permit; Clean Air Act Title V; ESA Section 7 Consultation; NHPA Section 106; EO 12898 Environmental Justice</value>
+    </values>
+    <values>
+        <field>Adjacent_Reviews__c</field>
+        <value xsi:type="xsd:string">CERCLA Remediation Review; TSCA PCB Disposal; EO 11990 Wetlands; EO 11988 Floodplains; Tribal Trust Resources Review</value>
+    </values>
+    <values>
+        <field>Typical_Timeline_Months__c</field>
+        <value xsi:type="xsd:decimal">24</value>
+    </values>
+    <values>
+        <field>EIS_Likelihood_Pct__c</field>
+        <value xsi:type="xsd:decimal">50</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>GIS_Trigger_Layers__c</field>
+        <value xsi:type="xsd:string">NHD; NWI_WETLANDS; EPA_TRIBAL_LANDS; FEMA_FLOOD</value>
+    </values>
+    <values>
+        <field>Initiation_Gate__c</field>
+        <value xsi:type="xsd:string">Scoping</value>
+    </values>
+</CustomMetadata>
