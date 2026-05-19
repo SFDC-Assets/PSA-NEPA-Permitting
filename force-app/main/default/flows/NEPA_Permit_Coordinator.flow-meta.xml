@@ -125,6 +125,59 @@
 
     <!-- FORMULAS -->
     <formulas>
+        <name>formula_GISAugmentedPermits</name>
+        <dataType>String</dataType>
+        <expression>{!Call_NEPA_Permit_Lookup.RequiredPermits} &amp;
+IF(
+  {!$Record.nepa_wetlands_flag__c} &amp;&amp;
+  NOT(CONTAINS({!Call_NEPA_Permit_Lookup.RequiredPermits}, "CWA Section 404")),
+  "; CWA Section 404 Permit",
+  ""
+) &amp;
+IF(
+  {!$Record.nepa_nhd_proximity_flag__c} &amp;&amp;
+  NOT(CONTAINS({!Call_NEPA_Permit_Lookup.RequiredPermits}, "CWA Section 401")),
+  "; CWA Section 401 Water Quality Certification",
+  ""
+) &amp;
+IF(
+  {!$Record.nepa_tribal_lands_flag__c} &amp;&amp;
+  NOT(CONTAINS({!Call_NEPA_Permit_Lookup.RequiredPermits}, "NHPA Section 106")),
+  "; NHPA Section 106 Consultation",
+  ""
+) &amp;
+IF(
+  {!$Record.nepa_ec_usace_czma__c} &amp;&amp;
+  NOT(CONTAINS({!Call_NEPA_Permit_Lookup.RequiredPermits}, "CZMA")),
+  "; CZMA Federal Consistency Determination",
+  ""
+) &amp;
+IF(
+  {!$Record.nepa_air_nonattainment_flag__c} &amp;&amp;
+  NOT(CONTAINS({!Call_NEPA_Permit_Lookup.RequiredPermits}, "Clean Air Act General Conformity")),
+  "; Clean Air Act General Conformity Determination",
+  ""
+) &amp;
+IF(
+  {!$Record.nepa_wild_scenic_river_flag__c} &amp;&amp;
+  NOT(CONTAINS({!Call_NEPA_Permit_Lookup.RequiredPermits}, "Wild and Scenic")),
+  "; Wild and Scenic Rivers Act Section 7 Compliance",
+  ""
+) &amp;
+IF(
+  {!$Record.nepa_blm_acec_flag__c} &amp;&amp;
+  NOT(CONTAINS({!Call_NEPA_Permit_Lookup.RequiredPermits}, "FLPMA")),
+  "; FLPMA Title V ROW Permit",
+  ""
+) &amp;
+IF(
+  {!$Record.nepa_fuds_flag__c} &amp;&amp;
+  NOT(CONTAINS({!Call_NEPA_Permit_Lookup.RequiredPermits}, "RCRA")),
+  "; RCRA Hazardous Waste Site Review",
+  ""
+)</expression>
+    </formulas>
+    <formulas>
         <name>formula_TaskSubject</name>
         <dataType>String</dataType>
         <expression>"Permit Coordination Required — " &amp; TEXT({!Get_ParentProgram.nepa_primary_sector__c})</expression>
@@ -240,7 +293,7 @@
         <inputAssignments>
             <field>nepa_co_permits_required__c</field>
             <value>
-                <elementReference>Call_NEPA_Permit_Lookup.RequiredPermits</elementReference>
+                <elementReference>formula_GISAugmentedPermits</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
