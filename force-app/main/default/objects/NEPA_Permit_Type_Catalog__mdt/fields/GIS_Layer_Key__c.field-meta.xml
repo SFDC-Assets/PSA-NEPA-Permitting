@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>GIS_Layer_Key__c</fullName>
+    <description>NEPA_GIS_Layer__mdt DeveloperName key that, when a positive spatial intersection is detected, causes this permit type to be included in the permit record collection regardless of sector/project-type match. Used by NEPA_Permit_Record_Creator GIS bridge. Example: NWI_WETLANDS triggers CWA Section 404 Permit; EPA_TRIBAL_LANDS triggers NHPA Section 106 Consultation.</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>GIS layer key (NEPA_GIS_Layer__mdt DeveloperName) that auto-triggers this permit when spatial intersection is detected.</inlineHelpText>
+    <label>GIS Layer Key</label>
+    <length>100</length>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

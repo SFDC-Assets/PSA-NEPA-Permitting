@@ -24,7 +24,7 @@
     </values>
     <values>
         <field>Required_Permits__c</field>
-        <value xsi:type="xsd:string">Atomic Energy Act Authorization; RCRA Subtitle C Permit; CERCLA ROD (if remediation); Clean Air Act NESHAP Subpart H; SDWA UIC Permit</value>
+        <value xsi:type="xsd:string">Atomic Energy Act Authorization; RCRA Hazardous Waste Permit; CERCLA ROD (if remediation); Clean Air Act NESHAP Subpart H; SDWA Underground Injection Control Permit</value>
     </values>
     <values>
         <field>Adjacent_Reviews__c</field>

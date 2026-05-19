@@ -1,0 +1,445 @@
+{
+  "records": [
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "CWA Section 404 Permit",
+      "Description": "33 U.S.C. § 1344; 33 CFR Part 323",
+      "nepa_default_lead_agency__c": "USACE",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "NWI_WETLANDS; NHD"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "CWA Section 401 Water Quality Certification",
+      "Description": "33 U.S.C. § 1341; 40 CFR Part 121",
+      "nepa_default_lead_agency__c": "State Agency",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 365,
+      "nepa_gis_trigger_layer__c": "NWI_WETLANDS; NHD"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "CWA Section 402 NPDES Permit",
+      "Description": "33 U.S.C. § 1342; 40 CFR Part 122",
+      "nepa_default_lead_agency__c": "EPA",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "NHD"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "ESA Section 7 Consultation",
+      "Description": "16 U.S.C. § 1536; 50 CFR Part 402",
+      "nepa_default_lead_agency__c": "USFWS",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 270,
+      "nepa_gis_trigger_layer__c": "USFWS_CRITICAL_HABITAT"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "NHPA Section 106 Consultation",
+      "Description": "54 U.S.C. § 306108; 36 CFR Part 800",
+      "nepa_default_lead_agency__c": "ACHP",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "EPA_TRIBAL_LANDS"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "CZMA Federal Consistency Determination",
+      "Description": "16 U.S.C. § 1456; 15 CFR Part 930 Subpart D",
+      "nepa_default_lead_agency__c": "NOAA",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 180,
+      "nepa_gis_trigger_layer__c": "COASTAL_ZONE"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "RHA Section 10 Permit",
+      "Description": "33 U.S.C. § 403; 33 CFR Part 322",
+      "nepa_default_lead_agency__c": "USACE",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "NHD; WILD_SCENIC_RIVERS"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "RHA Section 9 Bridge Permit",
+      "Description": "33 U.S.C. § 401; 23 CFR Part 650 Subpart H",
+      "nepa_default_lead_agency__c": "USCG",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "NHD"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "FERC Section 7(c) Certificate (NGA)",
+      "Description": "15 U.S.C. § 717f; 18 CFR Part 157",
+      "nepa_default_lead_agency__c": "FERC",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "NHD; NWI_WETLANDS"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "FERC Hydropower License (FPA)",
+      "Description": "16 U.S.C. § 799; 18 CFR Part 4",
+      "nepa_default_lead_agency__c": "FERC",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "NHD; WILD_SCENIC_RIVERS"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "FLPMA Title V ROW Grant",
+      "Description": "43 U.S.C. § 1761; 43 CFR Part 2800",
+      "nepa_default_lead_agency__c": "BLM",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "BLM_LANDS"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "FLPMA Resource Management Plan Amendment",
+      "Description": "43 U.S.C. § 1712; 43 CFR Part 1610",
+      "nepa_default_lead_agency__c": "BLM",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "BLM_LANDS"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "NFMA Forest Plan Amendment",
+      "Description": "16 U.S.C. § 1604; 36 CFR Part 219",
+      "nepa_default_lead_agency__c": "USFS",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "NATIONAL_FOREST"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "Section 4(f) Evaluation",
+      "Description": "49 U.S.C. § 303; 23 CFR Part 774",
+      "nepa_default_lead_agency__c": "USDOT",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "PADUS_PROTECTED"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "NRC Combined License",
+      "Description": "10 CFR Part 52; 42 U.S.C. § 2133",
+      "nepa_default_lead_agency__c": "NRC",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": ""
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "OCSLA Exploration Plan / Development Plan",
+      "Description": "43 U.S.C. § 1340; 30 CFR Parts 550/585",
+      "nepa_default_lead_agency__c": "BOEM",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "COASTAL_ZONE"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "BLM Application for Permit to Drill",
+      "Description": "43 U.S.C. § 1732; 43 CFR Part 3162",
+      "nepa_default_lead_agency__c": "BLM",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "BLM_LANDS"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "BLM Plan of Operations (3809)",
+      "Description": "43 CFR Part 3809; 43 U.S.C. § 1732",
+      "nepa_default_lead_agency__c": "BLM",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "BLM_LANDS"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "BLM Grazing Permit",
+      "Description": "43 U.S.C. § 1752; 43 CFR Part 4100",
+      "nepa_default_lead_agency__c": "BLM",
+      "nepa_is_critical_path__c": false,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "BLM_LANDS"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "Geothermal Steam Act Lease",
+      "Description": "30 U.S.C. § 1002; 43 CFR Part 3200",
+      "nepa_default_lead_agency__c": "BLM",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "BLM_LANDS"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "STB Certificate of Public Convenience",
+      "Description": "49 U.S.C. § 10901; 49 CFR Part 1150",
+      "nepa_default_lead_agency__c": "STB",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": ""
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "FAA Airport Improvement Program Approval",
+      "Description": "49 U.S.C. § 47101; 14 CFR Part 151",
+      "nepa_default_lead_agency__c": "FAA",
+      "nepa_is_critical_path__c": false,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": ""
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "USACE Civil Works Approval",
+      "Description": "33 U.S.C. § 701; 33 CFR Part 328",
+      "nepa_default_lead_agency__c": "USACE",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "NHD; FEMA_FLOODPLAINS"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "USBR Water Service Contract",
+      "Description": "43 U.S.C. § 485h; 43 CFR Part 426",
+      "nepa_default_lead_agency__c": "USBR",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "NHD"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "Ocean Dumping Permit (MPRSA)",
+      "Description": "33 U.S.C. § 1412; 40 CFR Part 220",
+      "nepa_default_lead_agency__c": "EPA",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "COASTAL_ZONE"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "Magnuson-Stevens EFH Consultation",
+      "Description": "16 U.S.C. § 1855(b); 50 CFR Part 600 Subpart J",
+      "nepa_default_lead_agency__c": "NOAA",
+      "nepa_is_critical_path__c": false,
+      "nepa_statutory_deadline_days__c": 90,
+      "nepa_gis_trigger_layer__c": "COASTAL_ZONE; NHD"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "MMPA Incidental Take Authorization",
+      "Description": "16 U.S.C. § 1371(a)(5); 50 CFR Part 18",
+      "nepa_default_lead_agency__c": "NOAA",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 365,
+      "nepa_gis_trigger_layer__c": "COASTAL_ZONE"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "Clean Air Act Title V Operating Permit",
+      "Description": "42 U.S.C. § 7661a; 40 CFR Part 70",
+      "nepa_default_lead_agency__c": "EPA",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": ""
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "Clean Air Act NSR/PSD Permit",
+      "Description": "42 U.S.C. § 7475; 40 CFR Part 52",
+      "nepa_default_lead_agency__c": "EPA",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": ""
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "Transportation Conformity Determination",
+      "Description": "42 U.S.C. § 7506; 40 CFR Part 93",
+      "nepa_default_lead_agency__c": "EPA",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": ""
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "RCRA Hazardous Waste Permit",
+      "Description": "42 U.S.C. § 6925; 40 CFR Part 270",
+      "nepa_default_lead_agency__c": "EPA",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": ""
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "SDWA Underground Injection Control Permit",
+      "Description": "42 U.S.C. § 300h; 40 CFR Part 144",
+      "nepa_default_lead_agency__c": "EPA",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": ""
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "SMCRA Surface Mining Permit",
+      "Description": "30 U.S.C. § 1256; 30 CFR Parts 700-999",
+      "nepa_default_lead_agency__c": "OSMRE",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": ""
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "Wild and Scenic Rivers Section 7 Consultation",
+      "Description": "16 U.S.C. § 1278; 36 CFR Part 297",
+      "nepa_default_lead_agency__c": "NPS",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "WILD_SCENIC_RIVERS"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "Wilderness Act Compatibility Determination",
+      "Description": "16 U.S.C. § 1131; 36 CFR Part 293",
+      "nepa_default_lead_agency__c": "USFS",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "PADUS_PROTECTED"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "USFS Special Use Permit",
+      "Description": "16 U.S.C. § 551; 36 CFR Part 251 Subpart B",
+      "nepa_default_lead_agency__c": "USFS",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "NATIONAL_FOREST"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "NFIP Floodplain Development Permit",
+      "Description": "42 U.S.C. § 4001; 44 CFR Part 60",
+      "nepa_default_lead_agency__c": "FEMA",
+      "nepa_is_critical_path__c": false,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "FEMA_FLOODPLAINS"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "Atomic Energy Act Authorization",
+      "Description": "42 U.S.C. § 2133; 10 CFR Part 50",
+      "nepa_default_lead_agency__c": "NRC",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": ""
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "FPA Section 216 Transmission Line Authorization",
+      "Description": "16 U.S.C. § 824p; 18 CFR Part 50",
+      "nepa_default_lead_agency__c": "FERC",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": ""
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "USCG Navigation Safety Permit",
+      "Description": "33 U.S.C. § 1221; 33 CFR Parts 64/66/67",
+      "nepa_default_lead_agency__c": "USCG",
+      "nepa_is_critical_path__c": false,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "COASTAL_ZONE; NHD"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "Smoke Management Plan Approval",
+      "Description": "42 U.S.C. § 7401; 40 CFR Part 51",
+      "nepa_default_lead_agency__c": "State Agency",
+      "nepa_is_critical_path__c": false,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": ""
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "State Water Rights Permit",
+      "Description": "State prior appropriation doctrine; varies by state",
+      "nepa_default_lead_agency__c": "State Agency",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "NHD"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "FAA Obstruction Evaluation",
+      "Description": "49 U.S.C. § 44718; 14 CFR Part 77",
+      "nepa_default_lead_agency__c": "FAA",
+      "nepa_is_critical_path__c": false,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": ""
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "Migratory Bird Treaty Act Compliance",
+      "Description": "16 U.S.C. § 703 et seq.; 50 CFR Part 21",
+      "nepa_default_lead_agency__c": "USFWS",
+      "nepa_is_critical_path__c": false,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "USFWS_CRITICAL_HABITAT"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "EO 12898 Environmental Justice",
+      "Description": "E.O. 12898 (1994); CEQ Environmental Justice Guidance 1997",
+      "nepa_default_lead_agency__c": "Lead Federal Agency",
+      "nepa_is_critical_path__c": false,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "EPA_TRIBAL_LANDS"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "EO 11990 Wetlands",
+      "Description": "E.O. 11990 (1977); 42 U.S.C. § 4321",
+      "nepa_default_lead_agency__c": "Lead Federal Agency",
+      "nepa_is_critical_path__c": false,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "NWI_WETLANDS"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "ANILCA (Alaska)",
+      "Description": "16 U.S.C. § 3101 et seq.; 36 CFR Part 13",
+      "nepa_default_lead_agency__c": "NPS",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": "PADUS_PROTECTED"
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "CERCLA ROD (if remediation)",
+      "Description": "42 U.S.C. § 9621; 40 CFR Part 300",
+      "nepa_default_lead_agency__c": "EPA",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": ""
+    },
+    {
+      "attributes": {"type": "RegulatoryAuthorizationType"},
+      "Name": "Clean Air Act NESHAP Subpart H",
+      "Description": "42 U.S.C. § 7412; 40 CFR Part 61 Subpart H",
+      "nepa_default_lead_agency__c": "NRC",
+      "nepa_is_critical_path__c": true,
+      "nepa_statutory_deadline_days__c": 0,
+      "nepa_gis_trigger_layer__c": ""
+    }
+  ]
+}

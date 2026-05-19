@@ -24,7 +24,7 @@
     </values>
     <values>
         <field>Required_Permits__c</field>
-        <value xsi:type="xsd:string">CWA Section 404 Permit; Section 4(f) Evaluation (49 USC 303); ESA Section 7 Consultation; NHPA Section 106 Review; CWA Section 402 NPDES Construction</value>
+        <value xsi:type="xsd:string">CWA Section 404 Permit; Section 4(f) Evaluation; ESA Section 7 Consultation; NHPA Section 106 Consultation; CWA Section 402 NPDES Permit</value>
     </values>
     <values>
         <field>Adjacent_Reviews__c</field>

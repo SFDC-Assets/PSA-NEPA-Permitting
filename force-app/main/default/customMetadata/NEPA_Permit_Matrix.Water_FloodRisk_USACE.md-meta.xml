@@ -24,7 +24,7 @@
     </values>
     <values>
         <field>Required_Permits__c</field>
-        <value xsi:type="xsd:string">USACE Civil Works Authorization; CWA Section 404 Permit; CWA Section 401 Water Quality Certification; Rivers and Harbors Act Section 10 Permit; ESA Section 7 Consultation; NHPA Section 106; CZMA Federal Consistency (coastal); NFIP Floodplain Development Permit; Wild and Scenic Rivers Act Section 7 Compliance</value>
+        <value xsi:type="xsd:string">USACE Civil Works Approval; CWA Section 404 Permit; CWA Section 401 Water Quality Certification; RHA Section 10 Permit; ESA Section 7 Consultation; NHPA Section 106 Consultation; CZMA Federal Consistency Determination; NFIP Floodplain Development Permit; Wild and Scenic Rivers Section 7 Consultation</value>
     </values>
     <values>
         <field>Adjacent_Reviews__c</field>

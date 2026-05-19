@@ -24,7 +24,7 @@
     </values>
     <values>
         <field>Required_Permits__c</field>
-        <value xsi:type="xsd:string">NFMA Forest Plan Consistency (16 USC 1604); ESA Section 7 Consultation; NHPA Section 106; Clean Air Act Smoke Management Plan; CWA Section 404 Permit (stream crossings); MBTA Nest Survey Clearance; Wild and Scenic Rivers Act Section 7 Compliance</value>
+        <value xsi:type="xsd:string">NFMA Forest Plan Amendment; ESA Section 7 Consultation; NHPA Section 106 Consultation; Smoke Management Plan Approval; CWA Section 404 Permit; Migratory Bird Treaty Act Compliance; Wild and Scenic Rivers Section 7 Consultation</value>
     </values>
     <values>
         <field>Adjacent_Reviews__c</field>

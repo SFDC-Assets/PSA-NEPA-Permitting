@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Clean Air Act NESHAP Subpart H</label>
+    <protected>false</protected>
+    <values><field>Canonical_Name__c</field><value xsi:type="xsd:string">Clean Air Act NESHAP Subpart H</value></values>
+    <values><field>RA_Type_Name__c</field><value xsi:type="xsd:string">Clean Air Act NESHAP Subpart H</value></values>
+    <values><field>Lead_Agency__c</field><value xsi:type="xsd:string">NRC</value></values>
+    <values><field>Regulatory_Citation__c</field><value xsi:type="xsd:string">42 U.S.C. § 7412; 40 CFR Part 61 Subpart H</value></values>
+    <values><field>Is_Critical_Path__c</field><value xsi:type="xsd:boolean">true</value></values>
+    <values><field>Statutory_Deadline_Days__c</field><value xsi:type="xsd:double">0</value></values>
+    <values><field>GIS_Layer_Key__c</field><value xsi:type="xsd:string"></value></values>
+    <values><field>Active__c</field><value xsi:type="xsd:boolean">true</value></values>
+</CustomMetadata>

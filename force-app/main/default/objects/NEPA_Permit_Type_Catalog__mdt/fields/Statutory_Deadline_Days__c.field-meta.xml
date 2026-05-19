@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Statutory_Deadline_Days__c</fullName>
+    <description>Days from IndividualApplication start date by which this permit must be obtained, based on statutory or regulatory deadline. 0 means no fixed statutory deadline. Populated into nepa_required_permit__c.nepa_statutory_deadline_days__c; the flow computes nepa_sla_due_date__c as IA.nepa_start_date__c + this value.</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>Days from IA start date to statutory permit deadline (0 = no fixed deadline).</inlineHelpText>
+    <label>Statutory Deadline Days</label>
+    <precision>4</precision>
+    <scale>0</scale>
+    <type>Number</type>
+</CustomField>

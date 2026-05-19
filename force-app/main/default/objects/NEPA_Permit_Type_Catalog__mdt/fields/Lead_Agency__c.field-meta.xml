@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Lead_Agency__c</fullName>
+    <description>Federal agency that issues or administers this permit type (e.g., USACE, USFWS, EPA). Populated into nepa_required_permit__c.nepa_lead_agency__c when a permit record is created.</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>Federal agency that issues this permit (e.g., USACE, USFWS, EPA, FERC).</inlineHelpText>
+    <label>Lead Agency</label>
+    <length>40</length>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

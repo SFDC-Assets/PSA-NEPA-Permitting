@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>RA_Type_Name__c</fullName>
+    <description>The Name value of the corresponding RegulatoryAuthorizationType record in org. NEPA_Permit_Record_Creator queries RegulatoryAuthorizationType WHERE Name = this value to get the Id for nepa_required_permit__c.nepa_permit_type__c lookup. Must match RegulatoryAuthorizationType.Name exactly after deploy and data load.</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>Exact Name of the matching RegulatoryAuthorizationType record (used by NEPA_Permit_Record_Creator to set the nepa_permit_type__c lookup field).</inlineHelpText>
+    <label>RA Type Name</label>
+    <length>255</length>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

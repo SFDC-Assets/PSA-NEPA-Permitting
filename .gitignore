@@ -15,6 +15,10 @@ docs/NEPA-Permitting-Acceleration-Plan.md
 docs/NEPA-Risk-Intelligence-Plan.md
 data insights/
 # Generated CE Library load artifacts (derived from exclusions.json; not source)
-data/
+# Allow data/seed/ through — it contains importable JSON seed files tracked as source
+data/*
+!data/seed/
+data/seed/*
+!data/seed/*.json
 exclusions.json
 exclusions_filtered.json

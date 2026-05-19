@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Is_Critical_Path__c</fullName>
+    <description>True when this permit type is on the critical path — i.e., its absence or delay would block ROD/FONSI issuance. Populated into nepa_required_permit__c.nepa_is_critical_path__c at record creation. Critical-path permits feed nepa_blocked_permit_count__c rollup and the permit gap litigation risk penalty.</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>Check if this permit type is typically critical-path (blocks ROD/FONSI if not issued).</inlineHelpText>
+    <label>Is Critical Path</label>
+    <defaultValue>false</defaultValue>
+    <type>Checkbox</type>
+</CustomField>

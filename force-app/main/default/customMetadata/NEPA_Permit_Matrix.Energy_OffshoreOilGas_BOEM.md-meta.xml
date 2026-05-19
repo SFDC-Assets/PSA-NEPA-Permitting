@@ -24,7 +24,7 @@
     </values>
     <values>
         <field>Required_Permits__c</field>
-        <value xsi:type="xsd:string">OCSLA Lease and Plan Approval (43 USC 1331); CWA Section 402 NPDES; CWA Section 404 Permit; ESA Section 7 Consultation; NHPA Section 106 Review; CZMA Federal Consistency; Marine Mammal Protection Act Authorization; Magnuson-Stevens EFH Consultation; Rivers and Harbors Act Section 10 Permit</value>
+        <value xsi:type="xsd:string">OCSLA Exploration Plan / Development Plan; CWA Section 402 NPDES Permit; CWA Section 404 Permit; ESA Section 7 Consultation; NHPA Section 106 Consultation; CZMA Federal Consistency Determination; MMPA Incidental Take Authorization; Magnuson-Stevens EFH Consultation; RHA Section 10 Permit</value>
     </values>
     <values>
         <field>Adjacent_Reviews__c</field>

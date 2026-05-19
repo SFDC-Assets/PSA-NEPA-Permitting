@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Regulatory_Citation__c</fullName>
+    <description>Primary statutory or CFR citation for this permit type (e.g., "33 U.S.C. § 1344; 33 CFR Part 323"). Populated into nepa_required_permit__c.nepa_regulatory_citation__c at record creation.</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>Primary statutory or CFR citation (e.g., 33 U.S.C. § 1344; 33 CFR Part 323).</inlineHelpText>
+    <label>Regulatory Citation</label>
+    <length>255</length>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

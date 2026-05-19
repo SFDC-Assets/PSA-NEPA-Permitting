@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Canonical_Name__c</fullName>
+    <description>The exact label string used in NEPA_Permit_Matrix__mdt Required_Permits__c semicolon lists. NEPA_Permit_Record_Creator splits those strings on semicolons and queries this field to find the matching catalog record. Must match exactly — case-sensitive.</description>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>Exact permit label as it appears in NEPA_Permit_Matrix Required_Permits__c (e.g., "CWA Section 404 Permit").</inlineHelpText>
+    <label>Canonical Name</label>
+    <length>255</length>
+    <required>true</required>
+    <type>Text</type>
+    <unique>true</unique>
+</CustomField>

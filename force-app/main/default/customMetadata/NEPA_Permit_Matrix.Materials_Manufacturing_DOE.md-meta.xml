@@ -24,7 +24,7 @@
     </values>
     <values>
         <field>Required_Permits__c</field>
-        <value xsi:type="xsd:string">Clean Air Act Title V Operating Permit; CWA Section 402 NPDES; RCRA Hazardous Waste Permit; SDWA UIC Permit; ESA Section 7 Consultation; NHPA Section 106; CWA Section 404 Permit (if wetlands); EO 12898 Environmental Justice</value>
+        <value xsi:type="xsd:string">Clean Air Act Title V Operating Permit; CWA Section 402 NPDES Permit; RCRA Hazardous Waste Permit; SDWA Underground Injection Control Permit; ESA Section 7 Consultation; NHPA Section 106 Consultation; CWA Section 404 Permit; EO 12898 Environmental Justice</value>
     </values>
     <values>
         <field>Adjacent_Reviews__c</field>

@@ -24,7 +24,7 @@
     </values>
     <values>
         <field>Required_Permits__c</field>
-        <value xsi:type="xsd:string">Rivers and Harbors Act Section 10 Permit; CWA Section 404 Permit; CWA Section 401 Water Quality Certification; CZMA Federal Consistency Determination; ESA Section 7 Consultation; NHPA Section 106 Review; Ocean Dumping Permit (MPRSA Section 103)</value>
+        <value xsi:type="xsd:string">RHA Section 10 Permit; CWA Section 404 Permit; CWA Section 401 Water Quality Certification; CZMA Federal Consistency Determination; ESA Section 7 Consultation; NHPA Section 106 Consultation; Ocean Dumping Permit (MPRSA)</value>
     </values>
     <values>
         <field>Adjacent_Reviews__c</field>
