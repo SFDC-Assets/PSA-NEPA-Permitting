@@ -14,7 +14,7 @@
 
 The proposed solution delivers a fully configured NEPA permitting acceleration platform built on **Salesforce Government Cloud Plus** and the **Salesforce Agentforce for Public Sector (APS)** suite. It satisfies all nine CEQ Standard entities (CEQ NEPA and Permitting Data and Technology Standard v1.2), all 82 requirements in this RFP, and all Priority 1 technical, data, security, and implementation requirements.
 
-The platform is FedRAMP High authorized on Salesforce Government Cloud Plus. No Agency-managed server infrastructure is required. The vast majority of capability is delivered through **configuration** — Salesforce declarative tools including Flows (38 total), Custom Metadata Types (23 types), OmniStudio Integration Procedures and DataRaptors, Business Rules Engine (BRE) Decision Matrices and Expression Sets, and the Salesforce Field Service scheduling engine — rather than custom code. This produces a maintainable, upgradeable platform that Agency administrators can extend without engaging developers for routine business rule changes.
+The platform is FedRAMP High authorized on Salesforce Government Cloud Plus. No Agency-managed server infrastructure is required. The vast majority of capability is delivered through **configuration** — Salesforce declarative tools including Flows (42 total), Custom Metadata Types (23 types), OmniStudio Integration Procedures and DataRaptors, Business Rules Engine (BRE) Decision Matrices and Expression Sets, and the Salesforce Field Service scheduling engine — rather than custom code. This produces a maintainable, upgradeable platform that Agency administrators can extend without engaging developers for routine business rule changes.
 
 The platform ships with a fully operational **empirical risk intelligence layer** calibrated from 761 federal NEPA litigation cases (PermitTEC v0.1, PNNL 2025) and the 61,881-project NETATEC v2.0 EIS timeline corpus. All risk scoring is deterministic and fully transparent: litigation risk scores, challenge prediction rules, tribal plaintiff intelligence, sector-circuit risk cells, and per-agency EIS scoping performance tiers are all configurable metadata records — not opaque AI outputs. The AI vs. deterministic boundary is explicitly disclosed in every score factors string written to the administrative record.
 
@@ -103,7 +103,7 @@ Multiple `IndividualApplication` records link to a single `Program` via `nepa_re
 
 Stage gate enforcement is implemented through two declarative Flows:
 
-- **`NEPA_Stage_Gate_Doc_Check`** — evaluates whether all required documents for the current stage and review type are present and in Approved status before allowing stage advancement. Required document rules are stored in a Custom Metadata Type (`NEPA_Required_Doc_Config__mdt`) and are editable by administrators without code changes.
+- **`NEPA_Stage_Gate_Doc_Check`** — evaluates whether all required documents for the current stage and review type are present and in Approved status before allowing stage advancement. Required document rules are stored in a Custom Metadata Type (`NEPA_Required_Doc_Config__mdt`) and are editable by administrators without code changes. At ROD and FONSI events, the gate additionally checks whether any critical-path `nepa_required_permit__c` records remain in Not Started status. If uninitiated critical-path permits exist, the save is blocked and the error message names the count: `"Critical-path permit(s) not yet initiated (N permit(s) in Not Started status)"`. This prevents a ROD from issuing while parallel federal authorizations are still uninitiated — a procedural gap that courts have identified in successful NEPA challenges.
 
 - **`NEPA_Stage_Gate_Orchestrator`** — coordinates the full gate check sequence: document check, consultation certification, prior stage status, and custom rule evaluation. It blocks the `IndividualApplication` status field from advancing if any gate condition is unmet and surfaces a specific error message identifying the unmet condition.
 
@@ -128,6 +128,8 @@ The statutory deadline clock per 42 U.S.C. § 4336a is implemented as a formula 
 **PM-007 — SLA monitoring with automated escalation** | **(B) Configuration**
 
 The `NEPA_SLA_Escalation_Monitor` scheduled Flow runs on a configurable daily cadence. It evaluates every active `IndividualApplication` against configurable deadline and warning thresholds stored in `NEPA_SLA_Config__mdt`. When a deadline is at risk, it creates an escalation task and triggers a notification to the Lead NEPA Coordinator assigned on the process team. Thresholds are configurable per review type and stage without code changes.
+
+A companion scheduled Flow, `NEPA_Permit_SLA_Monitor`, extends SLA enforcement to the dependent permit layer. It runs daily and queries `nepa_required_permit__c` records where `nepa_sla_due_date__c < TODAY()`, `nepa_is_critical_path__c = true`, and status is not Issued, Denied, or Withdrawn. For each qualifying permit, it creates a High-priority Task owned by the parent IA owner, with subject `"Permit SLA Overdue: [permit name]"`. Bulk Task creation occurs in a single DML operation after the loop — no per-record DML. This ensures that a NEPA coordinator cannot miss an overdue parallel permit even when the primary review timeline is on track.
 
 ---
 
@@ -478,7 +480,7 @@ Automated proximity checking is implemented through two declarative components:
 
 2. **`NEPA_GIS_Proximity_IP` Integration Procedure** — iterates over the GIS layer registry (Custom Metadata Type `NEPA_GIS_Layer__mdt`) and calls each registered ArcGIS FeatureServer endpoint via Named Credentials. For each layer, it evaluates whether the project point falls within the proximity buffer. Results are written back to the `Program` record and create `nepa_gis_data_element__c` records for each triggered layer.
 
-The platform ships with four pre-configured layer entries: BLM Surface Management, USFWS Critical Habitat, National Wetlands Inventory, and EPA EJSCREEN Environmental Justice Index.
+The platform ships with 15 pre-configured layer entries across the `NEPA_GIS_Layer__mdt` registry, including: USFWS ECOS (critical habitat and species consultation), EPA EJScreen (environmental justice screening), USGS NHD (hydrological proximity), FWS National Wetlands Inventory (wetland extent), OpenWetlandsMap (community-sourced wetland boundaries via Overpass API — addresses the NWI currency gap), EPA tribal lands (E.O. 13175 trigger), BLM ACEC, FEMA NFHL (flood hazard), Wild and Scenic Rivers, USACE FUDS (formerly used defense sites), EPA air nonattainment, FWS critical habitat, BLM PLSS, and BLM surface ownership. Each layer writes to a named flag field on `IndividualApplication`; the `NEPA_Permit_Coordinator` flow reads these flags and appends the appropriate dependent permits to the permit identification formula (GIS bridge pattern).
 
 ---
 
@@ -521,6 +523,10 @@ The `NEPA_Litigation_Risk_Scorer` record-triggered Flow fires asynchronously aft
 | ScopingOverrunMonths | `nepa_projected_scoping_overrun_months__c` |
 
 The BRE Expression Set `NEPA_Litigation_Risk_Scorer` V2 is Active in the platform. V3 (which adds full sector-circuit and scoping terms to the composite formula) is included as a Draft for sandbox validation. The BRE reads risk point values from Decision Matrix rows, not from the custom metadata records directly; the metadata records are supplementary documentation that mirror the DM values. Both are updated in lockstep when calibration data is refreshed.
+
+A permit gap penalty is computed in the Flow itself, outside the BRE, and added to the BRE composite score before it is written to `nepa_risk_score__c`: +8 pts when `nepa_blocked_permit_count__c ≥ 1` (at least one critical-path permit not yet Issued, Denied, or Withdrawn), +15 pts when `nepa_blocked_permit_count__c ≥ 3`. `nepa_blocked_permit_count__c` is a rollup summary field on `IndividualApplication` counting critical-path child `nepa_required_permit__c` records in active status. When a permit's status changes, the rollup recalculates and the risk scorer fires automatically. The scorer also fires when `nepa_blocked_permit_count__c` itself changes — meaning permit status changes in child records cascade into the parent risk score without any coordinator action. The permit gap contribution is appended to `nepa_risk_score_factors__c`: `"; PERMIT GAP: N critical-path permit(s) not yet Issued — +Xpts"`.
+
+The `NEPA_Permit_Record_Creator` after-save Flow creates `nepa_required_permit__c` child records automatically when `nepa_co_permits_required__c` changes on `IndividualApplication`. It evaluates `NEPA_Permit_Matrix__mdt` (25 sector/project-type combinations) and `NEPA_Permit_Type_Catalog__mdt` (~20 records) to map permit labels to structured field values. A GIS bridge within the flow also ensures that proximity flags set at intake — `nepa_nhd_proximity_flag__c`, `nepa_tribal_lands_flag__c`, `nepa_ec_usace_czma__c`, `nepa_wetlands_flag__c` — result in the appropriate CWA §404, NHPA §106, CZMA, and CWA §401 permit records being created regardless of matrix match.
 
 ---
 
@@ -951,10 +957,10 @@ Agency points of contact for each reference are provided under separate cover pe
 | PM-001 | CEQ Entity 1 project record | (B) | ✅ | Program + custom fields + provenance |
 | PM-002 | CEQ Entity 2 process record | (B) | ✅ | IndividualApplication + custom fields |
 | PM-003 | Multiple processes per project | (A) | ✅ | Lookup nepa_related_project__c |
-| PM-004 | Configurable stage gates | (B) | ✅ | NEPA_Stage_Gate_Orchestrator + CMT |
+| PM-004 | Configurable stage gates | (B) | ✅ | NEPA_Stage_Gate_Orchestrator + CMT; ROD/FONSI blocked if critical-path permits in Not Started |
 | PM-005 | CE/EA/EIS pathways | (B) | ✅ | NEPA_CE_Screener + CMT |
 | PM-006 | FRA statutory deadline clock | (B) | ✅ | Formula + accumulated pause days |
-| PM-007 | SLA monitoring with escalation | (B) | ✅ | NEPA_SLA_Escalation_Monitor |
+| PM-007 | SLA monitoring with escalation | (B) | ✅ | NEPA_SLA_Escalation_Monitor (process-level) + NEPA_Permit_SLA_Monitor (permit-level, daily scheduled) |
 | FS-001 | Auto work order generation | (B) | ✅ | After-save Flow + WorkType registry |
 | FS-002 | Seasonal survey constraints | (B) | ✅ | FSL policy + NEPA_Seasonal_Window__mdt |
 | FS-003 | Shared access resource enforcement | (B) | ✅ | FSL ServiceResource + scheduling policy |
@@ -988,7 +994,7 @@ Agency points of contact for each reference are provided under separate cover pe
 | GIS-003 | Automated proximity checks | (B) | ✅ | NEPA_GIS_Proximity_Check + NEPA_GIS_Proximity_IP |
 | GIS-004 | Proximity results write-back; CE flag | (B) | ✅ | IP writes to Program; CE screener consumes |
 | GIS-005 | Configurable GIS layer registry | (A/B) | ✅ | NEPA_GIS_Layer__mdt + Named Credentials |
-| RI-001 | Composite litigation risk score | (B) | ✅ | NEPA_Litigation_Risk_Scorer Flow + BRE ES V2 Active; 10 inputs |
+| RI-001 | Composite litigation risk score | (B) | ✅ | NEPA_Litigation_Risk_Scorer Flow + BRE ES V2 Active; 10 inputs + permit gap penalty (+8/+15 pts from nepa_blocked_permit_count__c); auto-fires on permit status changes |
 | RI-002 | Configurable risk weight tables | (B) | ✅ | 3 CMTs + 5 DMs; PermitTEC v0.1 761 cases; formulas documented in CMP |
 | RI-003 | Configurable risk tier thresholds | (B) | ✅ | BRE AssignRiskTier step + formula; ≥58 Very High / ≥45 High / ≥35 Moderate |
 | RI-004 | Challenge prediction rules | (B) | ✅ | NEPA_Challenge_Predictor + NEPA_Challenge_Prediction_Rule__mdt; 7 rules |
@@ -1037,6 +1043,8 @@ Agency points of contact for each reference are provided under separate cover pe
 | IR-006 | Configuration management plan | Service | ✅ | D-04; Salesforce DX + git version control |
 
 **Summary:** 82 requirements addressed. 0 marked as unable to meet. Classification breakdown: (A) COTS — 14; (A/B) COTS/Configuration — 7; (B) Configuration — 54; Service Deliverable — 7.
+
+**Phase 3 additions reflected above:** 42 total flows (was 38); `nepa_required_permit__c` structured permit object (16 fields, rollup to IA, GIS bridge auto-population, permit gap penalty feeding RI-001); `NEPA_Permit_SLA_Monitor` daily scheduled flow added to PM-007; `NEPA_Stage_Gate_Doc_Check` ROD/FONSI permit-initiation gate added to PM-004; 15-service GIS registry (was 4 pre-configured, now fully enumerated in GIS-003).
 
 Requirements added for risk intelligence and tribal intelligence: PC-008 (Tribal Nation dual-flag), TL-004 (scoping overrun detection + agency performance tier), TL-005 (page count outlier detection), RI-001 through RI-007 (Risk Intelligence layer — composite scoring, weight tables, tier thresholds, challenge prediction, sector-circuit matrix, agency performance tier, advisory-only outputs).
 
