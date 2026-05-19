@@ -79,10 +79,30 @@
                 <behavior>Edit</behavior>
                 <field>nepa_ec_usace_czma__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>nepa_wetlands_flag__c</field>
+            </layoutItems>
         </layoutColumns>
-        <layoutColumns/>
+        <layoutColumns>
+            <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>nepa_blocked_permit_count__c</field>
+            </layoutItems>
+        </layoutColumns>
         <style>TwoColumnsLeftToRight</style>
     </layoutSections>
+    <relatedLists>
+        <fields>Name</fields>
+        <fields>nepa_permit_type__c</fields>
+        <fields>nepa_permit_status__c</fields>
+        <fields>nepa_lead_agency__c</fields>
+        <fields>nepa_is_critical_path__c</fields>
+        <fields>nepa_sla_due_date__c</fields>
+        <fields>nepa_sla_overdue__c</fields>
+        <fields>nepa_expected_completion__c</fields>
+        <relatedList>nepa_required_permits__r</relatedList>
+    </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>false</showHighlightsPanel>
     <showInteractionLogPanel>false</showInteractionLogPanel>

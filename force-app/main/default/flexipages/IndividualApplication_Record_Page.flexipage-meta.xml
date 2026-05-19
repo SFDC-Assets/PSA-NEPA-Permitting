@@ -309,6 +309,16 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
+                <fieldItem>Record.nepa_wetlands_flag__c</fieldItem>
+                <identifier>ia_ce_wetlands_flag</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
                 <fieldItem>Record.nepa_plss_flag__c</fieldItem>
                 <identifier>ia_ce_plss_flag</identifier>
             </fieldInstance>
@@ -685,6 +695,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_clock_paused__c</fieldItem>
                 <identifier>ia_sla_clock_paused</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_blocked_permit_count__c</fieldItem>
+                <identifier>ia_sla_blocked_permit_count</identifier>
             </fieldInstance>
         </itemInstances>
         <name>ia-sla-c1</name>
