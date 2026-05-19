@@ -104,10 +104,12 @@ Requirements are designated Priority 1 (mandatory at contract award), Priority 2
 | PM-001 | 1 | The system shall maintain a structured project record (CEQ Entity 1) capturing federal unique project ID, project title, lead agency, project sector, project type, location (text, lat/lon, polygon), start date, and provenance fields per CEQ standard v1.2. |
 | PM-002 | 1 | The system shall maintain a structured process record (CEQ Entity 2) for each NEPA review, capturing review type (CE/EA/EIS), process status, process stage, comment period dates, completion date, and all required CEQ v1.2 process properties. |
 | PM-003 | 1 | The system shall support parallel multiple processes linked to a single project (tiered reviews, supplemental EIS). |
-| PM-004 | 1 | The system shall enforce configurable stage gates that prevent advancement to the next review stage until all required conditions are met (documents present, consultations certified, prior stage closed). |
+| PM-004 | 1 | The system shall enforce configurable stage gates that prevent advancement to the next review stage until all required conditions are met (documents present, consultations certified, prior stage closed). For ROD and FONSI stages, the stage gate shall additionally block advancement when any critical-path co-permit record is in an uninitiated status. |
 | PM-005 | 1 | The system shall support CE, EA, and EIS review pathways with configurable stage definitions and required documents per pathway. |
 | PM-006 | 2 | The system shall capture and display an FRA statutory deadline clock per 42 U.S.C. § 4336a, including pause/resume logic for applicant-caused delays. |
 | PM-007 | 2 | The system shall provide SLA monitoring with configurable warning thresholds and automated escalation notification when deadlines are at risk. |
+| PM-008 | 2 | The system shall maintain structured co-permit records linked to each NEPA process, capturing permit type, lead agency, regulatory citation, critical-path flag, permit status lifecycle (Not Started / In Progress / Under Review / Issued / Denied / Withdrawn), SLA due date, and external federal identifier. Critical-path co-permits in an uninitiated status shall be surfaced as a risk indicator on the process record. |
+| PM-009 | 2 | The system shall perform daily automated SLA monitoring across all co-permit records and create escalation tasks on overdue critical-path permits without writing back to permit records (read-only SLA evaluation). |
 
 ### 3.2 Field Scheduling and Work Order Management
 
@@ -166,7 +168,7 @@ Requirements are designated Priority 1 (mandatory at contract award), Priority 2
 
 | ID | Priority | Requirement |
 |---|---|---|
-| RI-001 | 1 | The system shall compute a composite litigation risk score on each NEPA process using configurable weight tables derived from federal NEPA litigation data. Input factors shall include at minimum: review type, lead agency litigation loss rate, judicial circuit, adjacent statutes implicated, and review completeness. The score shall be recalculated automatically when any input factor changes. |
+| RI-001 | 1 | The system shall compute a composite litigation risk score on each NEPA process using configurable weight tables derived from federal NEPA litigation data. Input factors shall include at minimum: review type, lead agency litigation loss rate, judicial circuit, adjacent statutes implicated, review completeness, and count of uninitiated critical-path co-permits. The score shall be recalculated automatically when any input factor changes, including when a co-permit record changes status. |
 | RI-002 | 1 | Risk weight tables (agency points, circuit points, statute points) shall be stored as configurable metadata records and decision matrix rows editable by authorized administrators without code changes. The calibration source (training corpus, case count per input value, formula) shall be documented in the system's configuration management plan. |
 | RI-003 | 1 | The system shall classify each NEPA process into a risk tier (e.g., Low / Moderate / High / Very High) based on configurable score thresholds. Tier boundaries shall be editable in metadata without code changes. |
 | RI-004 | 2 | The system shall evaluate configurable challenge prediction rules against the process record and accumulate risk delta points when trigger conditions are met (e.g., energy sector project in high-risk judicial circuit, tribal plaintiff flag set). Each triggered rule shall produce an explanation recorded on the process record. |
@@ -180,7 +182,7 @@ Requirements are designated Priority 1 (mandatory at contract award), Priority 2
 |---|---|---|
 | GIS-001 | 1 | The system shall maintain GIS data element records per CEQ Entity 7, capturing spatial data format, access method, coordinate system, bounding box, purpose, and access information for each layer associated with a project. |
 | GIS-002 | 1 | The system shall support storage of project location as a point (lat/lon) and polygon geometry. |
-| GIS-003 | 2 | The system shall perform automated proximity checks against a configurable registry of federal spatial datasets (protected areas, critical habitat, wetlands, floodplains, cultural resources, environmental justice indices) when project coordinates are set or updated. |
+| GIS-003 | 2 | The system shall perform automated proximity checks against a configurable registry of federal and community-sourced spatial datasets (protected areas, critical habitat, wetlands, floodplains, cultural resources, environmental justice indices) when project coordinates are set or updated. The registry shall include at minimum: NHD waterway proximity, PADUS protected areas, USFWS Critical Habitat, National Wetlands Inventory or equivalent community-sourced wetlands layer (e.g., OpenWetlandsMap), FEMA floodplains, NHPA Section 106 APE datasets, EPA EJScreen, and tribal lands boundaries. |
 | GIS-004 | 2 | Proximity check results shall be written back to the project record and shall flag extraordinary circumstances for CE eligibility screening. |
 | GIS-005 | 2 | The GIS layer registry shall be configurable by administrators without code changes, supporting addition of new ArcGIS FeatureServer endpoints or other OGC-compliant services. |
 

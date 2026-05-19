@@ -19,7 +19,7 @@ This report presents a systematic, data-driven analysis of federal permitting un
 
 4. **Speed and legal defensibility are positively correlated.** Fast agencies win more litigation. FERC (1.88-year median, 74% agency win rate) and BOEM (2.24 years, 100% win) substantially outperform slow agencies like USFWS (4.38 years, 54% win) and Bureau of Reclamation (4.69 years, 50% win). The assumption that slow processes produce more defensible records is empirically false.
 
-5. **Sector × circuit interaction is the strongest litigation risk predictor.** Energy projects in the 4th Circuit face a 28.6% agency win rate — the single highest-risk cell in the analysis. Transportation projects in the DC Circuit achieve a 90.9% win rate — the safest. The same sector can span a 3× range in litigation outcomes depending solely on venue.
+5. **Sector × circuit interaction is the strongest predictor from case outcome data.** Energy projects in the 4th Circuit face a 28.6% agency win rate — the single highest-risk cell in the analysis. Transportation projects in the DC Circuit achieve a 90.9% win rate — the safest. The same sector can span a 3× range in litigation outcomes depending solely on venue. The platform implementation adds a permit gap penalty — counting uninitiated critical-path co-permits — as an independent risk signal not captured in the PermitTEC case corpus.
 
 ---
 
@@ -42,7 +42,7 @@ The result: agencies with poor litigation track records (BLM: 39.3% loss rate) c
 This report provides the first integrated, cross-agency quantitative analysis of federal NEPA permitting risk by combining three public datasets — NEPATEC 2.0, PermitTEC v0.1, and CEQ EIS Timeline Data 2010–2024 — through a reproducible 16-stage AI-assisted pipeline. Specific contributions include:
 
 - A **CE/EA/EIS classification feature matrix** with sector-level EIS probability scores and CE code screening rules derived from 120,000+ NEPA documents
-- A **35-row interagency permit prediction matrix** mapping project sector, type, lead agency, and location to cooperating agencies, required permits, and EIS likelihood
+- A **35-input-combination interagency permit analysis** mapping project sector, type, lead agency, and location to cooperating agencies, required permits, and EIS likelihood (Stage 3 analyzed 35 sector × type × agency combinations; the platform implementation deploys a structured `nepa_required_permit__c` object with 25 seed records in `NEPA_Permit_Matrix__mdt`)
 - **Composite litigation risk scores** calibrated from 684 federal court cases, incorporating agency loss rates, statute multipliers, circuit multipliers, and sector×circuit interaction terms
 - A **scoping cap impact model** showing projected time savings at 1-, 2-, and 3-year cap levels across 1,897 CEQ EIS records
 - A **sector × circuit win-rate matrix** quantifying the interaction between project sector and federal circuit across 684 litigation cases
@@ -154,7 +154,7 @@ The analysis is implemented as a 16-stage Python pipeline across two orchestrato
 |---|---|---|---|---|
 | 1 | Feature Engineering | 1,489 NEPATEC sampled records | Batch LLM extraction (500/batch); sector EIS probability matrix | `1_feature_engineering.json` |
 | 2 | CE Code Ambiguity | 200 ambiguous CE records (18 agency/sector pairs) | Stratified sample of ambiguous (agency, sector) combinations; LLM statutory analysis | `2_ce_decision_tree.json` |
-| 3 | Permit Matrix | 150 EIS/EA records | Pivot table [sector × type × agency × location]; LLM synthesis of 35 input combinations | `3_permit_matrix.json`, `3_permit_matrix.csv` |
+| 3 | Permit Matrix | 150 EIS/EA records | Pivot table [sector × type × agency × location]; LLM synthesis of 35 input combinations → platform deployment as 25-record `NEPA_Permit_Matrix__mdt` CMT | `3_permit_matrix.json`, `3_permit_matrix.csv` |
 | 4 | Litigation Guardrails | 223 PermitTEC cases (UUID-linked) | Outcome normalization; LLM procedural failure extraction from matched cases | `4_litigation_guardrails.json` |
 | 6 | Timeline Risk Profile | 1,489 NEPATEC records | Page count percentiles (p50/p75/p90/p95) by process type; outlier flagging | `6_timeline_risk_profile.json` |
 | 7 | Litigation Risk Weights | 684 usable PermitTEC cases | Per-agency, per-statute, per-circuit loss rate computation; composite risk score formula v1 | `7_litigation_risk_weights.json` |
@@ -201,6 +201,8 @@ score_v2 = score_v1
 ```
 
 The scoping overrun flag adds 15 points when a project's projected NOI→DEIS exceeds agency baseline. The sector×circuit term adds up to 20 points based on the empirical win rate for the project's sector-circuit cell (discounted by 50% when the cell has fewer than 3 observed cases).
+
+**Platform implementation extension** — the PSA-NEPA accelerator adds a permit gap penalty outside the BRE formula: +8 points when ≥1 critical-path co-permit is in Not Started status, +15 points when ≥3 are blocked. This penalty is additive to the composite score and fires whenever the `nepa_blocked_permit_count__c` rollup changes. It represents an operational risk signal — uninitiated required permits at ROD — that does not appear in the PermitTEC litigation corpus because cases typically postdate the permitting failure that caused the gap.
 
 **Version 3 (Stage 14)** — extends v2 with a litigation cost dimension:
 
@@ -271,6 +273,8 @@ Fourteen CE screening rules were generated from this corpus, with 5 sector compl
 - **Routine USFS timber harvest (36 CFR 220.6):** 40% EIS likelihood; 8-month typical timeline.
 
 **Statutory clustering.** NEPA is nearly always accompanied by ESA §7, CWA §404, and NHPA §106 for natural resource projects. ESA §7 is the single statute most predictive of litigation loss (Section 4.4).
+
+**Platform operationalization.** The Stage 3 permit analysis is operationalized in the platform as `nepa_required_permit__c`, a structured child object of each NEPA process record with 16 fields covering permit type, lead agency, regulatory citation, critical-path flag, SLA due date, and permit status. A daily scheduled flow (`NEPA_Permit_SLA_Monitor`) creates Tasks on overdue critical-path permits. The GIS proximity check feeds a bridge layer that auto-generates CWA §404, NHPA §106, and CZMA permit records when spatial flags are set, ensuring the permits identified in the analysis are tracked as first-class records rather than free-text annotations.
 
 ### 4.3 Where Time Is Lost: The Scoping Bottleneck
 
@@ -429,7 +433,7 @@ Colorado (50% challenger win rate, n=20) and Oregon (42.9%, n=87) are the highes
 
 ### 4.5 Sector × Circuit Interaction
 
-**The sector × circuit matrix is the strongest single litigation risk predictor (Stage 13).** Constructing a win-rate matrix across 7 sectors and 12 circuits from 684 PermitTEC cases reveals that the same agency in the same sector can face dramatically different outcomes depending solely on the circuit in which it is sued:
+**The sector × circuit matrix is the strongest litigation risk predictor derived from observed case outcomes (Stage 13).** Constructing a win-rate matrix across 7 sectors and 12 circuits from 684 PermitTEC cases reveals that the same agency in the same sector can face dramatically different outcomes depending solely on the circuit in which it is sued:
 
 | Sector | DC Circuit | 4th Circuit | 9th Circuit | 10th Circuit |
 |---|---|---|---|---|
@@ -498,6 +502,8 @@ The three extended stages (14–16) produced findings that directly shaped platf
 1. **Sector-specific extraordinary circumstances intake fields (IMP-008).** CE intake OmniScript extended with `nepa_ec_multi_dod__c` (Military multi-installation DoD coordination required) and `nepa_ec_usace_czma__c` (Water/Coastal CZMA consistency + EFH dual-track review required). These fields capture the primary multi-agency coordination triggers at intake, enabling coordinators to see the friction multiplier basis before the first field survey.
 
 2. **OFD Coordination Tracker (IMP-006).** `ApplicationTimeline` extended with `nepa_ofd_track__c` (NEPA_Lead / Agency_Consultation / Permit_Milestone / Joint_ROD) and `nepa_coordinating_agency__c`. `NEPA_OFD_Milestone__mdt` pre-seeds 8 standard E.O. 13807 milestones including a Permit_Milestone record for USACE Section 404 pre-application meeting targeted for Water/Coastal projects. This converts the Stage 16 finding — that Water/Coastal federal overhead is primarily CZMA/EFH dual-track — from a retrospective data point into a forward-looking coordination milestone visible at case creation. The causal relationship between USACE dual-track review and the 1.47× friction premium is operationally visible on the same screen where the coordinator manages the NEPA review timeline.
+
+3. **OpenWetlandsMap GIS layer (IMP-009).** The 1.47× Water/Coastal friction premium and the position of CWA §404 as the third highest-risk co-permit drove addition of a sixth GIS intake layer: OpenWetlandsMap, a community-sourced dataset built on OpenStreetMap standards. This addresses the NWI (National Wetlands Inventory) currency gap — the NWI was last systematically updated in the 1970s–80s and cannot reliably identify recently altered or mapped wetland boundaries. The OpenWetlandsMap layer sets a dedicated `nepa_wetlands_flag__c` field that triggers CWA §404 permit record creation more precisely than waterway proximity alone. The NHD proximity check is retained as a parallel trigger. Where the OpenWetlandsMap endpoint is unavailable (pilot coverage is incomplete), the system logs a coordinator task and continues — applying the graceful-degradation pattern required for community-sourced data sources.
 
 ---
 
@@ -698,8 +704,8 @@ All stage outputs are written to `outputs/`:
 |---|---|---|
 | `1_feature_engineering.json` | 1 | Feature importance rankings; sector EIS probability matrix |
 | `2_ce_decision_tree.json` | 2 | CE decision tree by agency; extraordinary circumstances triggers |
-| `3_permit_matrix.json` | 3 | 35-row interagency permit matrix (JSON) |
-| `3_permit_matrix.csv` | 3 | Same matrix as CSV (for spreadsheet import) |
+| `3_permit_matrix.json` | 3 | Interagency permit matrix from 35 input combinations (JSON); deployed as 25-record `NEPA_Permit_Matrix__mdt` |
+| `3_permit_matrix.csv` | 3 | Same matrix as CSV (source for CMT row seeding) |
 | `4_litigation_guardrails.json` | 4 | Top procedural failures; validation rules |
 | `6_timeline_risk_profile.json` | 6 | Page count thresholds by process type |
 | `7_litigation_risk_weights.json` | 7 | Agency/statute/circuit loss rates; composite score v1 |
