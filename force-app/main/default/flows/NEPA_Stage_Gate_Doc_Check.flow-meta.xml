@@ -11,6 +11,7 @@ Design notes:
     <processType>AutoLaunchedFlow</processType>
     <status>Active</status>
 
+    <!-- ASSIGNMENTS -->
     <assignments>
         <name>Assign_CurrentRequired</name>
         <label>Capture Current Required Doc Type</label>
@@ -47,7 +48,6 @@ Design notes:
                 <booleanValue>true</booleanValue>
             </value>
         </assignmentItems>
-        <!-- Short-circuit to WasDocFound so the inner loop stops iterating -->
         <connector>
             <targetReference>Decision_WasDocFound</targetReference>
         </connector>
@@ -70,6 +70,23 @@ Design notes:
         </connector>
     </assignments>
 
+    <assignments>
+        <name>Append_PermitGapToMissingDocs</name>
+        <label>Append Permit Gap to Missing Docs Error</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_MissingDocs</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula_AppendPermitGap</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_AnyMissing</targetReference>
+        </connector>
+    </assignments>
+
     <!-- Before-save custom error — shows inline on the nepa_status__c field -->
     <customErrors>
         <name>Block_Save</name>
@@ -83,6 +100,7 @@ Design notes:
         </customErrorMessages>
     </customErrors>
 
+    <!-- DECISIONS -->
     <decisions>
         <name>Decision_HasRequiredDocs</name>
         <label>Any Required Documents for This Gate?</label>
@@ -148,7 +166,6 @@ Design notes:
                     <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
-            <!-- Connector returns to outer loop for the next required doc type -->
             <connector>
                 <targetReference>Loop_RequiredDocs</targetReference>
             </connector>
@@ -156,9 +173,6 @@ Design notes:
         </rules>
     </decisions>
 
-    <!-- ============================================================
-         STEP 4: If any docs are missing, block the save
-    ============================================================ -->
     <decisions>
         <name>Decision_AnyMissing</name>
         <label>Any Missing Required Documents?</label>
@@ -189,198 +203,7 @@ Design notes:
         </rules>
     </decisions>
 
-    <!-- ============================================================
-         FORMULAS
-    ============================================================ -->
-
-    <!-- Builds running missing-doc string: appends ", DocType" each pass -->
-    <formulas>
-        <name>formula_AppendMissing</name>
-        <dataType>String</dataType>
-        <expression>IF(ISBLANK({!var_MissingDocs}), {!var_CurrentDocType}, {!var_MissingDocs} &amp; ", " &amp; {!var_CurrentDocType})</expression>
-    </formulas>
-
-    <!-- User-facing error message shown on nepa_status__c field -->
-    <formulas>
-        <name>formula_ErrorMessage</name>
-        <dataType>String</dataType>
-        <expression>"Cannot complete this milestone. The following required documents are missing or not in Approved status: " &amp; {!var_MissingDocs} &amp; ". Upload and approve these documents before marking this event Completed."</expression>
-    </formulas>
-
-    <!-- ============================================================
-         STEP 3: For each required doc type, check if it is present
-         in the existing doc collection. Accumulate missing types.
-         O(n*m) — acceptable at current NEPA checklist scale (<=10 rules).
-    ============================================================ -->
-    <loops>
-        <name>Loop_RequiredDocs</name>
-        <label>Check Each Required Document</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <collectionReference>col_RequiredDocs</collectionReference>
-        <iterationOrder>Asc</iterationOrder>
-        <nextValueConnector>
-            <targetReference>Assign_CurrentRequired</targetReference>
-        </nextValueConnector>
-        <noMoreValuesConnector>
-            <targetReference>Decision_IsRODOrFONSI</targetReference>
-        </noMoreValuesConnector>
-    </loops>
-
-    <!-- Inner loop: scan existing docs for a match -->
-    <loops>
-        <name>Loop_ExistingDocs</name>
-        <label>Scan Existing Docs for Match</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <collectionReference>col_ExistingDocs</collectionReference>
-        <iterationOrder>Asc</iterationOrder>
-        <nextValueConnector>
-            <targetReference>Decision_DocTypeMatch</targetReference>
-        </nextValueConnector>
-        <noMoreValuesConnector>
-            <targetReference>Decision_WasDocFound</targetReference>
-        </noMoreValuesConnector>
-    </loops>
-
-    <!-- ============================================================
-         STEP 1: Load required document rules for this event type
-         CMT queries are governor-exempt.
-         Filter: Gate_Event_Type__c = nepa_event_type__c AND Is_Required__c = true AND Active__c = true
-    ============================================================ -->
-    <recordLookups>
-        <name>Get_RequiredDocs</name>
-        <label>Get Required Documents for This Gate Event</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Decision_HasRequiredDocs</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>Gate_Event_Type__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.nepa_event_type__c</elementReference>
-            </value>
-        </filters>
-        <filters>
-            <field>Is_Required__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
-        <filters>
-            <field>Active__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
-        <getFirstRecordOnly>false</getFirstRecordOnly>
-        <object>NEPA_Required_Document__mdt</object>
-        <outputReference>col_RequiredDocs</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>Document_Type__c</queriedFields>
-        <queriedFields>Stage_Required_By__c</queriedFields>
-    </recordLookups>
-
-    <!-- ============================================================
-         STEP 2: Query existing approved/published documents for the process
-         nepa_process__c is the direct lookup set by NEPA_AdminRecord_AutoCreate.
-         Filter to nepa_permit_document record type only — avoids matching
-         draft or unrelated ContentVersion records.
-         SOQL cost: 1 query against ContentVersion.
-    ============================================================ -->
-    <recordLookups>
-        <name>Get_ExistingDocs</name>
-        <label>Get Existing Approved Documents for This Process</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Loop_RequiredDocs</targetReference>
-        </connector>
-        <filterLogic>1 AND 2 AND 3 AND 4</filterLogic>
-        <filters>
-            <field>nepa_process__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.nepa_related_process__c</elementReference>
-            </value>
-        </filters>
-        <filters>
-            <field>nepa_status__c</field>
-            <operator>EqualTo</operator>
-            <value><stringValue>Approved</stringValue></value>
-        </filters>
-        <filters>
-            <field>IsLatest</field>
-            <operator>EqualTo</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
-        <filters>
-            <field>nepa_draft_source__c</field>
-            <operator>NotEqualTo</operator>
-            <value>
-                <stringValue>AI-Generated</stringValue>
-            </value>
-        </filters>
-        <getFirstRecordOnly>false</getFirstRecordOnly>
-        <object>ContentVersion</object>
-        <outputReference>col_ExistingDocs</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>nepa_document_type__c</queriedFields>
-    </recordLookups>
-
-    <!-- ============================================================
-         TRIGGER: ApplicationTimeline before-save, create + update
-         Entry: nepa_status__c changing to Completed AND event type set
-         AND related process set (cross-object lookup requires the lookup field)
-    ============================================================ -->
-    <start>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <object>ApplicationTimeline</object>
-        <recordTriggerType>CreateAndUpdate</recordTriggerType>
-        <triggerType>RecordBeforeSave</triggerType>
-        <filterLogic>1 AND 2 AND 3</filterLogic>
-        <filters>
-            <field>nepa_status__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>Completed</stringValue>
-            </value>
-        </filters>
-        <filters>
-            <field>nepa_event_type__c</field>
-            <operator>IsNull</operator>
-            <value>
-                <booleanValue>false</booleanValue>
-            </value>
-        </filters>
-        <filters>
-            <field>nepa_related_process__c</field>
-            <operator>IsNull</operator>
-            <value>
-                <booleanValue>false</booleanValue>
-            </value>
-        </filters>
-        <connector>
-            <targetReference>Get_RequiredDocs</targetReference>
-        </connector>
-    </start>
-
-    <!-- ============================================================
-         STEP 4b: At ROD/FONSI gates, check for uninitiated critical-path permits
-         Queries nepa_required_permit__c children of the related IA where
-         is_critical_path__c = true AND nepa_permit_status__c = 'Not Started'.
-         Appends to var_MissingDocs so the existing Block_Save path handles it.
-    ============================================================ -->
+    <!-- STEP 4b: At ROD/FONSI gates, check for uninitiated critical-path permits -->
     <decisions>
         <name>Decision_IsRODOrFONSI</name>
         <label>Is this a ROD or FONSI Gate?</label>
@@ -448,22 +271,142 @@ Design notes:
         </rules>
     </decisions>
 
-    <assignments>
-        <name>Append_PermitGapToMissingDocs</name>
-        <label>Append Permit Gap to Missing Docs Error</label>
+    <!-- FORMULAS -->
+    <formulas>
+        <name>formula_AppendMissing</name>
+        <dataType>String</dataType>
+        <expression>IF(ISBLANK({!var_MissingDocs}), {!var_CurrentDocType}, {!var_MissingDocs} &amp; ", " &amp; {!var_CurrentDocType})</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_ErrorMessage</name>
+        <dataType>String</dataType>
+        <expression>"Cannot complete this milestone. The following required documents are missing or not in Approved status: " &amp; {!var_MissingDocs} &amp; ". Upload and approve these documents before marking this event Completed."</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_AppendPermitGap</name>
+        <dataType>String</dataType>
+        <expression>IF(
+  ISBLANK({!var_MissingDocs}),
+  "Critical-path permit(s) not yet initiated (" &amp; TEXT({!$Record.nepa_related_process__r.nepa_blocked_permit_count__c}) &amp; " permit(s) in Not Started status)",
+  {!var_MissingDocs} &amp; ", Critical-path permit(s) not yet initiated (" &amp; TEXT({!$Record.nepa_related_process__r.nepa_blocked_permit_count__c}) &amp; " permit(s) in Not Started status)"
+)</expression>
+    </formulas>
+
+    <!-- LOOPS -->
+    <loops>
+        <name>Loop_RequiredDocs</name>
+        <label>Check Each Required Document</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
-        <assignmentItems>
-            <assignToReference>var_MissingDocs</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>formula_AppendPermitGap</elementReference>
-            </value>
-        </assignmentItems>
+        <collectionReference>col_RequiredDocs</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_CurrentRequired</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Decision_IsRODOrFONSI</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+
+    <loops>
+        <name>Loop_ExistingDocs</name>
+        <label>Scan Existing Docs for Match</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>col_ExistingDocs</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Decision_DocTypeMatch</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Decision_WasDocFound</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+
+    <!-- RECORD LOOKUPS -->
+    <recordLookups>
+        <name>Get_RequiredDocs</name>
+        <label>Get Required Documents for This Gate Event</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Decision_AnyMissing</targetReference>
+            <targetReference>Decision_HasRequiredDocs</targetReference>
         </connector>
-    </assignments>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Gate_Event_Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.nepa_event_type__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Is_Required__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Active__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>NEPA_Required_Document__mdt</object>
+        <outputReference>col_RequiredDocs</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Document_Type__c</queriedFields>
+        <queriedFields>Stage_Required_By__c</queriedFields>
+    </recordLookups>
+
+    <recordLookups>
+        <name>Get_ExistingDocs</name>
+        <label>Get Existing Approved Documents for This Process</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_RequiredDocs</targetReference>
+        </connector>
+        <filterLogic>1 AND 2 AND 3 AND 4</filterLogic>
+        <filters>
+            <field>nepa_process__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.nepa_related_process__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_status__c</field>
+            <operator>EqualTo</operator>
+            <value><stringValue>Approved</stringValue></value>
+        </filters>
+        <filters>
+            <field>IsLatest</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_draft_source__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>AI-Generated</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>ContentVersion</object>
+        <outputReference>col_ExistingDocs</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>nepa_document_type__c</queriedFields>
+    </recordLookups>
 
     <recordLookups>
         <name>Get_UninitatedCriticalPermits</name>
@@ -503,17 +446,41 @@ Design notes:
         <queriedFields>Name</queriedFields>
     </recordLookups>
 
-    <formulas>
-        <name>formula_AppendPermitGap</name>
-        <dataType>String</dataType>
-        <!-- Uses cross-object reference to the IA rollup rather than collection.size() which Flow does not support natively -->
-        <expression>IF(
-  ISBLANK({!var_MissingDocs}),
-  "Critical-path permit(s) not yet initiated (" &amp; TEXT({!$Record.nepa_related_process__r.nepa_blocked_permit_count__c}) &amp; " permit(s) in Not Started status)",
-  {!var_MissingDocs} &amp; ", Critical-path permit(s) not yet initiated (" &amp; TEXT({!$Record.nepa_related_process__r.nepa_blocked_permit_count__c}) &amp; " permit(s) in Not Started status)"
-)</expression>
-    </formulas>
+    <!-- TRIGGER: ApplicationTimeline before-save, create + update -->
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <object>ApplicationTimeline</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+        <filterLogic>1 AND 2 AND 3</filterLogic>
+        <filters>
+            <field>nepa_status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Completed</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_event_type__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_related_process__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <connector>
+            <targetReference>Get_RequiredDocs</targetReference>
+        </connector>
+    </start>
 
+    <!-- VARIABLES -->
     <variables>
         <name>col_UninitatedCriticalPermits</name>
         <dataType>SObject</dataType>
@@ -523,9 +490,6 @@ Design notes:
         <objectType>nepa_required_permit__c</objectType>
     </variables>
 
-    <!-- ============================================================
-         VARIABLES
-    ============================================================ -->
     <variables>
         <name>col_RequiredDocs</name>
         <dataType>SObject</dataType>

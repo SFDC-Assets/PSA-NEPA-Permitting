@@ -56,7 +56,6 @@
             </value>
         </filters>
         <getFirstRecordOnly>false</getFirstRecordOnly>
-        <limit>2000</limit>
         <object>nepa_required_permit__c</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
@@ -82,6 +81,29 @@
                 <targetReference>Loop_BuildTasks</targetReference>
             </connector>
             <label>Overdue Permits Found</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_TasksToCreate</name>
+        <label>Tasks Collection Populated?</label>
+        <locationX>176</locationX>
+        <locationY>647</locationY>
+        <defaultConnectorLabel>No tasks — exit</defaultConnectorLabel>
+        <rules>
+            <name>Tasks_Present</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>col_TasksToCreate</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_OverdueTasks</targetReference>
+            </connector>
+            <label>Tasks Present</label>
         </rules>
     </decisions>
 
@@ -204,30 +226,6 @@
             <targetReference>Call_ErrorLogger</targetReference>
         </connector>
     </assignments>
-
-    <!-- DECISIONS -->
-    <decisions>
-        <name>Decision_TasksToCreate</name>
-        <label>Tasks Collection Populated?</label>
-        <locationX>176</locationX>
-        <locationY>647</locationY>
-        <defaultConnectorLabel>No tasks — exit</defaultConnectorLabel>
-        <rules>
-            <name>Tasks_Present</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>col_TasksToCreate</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Create_OverdueTasks</targetReference>
-            </connector>
-            <label>Tasks Present</label>
-        </rules>
-    </decisions>
 
     <!-- RECORD CREATES -->
     <recordCreates>
