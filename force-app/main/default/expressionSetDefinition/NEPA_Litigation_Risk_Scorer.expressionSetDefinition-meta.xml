@@ -1,37 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ExpressionSetDefinition xmlns="http://soap.sforce.com/2006/04/metadata">
+    <executionScale>Low</executionScale>
     <label>NEPA Litigation Risk Scorer</label>
     <processType>Bre</processType>
     <template>false</template>
     <versions>
-        <fullName>NEPA_Litigation_Risk_Scorer_V2</fullName>
-        <description>Composite litigation risk scoring V2: DM output bindings changed to Text with VALUE() wrappers in expressions — required to avoid BRE rulesEngineInputInterview null init. ReviewType + Agency + Circuit DM lookups; statute points passed as pre-computed flow input; 1.5x expedited multiplier when record is incomplete; cap at 100; tier assignment.</description>
+        <fullName>NEPA_Litigation_Risk_Scorer_V1</fullName>
+        <description>Composite litigation risk scoring: ReviewType + Agency + Circuit + SectorCircuit DM lookups; statute points passed as pre-computed flow input; 1.5x expedited multiplier when record is incomplete; cap at 100; tier assignment.</description>
         <expressionSetDefinition>NEPA_Litigation_Risk_Scorer</expressionSetDefinition>
-        <label>NEPA Litigation Risk Scorer V2</label>
+        <label>NEPA Litigation Risk Scorer V1</label>
         <processType>Bre</processType>
-        <rank>2</rank>
+        <rank>1</rank>
         <shouldShowExplExternally>false</shouldShowExplExternally>
-        <startDate>2026-05-08T00:00:00.000Z</startDate>
-        <status>Inactive</status>
-
-        <!-- Step 1: Review Type points lookup -->
-        <steps>
-            <actionType>GetOutputsFromDecisionMatrix</actionType>
-            <decisionTable>
-                <decisionTableName>NEPA_Risk_ReviewType</decisionTableName>
-                <type>DecisionMatrix</type>
-            </decisionTable>
-            <label>Review Type Points Lookup</label>
-            <name>ReviewTypePointsLookup</name>
-            <resultIncluded>false</resultIncluded>
-            <sequenceNumber>1</sequenceNumber>
-            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
-            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
-            <shouldShowExplExternally>false</shouldShowExplExternally>
-            <stepType>BusinessKnowledgeModel</stepType>
-        </steps>
-
-        <!-- Step 2: Agency risk points lookup -->
+        <startDate>2026-05-20T00:00:00.000Z</startDate>
+        <status>Active</status>
         <steps>
             <actionType>GetOutputsFromDecisionMatrix</actionType>
             <decisionTable>
@@ -47,45 +29,6 @@
             <shouldShowExplExternally>false</shouldShowExplExternally>
             <stepType>BusinessKnowledgeModel</stepType>
         </steps>
-
-        <!-- Step 3: Circuit risk points lookup -->
-        <steps>
-            <actionType>GetOutputsFromDecisionMatrix</actionType>
-            <decisionTable>
-                <decisionTableName>NEPA_Risk_Circuit</decisionTableName>
-                <type>DecisionMatrix</type>
-            </decisionTable>
-            <label>Circuit Risk Points Lookup</label>
-            <name>CircuitRiskPointsLookup</name>
-            <resultIncluded>false</resultIncluded>
-            <sequenceNumber>3</sequenceNumber>
-            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
-            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
-            <shouldShowExplExternally>false</shouldShowExplExternally>
-            <stepType>BusinessKnowledgeModel</stepType>
-        </steps>
-
-        <!-- Step 4: Sum all components. StatutePoints is pre-computed in the calling flow
-             (statute CONTAINS matching cannot be done in BRE).
-             VALUE() needed because DM output binding vars are Text (BRE only supports Text bindings). -->
-        <steps>
-            <actionType>AssignParameterValues</actionType>
-            <assignment>
-                <assignedParameter>RawScore</assignedParameter>
-                <expression>VALUE(NEPA_Risk_ReviewType__Points) + VALUE(NEPA_Risk_Agency__Points) + VALUE(NEPA_Risk_Circuit__Points) + StatutePoints + ChallengeDelta</expression>
-            </assignment>
-            <label>Sum Risk Components</label>
-            <name>SumRiskComponents</name>
-            <resultIncluded>false</resultIncluded>
-            <sequenceNumber>4</sequenceNumber>
-            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
-            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
-            <shouldShowExplExternally>false</shouldShowExplExternally>
-            <stepType>BusinessKnowledgeModel</stepType>
-        </steps>
-
-        <!-- Step 5: Apply 1.5x APA expedited multiplier when record is incomplete.
-             Condition: IsExpedited == true AND RecordCompleteness < 100 -->
         <steps>
             <actionType>AssignParameterValues</actionType>
             <assignment>
@@ -95,48 +38,12 @@
             <label>Apply Expedited Multiplier</label>
             <name>ApplyExpeditedMultiplier</name>
             <resultIncluded>false</resultIncluded>
-            <sequenceNumber>5</sequenceNumber>
-            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
-            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
-            <shouldShowExplExternally>false</shouldShowExplExternally>
-            <stepType>BusinessKnowledgeModel</stepType>
-        </steps>
-
-        <!-- Step 6: Track whether the expedited penalty was applied -->
-        <steps>
-            <actionType>AssignParameterValues</actionType>
-            <assignment>
-                <assignedParameter>ExpeditedPenaltyApplied</assignedParameter>
-                <expression>IsExpedited &amp;&amp; RecordCompleteness &lt; 100</expression>
-            </assignment>
-            <label>Set Expedited Penalty Flag</label>
-            <name>SetExpeditedPenaltyFlag</name>
-            <resultIncluded>false</resultIncluded>
-            <sequenceNumber>6</sequenceNumber>
-            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
-            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
-            <shouldShowExplExternally>false</shouldShowExplExternally>
-            <stepType>BusinessKnowledgeModel</stepType>
-        </steps>
-
-        <!-- Step 7: Cap at 100 -->
-        <steps>
-            <actionType>AssignParameterValues</actionType>
-            <assignment>
-                <assignedParameter>RiskScore</assignedParameter>
-                <expression>IF( RiskScore &gt; 100, 100, RiskScore )</expression>
-            </assignment>
-            <label>Cap Score at 100</label>
-            <name>CapScoreAt100</name>
-            <resultIncluded>false</resultIncluded>
             <sequenceNumber>7</sequenceNumber>
             <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
             <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
             <shouldShowExplExternally>false</shouldShowExplExternally>
             <stepType>BusinessKnowledgeModel</stepType>
         </steps>
-
-        <!-- Step 8: Assign risk tier based on final score -->
         <steps>
             <actionType>AssignParameterValues</actionType>
             <assignment>
@@ -146,24 +53,20 @@
             <label>Assign Risk Tier</label>
             <name>AssignRiskTier</name>
             <resultIncluded>false</resultIncluded>
-            <sequenceNumber>8</sequenceNumber>
+            <sequenceNumber>10</sequenceNumber>
             <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
             <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
             <shouldShowExplExternally>false</shouldShowExplExternally>
             <stepType>BusinessKnowledgeModel</stepType>
         </steps>
-
-        <!-- Step 9: Compute AI confidence. 50 base (ReviewType+Statutes always scored) +
-             25 per DM hit (Agency MatchScore=1, Circuit MatchScore=1). Max 100.
-             VALUE() needed because DM output binding vars are Text. -->
         <steps>
             <actionType>AssignParameterValues</actionType>
             <assignment>
-                <assignedParameter>AIConfidence</assignedParameter>
-                <expression>50 + ( IF( VALUE(NEPA_Risk_Agency__MatchScore) &gt;= 1, 25, 0 ) ) + ( IF( VALUE(NEPA_Risk_Circuit__MatchScore) &gt;= 1, 25, 0 ) )</expression>
+                <assignedParameter>RiskScore</assignedParameter>
+                <expression>IF( RiskScore &gt; 100, 100, RiskScore )</expression>
             </assignment>
-            <label>Compute AI Confidence</label>
-            <name>ComputeAIConfidence</name>
+            <label>Cap Score at 100</label>
+            <name>CapScoreAt100</name>
             <resultIncluded>false</resultIncluded>
             <sequenceNumber>9</sequenceNumber>
             <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
@@ -171,277 +74,6 @@
             <shouldShowExplExternally>false</shouldShowExplExternally>
             <stepType>BusinessKnowledgeModel</stepType>
         </steps>
-
-        <!-- Step 10: Output final values -->
-        <steps>
-            <actionType>AssignParameterValues</actionType>
-            <assignment>
-                <assignedParameter>RiskScore</assignedParameter>
-                <expression>RiskScore</expression>
-            </assignment>
-            <label>Output Risk Score</label>
-            <name>OutputRiskScore</name>
-            <resultIncluded>true</resultIncluded>
-            <sequenceNumber>10</sequenceNumber>
-            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
-            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
-            <shouldShowExplExternally>false</shouldShowExplExternally>
-            <stepType>BusinessKnowledgeModel</stepType>
-        </steps>
-
-        <!-- Input variables -->
-        <variables>
-            <collection>false</collection>
-            <dataType>Text</dataType>
-            <decimalPlaces>2</decimalPlaces>
-            <description>Review type from IndividualApplication.nepa_review_type__c (CE, EA, EIS, Other)</description>
-            <input>true</input>
-            <name>ReviewType</name>
-            <output>false</output>
-            <type>Variable</type>
-            <value></value>
-        </variables>
-        <variables>
-            <collection>false</collection>
-            <dataType>Text</dataType>
-            <decimalPlaces>2</decimalPlaces>
-            <description>Lead agency full name from Program.nepa_lead_agency__c</description>
-            <input>true</input>
-            <name>AgencyName</name>
-            <output>false</output>
-            <type>Variable</type>
-            <value></value>
-        </variables>
-        <variables>
-            <collection>false</collection>
-            <dataType>Text</dataType>
-            <decimalPlaces>2</decimalPlaces>
-            <description>Circuit key from Program.nepa_circuit__c (9th, DC, 10th, etc.)</description>
-            <input>true</input>
-            <name>CircuitKey</name>
-            <output>false</output>
-            <type>Variable</type>
-            <value></value>
-        </variables>
-        <variables>
-            <collection>false</collection>
-            <dataType>Numeric</dataType>
-            <decimalPlaces>1</decimalPlaces>
-            <description>Pre-computed statute risk points (CWA+ESA+NHPA CONTAINS matching done in flow, each 5pts)</description>
-            <input>true</input>
-            <name>StatutePoints</name>
-            <output>false</output>
-            <type>Variable</type>
-            <value>0</value>
-        </variables>
-        <variables>
-            <collection>false</collection>
-            <dataType>Boolean</dataType>
-            <decimalPlaces>2</decimalPlaces>
-            <description>True when nepa_review_timeline_type__c = Expedited/Emergency</description>
-            <input>true</input>
-            <name>IsExpedited</name>
-            <output>false</output>
-            <type>Variable</type>
-            <value>false</value>
-        </variables>
-        <variables>
-            <collection>false</collection>
-            <dataType>Numeric</dataType>
-            <decimalPlaces>1</decimalPlaces>
-            <description>Record completeness percentage from nepa_record_completeness__c</description>
-            <input>true</input>
-            <name>RecordCompleteness</name>
-            <output>false</output>
-            <type>Variable</type>
-            <value>100</value>
-        </variables>
-
-        <variables>
-            <collection>false</collection>
-            <dataType>Numeric</dataType>
-            <decimalPlaces>1</decimalPlaces>
-            <description>Pre-computed challenge risk delta from matched NEPA_Challenge_Prediction_Rule__mdt records (Energy×4th=12pts, Tribal Plaintiff=20pts). Written by NEPA_Challenge_Predictor to nepa_challenge_risk_delta__c.</description>
-            <input>true</input>
-            <name>ChallengeDelta</name>
-            <output>false</output>
-            <type>Variable</type>
-            <value>0</value>
-        </variables>
-
-        <!-- Output variables -->
-        <variables>
-            <collection>false</collection>
-            <dataType>Numeric</dataType>
-            <decimalPlaces>1</decimalPlaces>
-            <description>Final composite risk score (0-100)</description>
-            <input>false</input>
-            <name>RiskScore</name>
-            <output>true</output>
-            <type>Variable</type>
-            <value>0</value>
-        </variables>
-        <variables>
-            <collection>false</collection>
-            <dataType>Text</dataType>
-            <decimalPlaces>2</decimalPlaces>
-            <description>Risk tier: Very High / High / Moderate / Low</description>
-            <input>false</input>
-            <name>RiskTier</name>
-            <output>true</output>
-            <type>Variable</type>
-            <value></value>
-        </variables>
-        <variables>
-            <collection>false</collection>
-            <dataType>Boolean</dataType>
-            <decimalPlaces>2</decimalPlaces>
-            <description>True when the 1.5x APA expedited multiplier was applied</description>
-            <input>false</input>
-            <name>ExpeditedPenaltyApplied</name>
-            <output>true</output>
-            <type>Variable</type>
-            <value>false</value>
-        </variables>
-        <variables>
-            <collection>false</collection>
-            <dataType>Numeric</dataType>
-            <decimalPlaces>1</decimalPlaces>
-            <description>AI confidence score (50-100): 50 base + 25 per matched DM row (Agency, Circuit)</description>
-            <input>false</input>
-            <name>AIConfidence</name>
-            <output>true</output>
-            <type>Variable</type>
-            <value>50</value>
-        </variables>
-
-        <!-- Internal calculation variable -->
-        <variables>
-            <collection>false</collection>
-            <dataType>Numeric</dataType>
-            <decimalPlaces>1</decimalPlaces>
-            <description>Raw sum before multiplier and cap</description>
-            <input>false</input>
-            <name>RawScore</name>
-            <output>false</output>
-            <type>Variable</type>
-            <value>0</value>
-        </variables>
-
-        <!-- DM output bindings: ReviewType DM
-             dataType=Text is required — BRE only supports Text DM output bindings. VALUE() wraps in expressions. -->
-        <variables>
-            <collection>false</collection>
-            <dataType>Text</dataType>
-            <decimalPlaces>2</decimalPlaces>
-            <input>false</input>
-            <lookupName>NEPA_Risk_ReviewType</lookupName>
-            <lookupType>DecisionMatrix</lookupType>
-            <name>NEPA_Risk_ReviewType__Points</name>
-            <output>false</output>
-            <type>Variable</type>
-        </variables>
-
-        <!-- DM output bindings: Agency DM -->
-        <variables>
-            <collection>false</collection>
-            <dataType>Text</dataType>
-            <decimalPlaces>2</decimalPlaces>
-            <input>false</input>
-            <lookupName>NEPA_Risk_Agency</lookupName>
-            <lookupType>DecisionMatrix</lookupType>
-            <name>NEPA_Risk_Agency__Points</name>
-            <output>false</output>
-            <type>Variable</type>
-        </variables>
-        <variables>
-            <collection>false</collection>
-            <dataType>Text</dataType>
-            <decimalPlaces>2</decimalPlaces>
-            <input>false</input>
-            <lookupName>NEPA_Risk_Agency</lookupName>
-            <lookupType>DecisionMatrix</lookupType>
-            <name>NEPA_Risk_Agency__MatchScore</name>
-            <output>false</output>
-            <type>Variable</type>
-        </variables>
-
-        <!-- DM output bindings: Circuit DM -->
-        <variables>
-            <collection>false</collection>
-            <dataType>Text</dataType>
-            <decimalPlaces>2</decimalPlaces>
-            <input>false</input>
-            <lookupName>NEPA_Risk_Circuit</lookupName>
-            <lookupType>DecisionMatrix</lookupType>
-            <name>NEPA_Risk_Circuit__Points</name>
-            <output>false</output>
-            <type>Variable</type>
-        </variables>
-        <variables>
-            <collection>false</collection>
-            <dataType>Text</dataType>
-            <decimalPlaces>2</decimalPlaces>
-            <input>false</input>
-            <lookupName>NEPA_Risk_Circuit</lookupName>
-            <lookupType>DecisionMatrix</lookupType>
-            <name>NEPA_Risk_Circuit__MatchScore</name>
-            <output>false</output>
-            <type>Variable</type>
-        </variables>
-
-        <versionNumber>2</versionNumber>
-    </versions>
-
-    <!-- V3: Adds sector-circuit DM lookup + composite V2 terms (scoping overrun + sector-circuit risk).
-         Deploy as Draft. Activate after sandbox validation of NEPA_Risk_SectorCircuit DM rows.
-         V2 remains Active during transition. -->
-    <versions>
-        <fullName>NEPA_Litigation_Risk_Scorer_V3</fullName>
-        <description>Composite litigation risk scoring V3: adds GetSectorCircuitRisk DM lookup and ComputeV2Terms (ScopingTerm + SectorCircuitTerm). ScopingTerm = 0.15×ScopingOverrunFlag + 0.10×MIN(ScopingOverrunMonths/48,1.0). SectorCircuitTerm = 0.20×(1−WinRatePct/100)×IF(CaseCount≥3,1.0,0.5) × 100. All other steps carried forward from V2.</description>
-        <expressionSetDefinition>NEPA_Litigation_Risk_Scorer</expressionSetDefinition>
-        <label>NEPA Litigation Risk Scorer V3</label>
-        <processType>Bre</processType>
-        <rank>3</rank>
-        <shouldShowExplExternally>false</shouldShowExplExternally>
-        <startDate>2026-05-13T00:00:00.000Z</startDate>
-        <status>Draft</status>
-
-        <!-- Step 1: Review Type points lookup -->
-        <steps>
-            <actionType>GetOutputsFromDecisionMatrix</actionType>
-            <decisionTable>
-                <decisionTableName>NEPA_Risk_ReviewType</decisionTableName>
-                <type>DecisionMatrix</type>
-            </decisionTable>
-            <label>Review Type Points Lookup</label>
-            <name>ReviewTypePointsLookup</name>
-            <resultIncluded>false</resultIncluded>
-            <sequenceNumber>1</sequenceNumber>
-            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
-            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
-            <shouldShowExplExternally>false</shouldShowExplExternally>
-            <stepType>BusinessKnowledgeModel</stepType>
-        </steps>
-
-        <!-- Step 2: Agency risk points lookup -->
-        <steps>
-            <actionType>GetOutputsFromDecisionMatrix</actionType>
-            <decisionTable>
-                <decisionTableName>NEPA_Risk_Agency</decisionTableName>
-                <type>DecisionMatrix</type>
-            </decisionTable>
-            <label>Agency Risk Points Lookup</label>
-            <name>AgencyRiskPointsLookup</name>
-            <resultIncluded>false</resultIncluded>
-            <sequenceNumber>2</sequenceNumber>
-            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
-            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
-            <shouldShowExplExternally>false</shouldShowExplExternally>
-            <stepType>BusinessKnowledgeModel</stepType>
-        </steps>
-
-        <!-- Step 3: Circuit risk points lookup -->
         <steps>
             <actionType>GetOutputsFromDecisionMatrix</actionType>
             <decisionTable>
@@ -457,29 +89,21 @@
             <shouldShowExplExternally>false</shouldShowExplExternally>
             <stepType>BusinessKnowledgeModel</stepType>
         </steps>
-
-        <!-- Step 4: NEW — Sector-circuit DM lookup (V3 addition) -->
         <steps>
-            <actionType>GetOutputsFromDecisionMatrix</actionType>
-            <decisionTable>
-                <decisionTableName>NEPA_Risk_SectorCircuit</decisionTableName>
-                <type>DecisionMatrix</type>
-            </decisionTable>
-            <label>Sector Circuit Risk Lookup</label>
-            <name>SectorCircuitRiskLookup</name>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>AIConfidence</assignedParameter>
+                <expression>40 + ( IF( VALUE(NEPA_Risk_Agency__MatchScore) &gt;= 1, 20, 0 ) ) + ( IF( VALUE(NEPA_Risk_Circuit__MatchScore) &gt;= 1, 20, 0 ) ) + ( IF( VALUE(NEPA_Risk_SectorCircuit__CaseCount) &gt;= 3, 20, 0 ) )</expression>
+            </assignment>
+            <label>Compute AI Confidence</label>
+            <name>ComputeAIConfidence</name>
             <resultIncluded>false</resultIncluded>
-            <sequenceNumber>4</sequenceNumber>
+            <sequenceNumber>11</sequenceNumber>
             <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
             <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
             <shouldShowExplExternally>false</shouldShowExplExternally>
             <stepType>BusinessKnowledgeModel</stepType>
         </steps>
-
-        <!-- Step 5: NEW — Compute V2 composite terms: ScopingTerm + SectorCircuitTerm.
-             ScopingTerm = 0.15×ScopingOverrunFlag + 0.10×MIN(ScopingOverrunMonths/48, 1.0)
-             SectorCircuitTerm = 0.20×(1−WinRatePct/100) × DataQuality × 100
-             DataQuality = IF(CaseCount≥3, 1.0, 0.5)
-             VALUE() required for Text-typed DM binding vars. -->
         <steps>
             <actionType>AssignParameterValues</actionType>
             <assignment>
@@ -495,110 +119,6 @@
             <shouldShowExplExternally>false</shouldShowExplExternally>
             <stepType>BusinessKnowledgeModel</stepType>
         </steps>
-
-        <!-- Step 6: Sum all components including V2 terms -->
-        <steps>
-            <actionType>AssignParameterValues</actionType>
-            <assignment>
-                <assignedParameter>RawScore</assignedParameter>
-                <expression>VALUE(NEPA_Risk_ReviewType__Points) + VALUE(NEPA_Risk_Agency__Points) + VALUE(NEPA_Risk_Circuit__Points) + StatutePoints + ChallengeDelta + V2Terms</expression>
-            </assignment>
-            <label>Sum Risk Components V3</label>
-            <name>SumRiskComponentsV3</name>
-            <resultIncluded>false</resultIncluded>
-            <sequenceNumber>6</sequenceNumber>
-            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
-            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
-            <shouldShowExplExternally>false</shouldShowExplExternally>
-            <stepType>BusinessKnowledgeModel</stepType>
-        </steps>
-
-        <!-- Step 7: Apply 1.5x APA expedited multiplier when record is incomplete -->
-        <steps>
-            <actionType>AssignParameterValues</actionType>
-            <assignment>
-                <assignedParameter>RiskScore</assignedParameter>
-                <expression>IF( IsExpedited &amp;&amp; RecordCompleteness &lt; 100, RawScore * 1.5, RawScore )</expression>
-            </assignment>
-            <label>Apply Expedited Multiplier</label>
-            <name>ApplyExpeditedMultiplier</name>
-            <resultIncluded>false</resultIncluded>
-            <sequenceNumber>7</sequenceNumber>
-            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
-            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
-            <shouldShowExplExternally>false</shouldShowExplExternally>
-            <stepType>BusinessKnowledgeModel</stepType>
-        </steps>
-
-        <!-- Step 8: Track expedited penalty flag -->
-        <steps>
-            <actionType>AssignParameterValues</actionType>
-            <assignment>
-                <assignedParameter>ExpeditedPenaltyApplied</assignedParameter>
-                <expression>IsExpedited &amp;&amp; RecordCompleteness &lt; 100</expression>
-            </assignment>
-            <label>Set Expedited Penalty Flag</label>
-            <name>SetExpeditedPenaltyFlag</name>
-            <resultIncluded>false</resultIncluded>
-            <sequenceNumber>8</sequenceNumber>
-            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
-            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
-            <shouldShowExplExternally>false</shouldShowExplExternally>
-            <stepType>BusinessKnowledgeModel</stepType>
-        </steps>
-
-        <!-- Step 9: Cap at 100 -->
-        <steps>
-            <actionType>AssignParameterValues</actionType>
-            <assignment>
-                <assignedParameter>RiskScore</assignedParameter>
-                <expression>IF( RiskScore &gt; 100, 100, RiskScore )</expression>
-            </assignment>
-            <label>Cap Score at 100</label>
-            <name>CapScoreAt100</name>
-            <resultIncluded>false</resultIncluded>
-            <sequenceNumber>9</sequenceNumber>
-            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
-            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
-            <shouldShowExplExternally>false</shouldShowExplExternally>
-            <stepType>BusinessKnowledgeModel</stepType>
-        </steps>
-
-        <!-- Step 10: Assign risk tier -->
-        <steps>
-            <actionType>AssignParameterValues</actionType>
-            <assignment>
-                <assignedParameter>RiskTier</assignedParameter>
-                <expression>IF( RiskScore &gt;= 58, &apos;Very High&apos;, IF( RiskScore &gt;= 45, &apos;High&apos;, IF( RiskScore &gt;= 35, &apos;Moderate&apos;, &apos;Low&apos; ) ) )</expression>
-            </assignment>
-            <label>Assign Risk Tier</label>
-            <name>AssignRiskTier</name>
-            <resultIncluded>false</resultIncluded>
-            <sequenceNumber>10</sequenceNumber>
-            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
-            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
-            <shouldShowExplExternally>false</shouldShowExplExternally>
-            <stepType>BusinessKnowledgeModel</stepType>
-        </steps>
-
-        <!-- Step 11: Compute AI confidence (now includes sector-circuit match) -->
-        <steps>
-            <actionType>AssignParameterValues</actionType>
-            <assignment>
-                <assignedParameter>AIConfidence</assignedParameter>
-                <expression>40 + ( IF( VALUE(NEPA_Risk_Agency__MatchScore) &gt;= 1, 20, 0 ) ) + ( IF( VALUE(NEPA_Risk_Circuit__MatchScore) &gt;= 1, 20, 0 ) ) + ( IF( VALUE(NEPA_Risk_SectorCircuit__CaseCount) &gt;= 3, 20, 0 ) )</expression>
-            </assignment>
-            <label>Compute AI Confidence V3</label>
-            <name>ComputeAIConfidenceV3</name>
-            <resultIncluded>false</resultIncluded>
-            <sequenceNumber>11</sequenceNumber>
-            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
-            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
-            <shouldShowExplExternally>false</shouldShowExplExternally>
-            <stepType>BusinessKnowledgeModel</stepType>
-        </steps>
-
-        <!-- Step 12: Output final values -->
         <steps>
             <actionType>AssignParameterValues</actionType>
             <assignment>
@@ -614,68 +134,119 @@
             <shouldShowExplExternally>false</shouldShowExplExternally>
             <stepType>BusinessKnowledgeModel</stepType>
         </steps>
-
-        <!-- Input variables (V2 variables carried forward) -->
+        <steps>
+            <actionType>GetOutputsFromDecisionMatrix</actionType>
+            <decisionTable>
+                <decisionTableName>NEPA_Risk_ReviewType</decisionTableName>
+                <type>DecisionMatrix</type>
+            </decisionTable>
+            <label>Review Type Points Lookup</label>
+            <name>ReviewTypePointsLookup</name>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>1</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+        <steps>
+            <actionType>GetOutputsFromDecisionMatrix</actionType>
+            <decisionTable>
+                <decisionTableName>NEPA_Risk_SectorCircuit</decisionTableName>
+                <type>DecisionMatrix</type>
+            </decisionTable>
+            <label>Sector Circuit Risk Lookup</label>
+            <name>SectorCircuitRiskLookup</name>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>4</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>ExpeditedPenaltyApplied</assignedParameter>
+                <expression>IsExpedited &amp;&amp; RecordCompleteness &lt; 100</expression>
+            </assignment>
+            <label>Set Expedited Penalty Flag</label>
+            <name>SetExpeditedPenaltyFlag</name>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>8</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
+        <steps>
+            <actionType>AssignParameterValues</actionType>
+            <assignment>
+                <assignedParameter>RawScore</assignedParameter>
+                <expression>VALUE(NEPA_Risk_ReviewType__Points) + VALUE(NEPA_Risk_Agency__Points) + VALUE(NEPA_Risk_Circuit__Points) + StatutePoints + ChallengeDelta + V2Terms</expression>
+            </assignment>
+            <label>Sum Risk Components</label>
+            <name>SumRiskComponents</name>
+            <resultIncluded>false</resultIncluded>
+            <sequenceNumber>6</sequenceNumber>
+            <shouldExposExecPathMsgOnly>true</shouldExposExecPathMsgOnly>
+            <shouldExposeConditionDetails>false</shouldExposeConditionDetails>
+            <shouldShowExplExternally>false</shouldShowExplExternally>
+            <stepType>BusinessKnowledgeModel</stepType>
+        </steps>
         <variables>
             <collection>false</collection>
-            <dataType>Text</dataType>
-            <decimalPlaces>2</decimalPlaces>
-            <description>Review type from IndividualApplication.nepa_review_type__c (CE, EA, EIS, Other)</description>
-            <input>true</input>
-            <name>ReviewType</name>
-            <output>false</output>
+            <dataType>Numeric</dataType>
+            <decimalPlaces>1</decimalPlaces>
+            <input>false</input>
+            <name>AIConfidence</name>
+            <output>true</output>
             <type>Variable</type>
-            <value></value>
+            <value>40</value>
         </variables>
         <variables>
             <collection>false</collection>
             <dataType>Text</dataType>
-            <decimalPlaces>2</decimalPlaces>
-            <description>Lead agency abbreviation from Program.nepa_record_owner_agency__c</description>
             <input>true</input>
+            <lookupName>NEPA_Risk_Agency</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
             <name>AgencyName</name>
             <output>false</output>
             <type>Variable</type>
-            <value></value>
-        </variables>
-        <variables>
-            <collection>false</collection>
-            <dataType>Text</dataType>
-            <decimalPlaces>2</decimalPlaces>
-            <description>Circuit key from Program.nepa_circuit__c (9th, DC, 10th, etc.)</description>
-            <input>true</input>
-            <name>CircuitKey</name>
-            <output>false</output>
-            <type>Variable</type>
-            <value></value>
-        </variables>
-        <variables>
-            <collection>false</collection>
-            <dataType>Text</dataType>
-            <decimalPlaces>2</decimalPlaces>
-            <description>NEW V3: Composite sector|circuit key for DM lookup. Pre-computed in calling flow as SectorKey + '|' + CircuitKey. Example: 'Energy|4th'.</description>
-            <input>true</input>
-            <name>SectorCircuitKey</name>
-            <output>false</output>
-            <type>Variable</type>
-            <value></value>
         </variables>
         <variables>
             <collection>false</collection>
             <dataType>Numeric</dataType>
             <decimalPlaces>1</decimalPlaces>
-            <description>Pre-computed statute risk points (CONTAINS matching done in flow)</description>
             <input>true</input>
-            <name>StatutePoints</name>
+            <name>ChallengeDelta</name>
             <output>false</output>
             <type>Variable</type>
             <value>0</value>
         </variables>
         <variables>
             <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>true</input>
+            <name>CircuitKey</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
             <dataType>Boolean</dataType>
             <decimalPlaces>2</decimalPlaces>
-            <description>True when nepa_review_timeline_type__c = Expedited/Emergency</description>
+            <input>false</input>
+            <name>ExpeditedPenaltyApplied</name>
+            <output>true</output>
+            <type>Variable</type>
+            <value>false</value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Boolean</dataType>
+            <decimalPlaces>2</decimalPlaces>
             <input>true</input>
             <name>IsExpedited</name>
             <output>false</output>
@@ -685,135 +256,17 @@
         <variables>
             <collection>false</collection>
             <dataType>Numeric</dataType>
-            <decimalPlaces>1</decimalPlaces>
-            <description>Record completeness percentage from nepa_record_completeness__c</description>
-            <input>true</input>
-            <name>RecordCompleteness</name>
-            <output>false</output>
-            <type>Variable</type>
-            <value>100</value>
-        </variables>
-        <variables>
-            <collection>false</collection>
-            <dataType>Numeric</dataType>
-            <decimalPlaces>1</decimalPlaces>
-            <description>Pre-computed challenge risk delta from matched NEPA_Challenge_Prediction_Rule__mdt records</description>
-            <input>true</input>
-            <name>ChallengeDelta</name>
-            <output>false</output>
-            <type>Variable</type>
-            <value>0</value>
-        </variables>
-        <variables>
-            <collection>false</collection>
-            <dataType>Boolean</dataType>
-            <decimalPlaces>2</decimalPlaces>
-            <description>NEW V3: True when nepa_scoping_overrun_flag__c is set on IndividualApplication</description>
-            <input>true</input>
-            <name>ScopingOverrunFlag</name>
-            <output>false</output>
-            <type>Variable</type>
-            <value>false</value>
-        </variables>
-        <variables>
-            <collection>false</collection>
-            <dataType>Numeric</dataType>
-            <decimalPlaces>1</decimalPlaces>
-            <description>NEW V3: Projected scoping overrun in months from nepa_projected_scoping_overrun_months__c. Capped at 48 in formula.</description>
-            <input>true</input>
-            <name>ScopingOverrunMonths</name>
-            <output>false</output>
-            <type>Variable</type>
-            <value>0</value>
-        </variables>
-
-        <!-- Output variables -->
-        <variables>
-            <collection>false</collection>
-            <dataType>Numeric</dataType>
-            <decimalPlaces>1</decimalPlaces>
-            <description>Final composite risk score (0-100)</description>
-            <input>false</input>
-            <name>RiskScore</name>
-            <output>true</output>
-            <type>Variable</type>
-            <value>0</value>
-        </variables>
-        <variables>
-            <collection>false</collection>
-            <dataType>Text</dataType>
-            <decimalPlaces>2</decimalPlaces>
-            <description>Risk tier: Very High / High / Moderate / Low</description>
-            <input>false</input>
-            <name>RiskTier</name>
-            <output>true</output>
-            <type>Variable</type>
-            <value></value>
-        </variables>
-        <variables>
-            <collection>false</collection>
-            <dataType>Boolean</dataType>
-            <decimalPlaces>2</decimalPlaces>
-            <description>True when the 1.5x APA expedited multiplier was applied</description>
-            <input>false</input>
-            <name>ExpeditedPenaltyApplied</name>
-            <output>true</output>
-            <type>Variable</type>
-            <value>false</value>
-        </variables>
-        <variables>
-            <collection>false</collection>
-            <dataType>Numeric</dataType>
-            <decimalPlaces>1</decimalPlaces>
-            <description>AI confidence score (40–100): 40 base + 20 per matched DM row (Agency, Circuit, SectorCircuit)</description>
-            <input>false</input>
-            <name>AIConfidence</name>
-            <output>true</output>
-            <type>Variable</type>
-            <value>40</value>
-        </variables>
-
-        <!-- Internal calculation variables -->
-        <variables>
-            <collection>false</collection>
-            <dataType>Numeric</dataType>
-            <decimalPlaces>1</decimalPlaces>
-            <description>Raw sum before multiplier and cap</description>
-            <input>false</input>
-            <name>RawScore</name>
-            <output>false</output>
-            <type>Variable</type>
-            <value>0</value>
-        </variables>
-        <variables>
-            <collection>false</collection>
-            <dataType>Numeric</dataType>
-            <decimalPlaces>2</decimalPlaces>
-            <description>V3 composite terms: ScopingTerm + SectorCircuitTerm (scaled 0–100)</description>
-            <input>false</input>
-            <name>V2Terms</name>
-            <output>false</output>
-            <type>Variable</type>
-            <value>0</value>
-        </variables>
-
-        <!-- DM output bindings: ReviewType DM -->
-        <variables>
-            <collection>false</collection>
-            <dataType>Text</dataType>
             <decimalPlaces>2</decimalPlaces>
             <input>false</input>
-            <lookupName>NEPA_Risk_ReviewType</lookupName>
+            <lookupName>NEPA_Risk_Agency</lookupName>
             <lookupType>DecisionMatrix</lookupType>
-            <name>NEPA_Risk_ReviewType__Points</name>
+            <name>NEPA_Risk_Agency__MatchScore</name>
             <output>false</output>
             <type>Variable</type>
         </variables>
-
-        <!-- DM output bindings: Agency DM -->
         <variables>
             <collection>false</collection>
-            <dataType>Text</dataType>
+            <dataType>Numeric</dataType>
             <decimalPlaces>2</decimalPlaces>
             <input>false</input>
             <lookupName>NEPA_Risk_Agency</lookupName>
@@ -824,20 +277,18 @@
         </variables>
         <variables>
             <collection>false</collection>
-            <dataType>Text</dataType>
+            <dataType>Numeric</dataType>
             <decimalPlaces>2</decimalPlaces>
             <input>false</input>
-            <lookupName>NEPA_Risk_Agency</lookupName>
+            <lookupName>NEPA_Risk_Circuit</lookupName>
             <lookupType>DecisionMatrix</lookupType>
-            <name>NEPA_Risk_Agency__MatchScore</name>
+            <name>NEPA_Risk_Circuit__MatchScore</name>
             <output>false</output>
             <type>Variable</type>
         </variables>
-
-        <!-- DM output bindings: Circuit DM -->
         <variables>
             <collection>false</collection>
-            <dataType>Text</dataType>
+            <dataType>Numeric</dataType>
             <decimalPlaces>2</decimalPlaces>
             <input>false</input>
             <lookupName>NEPA_Risk_Circuit</lookupName>
@@ -848,31 +299,18 @@
         </variables>
         <variables>
             <collection>false</collection>
-            <dataType>Text</dataType>
+            <dataType>Numeric</dataType>
             <decimalPlaces>2</decimalPlaces>
             <input>false</input>
-            <lookupName>NEPA_Risk_Circuit</lookupName>
+            <lookupName>NEPA_Risk_ReviewType</lookupName>
             <lookupType>DecisionMatrix</lookupType>
-            <name>NEPA_Risk_Circuit__MatchScore</name>
-            <output>false</output>
-            <type>Variable</type>
-        </variables>
-
-        <!-- DM output bindings: SectorCircuit DM (V3 new) -->
-        <variables>
-            <collection>false</collection>
-            <dataType>Text</dataType>
-            <decimalPlaces>2</decimalPlaces>
-            <input>false</input>
-            <lookupName>NEPA_Risk_SectorCircuit</lookupName>
-            <lookupType>DecisionMatrix</lookupType>
-            <name>NEPA_Risk_SectorCircuit__WinRatePct</name>
+            <name>NEPA_Risk_ReviewType__Points</name>
             <output>false</output>
             <type>Variable</type>
         </variables>
         <variables>
             <collection>false</collection>
-            <dataType>Text</dataType>
+            <dataType>Numeric</dataType>
             <decimalPlaces>2</decimalPlaces>
             <input>false</input>
             <lookupName>NEPA_Risk_SectorCircuit</lookupName>
@@ -892,7 +330,115 @@
             <output>false</output>
             <type>Variable</type>
         </variables>
-
-        <versionNumber>3</versionNumber>
+        <variables>
+            <collection>false</collection>
+            <dataType>Numeric</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <lookupName>NEPA_Risk_SectorCircuit</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>NEPA_Risk_SectorCircuit__WinRatePct</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Numeric</dataType>
+            <decimalPlaces>1</decimalPlaces>
+            <input>false</input>
+            <name>RawScore</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value>0</value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Numeric</dataType>
+            <decimalPlaces>1</decimalPlaces>
+            <input>true</input>
+            <name>RecordCompleteness</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value>100</value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <input>true</input>
+            <lookupName>NEPA_Risk_ReviewType</lookupName>
+            <lookupType>DecisionMatrix</lookupType>
+            <name>ReviewType</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Numeric</dataType>
+            <decimalPlaces>1</decimalPlaces>
+            <input>false</input>
+            <name>RiskScore</name>
+            <output>true</output>
+            <type>Variable</type>
+            <value>0</value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <name>RiskTier</name>
+            <output>true</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Boolean</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>true</input>
+            <name>ScopingOverrunFlag</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value>false</value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Numeric</dataType>
+            <decimalPlaces>1</decimalPlaces>
+            <input>true</input>
+            <name>ScopingOverrunMonths</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value>0</value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Text</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>true</input>
+            <name>SectorCircuitKey</name>
+            <output>false</output>
+            <type>Variable</type>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Numeric</dataType>
+            <decimalPlaces>1</decimalPlaces>
+            <input>true</input>
+            <name>StatutePoints</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value>0</value>
+        </variables>
+        <variables>
+            <collection>false</collection>
+            <dataType>Numeric</dataType>
+            <decimalPlaces>2</decimalPlaces>
+            <input>false</input>
+            <name>V2Terms</name>
+            <output>false</output>
+            <type>Variable</type>
+            <value>0</value>
+        </variables>
+        <versionNumber>1</versionNumber>
     </versions>
 </ExpressionSetDefinition>

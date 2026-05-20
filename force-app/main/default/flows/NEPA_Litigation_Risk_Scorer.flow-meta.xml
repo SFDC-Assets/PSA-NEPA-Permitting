@@ -75,7 +75,18 @@
             </value>
         </inputParameters>
         <nameSegment>NEPA_Litigation_Risk_Scorer</nameSegment>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
+        <outputParameters>
+            <assignToReference>var_RiskScore</assignToReference>
+            <name>RiskScore</name>
+        </outputParameters>
+        <outputParameters>
+            <assignToReference>var_RiskTier</assignToReference>
+            <name>RiskTier</name>
+        </outputParameters>
+        <outputParameters>
+            <assignToReference>var_AIConfidence</assignToReference>
+            <name>AIConfidence</name>
+        </outputParameters>
     </actionCalls>
     <apiVersion>62.0</apiVersion>
     <assignments>
@@ -417,7 +428,7 @@
         <name>formula_FinalRiskScore</name>
         <dataType>Number</dataType>
         <scale>1</scale>
-        <expression>{!Call_NEPA_Risk_Scorer.RiskScore} + {!var_PermitGapPoints}</expression>
+        <expression>{!var_RiskScore} + {!var_PermitGapPoints}</expression>
     </formulas>
     <formulas>
         <name>formula_RiskTier</name>
