@@ -609,8 +609,8 @@ public class NepaTestFactory {
         Id processId, String status, Boolean isCritical, Date slaDate
     ) {
         nepa_required_permit__c p = new nepa_required_permit__c();
-        p.Name                      = 'Test Permit ' + status;
         p.nepa_process__c           = processId;
+        p.nepa_permit_type__c       = 'CWA Section 404 Permit';
         p.nepa_permit_status__c     = status != null ? status : 'Not Started';
         p.nepa_is_critical_path__c  = isCritical != null ? isCritical : false;
         p.nepa_lead_agency__c       = 'USACE';

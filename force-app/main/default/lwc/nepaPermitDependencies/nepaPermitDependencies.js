@@ -2,14 +2,18 @@ import { LightningElement, api, track } from 'lwc';
 import getPermitStatuses from '@salesforce/apex/NepaAgencyPermitService.getPermitStatuses';
 
 const STATUS_CLASS = {
+    'Not Started'    : 'slds-badge_lightest',
+    'Pending'        : 'slds-badge slds-theme_warning',
+    'In Progress'    : 'slds-badge_inverse',
     'in progress'    : 'slds-badge_inverse',
-    'completed'      : 'slds-badge slds-theme_success',
-    'Issued'         : 'slds-badge slds-theme_success',
+    'Initiated'      : 'slds-badge_inverse',
     'Under Review'   : 'slds-badge slds-theme_warning',
     'paused'         : 'slds-badge slds-theme_warning',
+    'Issued'         : 'slds-badge slds-theme_success',
+    'completed'      : 'slds-badge slds-theme_success',
     'Denied'         : 'slds-badge slds-theme_error',
-    'cancelled'      : 'slds-badge slds-theme_error',
-    'Withdrawn'      : 'slds-badge slds-theme_error'
+    'Withdrawn'      : 'slds-badge slds-theme_error',
+    'cancelled'      : 'slds-badge slds-theme_error'
 };
 
 export default class NepaPermitDependencies extends LightningElement {

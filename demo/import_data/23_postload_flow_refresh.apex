@@ -90,7 +90,8 @@ if (!cvsToWire.isEmpty()) {
 
 IndividualApplication app = [
     SELECT Id, nepa_review_type__c, nepa_process_stage__c,
-           nepa_action_type__c, nepa_disturbance_acres__c
+           nepa_action_type__c, nepa_disturbance_acres__c,
+           nepa_co_permits_required__c
     FROM IndividualApplication
     WHERE nepa_federal_unique_id__c = 'IDI-38709'
     LIMIT 1
@@ -100,24 +101,28 @@ String origReviewType    = app.nepa_review_type__c;
 String origProcessStage  = app.nepa_process_stage__c;
 String origActionType    = app.nepa_action_type__c;
 Decimal origAcres        = app.nepa_disturbance_acres__c;
+String origPermitsReq    = app.nepa_co_permits_required__c;
 
 // Step A1: set placeholder values so step A2 registers genuine IsChanged hits
 // on nepa_review_type__c (Risk Scorer, SLA), nepa_process_stage__c (Stage Gate, Timeline),
-// nepa_action_type__c (CE Screener), nepa_disturbance_acres__c (CE Screener)
-app.nepa_review_type__c      = 'Other Authorization';
-app.nepa_process_stage__c    = 'Scoping';
-app.nepa_action_type__c      = 'Research or Study';
+// nepa_action_type__c (CE Screener), nepa_disturbance_acres__c (CE Screener),
+// nepa_co_permits_required__c (NEPA_Permit_Record_Creator)
+app.nepa_review_type__c       = 'Other Authorization';
+app.nepa_process_stage__c     = 'Scoping';
+app.nepa_action_type__c       = 'Research or Study';
 app.nepa_disturbance_acres__c = 0;
+app.nepa_co_permits_required__c = null;
 update app;
 System.debug('Toggle A Step 1 — placeholder values written');
 
-// Step A2: restore originals — all IsChanged gates fire
-app.nepa_review_type__c      = origReviewType;
-app.nepa_process_stage__c    = origProcessStage;
-app.nepa_action_type__c      = origActionType;
+// Step A2: restore originals — all IsChanged gates fire, including Permit_Record_Creator
+app.nepa_review_type__c       = origReviewType;
+app.nepa_process_stage__c     = origProcessStage;
+app.nepa_action_type__c       = origActionType;
 app.nepa_disturbance_acres__c = origAcres;
+app.nepa_co_permits_required__c = origPermitsReq;
 update app;
-System.debug('Toggle A Step 2 — original values restored; IA flows queued');
+System.debug('Toggle A Step 2 — original values restored; IA flows queued (incl. NEPA_Permit_Record_Creator)');
 
 // ── Toggle B: ContentVersion (fires Defensibility + AdminRecord triggers) ──
 
@@ -153,4 +158,5 @@ System.debug('Expected populated: nepa_risk_score_factors__c, nepa_screening_con
 System.debug('  nepa_ce_pathway_recommendation__c, nepa_classification_basis__c,');
 System.debug('  nepa_sla_due_date__c, nepa_timeline_risk_tier__c, nepa_defensibility_gaps__c,');
 System.debug('  nepa_missing_documents__c');
+System.debug('Expected: nepa_required_permit__c child records created by NEPA_Permit_Record_Creator');
 System.debug('=== Flow-refresh complete ===');

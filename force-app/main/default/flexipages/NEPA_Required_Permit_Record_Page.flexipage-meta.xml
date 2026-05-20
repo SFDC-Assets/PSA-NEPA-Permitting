@@ -29,7 +29,7 @@
                 <identifier>force_highlightsPanel</identifier>
             </componentInstance>
         </itemInstances>
-        <mode>Replace</mode>
+
         <name>header</name>
         <type>Region</type>
     </flexiPageRegions>
@@ -198,7 +198,8 @@
         <type>Facet</type>
     </flexiPageRegions>
 
-    <!-- SECTION: Agency Sync — Column 1 -->
+
+    <!-- SECTION: Coordination Notes — Column 1 -->
     <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
@@ -206,21 +207,11 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_agency_endpoint_key__c</fieldItem>
-                <identifier>rp_agency_endpoint_key</identifier>
+                <fieldItem>Record.nepa_permit_notes__c</fieldItem>
+                <identifier>rp_permit_notes</identifier>
             </fieldInstance>
         </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_last_synced__c</fieldItem>
-                <identifier>rp_last_synced</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>rp-sync-c1</name>
+        <name>rp-notes-c1</name>
         <type>Facet</type>
     </flexiPageRegions>
 
@@ -279,6 +270,21 @@
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
+                    <name>body</name>
+                    <value>rp-notes-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>rp_notes_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>rp-notes-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
                     <name>columns</name>
                     <value>rp-info-cols</value>
                 </componentInstanceProperties>
@@ -313,20 +319,10 @@
             </componentInstance>
         </itemInstances>
         <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_permit_notes__c</fieldItem>
-                <identifier>rp_permit_notes</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
-                    <value>rp-sync-c1</value>
+                    <value>rp-notes-cols</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>horizontalAlignment</name>
@@ -334,13 +330,12 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>label</name>
-                    <value>Agency Sync</value>
+                    <value>Coordination Notes</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
-                <identifier>rp_section_sync</identifier>
+                <identifier>rp_section_notes</identifier>
             </componentInstance>
         </itemInstances>
-        <mode>Replace</mode>
         <name>detailTabContent</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -353,12 +348,11 @@
                 <identifier>force_relatedListContainer</identifier>
             </componentInstance>
         </itemInstances>
-        <mode>Replace</mode>
         <name>relatedTabContent</name>
         <type>Facet</type>
     </flexiPageRegions>
 
-    <!-- MAIN TABS -->
+    <!-- MAIN TABS facet — tabs here, tabset references this from the main Region -->
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
@@ -396,13 +390,30 @@
                 <identifier>rp_tab_related</identifier>
             </componentInstance>
         </itemInstances>
-        <mode>Replace</mode>
+        <name>rp-maintabs</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- MAIN REGION — tabset wrapping the tabs facet -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>tabs</name>
+                    <value>rp-maintabs</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:tabset</componentName>
+                <identifier>rp_tabset</identifier>
+            </componentInstance>
+        </itemInstances>
         <name>main</name>
         <type>Region</type>
     </flexiPageRegions>
 
-    <label>Required Permit Record Page</label>
-    <pageTemplate>force:recordLayout2Col</pageTemplate>
+    <masterLabel>Required Permit Record Page</masterLabel>
     <sobjectType>nepa_required_permit__c</sobjectType>
+    <template>
+        <name>flexipage:recordHomeTemplateDesktop</name>
+    </template>
     <type>RecordPage</type>
 </FlexiPage>

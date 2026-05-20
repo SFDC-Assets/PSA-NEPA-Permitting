@@ -98,6 +98,14 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
+    <variables>
+        <name>var_NotStartedPermits</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>nepa_required_permit__c</objectType>
+    </variables>
 
     <!-- ═══════════════════════════════════════════
          FORMULAS
@@ -161,6 +169,11 @@ IF(
 )</expression>
     </formulas>
     <formulas>
+        <name>formula_LeadAgencyDefault</name>
+        <dataType>String</dataType>
+        <expression>IF(ISBLANK({!var_MatchedLeadAgency}), "Other", {!var_MatchedLeadAgency})</expression>
+    </formulas>
+    <formulas>
         <name>formula_SLADueDate</name>
         <dataType>Date</dataType>
         <expression>IF(
@@ -200,7 +213,7 @@ IF(
             <value><elementReference>formula_GISAugmentedPermits</elementReference></value>
         </assignmentItems>
         <connector>
-            <targetReference>Delete_NotStartedPermits</targetReference>
+            <targetReference>Get_NotStartedPermits</targetReference>
         </connector>
     </assignments>
 
@@ -222,12 +235,12 @@ IF(
         <assignmentItems>
             <assignToReference>var_NewPermit.nepa_permit_type__c</assignToReference>
             <operator>Assign</operator>
-            <value><elementReference>var_MatchedRATypeId</elementReference></value>
+            <value><elementReference>var_MatchedRATypeName</elementReference></value>
         </assignmentItems>
         <assignmentItems>
             <assignToReference>var_NewPermit.nepa_lead_agency__c</assignToReference>
             <operator>Assign</operator>
-            <value><elementReference>var_MatchedLeadAgency</elementReference></value>
+            <value><elementReference>formula_LeadAgencyDefault</elementReference></value>
         </assignmentItems>
         <assignmentItems>
             <assignToReference>var_NewPermit.nepa_regulatory_citation__c</assignToReference>
@@ -280,9 +293,14 @@ IF(
             <value><elementReference>var_CurrentToken</elementReference></value>
         </assignmentItems>
         <assignmentItems>
+            <assignToReference>var_NewPermit.nepa_permit_type__c</assignToReference>
+            <operator>Assign</operator>
+            <value><elementReference>var_CurrentToken</elementReference></value>
+        </assignmentItems>
+        <assignmentItems>
             <assignToReference>var_NewPermit.nepa_lead_agency__c</assignToReference>
             <operator>Assign</operator>
-            <value><stringValue>TBD</stringValue></value>
+            <value><stringValue>Other</stringValue></value>
         </assignmentItems>
         <assignmentItems>
             <assignToReference>var_NewPermit.nepa_permit_status__c</assignToReference>
@@ -368,6 +386,30 @@ IF(
         </rules>
     </decisions>
 
+    <decisions>
+        <name>Decision_HasNotStartedPermits</name>
+        <label>Has Not Started Permits to Delete?</label>
+        <locationX>176</locationX>
+        <locationY>593</locationY>
+        <defaultConnectorLabel>No Permits to Delete</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Call_SplitPermitString</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>Has_NotStarted_Permits</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_NotStartedPermits</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Delete_NotStartedPermits</targetReference>
+            </connector>
+            <label>Has Not Started Permits</label>
+        </rules>
+    </decisions>
+
     <!-- ═══════════════════════════════════════════
          RECORD DELETES
          ═══════════════════════════════════════════ -->
@@ -375,25 +417,14 @@ IF(
         <name>Delete_NotStartedPermits</name>
         <label>Delete Existing Not Started Permits</label>
         <locationX>176</locationX>
-        <locationY>539</locationY>
+        <locationY>647</locationY>
         <connector>
             <targetReference>Call_SplitPermitString</targetReference>
         </connector>
         <faultConnector>
             <targetReference>Handle_Error</targetReference>
         </faultConnector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>nepa_process__c</field>
-            <operator>EqualTo</operator>
-            <value><elementReference>$Record.Id</elementReference></value>
-        </filters>
-        <filters>
-            <field>nepa_permit_status__c</field>
-            <operator>EqualTo</operator>
-            <value><stringValue>Not Started</stringValue></value>
-        </filters>
-        <object>nepa_required_permit__c</object>
+        <inputReference>var_NotStartedPermits</inputReference>
     </recordDeletes>
 
     <!-- ═══════════════════════════════════════════
@@ -444,6 +475,33 @@ IF(
     <!-- ═══════════════════════════════════════════
          RECORD LOOKUPS
          ═══════════════════════════════════════════ -->
+    <recordLookups>
+        <name>Get_NotStartedPermits</name>
+        <label>Get Existing Not Started Permits</label>
+        <locationX>176</locationX>
+        <locationY>539</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_HasNotStartedPermits</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>nepa_process__c</field>
+            <operator>EqualTo</operator>
+            <value><elementReference>$Record.Id</elementReference></value>
+        </filters>
+        <filters>
+            <field>nepa_permit_status__c</field>
+            <operator>EqualTo</operator>
+            <value><stringValue>Not Started</stringValue></value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>nepa_required_permit__c</object>
+        <outputReference>var_NotStartedPermits</outputReference>
+    </recordLookups>
     <recordLookups>
         <name>Get_RAType_For_Token</name>
         <label>Lookup RegulatoryAuthorizationType by Name</label>
@@ -542,20 +600,12 @@ IF(
         <locationX>50</locationX>
         <locationY>0</locationY>
         <object>IndividualApplication</object>
+        <connector>
+            <targetReference>Decision_PermitsStringPopulated</targetReference>
+        </connector>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
-        <scheduledPaths>
-            <connector>
-                <targetReference>Decision_PermitsStringPopulated</targetReference>
-            </connector>
-            <pathType>AsyncAfterCommit</pathType>
-        </scheduledPaths>
         <filterLogic>and</filterLogic>
-        <filters>
-            <field>nepa_co_permits_required__c</field>
-            <operator>IsChanged</operator>
-            <value><booleanValue>true</booleanValue></value>
-        </filters>
         <filters>
             <field>nepa_co_permits_required__c</field>
             <operator>IsNull</operator>

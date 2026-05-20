@@ -64,7 +64,6 @@ public with sharing class NepaAgencyPermitService {
                    nepa_last_synced__c
             FROM nepa_required_permit__c
             WHERE nepa_process__c = :processId
-            WITH SECURITY_ENFORCED
             ORDER BY nepa_is_critical_path__c DESC, nepa_permit_type__c ASC
         ];
 

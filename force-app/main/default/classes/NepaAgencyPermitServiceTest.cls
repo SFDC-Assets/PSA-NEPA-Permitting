@@ -182,4 +182,20 @@ private class NepaAgencyPermitServiceTest {
         }
         System.assertEquals(true, thrown);
     }
+
+    @IsTest
+    static void getPermitStatuses_criticalPathFirst_orderIsCorrect() {
+        Test.setMock(HttpCalloutMock.class, new SuccessMock());
+
+        Test.startTest();
+        List<NepaAgencyPermitService.PermitStatusResult> results =
+            NepaAgencyPermitService.getPermitStatuses(getProcessId());
+        Test.stopTest();
+
+        System.assertEquals(2, results.size(), 'Setup must produce exactly 2 permit records');
+        System.assertEquals(true,  results[0].isCriticalPath,
+            'Critical-path permit (USACE CWA 404) must be ordered first');
+        System.assertEquals(false, results[1].isCriticalPath,
+            'Non-critical permit (USFWS ESA) must be ordered second');
+    }
 }

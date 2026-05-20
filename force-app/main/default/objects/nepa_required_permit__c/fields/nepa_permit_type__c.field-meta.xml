@@ -1,14 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>nepa_permit_type__c</fullName>
-    <description>Lookup to RegulatoryAuthorizationType — the PSS type catalog record that defines the permit kind, issuing authority, and default parameters. Populated by NEPA_Permit_Record_Creator from NEPA_Permit_Matrix__mdt and NEPA_Permit_Type_Catalog__mdt seed data.</description>
+    <description>The type of federal permit or authorization required. Populated by NEPA_Permit_Record_Creator from NEPA_Permit_Matrix__mdt and NEPA_Permit_Type_Catalog__mdt seed data.</description>
     <inlineHelpText>The type of federal permit or authorization required (e.g., CWA Section 404, ESA Section 7, NHPA Section 106).</inlineHelpText>
     <label>Permit Type</label>
-    <deleteConstraint>SetNull</deleteConstraint>
-    <referenceTo>RegulatoryAuthorizationType</referenceTo>
-    <relationshipLabel>Required Permits</relationshipLabel>
-    <relationshipName>Required_Permits</relationshipName>
-    <required>false</required>
+    <required>true</required>
     <trackHistory>false</trackHistory>
-    <type>Lookup</type>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>false</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value><fullName>ANILCA Alaska Interest Lands</fullName><default>false</default><label>ANILCA Alaska Interest Lands</label></value>
+            <value><fullName>Atomic Energy Act Authorization</fullName><default>false</default><label>Atomic Energy Act Authorization</label></value>
+            <value><fullName>BLM Application for Permit to Drill</fullName><default>false</default><label>BLM Application for Permit to Drill</label></value>
+            <value><fullName>BLM Grazing Permit</fullName><default>false</default><label>BLM Grazing Permit</label></value>
+            <value><fullName>BLM Right-of-Way</fullName><default>false</default><label>BLM Right-of-Way</label></value>
+            <value><fullName>Clean Air Act Title V Operating Permit</fullName><default>false</default><label>Clean Air Act Title V Operating Permit</label></value>
+            <value><fullName>Clean Air NSR/PSD Permit</fullName><default>false</default><label>Clean Air NSR/PSD Permit</label></value>
+            <value><fullName>CERCLA Record of Decision</fullName><default>false</default><label>CERCLA Record of Decision</label></value>
+            <value><fullName>CWA Section 401 Water Quality Certification</fullName><default>false</default><label>CWA Section 401 Water Quality Certification</label></value>
+            <value><fullName>CWA Section 402 NPDES Permit</fullName><default>false</default><label>CWA Section 402 NPDES Permit</label></value>
+            <value><fullName>CWA Section 404 Permit</fullName><default>false</default><label>CWA Section 404 Permit</label></value>
+            <value><fullName>CZMA Federal Consistency Determination</fullName><default>false</default><label>CZMA Federal Consistency Determination</label></value>
+            <value><fullName>ESA Section 7 Consultation</fullName><default>false</default><label>ESA Section 7 Consultation</label></value>
+            <value><fullName>FAA AIP Approval</fullName><default>false</default><label>FAA AIP Approval</label></value>
+            <value><fullName>FERC Certificate</fullName><default>false</default><label>FERC Certificate</label></value>
+            <value><fullName>FERC FPA License</fullName><default>false</default><label>FERC FPA License</label></value>
+            <value><fullName>FLPMA Plan Approval</fullName><default>false</default><label>FLPMA Plan Approval</label></value>
+            <value><fullName>FLPMA Title V ROW Grant</fullName><default>false</default><label>FLPMA Title V ROW Grant</label></value>
+            <value><fullName>Geothermal Steam Act Lease</fullName><default>false</default><label>Geothermal Steam Act Lease</label></value>
+            <value><fullName>MBTA Compliance</fullName><default>false</default><label>MBTA Compliance</label></value>
+            <value><fullName>MMPA Incidental Take Authorization</fullName><default>false</default><label>MMPA Incidental Take Authorization</label></value>
+            <value><fullName>NHPA Section 106 Consultation</fullName><default>false</default><label>NHPA Section 106 Consultation</label></value>
+            <value><fullName>NRC Combined License</fullName><default>false</default><label>NRC Combined License</label></value>
+            <value><fullName>OCSLA Lease/Plan Approval</fullName><default>false</default><label>OCSLA Lease/Plan Approval</label></value>
+            <value><fullName>RCRA Hazardous Waste Permit</fullName><default>false</default><label>RCRA Hazardous Waste Permit</label></value>
+            <value><fullName>Rivers and Harbors Act Section 9 Bridge Permit</fullName><default>false</default><label>Rivers and Harbors Act Section 9 Bridge Permit</label></value>
+            <value><fullName>Rivers and Harbors Act Section 10 Permit</fullName><default>false</default><label>Rivers and Harbors Act Section 10 Permit</label></value>
+            <value><fullName>SDWA UIC Permit</fullName><default>false</default><label>SDWA UIC Permit</label></value>
+            <value><fullName>Section 4(f) Evaluation</fullName><default>false</default><label>Section 4(f) Evaluation</label></value>
+            <value><fullName>SMCRA Surface Mining Permit</fullName><default>false</default><label>SMCRA Surface Mining Permit</label></value>
+            <value><fullName>STB Certificate</fullName><default>false</default><label>STB Certificate</label></value>
+            <value><fullName>USACE Civil Works Authorization</fullName><default>false</default><label>USACE Civil Works Authorization</label></value>
+            <value><fullName>USFS Special Use Permit</fullName><default>false</default><label>USFS Special Use Permit</label></value>
+            <value><fullName>Other</fullName><default>false</default><label>Other</label></value>
+        </valueSetDefinition>
+    </valueSet>
 </CustomField>

@@ -597,6 +597,48 @@ private class NepaLitigationRiskScorerTest {
     }
 
     @IsTest
+    static void blockedPermitCount_change_triggersScorer_doesNotThrow() {
+        Program proj = makeProject('Bureau of Land Management', '9th');
+        IndividualApplication ia = makeProcess(proj.Id, 'EIS');
+        ia.nepa_review_type__c = 'EIS';
+        insert ia;
+
+        nepa_required_permit__c p = new nepa_required_permit__c(
+            nepa_process__c             = ia.Id,
+            nepa_permit_type__c         = 'CWA Section 404 Permit',
+            nepa_permit_status__c       = 'Not Started',
+            nepa_is_critical_path__c    = true,
+            nepa_lead_agency__c         = 'USACE',
+            nepa_regulatory_citation__c = '33 USC 1344'
+        );
+        insert p;
+
+        Boolean threw = false;
+        Test.startTest();
+        try {
+            p.nepa_permit_status__c = 'Issued';
+            update p;
+        } catch (Exception e) {
+            threw = true;
+        }
+        Test.stopTest();
+
+        System.assertEquals(false, threw,
+            'Transitioning a permit to Issued (changing blocked permit count) must not throw');
+
+        // nepa_blocked_permit_count__c is a rollup summary: verify via the child record count
+        Integer remainingBlocked = [
+            SELECT COUNT()
+            FROM nepa_required_permit__c
+            WHERE nepa_process__c = :ia.Id
+            AND nepa_is_critical_path__c = true
+            AND nepa_permit_status__c NOT IN ('Issued', 'Denied', 'Withdrawn')
+        ];
+        System.assertEquals(0, remainingBlocked,
+            'No critical-path permits should remain in a non-terminal status after Issued transition');
+    }
+
+    @IsTest
     static void litigationDurationCost_blmRecordLookedUp() {
         List<NEPA_Agency_Duration_Cost__mdt> blmRecord = [
             SELECT Normalized_Duration_Cost__c, Median_Duration_Months__c
