@@ -171,6 +171,43 @@
 #     Tests that prove NEPA flow bulk safety at 20 records are sufficient — the PSS
 #     limit is a package ceiling, not a NEPA automation limit.
 #
+# 20. ExpressionSetDefinition deploy fails with "LatestVersionSnapshotId not found":
+#     The Metadata API creates a new ESDV during deploy but never creates the snapshot
+#     that the BRE runtime requires. This fails on every deploy attempt regardless of
+#     the version status in the source file — even when the ESD already exists in org.
+#     Root cause: a platform-side validation bug. Affects ESDs that include
+#     GetOutputsFromDecisionMatrix steps.
+#
+#     Workaround (automated in Phase 5c-activate via --activate-es):
+#       1. Deploy the ESD via Metadata API — this creates a Draft ESDV in org.
+#       2. PATCH the ESDV's Metadata field with the full steps + variables via
+#          Tooling API, setting status="Active". This atomically activates the
+#          version AND creates the LatestVersionSnapshotId.
+#       3. Retrieve the ESD back to source — the retrieved file now reflects the
+#          Active version with snapshot. Subsequent Metadata API deploys succeed
+#          as no-ops (Unchanged) because the org and source match exactly.
+#
+#     The load_decision_matrix_rows.py --activate-es flag implements step 2 for
+#     all ES versions listed in ES_VERSIONS. The ESDV must already exist in org
+#     (created by step 1) before --activate-es is called.
+#
+#     If the ESD source file is lost or regenerated (e.g., after a scratch org):
+#       1. Deploy the ESD (creates Draft ESDV).
+#       2. Run: python3 scripts/load_decision_matrix_rows.py --org <alias> --activate-es
+#       3. Run: sf project retrieve start --metadata "ExpressionSetDefinition:NEPA_Litigation_Risk_Scorer" --target-org <alias>
+#       4. Commit the retrieved file — it is now the authoritative source.
+#
+# 21. runExpressionSet action + storeOutputAutomatically: Numeric outputs not accessible
+#     via dot-notation in Flow formula elements. When a Flow actionCall with
+#     actionType=runExpressionSet uses storeOutputAutomatically=true, Text-typed ES
+#     output variables ARE accessible in <formulas> as {!ActionName.VarName}. But
+#     Numeric-typed outputs are NOT — deploy fails with:
+#       "The formula expression is invalid: Field ActionName.VarName does not exist."
+#     Workaround: use explicit <outputParameters> in the actionCall to bind each
+#     Numeric/Boolean ES output to a named flow variable. Text outputs can still
+#     use storeOutputAutomatically if preferred, but explicit outputParameters work
+#     for all types and should be preferred for clarity and cross-type safety.
+#
 # 19. Text field length for formula-populated fields:
 #     Flow formula values written to Text fields fail silently when the output string
 #     exceeds the field's length. The DML exception is caught by any faultConnector on
@@ -421,12 +458,21 @@ deploy "decision matrices" allow-failure \
     --target-org "$TARGET_ORG"
 
 # ── phase 5c: bre expression sets ────────────────────────────────────────────
-# Deploy ESD metadata BEFORE DM rows are loaded and activated (Phase 5b-data).
-# Reason: the Metadata API snapshot validation for ESD deploys only fires when
-# the referenced DMs have been activated AND their snapshot was created via the
-# Setup UI. DMs deployed via Metadata API are Draft at this point — no snapshot
-# exists yet — so the ESD deploy succeeds. Activation happens after rows are
-# loaded in Phase 5c-activate below.
+# Deploy ESD metadata. The source files for all three ESDs contain their Active
+# version as retrieved from the org (after the Tooling API activation workaround
+# in Phase 5c-activate). Re-deploying an already-Active ESD is a no-op (Unchanged).
+#
+# On a FIRST-TIME deploy to a fresh org:
+#   1. This phase creates a Draft ESDV in org (no snapshot yet — Metadata API
+#      cannot create the snapshot; see known idiosyncrasy #20).
+#   2. Phase 5b-data loads DM rows and activates DMs.
+#   3. Phase 5c-activate runs load_decision_matrix_rows.py --activate-es, which
+#      PATCHes the ESDV via Tooling API — this activates the version and creates
+#      the LatestVersionSnapshotId. Subsequent deploys succeed as no-ops.
+#
+# allow-failure set because on a fresh org the first deploy creates a Draft ESDV
+# that is technically valid but not yet Active; the deploy itself succeeds but
+# the ES will not be usable until Phase 5c-activate runs.
 phase_header "Phase 5c: BRE Expression Set definitions"
 # Deployed individually — batch ESD deploys trigger transient UNKNOWN_EXCEPTION.
 for esd in NEPA_CE_Screener NEPA_Permit_Coordinator NEPA_Litigation_Risk_Scorer; do
@@ -460,8 +506,22 @@ else
 fi
 
 # ── phase 5c-activate: bre expression set activation ─────────────────────────
-# Activate ESDs after DMs are active. ESDs cannot be activated before their
-# referenced DMs are active (BRE runtime requirement).
+# Activates all ESDs in ES_VERSIONS via Tooling API PATCH after DMs are active.
+# DMs must be active first (BRE runtime requirement).
+#
+# For first-time deploys: the Metadata API created Draft ESDVs with full steps
+# in Phase 5c. This PATCH atomically sets status=Active and creates the
+# LatestVersionSnapshotId that the BRE runtime and subsequent Metadata API
+# deploys require (see known idiosyncrasy #20).
+#
+# After this phase succeeds on a fresh org, retrieve the ESDs to sync the
+# Active state back to source:
+#   sf project retrieve start \
+#     --metadata "ExpressionSetDefinition:NEPA_Litigation_Risk_Scorer" \
+#     --metadata "ExpressionSetDefinition:NEPA_CE_Screener" \
+#     --metadata "ExpressionSetDefinition:NEPA_Permit_Coordinator" \
+#     --target-org <alias>
+# Commit the retrieved files. Subsequent deploys will then succeed as no-ops.
 if [[ "$DRY_RUN" == "false" ]]; then
     phase_header "Phase 5c-activate: BRE Expression Set activation"
     python3 scripts/load_decision_matrix_rows.py \
@@ -855,44 +915,14 @@ else
     echo "       Or assign to a specific user:"
     echo "       sf org assign permset --name NEPA_Permitting --on-behalf-of user@example.com --target-org $TARGET_ORG"
     echo ""
-    echo "    2. Activate flows (Setup > Flows). Recommended order:"
-    echo "       NEPA_Litigation_Risk_Scorer"
-    echo "       NEPA_Challenge_Predictor"
-    echo "       NEPA_Defensibility_Gap_Checker"
-    echo "       NEPA_Defensibility_Trigger_ContentVersion"
-    echo "       NEPA_Defensibility_Trigger_Engagement"
-    echo "       NEPA_CE_Screener"
-    echo "       NEPA_CE_Determination_Router"
-    echo "       NEPA_CE_Intake"
-    echo "       NEPA_Timeline_Risk_Assessor"
-    echo "       NEPA_SLA_Due_Date_Setter"
-    echo "       NEPA_SLA_Escalation_Monitor"
-    echo "       NEPA_Record_Completeness_Scorer"
-    echo "       NEPA_Stage_Gate"
-    echo "       NEPA_Stage_Gate_Doc_Check"
-    echo "       NEPA_Stage_Gate_Orchestrator"
-    echo "       NEPA_Administrative_Record_Checker"
-    echo "       NEPA_Comment_Period_Gate"
-    echo "       NEPA_Comment_Triage_Save"
-    echo "       NEPA_Plaintiff_Intelligence"
-    echo "       NEPA_Permit_Coordinator"
-    echo "       NEPA_Permit_Record_Creator"
-    echo "       NEPA_Permit_SLA_Monitor"
-    echo "       NEPA_FRA_Page_Limit_Setter"
-    echo "       NEPA_GIS_Proximity_Check"
-    echo "       NEPA_Team_Assembly_Orchestrator"
-    echo "       NEPA_WO_Milestone_Setter"
-    echo "       NEPA_Agency_Tier_Setter"
-    echo "       (NEPA_EIS_Section_Assembler + NEPA_EIS_Section_Draft_Trigger require Einstein AI — deploy separately if available)"
-    echo "       NEPA_AdminRecord_AutoCreate"
-    echo "       NEPA_Close_Administrative_Record"
-    echo "       NEPA_Comment_AI_Router"
-    echo "       NEPA_Comment_Duplicate_Check"
-    echo "       NEPA_EJTribal_Router"
-    echo "       NEPA_Comment_ResponseTask_Creator"
-    echo "       NEPA_Error_Logger"
-    echo "       NEPA_Error_Event_Handler"
-    echo "       NEPA_FlowError_CountIncrementer"
+    echo "    2. All flows deploy with status=Active — no manual activation needed."
+    echo "       Verify in Setup > Flows that all NEPA_* flows show Active status."
+    echo "       If any show Draft or Inactive, activate them manually or re-run Phase 8."
+    echo "       Exception: NEPA_EIS_Section_Assembler + NEPA_EIS_Section_Draft_Trigger"
+    echo "       require Einstein generative AI and are NOT deployed by this script."
+    echo "       Deploy them manually when Einstein AI is provisioned:"
+    echo "         sf project deploy start --metadata \"Flow:NEPA_EIS_Section_Assembler\" --target-org $TARGET_ORG --test-level NoTestRun --wait 30"
+    echo "         sf project deploy start --metadata \"Flow:NEPA_EIS_Section_Draft_Trigger\" --target-org $TARGET_ORG --test-level NoTestRun --wait 30"
     echo ""
     echo "    3. BRE Decision Matrices and Expression Sets — automated by Phase 5b-data above."
     echo "       If Phase 5b-data reported errors, re-run manually:"

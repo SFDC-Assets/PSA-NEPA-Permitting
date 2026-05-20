@@ -82,11 +82,15 @@ DM_CONFIG = {
     },
 }
 
-# Expression Set version developer names to activate
+# Expression Set version developer names to activate.
+# Each entry is the ESDV DeveloperName (not the ESD DeveloperName).
+# For the Risk Scorer: V1 is the active version — the previous V2/V3 label was
+# from a multi-version history that was collapsed into a single Active V1 during
+# the Tooling API activation workaround (LatestVersionSnapshotId platform bug).
 ES_VERSIONS = [
     "NEPA_CE_Screener_V3",
     "NEPA_Permit_Coordinator_V1",
-    "NEPA_Litigation_Risk_Scorer_V2",
+    "NEPA_Litigation_Risk_Scorer_V1",
 ]
 
 
