@@ -1,0 +1,83 @@
+<template>
+    <div class="nepa-site-picker">
+
+        <!-- Toast notification -->
+        <template if:true={showToastMessage}>
+            <div class={toastContainerClass}>
+                <div class="slds-notify slds-notify_toast" role="status">
+                    <span class="slds-assistive-text">{toastVariant}</span>
+                    <div class="slds-notify__content">
+                        <h2 class="slds-text-heading_small">{toastTitle}</h2>
+                        <p>{toastMessage}</p>
+                    </div>
+                    <div class="slds-notify__close">
+                        <lightning-button-icon
+                            icon-name="utility:close"
+                            alternative-text="Close"
+                            variant="bare-inverse"
+                            onclick={hideToastMessage}>
+                        </lightning-button-icon>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Label -->
+        <fieldset class="slds-form-element">
+            <legend class="slds-form-element__legend slds-form-element__label">
+                <template if:true={required}>
+                    <abbr class="slds-required" title="required">*</abbr>
+                </template>
+                {label}
+            </legend>
+            <template if:true={helpText}>
+                <p class="slds-form-element__help">{helpText}</p>
+            </template>
+
+            <!-- Error banner -->
+            <template if:true={hasError}>
+                <div class="slds-notify slds-notify_alert slds-theme_error nepa-site-picker__error" role="alert">
+                    <span class="slds-assistive-text">Error</span>
+                    <p>{errorMessage}</p>
+                </div>
+            </template>
+
+            <!-- Map iframe -->
+            <div class="nepa-site-picker__map-container">
+                <iframe
+                    src={pathtoVFPage}
+                    title="ArcGIS Map - Draw Site Location Polygon"
+                    class="nepa-site-picker__iframe">
+                </iframe>
+            </div>
+
+            <!-- Controls -->
+            <div class="slds-m-top_small nepa-site-picker__controls">
+                <lightning-button
+                    variant="neutral"
+                    label="Find on Map"
+                    onclick={handleFindOnMap}
+                    disabled={disabled}
+                    class="slds-m-right_x-small">
+                </lightning-button>
+                <lightning-button
+                    variant="brand"
+                    label="Capture Location"
+                    onclick={handleCaptureLocation}
+                    disabled={disabled}>
+                </lightning-button>
+            </div>
+
+            <!-- Captured location summary -->
+            <template if:true={hasCapture}>
+                <div class="nepa-site-picker__selection slds-m-top_small">
+                    <p class="slds-text-body_small">
+                        <strong>Captured:</strong>
+                        Lat {capturedLat}, Lng {capturedLng}
+                    </p>
+                </div>
+            </template>
+
+        </fieldset>
+    </div>
+</template>

@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <OmniDataTransform xmlns="http://soap.sforce.com/2006/04/metadata">
-    <active>true</active>
+    <active>false</active>
     <assignmentRulesUsed>false</assignmentRulesUsed>
     <deletedOnSuccess>false</deletedOnSuccess>
     <errorIgnored>false</errorIgnored>
     <expectedInputJson>{
-  &quot;projectId&quot;: &quot;sample_projectId&quot;
+  &quot;processId&quot;: &quot;sample_processId&quot;
 }</expectedInputJson>
     <fieldLevelSecurityEnabled>false</fieldLevelSecurityEnabled>
     <inputType>SObject</inputType>
     <isManagedUsingStdDesigner>false</isManagedUsingStdDesigner>
-    <name>DRExtractNEPAProject</name>
+    <name>DRExtractNEPARequiredPermit</name>
     <nullInputsIncludedInOutput>false</nullInputsIncludedInOutput>
     <omniDataTransformItem>
         <disabled>false</disabled>
         <filterGroup>1.0</filterGroup>
         <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item0</globalKey>
-        <inputFieldName>projectId</inputFieldName>
+        <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item0</globalKey>
+        <inputFieldName>processId</inputFieldName>
         <inputObjectQuerySequence>1.0</inputObjectQuerySequence>
         <linkedObjectSequence>0.0</linkedObjectSequence>
         <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
+        <name>DRExtractNEPARequiredPermit</name>
         <outputCreationSequence>0.0</outputCreationSequence>
-        <outputFieldName>Id</outputFieldName>
-        <outputObjectName>Program</outputObjectName>
+        <outputFieldName>nepa_process__c</outputFieldName>
+        <outputObjectName>nepa_required_permit__c</outputObjectName>
         <requiredForUpsert>false</requiredForUpsert>
         <upsertKey>false</upsertKey>
     </omniDataTransformItem>
@@ -32,15 +32,15 @@
         <disabled>false</disabled>
         <filterGroup>0.0</filterGroup>
         <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item1</globalKey>
+        <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item1</globalKey>
         <inputFieldName>Id</inputFieldName>
         <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
         <linkedObjectSequence>0.0</linkedObjectSequence>
         <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
+        <name>DRExtractNEPARequiredPermit</name>
         <outputCreationSequence>1.0</outputCreationSequence>
         <outputFieldName>id</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
+        <outputObjectName>permits</outputObjectName>
         <requiredForUpsert>false</requiredForUpsert>
         <upsertKey>false</upsertKey>
     </omniDataTransformItem>
@@ -48,47 +48,15 @@
         <disabled>false</disabled>
         <filterGroup>0.0</filterGroup>
         <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item2</globalKey>
-        <inputFieldName>nepa_project_id__c</inputFieldName>
-        <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
-        <linkedObjectSequence>0.0</linkedObjectSequence>
-        <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
-        <outputCreationSequence>2.0</outputCreationSequence>
-        <outputFieldName>project_id</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
-        <requiredForUpsert>false</requiredForUpsert>
-        <upsertKey>false</upsertKey>
-    </omniDataTransformItem>
-    <omniDataTransformItem>
-        <disabled>false</disabled>
-        <filterGroup>0.0</filterGroup>
-        <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item3</globalKey>
-        <inputFieldName>nepa_project_title__c</inputFieldName>
-        <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
-        <linkedObjectSequence>0.0</linkedObjectSequence>
-        <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
-        <outputCreationSequence>3.0</outputCreationSequence>
-        <outputFieldName>project_title</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
-        <requiredForUpsert>false</requiredForUpsert>
-        <upsertKey>false</upsertKey>
-    </omniDataTransformItem>
-    <omniDataTransformItem>
-        <disabled>false</disabled>
-        <filterGroup>0.0</filterGroup>
-        <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item4</globalKey>
+        <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item2</globalKey>
         <inputFieldName>Name</inputFieldName>
         <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
         <linkedObjectSequence>0.0</linkedObjectSequence>
         <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
-        <outputCreationSequence>4.0</outputCreationSequence>
+        <name>DRExtractNEPARequiredPermit</name>
+        <outputCreationSequence>2.0</outputCreationSequence>
         <outputFieldName>name</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
+        <outputObjectName>permits</outputObjectName>
         <requiredForUpsert>false</requiredForUpsert>
         <upsertKey>false</upsertKey>
     </omniDataTransformItem>
@@ -96,15 +64,15 @@
         <disabled>false</disabled>
         <filterGroup>0.0</filterGroup>
         <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item5</globalKey>
-        <inputFieldName>nepa_project_description__c</inputFieldName>
+        <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item3</globalKey>
+        <inputFieldName>nepa_permit_type__c</inputFieldName>
         <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
         <linkedObjectSequence>0.0</linkedObjectSequence>
         <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
-        <outputCreationSequence>5.0</outputCreationSequence>
-        <outputFieldName>project_description</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
+        <name>DRExtractNEPARequiredPermit</name>
+        <outputCreationSequence>3.0</outputCreationSequence>
+        <outputFieldName>permit_type</outputFieldName>
+        <outputObjectName>permits</outputObjectName>
         <requiredForUpsert>false</requiredForUpsert>
         <upsertKey>false</upsertKey>
     </omniDataTransformItem>
@@ -112,63 +80,15 @@
         <disabled>false</disabled>
         <filterGroup>0.0</filterGroup>
         <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item6</globalKey>
-        <inputFieldName>nepa_project_sector__c</inputFieldName>
-        <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
-        <linkedObjectSequence>0.0</linkedObjectSequence>
-        <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
-        <outputCreationSequence>6.0</outputCreationSequence>
-        <outputFieldName>project_sector</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
-        <requiredForUpsert>false</requiredForUpsert>
-        <upsertKey>false</upsertKey>
-    </omniDataTransformItem>
-    <omniDataTransformItem>
-        <disabled>false</disabled>
-        <filterGroup>0.0</filterGroup>
-        <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item7</globalKey>
-        <inputFieldName>nepa_project_type__c</inputFieldName>
-        <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
-        <linkedObjectSequence>0.0</linkedObjectSequence>
-        <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
-        <outputCreationSequence>7.0</outputCreationSequence>
-        <outputFieldName>project_type</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
-        <requiredForUpsert>false</requiredForUpsert>
-        <upsertKey>false</upsertKey>
-    </omniDataTransformItem>
-    <omniDataTransformItem>
-        <disabled>false</disabled>
-        <filterGroup>0.0</filterGroup>
-        <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item8</globalKey>
-        <inputFieldName>nepa_current_status__c</inputFieldName>
-        <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
-        <linkedObjectSequence>0.0</linkedObjectSequence>
-        <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
-        <outputCreationSequence>8.0</outputCreationSequence>
-        <outputFieldName>status</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
-        <requiredForUpsert>false</requiredForUpsert>
-        <upsertKey>false</upsertKey>
-    </omniDataTransformItem>
-    <omniDataTransformItem>
-        <disabled>false</disabled>
-        <filterGroup>0.0</filterGroup>
-        <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item9</globalKey>
+        <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item4</globalKey>
         <inputFieldName>nepa_lead_agency__c</inputFieldName>
         <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
         <linkedObjectSequence>0.0</linkedObjectSequence>
         <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
-        <outputCreationSequence>9.0</outputCreationSequence>
+        <name>DRExtractNEPARequiredPermit</name>
+        <outputCreationSequence>4.0</outputCreationSequence>
         <outputFieldName>lead_agency</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
+        <outputObjectName>permits</outputObjectName>
         <requiredForUpsert>false</requiredForUpsert>
         <upsertKey>false</upsertKey>
     </omniDataTransformItem>
@@ -176,15 +96,95 @@
         <disabled>false</disabled>
         <filterGroup>0.0</filterGroup>
         <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item10</globalKey>
-        <inputFieldName>nepa_project_sponsor__c</inputFieldName>
+        <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item5</globalKey>
+        <inputFieldName>nepa_regulatory_citation__c</inputFieldName>
         <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
         <linkedObjectSequence>0.0</linkedObjectSequence>
         <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
+        <name>DRExtractNEPARequiredPermit</name>
+        <outputCreationSequence>5.0</outputCreationSequence>
+        <outputFieldName>regulatory_citation</outputFieldName>
+        <outputObjectName>permits</outputObjectName>
+        <requiredForUpsert>false</requiredForUpsert>
+        <upsertKey>false</upsertKey>
+    </omniDataTransformItem>
+    <omniDataTransformItem>
+        <disabled>false</disabled>
+        <filterGroup>0.0</filterGroup>
+        <filterOperator>=</filterOperator>
+        <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item6</globalKey>
+        <inputFieldName>nepa_is_critical_path__c</inputFieldName>
+        <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
+        <linkedObjectSequence>0.0</linkedObjectSequence>
+        <migrationValue>FAKEMAPPING</migrationValue>
+        <name>DRExtractNEPARequiredPermit</name>
+        <outputCreationSequence>6.0</outputCreationSequence>
+        <outputFieldName>is_critical_path</outputFieldName>
+        <outputObjectName>permits</outputObjectName>
+        <requiredForUpsert>false</requiredForUpsert>
+        <upsertKey>false</upsertKey>
+    </omniDataTransformItem>
+    <omniDataTransformItem>
+        <disabled>false</disabled>
+        <filterGroup>0.0</filterGroup>
+        <filterOperator>=</filterOperator>
+        <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item7</globalKey>
+        <inputFieldName>nepa_permit_status__c</inputFieldName>
+        <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
+        <linkedObjectSequence>0.0</linkedObjectSequence>
+        <migrationValue>FAKEMAPPING</migrationValue>
+        <name>DRExtractNEPARequiredPermit</name>
+        <outputCreationSequence>7.0</outputCreationSequence>
+        <outputFieldName>permit_status</outputFieldName>
+        <outputObjectName>permits</outputObjectName>
+        <requiredForUpsert>false</requiredForUpsert>
+        <upsertKey>false</upsertKey>
+    </omniDataTransformItem>
+    <omniDataTransformItem>
+        <disabled>false</disabled>
+        <filterGroup>0.0</filterGroup>
+        <filterOperator>=</filterOperator>
+        <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item8</globalKey>
+        <inputFieldName>nepa_nepa_stage_gate__c</inputFieldName>
+        <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
+        <linkedObjectSequence>0.0</linkedObjectSequence>
+        <migrationValue>FAKEMAPPING</migrationValue>
+        <name>DRExtractNEPARequiredPermit</name>
+        <outputCreationSequence>8.0</outputCreationSequence>
+        <outputFieldName>nepa_stage_gate</outputFieldName>
+        <outputObjectName>permits</outputObjectName>
+        <requiredForUpsert>false</requiredForUpsert>
+        <upsertKey>false</upsertKey>
+    </omniDataTransformItem>
+    <omniDataTransformItem>
+        <disabled>false</disabled>
+        <filterGroup>0.0</filterGroup>
+        <filterOperator>=</filterOperator>
+        <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item9</globalKey>
+        <inputFieldName>nepa_expected_completion__c</inputFieldName>
+        <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
+        <linkedObjectSequence>0.0</linkedObjectSequence>
+        <migrationValue>FAKEMAPPING</migrationValue>
+        <name>DRExtractNEPARequiredPermit</name>
+        <outputCreationSequence>9.0</outputCreationSequence>
+        <outputFieldName>expected_completion</outputFieldName>
+        <outputObjectName>permits</outputObjectName>
+        <requiredForUpsert>false</requiredForUpsert>
+        <upsertKey>false</upsertKey>
+    </omniDataTransformItem>
+    <omniDataTransformItem>
+        <disabled>false</disabled>
+        <filterGroup>0.0</filterGroup>
+        <filterOperator>=</filterOperator>
+        <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item10</globalKey>
+        <inputFieldName>nepa_actual_completion__c</inputFieldName>
+        <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
+        <linkedObjectSequence>0.0</linkedObjectSequence>
+        <migrationValue>FAKEMAPPING</migrationValue>
+        <name>DRExtractNEPARequiredPermit</name>
         <outputCreationSequence>10.0</outputCreationSequence>
-        <outputFieldName>project_sponsor</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
+        <outputFieldName>actual_completion</outputFieldName>
+        <outputObjectName>permits</outputObjectName>
         <requiredForUpsert>false</requiredForUpsert>
         <upsertKey>false</upsertKey>
     </omniDataTransformItem>
@@ -192,15 +192,15 @@
         <disabled>false</disabled>
         <filterGroup>0.0</filterGroup>
         <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item11</globalKey>
-        <inputFieldName>nepa_funding__c</inputFieldName>
+        <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item11</globalKey>
+        <inputFieldName>nepa_sla_due_date__c</inputFieldName>
         <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
         <linkedObjectSequence>0.0</linkedObjectSequence>
         <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
+        <name>DRExtractNEPARequiredPermit</name>
         <outputCreationSequence>11.0</outputCreationSequence>
-        <outputFieldName>funding_sources</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
+        <outputFieldName>sla_due_date</outputFieldName>
+        <outputObjectName>permits</outputObjectName>
         <requiredForUpsert>false</requiredForUpsert>
         <upsertKey>false</upsertKey>
     </omniDataTransformItem>
@@ -208,15 +208,15 @@
         <disabled>false</disabled>
         <filterGroup>0.0</filterGroup>
         <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item12</globalKey>
-        <inputFieldName>nepa_start_date__c</inputFieldName>
+        <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item12</globalKey>
+        <inputFieldName>nepa_sla_overdue__c</inputFieldName>
         <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
         <linkedObjectSequence>0.0</linkedObjectSequence>
         <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
+        <name>DRExtractNEPARequiredPermit</name>
         <outputCreationSequence>12.0</outputCreationSequence>
-        <outputFieldName>start_date</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
+        <outputFieldName>sla_overdue</outputFieldName>
+        <outputObjectName>permits</outputObjectName>
         <requiredForUpsert>false</requiredForUpsert>
         <upsertKey>false</upsertKey>
     </omniDataTransformItem>
@@ -224,15 +224,15 @@
         <disabled>false</disabled>
         <filterGroup>0.0</filterGroup>
         <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item13</globalKey>
-        <inputFieldName>nepa_location__c</inputFieldName>
+        <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item13</globalKey>
+        <inputFieldName>nepa_statutory_deadline_days__c</inputFieldName>
         <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
         <linkedObjectSequence>0.0</linkedObjectSequence>
         <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
+        <name>DRExtractNEPARequiredPermit</name>
         <outputCreationSequence>13.0</outputCreationSequence>
-        <outputFieldName>location</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
+        <outputFieldName>statutory_deadline_days</outputFieldName>
+        <outputObjectName>permits</outputObjectName>
         <requiredForUpsert>false</requiredForUpsert>
         <upsertKey>false</upsertKey>
     </omniDataTransformItem>
@@ -240,15 +240,15 @@
         <disabled>false</disabled>
         <filterGroup>0.0</filterGroup>
         <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item14</globalKey>
-        <inputFieldName>nepa_location_lat__c</inputFieldName>
+        <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item14</globalKey>
+        <inputFieldName>nepa_external_federal_id__c</inputFieldName>
         <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
         <linkedObjectSequence>0.0</linkedObjectSequence>
         <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
+        <name>DRExtractNEPARequiredPermit</name>
         <outputCreationSequence>14.0</outputCreationSequence>
-        <outputFieldName>location_latitude</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
+        <outputFieldName>external_federal_id</outputFieldName>
+        <outputObjectName>permits</outputObjectName>
         <requiredForUpsert>false</requiredForUpsert>
         <upsertKey>false</upsertKey>
     </omniDataTransformItem>
@@ -256,15 +256,15 @@
         <disabled>false</disabled>
         <filterGroup>0.0</filterGroup>
         <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item15</globalKey>
-        <inputFieldName>nepa_location_lon__c</inputFieldName>
+        <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item15</globalKey>
+        <inputFieldName>nepa_agency_endpoint_key__c</inputFieldName>
         <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
         <linkedObjectSequence>0.0</linkedObjectSequence>
         <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
+        <name>DRExtractNEPARequiredPermit</name>
         <outputCreationSequence>15.0</outputCreationSequence>
-        <outputFieldName>location_longitude</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
+        <outputFieldName>agency_endpoint_key</outputFieldName>
+        <outputObjectName>permits</outputObjectName>
         <requiredForUpsert>false</requiredForUpsert>
         <upsertKey>false</upsertKey>
     </omniDataTransformItem>
@@ -272,15 +272,15 @@
         <disabled>false</disabled>
         <filterGroup>0.0</filterGroup>
         <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item16</globalKey>
-        <inputFieldName>nepa_location_text__c</inputFieldName>
+        <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item16</globalKey>
+        <inputFieldName>nepa_agency_system_url__c</inputFieldName>
         <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
         <linkedObjectSequence>0.0</linkedObjectSequence>
         <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
+        <name>DRExtractNEPARequiredPermit</name>
         <outputCreationSequence>16.0</outputCreationSequence>
-        <outputFieldName>location_text</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
+        <outputFieldName>agency_system_url</outputFieldName>
+        <outputObjectName>permits</outputObjectName>
         <requiredForUpsert>false</requiredForUpsert>
         <upsertKey>false</upsertKey>
     </omniDataTransformItem>
@@ -288,15 +288,15 @@
         <disabled>false</disabled>
         <filterGroup>0.0</filterGroup>
         <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item17</globalKey>
-        <inputFieldName>nepa_polygon__c</inputFieldName>
+        <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item17</globalKey>
+        <inputFieldName>nepa_last_synced__c</inputFieldName>
         <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
         <linkedObjectSequence>0.0</linkedObjectSequence>
         <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
+        <name>DRExtractNEPARequiredPermit</name>
         <outputCreationSequence>17.0</outputCreationSequence>
-        <outputFieldName>polygon_id</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
+        <outputFieldName>last_synced</outputFieldName>
+        <outputObjectName>permits</outputObjectName>
         <requiredForUpsert>false</requiredForUpsert>
         <upsertKey>false</upsertKey>
     </omniDataTransformItem>
@@ -304,15 +304,15 @@
         <disabled>false</disabled>
         <filterGroup>0.0</filterGroup>
         <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item18</globalKey>
-        <inputFieldName>nepa_parent_project__c</inputFieldName>
+        <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item18</globalKey>
+        <inputFieldName>nepa_permit_notes__c</inputFieldName>
         <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
         <linkedObjectSequence>0.0</linkedObjectSequence>
         <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
+        <name>DRExtractNEPARequiredPermit</name>
         <outputCreationSequence>18.0</outputCreationSequence>
-        <outputFieldName>parent_project_id</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
+        <outputFieldName>permit_notes</outputFieldName>
+        <outputObjectName>permits</outputObjectName>
         <requiredForUpsert>false</requiredForUpsert>
         <upsertKey>false</upsertKey>
     </omniDataTransformItem>
@@ -320,15 +320,15 @@
         <disabled>false</disabled>
         <filterGroup>0.0</filterGroup>
         <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item19</globalKey>
-        <inputFieldName>nepa_data_record_version__c</inputFieldName>
+        <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item19</globalKey>
+        <inputFieldName>nepa_process__c</inputFieldName>
         <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
         <linkedObjectSequence>0.0</linkedObjectSequence>
         <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
+        <name>DRExtractNEPARequiredPermit</name>
         <outputCreationSequence>19.0</outputCreationSequence>
-        <outputFieldName>data_record_version</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
+        <outputFieldName>process_id</outputFieldName>
+        <outputObjectName>permits</outputObjectName>
         <requiredForUpsert>false</requiredForUpsert>
         <upsertKey>false</upsertKey>
     </omniDataTransformItem>
@@ -336,79 +336,15 @@
         <disabled>false</disabled>
         <filterGroup>0.0</filterGroup>
         <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item20</globalKey>
-        <inputFieldName>nepa_data_source_agency__c</inputFieldName>
-        <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
-        <linkedObjectSequence>0.0</linkedObjectSequence>
-        <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
-        <outputCreationSequence>20.0</outputCreationSequence>
-        <outputFieldName>data_source_agency</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
-        <requiredForUpsert>false</requiredForUpsert>
-        <upsertKey>false</upsertKey>
-    </omniDataTransformItem>
-    <omniDataTransformItem>
-        <disabled>false</disabled>
-        <filterGroup>0.0</filterGroup>
-        <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item21</globalKey>
-        <inputFieldName>nepa_data_source_system__c</inputFieldName>
-        <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
-        <linkedObjectSequence>0.0</linkedObjectSequence>
-        <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
-        <outputCreationSequence>21.0</outputCreationSequence>
-        <outputFieldName>data_source_system</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
-        <requiredForUpsert>false</requiredForUpsert>
-        <upsertKey>false</upsertKey>
-    </omniDataTransformItem>
-    <omniDataTransformItem>
-        <disabled>false</disabled>
-        <filterGroup>0.0</filterGroup>
-        <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item22</globalKey>
-        <inputFieldName>nepa_record_owner_agency__c</inputFieldName>
-        <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
-        <linkedObjectSequence>0.0</linkedObjectSequence>
-        <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
-        <outputCreationSequence>22.0</outputCreationSequence>
-        <outputFieldName>record_owner_agency</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
-        <requiredForUpsert>false</requiredForUpsert>
-        <upsertKey>false</upsertKey>
-    </omniDataTransformItem>
-    <omniDataTransformItem>
-        <disabled>false</disabled>
-        <filterGroup>0.0</filterGroup>
-        <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item23</globalKey>
-        <inputFieldName>nepa_retrieved_timestamp__c</inputFieldName>
-        <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
-        <linkedObjectSequence>0.0</linkedObjectSequence>
-        <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
-        <outputCreationSequence>23.0</outputCreationSequence>
-        <outputFieldName>retrieved_timestamp</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
-        <requiredForUpsert>false</requiredForUpsert>
-        <upsertKey>false</upsertKey>
-    </omniDataTransformItem>
-    <omniDataTransformItem>
-        <disabled>false</disabled>
-        <filterGroup>0.0</filterGroup>
-        <filterOperator>=</filterOperator>
-        <globalKey>DRExtractNEPAProjectCustomPLACEHOLDER_NEPA_011Item24</globalKey>
+        <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item20</globalKey>
         <inputFieldName>LastModifiedDate</inputFieldName>
         <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
         <linkedObjectSequence>0.0</linkedObjectSequence>
         <migrationValue>FAKEMAPPING</migrationValue>
-        <name>DRExtractNEPAProject</name>
-        <outputCreationSequence>24.0</outputCreationSequence>
+        <name>DRExtractNEPARequiredPermit</name>
+        <outputCreationSequence>20.0</outputCreationSequence>
         <outputFieldName>last_updated</outputFieldName>
-        <outputObjectName>Project</outputObjectName>
+        <outputObjectName>permits</outputObjectName>
         <requiredForUpsert>false</requiredForUpsert>
         <upsertKey>false</upsertKey>
     </omniDataTransformItem>
@@ -416,11 +352,11 @@
     <processSuperBulk>false</processSuperBulk>
     <responseCacheTtlMinutes>0.0</responseCacheTtlMinutes>
     <rollbackOnError>false</rollbackOnError>
-    <sourceObject>Program</sourceObject>
+    <sourceObject>nepa_required_permit__c</sourceObject>
     <sourceObjectDefault>false</sourceObjectDefault>
     <synchronousProcessThreshold>0.0</synchronousProcessThreshold>
     <type>Extract</type>
-    <uniqueName>DRExtractNEPAProject_1</uniqueName>
+    <uniqueName>DRExtractNEPARequiredPermit_1</uniqueName>
     <versionNumber>1.0</versionNumber>
     <xmlDeclarationRemoved>false</xmlDeclarationRemoved>
 </OmniDataTransform>

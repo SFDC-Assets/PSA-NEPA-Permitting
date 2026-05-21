@@ -1,0 +1,31 @@
+{
+  "Name": "DR_Extract_NEPA_RequiredPermit",
+  "Type": "Extract",
+  "IsActive__c": false,
+  "Description": "CEQ Phase 3 cross-permit tracking: extracts nepa_required_permit__c records for a Process. Mapped to permit property names aligned to CEQ NEPA and Permitting Data and Technology Standard v1.2. Input: processId. Output path: currentProcess:permits.",
+  "SObjectType": "nepa_required_permit__c",
+  "WhereClause": "nepa_process__c = :processId",
+  "OutputPath": "currentProcess:permits",
+  "Mappings": [
+    {"SObjectField": "Id", "OutputKey": "id", "DataType": "STRING"},
+    {"SObjectField": "Name", "OutputKey": "name", "DataType": "STRING"},
+    {"SObjectField": "nepa_permit_type__c", "OutputKey": "permit_type", "DataType": "STRING"},
+    {"SObjectField": "nepa_lead_agency__c", "OutputKey": "lead_agency", "DataType": "STRING"},
+    {"SObjectField": "nepa_regulatory_citation__c", "OutputKey": "regulatory_citation", "DataType": "STRING"},
+    {"SObjectField": "nepa_is_critical_path__c", "OutputKey": "is_critical_path", "DataType": "BOOLEAN"},
+    {"SObjectField": "nepa_permit_status__c", "OutputKey": "permit_status", "DataType": "STRING"},
+    {"SObjectField": "nepa_nepa_stage_gate__c", "OutputKey": "nepa_stage_gate", "DataType": "STRING"},
+    {"SObjectField": "nepa_expected_completion__c", "OutputKey": "expected_completion", "DataType": "DATE"},
+    {"SObjectField": "nepa_actual_completion__c", "OutputKey": "actual_completion", "DataType": "DATE"},
+    {"SObjectField": "nepa_sla_due_date__c", "OutputKey": "sla_due_date", "DataType": "DATE"},
+    {"SObjectField": "nepa_sla_overdue__c", "OutputKey": "sla_overdue", "DataType": "BOOLEAN"},
+    {"SObjectField": "nepa_statutory_deadline_days__c", "OutputKey": "statutory_deadline_days", "DataType": "NUMBER"},
+    {"SObjectField": "nepa_external_federal_id__c", "OutputKey": "external_federal_id", "DataType": "STRING"},
+    {"SObjectField": "nepa_agency_endpoint_key__c", "OutputKey": "agency_endpoint_key", "DataType": "STRING"},
+    {"SObjectField": "nepa_agency_system_url__c", "OutputKey": "agency_system_url", "DataType": "STRING"},
+    {"SObjectField": "nepa_last_synced__c", "OutputKey": "last_synced", "DataType": "DATETIME"},
+    {"SObjectField": "nepa_permit_notes__c", "OutputKey": "permit_notes", "DataType": "STRING"},
+    {"SObjectField": "nepa_process__c", "OutputKey": "process_id", "DataType": "STRING"},
+    {"SObjectField": "LastModifiedDate", "OutputKey": "last_updated", "DataType": "DATETIME"}
+  ]
+}

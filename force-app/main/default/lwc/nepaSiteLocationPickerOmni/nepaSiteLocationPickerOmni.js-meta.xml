@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <isExposed>false</isExposed>
+    <description>NEPA site location picker for OmniScript. Embeds an ArcGIS map via VF iframe. Users draw a polygon to capture site location. Writes {lat, lng, geometry} to OmniScript via omniUpdateDataJson.</description>
+</LightningComponentBundle>

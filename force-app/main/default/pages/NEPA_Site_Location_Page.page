@@ -1,0 +1,186 @@
+<apex:page lightningStylesheets="true" controller="NepaMapCreateCtr" docType="html-5.0" showHeader="false" sidebar="false">
+    <style>
+        html, body, .mapContainer {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+        .loadingIcon {
+            margin: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-right: -50%;
+        }
+    </style>
+
+    <!-- ArcGIS JavaScript SDK v4.29 -->
+    <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css"/>
+    <script src="https://js.arcgis.com/4.29/"></script>
+
+    <script>
+    var geometry;
+    var locationSelected;
+    var graphicsLayer1;
+
+    var defaultlng = {!JSENCODE(defaultlng)};
+    var defaultlat = {!JSENCODE(defaultlat)};
+
+    var lat, lon;
+    if (defaultlat != 'NA' &amp;&amp; defaultlat != null &amp;&amp; defaultlat != '') {
+        lat = defaultlat;
+        lon = defaultlng;
+    } else {
+        lat = {!JSENCODE(strLat)};
+        lon = {!JSENCODE(strLon)};
+    }
+    </script>
+
+    <apex:outputPanel id="container">
+    <script>
+    function loadMaps() {
+        require(
+            [
+                "esri/config",
+                "esri/Map",
+                "esri/views/MapView",
+                "esri/widgets/ScaleBar",
+                "esri/widgets/Sketch",
+                "esri/layers/GraphicsLayer",
+                "esri/widgets/Search",
+                "esri/geometry/support/webMercatorUtils"
+            ],
+            (esriConfig, Map, MapView, ScaleBar, Sketch, GraphicsLayer, Search, webMercatorUtils) => {
+                esriConfig.apiKey = "{!JSENCODE(apiKey)}";
+
+                const map = new Map({ basemap: "satellite" });
+
+                const view = new MapView({
+                    container: "viewDiv",
+                    map: map,
+                    center: [lon, lat],
+                    zoom: 17,
+                    constraints: {
+                        rotationEnabled: false,
+                        minZoom: 5
+                    }
+                });
+
+                const search = new Search({ view: view });
+                view.ui.add(search, "top-right");
+
+                const scalebar = new ScaleBar({ view: view, unit: "metric" });
+                view.ui.add(scalebar, "bottom-right");
+
+                graphicsLayer1 = new GraphicsLayer();
+                map.add(graphicsLayer1);
+
+                view.watch('updating', function(evt) {
+                    var icon = document.getElementsByClassName('loadingIcon')[0];
+                    if (icon) icon.style.display = evt ? 'block' : 'none';
+                });
+
+                const sketch = new Sketch({
+                    layer: graphicsLayer1,
+                    view: view,
+                    availableCreateTools: ["polygon", "rectangle", "circle"],
+                    creationMode: "update",
+                    updateOnGraphicClick: true,
+                    visibleElements: {
+                        createTools: { point: false, circle: true },
+                        selectionTools: { "lasso-selection": false, "rectangle-selection": false },
+                        settingsMenu: false,
+                        undoRedoMenu: false
+                    },
+                    defaultUpdateOptions: {
+                        enableRotation: false,
+                        enableScaling: false,
+                        enableZ: false,
+                        multipleSelectionEnabled: false,
+                        toggleToolOnClick: false
+                    }
+                });
+                view.ui.add(sketch, "top-right");
+
+                sketch.on("create", function(event) {
+                    if (event.state === "complete") {
+                        var geomDetails = webMercatorUtils.webMercatorToGeographic(event.graphic.geometry).toJSON();
+                        locationSelected = geomDetails.rings[0][0];
+                    }
+                });
+
+                sketch.on("update", function(event) {
+                    geometry = event.graphics[0].geometry;
+                });
+            }
+        );
+    }
+
+    function saveData() {
+        var polygonRings = [];
+        var index = 0;
+
+        graphicsLayer1.graphics.items.forEach(function(ele) {
+            var polygonData = {
+                spatialReference: {
+                    latestWkid: ele.geometry.spatialReference.latestWkid,
+                    wkid: ele.geometry.spatialReference.wkid
+                },
+                rings: ele.geometry.rings
+            };
+            polygonRings.push({ data: JSON.stringify(polygonData), name: "LOC-" + index });
+            index++;
+        });
+
+        var details = {};
+        if (polygonRings.length < 1) {
+            details.error = 'No polygon drawn. Please draw a polygon on the map.';
+        } else if (polygonRings.length > 1) {
+            details.error = 'Only one polygon can be added per site location.';
+        } else {
+            details.geometry = polygonRings;
+            details.lng = locationSelected ? locationSelected[0] : lon;
+            details.lat = locationSelected ? locationSelected[1] : lat;
+        }
+
+        sendToLWC(JSON.stringify(details));
+    }
+
+    function sendToLWC(geo) {
+        parent.postMessage({ name: "storeDetails", payload: geo, location: locName }, lexOriginCommunity);
+    }
+
+    var locName;
+    </script>
+    </apex:outputPanel>
+
+    <body>
+        <div class="loadingIcon" style="display:none;">
+            <img src="/img/loading.gif" width="50" height="50" alt="Loading..."/>
+        </div>
+        <div id="viewDiv" class="mapContainer"></div>
+    </body>
+
+    <script>
+    var lexOriginCommunity = "{!JSENCODE(communityUrl)}";
+
+    parent.postMessage({ name: "pageLoaded", location: locName }, lexOriginCommunity);
+
+    window.addEventListener("message", function(event) {
+        if (event.origin !== lexOriginCommunity) {
+            return;
+        }
+        var recdMsg = JSON.parse(event.data);
+        if (!locName) {
+            locName = recdMsg.detail ? recdMsg.detail.name : undefined;
+        }
+        if (recdMsg.title === 'captureDetails') {
+            saveData();
+        } else if (recdMsg.title === 'fetchDetails') {
+            loadMaps();
+        }
+    });
+    </script>
+
+</apex:page>

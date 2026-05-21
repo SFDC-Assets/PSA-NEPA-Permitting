@@ -1,0 +1,118 @@
+.nepa-industry-picker {
+  font-family: "Open Sans", var(--lwc-fontFamily, sans-serif);
+}
+
+.nepa-industry-picker .slds-form-element {
+  border: none;
+  padding: 0;
+  margin: 0 0 1.5rem 0;
+}
+
+.nepa-industry-picker .slds-form-element__legend {
+  padding: 0;
+  margin-bottom: 0.5rem;
+}
+
+.nepa-industry-picker .slds-form-element__label {
+  display: block;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+  color: var(--lwc-colorTextDefault, #181818);
+}
+
+.nepa-industry-picker__flag {
+  font-weight: 400;
+  font-style: normal;
+}
+
+.nepa-industry-picker .slds-form-element__help {
+  color: var(--lwc-colorTextWeak, #3e3e3c);
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
+.nepa-industry-picker .slds-select_container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  max-width: 48rem;
+}
+
+.nepa-industry-picker .slds-select {
+  width: 100%;
+  height: 48px;
+  padding: 0 48px 0 16px;
+  font-size: 1rem;
+  font-family: inherit;
+  border: 2px solid var(--lwc-colorBorder, #dddbda);
+  border-radius: 4px;
+  background-color: #fff;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  color: var(--lwc-colorTextDefault, #181818);
+}
+
+.nepa-industry-picker .slds-select:focus {
+  outline: 4px solid var(--lwc-colorBorderBrand, #0176d3);
+  outline-offset: 2px;
+  border-color: var(--lwc-colorBorderBrand, #0176d3);
+}
+
+.nepa-industry-picker .slds-select:disabled {
+  background-color: var(--lwc-colorBackgroundButtonDisabled, #e5e5e5);
+  border-color: var(--lwc-colorBorderButtonDisabled, #c9c9c9);
+  color: var(--lwc-colorTextButtonDisabled, #8e8e8e);
+  cursor: not-allowed;
+}
+
+.nepa-industry-picker__dropdown-icon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+  fill: var(--lwc-colorTextDefault, #181818);
+}
+
+.nepa-industry-picker .slds-select:disabled ~ .nepa-industry-picker__dropdown-icon {
+  fill: var(--lwc-colorTextButtonDisabled, #8e8e8e);
+}
+
+/* Error styling */
+.nepa-industry-picker .slds-has-error {
+  display: flex;
+  align-items: flex-start;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  background-color: #fce7e7;
+  border-left: 4px solid var(--lwc-colorTextError, #ba0517);
+}
+
+.nepa-industry-picker .slds-icon-text-error {
+  width: 24px;
+  height: 24px;
+  fill: var(--lwc-colorTextError, #ba0517);
+  flex-shrink: 0;
+  margin-right: 0.5rem;
+}
+
+.nepa-industry-picker .slds-form-error {
+  color: var(--lwc-colorTextDefault, #181818);
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Selected value display */
+.nepa-industry-picker__selection {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: var(--lwc-colorBackgroundAlt, #f3f3f3);
+  border-radius: 4px;
+}

@@ -1,0 +1,2 @@
+# Exclude LWC Jest test directories from Salesforce deployments
+**/__tests__/**

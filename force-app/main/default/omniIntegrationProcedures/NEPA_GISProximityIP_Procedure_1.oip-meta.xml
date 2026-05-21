@@ -36,6 +36,36 @@
         <isActive>true</isActive>
         <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
         <level>0.0</level>
+        <name>GuardCoordinates</name>
+        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+        <propertySetConfig>{&quot;conditions&quot;:[{&quot;name&quot;:&quot;MissingCoordinates&quot;,&quot;value&quot;:&quot;%HasCoordinates% != true&quot;,&quot;valueType&quot;:&quot;formula&quot;}],&quot;useFormulas&quot;:true}</propertySetConfig>
+        <sequenceNumber>2.5</sequenceNumber>
+        <type>Conditional Block</type>
+    </omniProcessElements>
+    <omniProcessElements>
+        <isActive>true</isActive>
+        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+        <level>1.0</level>
+        <name>SetMissingCoordinatesError</name>
+        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+        <propertySetConfig>{&quot;assignmentRules&quot;:[{&quot;name&quot;:&quot;error&quot;,&quot;value&quot;:&quot;GIS proximity check skipped: project does not have valid latitude and longitude coordinates.&quot;,&quot;valueType&quot;:&quot;value&quot;},{&quot;name&quot;:&quot;ProtectionAreas&quot;,&quot;value&quot;:&quot;&quot;,&quot;valueType&quot;:&quot;value&quot;},{&quot;name&quot;:&quot;ExtraordinaryCircumstances&quot;,&quot;value&quot;:&quot;false&quot;,&quot;valueType&quot;:&quot;value&quot;}],&quot;useFormulas&quot;:true}</propertySetConfig>
+        <sequenceNumber>2.6</sequenceNumber>
+        <type>Set Values</type>
+    </omniProcessElements>
+    <omniProcessElements>
+        <isActive>true</isActive>
+        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+        <level>1.0</level>
+        <name>ExitMissingCoordinates</name>
+        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+        <propertySetConfig>{&quot;exitType&quot;:&quot;stop&quot;,&quot;useFormulas&quot;:true}</propertySetConfig>
+        <sequenceNumber>2.7</sequenceNumber>
+        <type>Stop</type>
+    </omniProcessElements>
+    <omniProcessElements>
+        <isActive>true</isActive>
+        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+        <level>0.0</level>
         <name>GetActiveGISLayers</name>
         <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
         <propertySetConfig>{&quot;bundleName&quot;:&quot;DRExtractGISLayers&quot;,&quot;inputMap&quot;:[],&quot;outputPath&quot;:&quot;GISLayers&quot;,&quot;failOnStepError&quot;:true,&quot;useFormulas&quot;:true}</propertySetConfig>

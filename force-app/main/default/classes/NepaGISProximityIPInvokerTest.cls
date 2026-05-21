@@ -2,36 +2,26 @@
 @IsTest
 private class NepaGISProximityIPInvokerTest {
 
-    /**
-     * Happy path: the IP service responds without throwing.
-     * omnistudio.IntegrationProcedureService is a managed-package class and cannot
-     * be mocked directly in a test context, so we verify the invocable wires up
-     * the request/result objects correctly and handles a null IP result gracefully.
-     */
     @IsTest
     static void invokeWithValidProjectIdReturnsResult() {
         NepaGISProximityIPInvoker.InvokerRequest req = new NepaGISProximityIPInvoker.InvokerRequest();
-        req.projectId = 'a0B000000000001AAA'; // synthetic Id — no real callout occurs in test
+        req.projectId = 'a0B000000000001AAA';
 
         Test.startTest();
-        List<NepaGISProximityIPInvoker.InvokerResult> results;
-        try {
-            results = NepaGISProximityIPInvoker.invoke(
+        List<NepaGISProximityIPInvoker.InvokerResult> results =
+            NepaGISProximityIPInvoker.invoke(
                 new List<NepaGISProximityIPInvoker.InvokerRequest>{ req }
             );
-        } catch (Exception ex) {
-            // IP service unavailable in test context — verify the catch path worked
-            System.assert(
-                ex.getMessage() != null,
-                'Exception should carry a message'
-            );
-            return;
-        }
         Test.stopTest();
 
         System.assertEquals(1, results.size(), 'Expected exactly one result');
-        // If IP returned null the result.success is false — both branches are valid in unit test
-        System.assertNotEquals(null, results[0], 'Result object should not be null');
+        System.assertNotEquals(null, results[0], 'Result object must not be null');
+        // If the IP service was unavailable, the invoker must have caught the exception
+        // and returned success=false with an errorMessage — not silently passed.
+        if (!results[0].success) {
+            System.assertNotEquals(null, results[0].errorMessage,
+                'Failed result must carry an errorMessage; silent failure is not acceptable');
+        }
     }
 
     @IsTest
@@ -48,27 +38,21 @@ private class NepaGISProximityIPInvokerTest {
 
     @IsTest
     static void invokeExceptionPathSetsErrorMessage() {
-        // Pass null projectId — service should throw or return a fault;
-        // either way the catch block must populate errorMessage
         NepaGISProximityIPInvoker.InvokerRequest req = new NepaGISProximityIPInvoker.InvokerRequest();
         req.projectId = null;
 
         Test.startTest();
-        List<NepaGISProximityIPInvoker.InvokerResult> results;
-        try {
-            results = NepaGISProximityIPInvoker.invoke(
+        List<NepaGISProximityIPInvoker.InvokerResult> results =
+            NepaGISProximityIPInvoker.invoke(
                 new List<NepaGISProximityIPInvoker.InvokerRequest>{ req }
             );
-            if (results != null && !results.isEmpty() && results[0].success == false) {
-                System.assertNotEquals(
-                    null,
-                    results[0].errorMessage,
-                    'Error path must carry a message'
-                );
-            }
-        } catch (Exception ex) {
-            System.assert(true, 'Exception is acceptable when IP unavailable in test context');
-        }
         Test.stopTest();
+
+        System.assertEquals(1, results.size(), 'Must return one result for one request');
+        System.assertNotEquals(null, results[0], 'Result must not be null');
+        if (!results[0].success) {
+            System.assertNotEquals(null, results[0].errorMessage,
+                'Null projectId fault path must populate errorMessage');
+        }
     }
 }

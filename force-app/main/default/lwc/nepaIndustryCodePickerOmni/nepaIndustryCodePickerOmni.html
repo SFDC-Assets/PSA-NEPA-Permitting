@@ -1,0 +1,184 @@
+<template>
+  <div class="nepa-industry-picker">
+    <fieldset class="slds-form-element">
+      <legend class="slds-form-element__legend slds-form-element__label">
+        <span>{label}</span>
+        <template lwc:if={required}>
+          <span class="slds-required"> (required)</span>
+        </template>
+        <template lwc:if={optional}>
+          <span class="nepa-industry-picker__flag"> (optional)</span>
+        </template>
+      </legend>
+
+      <p lwc:if={helpText} class="slds-form-element__help">{helpText}</p>
+
+      <!-- Error message -->
+      <div
+        lwc:if={hasError}
+        class="slds-has-error"
+        role="alert"
+        aria-live="assertive"
+      >
+        <svg
+          class="slds-icon slds-icon-text-error"
+          aria-hidden="true"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+          />
+        </svg>
+        <p class="slds-form-error">{errorMessage}</p>
+      </div>
+
+      <!-- Sector Dropdown -->
+      <div class="slds-form-element">
+        <label class="slds-form-element__label" for="sector-select">{sectorLabel}</label>
+        <div class="slds-form-element__control slds-select_container">
+          <select
+            id="sector-select"
+            class="slds-select"
+            disabled={disabled}
+            onchange={handleSectorChange}
+          >
+            <option value="">Select</option>
+            <template for:each={sectorOptionsWithSelected} for:item="opt">
+              <option key={opt.value} value={opt.value} selected={opt.selected}>
+                {opt.label}
+              </option>
+            </template>
+          </select>
+          <svg
+            class="nepa-industry-picker__dropdown-icon"
+            aria-hidden="true"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Sub Sector Dropdown -->
+      <div class="slds-form-element">
+        <label class="slds-form-element__label" for="subsector-select">{subSectorLabel}</label>
+        <div class="slds-form-element__control slds-select_container">
+          <select
+            id="subsector-select"
+            class="slds-select"
+            disabled={isSubSectorDisabled}
+            onchange={handleSubSectorChange}
+          >
+            <option value="">Select</option>
+            <template for:each={subSectorOptionsWithSelected} for:item="opt">
+              <option key={opt.value} value={opt.value} selected={opt.selected}>
+                {opt.label}
+              </option>
+            </template>
+          </select>
+          <svg
+            class="nepa-industry-picker__dropdown-icon"
+            aria-hidden="true"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Industry Group Dropdown -->
+      <div class="slds-form-element">
+        <label class="slds-form-element__label" for="industrygroup-select">{industryGroupLabel}</label>
+        <div class="slds-form-element__control slds-select_container">
+          <select
+            id="industrygroup-select"
+            class="slds-select"
+            disabled={isIndustryGroupDisabled}
+            onchange={handleIndustryGroupChange}
+          >
+            <option value="">Select</option>
+            <template for:each={industryGroupOptionsWithSelected} for:item="opt">
+              <option key={opt.value} value={opt.value} selected={opt.selected}>
+                {opt.label}
+              </option>
+            </template>
+          </select>
+          <svg
+            class="nepa-industry-picker__dropdown-icon"
+            aria-hidden="true"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Industry Dropdown -->
+      <div class="slds-form-element">
+        <label class="slds-form-element__label" for="industry-select">{industryLabel}</label>
+        <div class="slds-form-element__control slds-select_container">
+          <select
+            id="industry-select"
+            class="slds-select"
+            disabled={isIndustryDisabled}
+            onchange={handleIndustryChange}
+          >
+            <option value="">Select</option>
+            <template for:each={industryOptionsWithSelected} for:item="opt">
+              <option key={opt.value} value={opt.value} selected={opt.selected}>
+                {opt.label}
+              </option>
+            </template>
+          </select>
+          <svg
+            class="nepa-industry-picker__dropdown-icon"
+            aria-hidden="true"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- National Industry Dropdown -->
+      <div class="slds-form-element">
+        <label class="slds-form-element__label" for="nationalindustry-select">{nationalIndustryLabel}</label>
+        <div class="slds-form-element__control slds-select_container">
+          <select
+            id="nationalindustry-select"
+            class="slds-select"
+            disabled={isNationalIndustryDisabled}
+            onchange={handleNationalIndustryChange}
+          >
+            <option value="">Select</option>
+            <template for:each={nationalIndustryOptionsWithSelected} for:item="opt">
+              <option key={opt.value} value={opt.value} selected={opt.selected}>
+                {opt.label}
+              </option>
+            </template>
+          </select>
+          <svg
+            class="nepa-industry-picker__dropdown-icon"
+            aria-hidden="true"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Selected value display -->
+      <div lwc:if={hasValue} class="nepa-industry-picker__selection">
+        <p class="slds-form-element__help">
+          <strong>Selected NAICS Code:</strong> {value}
+        </p>
+      </div>
+    </fieldset>
+  </div>
+</template>

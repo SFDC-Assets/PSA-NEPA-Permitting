@@ -6,16 +6,86 @@
     <isIntegrationProcedure>false</isIntegrationProcedure>
     <isManagedUsingStdDesigner>false</isManagedUsingStdDesigner>
     <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-    <isWebCompEnabled>true</isWebCompEnabled>
+    <isWebCompEnabled>false</isWebCompEnabled>
     <language>English</language>
     <name>CEIntake</name>
 
     <!-- ══════════════════════════════════════════════════════════
          STEP 1: Project Identity
-         Applicant provides agency, project name, description.
-         AgencyAbbr drives CE Library lookup in Step 4.
     ══════════════════════════════════════════════════════════ -->
     <omniProcessElements>
+        <childElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>AgencyAbbr</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{
+  &quot;label&quot;: &quot;Lead Agency&quot;,
+  &quot;helpText&quot;: &quot;Select the federal agency with primary NEPA responsibility for this action.&quot;,
+  &quot;required&quot;: true,
+  &quot;controlWidth&quot;: 12,
+  &quot;options&quot;: [
+    {&quot;label&quot;: &quot;Bureau of Land Management (BLM)&quot;,           &quot;value&quot;: &quot;DOI - BLM&quot;},
+    {&quot;label&quot;: &quot;Department of Energy (DOE)&quot;,                 &quot;value&quot;: &quot;DOE&quot;},
+    {&quot;label&quot;: &quot;Federal Highway Administration (FHWA)&quot;,      &quot;value&quot;: &quot;DOT - FHWA&quot;},
+    {&quot;label&quot;: &quot;Federal Energy Regulatory Commission (FERC)&quot;, &quot;value&quot;: &quot;FERC&quot;},
+    {&quot;label&quot;: &quot;US Army Corps of Engineers (USACE)&quot;,          &quot;value&quot;: &quot;DOD - USACE&quot;},
+    {&quot;label&quot;: &quot;US Fish and Wildlife Service (USFWS)&quot;,        &quot;value&quot;: &quot;DOI - USFWS&quot;},
+    {&quot;label&quot;: &quot;Other / Multiple Agencies&quot;,                  &quot;value&quot;: &quot;OTHER&quot;}
+  ]
+}</propertySetConfig>
+            <sequenceNumber>2.0</sequenceNumber>
+            <type>Select</type>
+        </childElements>
+        <childElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>Name</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{
+  &quot;label&quot;: &quot;Project / Action Name&quot;,
+  &quot;helpText&quot;: &quot;A short descriptive name for this proposed federal action.&quot;,
+  &quot;required&quot;: true,
+  &quot;controlWidth&quot;: 12,
+  &quot;maxLength&quot;: 255
+}</propertySetConfig>
+            <sequenceNumber>3.0</sequenceNumber>
+            <type>Text</type>
+        </childElements>
+        <childElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>nepa_description__c</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{
+  &quot;label&quot;: &quot;Project Description&quot;,
+  &quot;helpText&quot;: &quot;Briefly describe the proposed action, its location, and its purpose.&quot;,
+  &quot;required&quot;: true,
+  &quot;controlWidth&quot;: 12,
+  &quot;rows&quot;: 5
+}</propertySetConfig>
+            <sequenceNumber>4.0</sequenceNumber>
+            <type>Text Area</type>
+        </childElements>
+        <childElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>nepa_purpose_need__c</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{
+  &quot;label&quot;: &quot;Purpose and Need&quot;,
+  &quot;helpText&quot;: &quot;Why is this action being proposed? What need does it address?&quot;,
+  &quot;required&quot;: false,
+  &quot;controlWidth&quot;: 12,
+  &quot;rows&quot;: 4
+}</propertySetConfig>
+            <sequenceNumber>5.0</sequenceNumber>
+            <type>Text Area</type>
+        </childElements>
         <isActive>true</isActive>
         <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
         <level>0.0</level>
@@ -26,143 +96,94 @@
   &quot;showLabel&quot;: true,
   &quot;allowBack&quot;: false,
   &quot;allowSave&quot;: false,
-  &quot;showCount&quot;: false,
-  &quot;stepNumber&quot;: &quot;1&quot;
+  &quot;showCount&quot;: true,
+  &quot;validationRequired&quot;: true,
+  &quot;previousLabel&quot;: &quot;Previous&quot;,
+  &quot;previousWidth&quot;: 3,
+  &quot;nextLabel&quot;: &quot;Next&quot;,
+  &quot;nextWidth&quot;: 3,
+  &quot;cancelLabel&quot;: &quot;Cancel&quot;,
+  &quot;cancelMessage&quot;: &quot;Are you sure?&quot;,
+  &quot;saveLabel&quot;: &quot;Save as Draft&quot;,
+  &quot;saveMessage&quot;: &quot;Are you sure you want to save it for later?&quot;,
+  &quot;completeLabel&quot;: &quot;Complete&quot;,
+  &quot;completeMessage&quot;: &quot;Are you sure you want to complete the script?&quot;,
+  &quot;instruction&quot;: &quot;&quot;,
+  &quot;showPersistentComponent&quot;: [
+    false,
+    false
+  ],
+  &quot;remoteClass&quot;: &quot;&quot;,
+  &quot;remoteMethod&quot;: &quot;&quot;,
+  &quot;remoteTimeout&quot;: 30000,
+  &quot;remoteOptions&quot;: {},
+  &quot;knowledgeOptions&quot;: {
+    &quot;language&quot;: &quot;English&quot;,
+    &quot;publishStatus&quot;: &quot;Online&quot;,
+    &quot;keyword&quot;: &quot;&quot;,
+    &quot;dataCategoryCriteria&quot;: &quot;&quot;,
+    &quot;remoteTimeout&quot;: 30000,
+    &quot;typeFilter&quot;: &quot;&quot;
+  },
+  &quot;show&quot;: null,
+  &quot;conditionType&quot;: &quot;Readonly if False&quot;,
+  &quot;HTMLTemplateId&quot;: &quot;&quot;,
+  &quot;instructionKey&quot;: &quot;&quot;,
+  &quot;chartLabel&quot;: &quot;&quot;,
+  &quot;allowSaveForLater&quot;: false,
+  &quot;errorMessage&quot;: {
+    &quot;custom&quot;: [],
+    &quot;default&quot;: null
+  },
+  &quot;wpm&quot;: false,
+  &quot;ssm&quot;: false,
+  &quot;pubsub&quot;: false,
+  &quot;message&quot;: {},
+  &quot;disOnTplt&quot;: false
 }</propertySetConfig>
         <sequenceNumber>1.0</sequenceNumber>
         <type>Step</type>
     </omniProcessElements>
 
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>1.0</level>
-        <name>AgencyAbbr</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{
-  &quot;label&quot;: &quot;Lead Agency&quot;,
-  &quot;helpText&quot;: &quot;Select the federal agency with primary NEPA responsibility for this action.&quot;,
-  &quot;required&quot;: true,
-  &quot;type&quot;: &quot;select&quot;,
-  &quot;options&quot;: [
-    {&quot;label&quot;: &quot;Bureau of Land Management (BLM)&quot;,      &quot;value&quot;: &quot;DOI - BLM&quot;},
-    {&quot;label&quot;: &quot;Department of Energy (DOE)&quot;,            &quot;value&quot;: &quot;DOE&quot;},
-    {&quot;label&quot;: &quot;Federal Highway Administration (FHWA)&quot;, &quot;value&quot;: &quot;DOT - FHWA&quot;},
-    {&quot;label&quot;: &quot;Federal Energy Regulatory Commission (FERC)&quot;, &quot;value&quot;: &quot;FERC&quot;},
-    {&quot;label&quot;: &quot;US Army Corps of Engineers (USACE)&quot;,    &quot;value&quot;: &quot;DOD - USACE&quot;},
-    {&quot;label&quot;: &quot;US Fish and Wildlife Service (USFWS)&quot;,  &quot;value&quot;: &quot;DOI - USFWS&quot;},
-    {&quot;label&quot;: &quot;Other / Multiple Agencies&quot;,             &quot;value&quot;: &quot;OTHER&quot;}
-  ]
-}</propertySetConfig>
-        <sequenceNumber>2.0</sequenceNumber>
-        <type>Select</type>
-    </omniProcessElements>
-
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>1.0</level>
-        <name>Name</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{
-  &quot;label&quot;: &quot;Project / Action Name&quot;,
-  &quot;helpText&quot;: &quot;A short descriptive name for this proposed federal action.&quot;,
-  &quot;required&quot;: true,
-  &quot;maxLength&quot;: 255
-}</propertySetConfig>
-        <sequenceNumber>3.0</sequenceNumber>
-        <type>Text</type>
-    </omniProcessElements>
-
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>1.0</level>
-        <name>nepa_description__c</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{
-  &quot;label&quot;: &quot;Project Description&quot;,
-  &quot;helpText&quot;: &quot;Briefly describe the proposed action, its location, and its purpose.&quot;,
-  &quot;required&quot;: true,
-  &quot;rows&quot;: 5
-}</propertySetConfig>
-        <sequenceNumber>4.0</sequenceNumber>
-        <type>Text Area</type>
-    </omniProcessElements>
-
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>1.0</level>
-        <name>nepa_purpose_need__c</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{
-  &quot;label&quot;: &quot;Purpose and Need&quot;,
-  &quot;helpText&quot;: &quot;Why is this action being proposed? What need does it address?&quot;,
-  &quot;required&quot;: false,
-  &quot;rows&quot;: 4
-}</propertySetConfig>
-        <sequenceNumber>5.0</sequenceNumber>
-        <type>Text Area</type>
-    </omniProcessElements>
-
     <!-- ══════════════════════════════════════════════════════════
          STEP 2: Action Type and Sector
-         Maps to BRE inputs: ActionType, SectorKey, TypeKey.
     ══════════════════════════════════════════════════════════ -->
     <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>0.0</level>
-        <name>Step2_ActionType</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{
-  &quot;label&quot;: &quot;Action Details&quot;,
-  &quot;showLabel&quot;: true,
-  &quot;allowBack&quot;: true,
-  &quot;allowSave&quot;: false,
-  &quot;stepNumber&quot;: &quot;2&quot;
-}</propertySetConfig>
-        <sequenceNumber>6.0</sequenceNumber>
-        <type>Step</type>
-    </omniProcessElements>
-
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>1.0</level>
-        <name>nepa_action_type__c</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{
+        <childElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>nepa_action_type__c</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{
   &quot;label&quot;: &quot;Action Type&quot;,
   &quot;helpText&quot;: &quot;What type of action is being proposed?&quot;,
   &quot;required&quot;: true,
-  &quot;type&quot;: &quot;select&quot;,
+  &quot;controlWidth&quot;: 12,
   &quot;options&quot;: [
-    {&quot;label&quot;: &quot;Abandon or Decommission&quot;,        &quot;value&quot;: &quot;Abandon or Decommission&quot;},
-    {&quot;label&quot;: &quot;Construct New&quot;,                   &quot;value&quot;: &quot;Construct New&quot;},
-    {&quot;label&quot;: &quot;Modify Existing&quot;,                 &quot;value&quot;: &quot;Modify Existing&quot;},
-    {&quot;label&quot;: &quot;Operate or Maintain Existing&quot;,    &quot;value&quot;: &quot;Operate or Maintain Existing&quot;},
-    {&quot;label&quot;: &quot;Renew or Extend Existing&quot;,        &quot;value&quot;: &quot;Renew or Extend Existing&quot;},
-    {&quot;label&quot;: &quot;Research or Study&quot;,               &quot;value&quot;: &quot;Research or Study&quot;},
-    {&quot;label&quot;: &quot;Other&quot;,                           &quot;value&quot;: &quot;Other&quot;}
+    {&quot;label&quot;: &quot;Abandon or Decommission&quot;,     &quot;value&quot;: &quot;Abandon or Decommission&quot;},
+    {&quot;label&quot;: &quot;Construct New&quot;,               &quot;value&quot;: &quot;Construct New&quot;},
+    {&quot;label&quot;: &quot;Modify Existing&quot;,             &quot;value&quot;: &quot;Modify Existing&quot;},
+    {&quot;label&quot;: &quot;Operate or Maintain Existing&quot;,&quot;value&quot;: &quot;Operate or Maintain Existing&quot;},
+    {&quot;label&quot;: &quot;Renew or Extend Existing&quot;,    &quot;value&quot;: &quot;Renew or Extend Existing&quot;},
+    {&quot;label&quot;: &quot;Research or Study&quot;,           &quot;value&quot;: &quot;Research or Study&quot;},
+    {&quot;label&quot;: &quot;Other&quot;,                       &quot;value&quot;: &quot;Other&quot;}
   ]
 }</propertySetConfig>
-        <sequenceNumber>7.0</sequenceNumber>
-        <type>Select</type>
-    </omniProcessElements>
-
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>1.0</level>
-        <name>nepa_project_sector__c</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{
+            <sequenceNumber>7.0</sequenceNumber>
+            <type>Select</type>
+        </childElements>
+        <childElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>nepa_project_sector__c</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{
   &quot;label&quot;: &quot;Project Sector&quot;,
-  &quot;helpText&quot;: &quot;The primary resource sector for this project. Used to match agency-specific CE thresholds.&quot;,
+  &quot;helpText&quot;: &quot;The primary resource sector for this project.&quot;,
   &quot;required&quot;: true,
-  &quot;type&quot;: &quot;select&quot;,
+  &quot;controlWidth&quot;: 12,
   &quot;options&quot;: [
     {&quot;label&quot;: &quot;Agriculture and Natural Resources&quot;, &quot;value&quot;: &quot;Agriculture and Natural&quot;},
     {&quot;label&quot;: &quot;Energy&quot;,                             &quot;value&quot;: &quot;Energy&quot;},
@@ -173,16 +194,153 @@
     {&quot;label&quot;: &quot;Other&quot;,                              &quot;value&quot;: &quot;Other&quot;}
   ]
 }</propertySetConfig>
-        <sequenceNumber>8.0</sequenceNumber>
-        <type>Select</type>
+            <sequenceNumber>8.0</sequenceNumber>
+            <type>Select</type>
+        </childElements>
+        <isActive>true</isActive>
+        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+        <level>0.0</level>
+        <name>Step2_ActionType</name>
+        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+        <propertySetConfig>{
+  &quot;label&quot;: &quot;Action Details&quot;,
+  &quot;showLabel&quot;: true,
+  &quot;allowBack&quot;: true,
+  &quot;allowSave&quot;: false,
+  &quot;showCount&quot;: false,
+  &quot;validationRequired&quot;: true,
+  &quot;previousLabel&quot;: &quot;Previous&quot;,
+  &quot;previousWidth&quot;: 3,
+  &quot;nextLabel&quot;: &quot;Next&quot;,
+  &quot;nextWidth&quot;: 3,
+  &quot;cancelLabel&quot;: &quot;Cancel&quot;,
+  &quot;cancelMessage&quot;: &quot;Are you sure?&quot;,
+  &quot;saveLabel&quot;: &quot;Save as Draft&quot;,
+  &quot;saveMessage&quot;: &quot;Are you sure you want to save it for later?&quot;,
+  &quot;completeLabel&quot;: &quot;Complete&quot;,
+  &quot;completeMessage&quot;: &quot;Are you sure you want to complete the script?&quot;,
+  &quot;instruction&quot;: &quot;&quot;,
+  &quot;showPersistentComponent&quot;: [
+    false,
+    false
+  ],
+  &quot;remoteClass&quot;: &quot;&quot;,
+  &quot;remoteMethod&quot;: &quot;&quot;,
+  &quot;remoteTimeout&quot;: 30000,
+  &quot;remoteOptions&quot;: {},
+  &quot;knowledgeOptions&quot;: {
+    &quot;language&quot;: &quot;English&quot;,
+    &quot;publishStatus&quot;: &quot;Online&quot;,
+    &quot;keyword&quot;: &quot;&quot;,
+    &quot;dataCategoryCriteria&quot;: &quot;&quot;,
+    &quot;remoteTimeout&quot;: 30000,
+    &quot;typeFilter&quot;: &quot;&quot;
+  },
+  &quot;show&quot;: null,
+  &quot;conditionType&quot;: &quot;Readonly if False&quot;,
+  &quot;HTMLTemplateId&quot;: &quot;&quot;,
+  &quot;instructionKey&quot;: &quot;&quot;,
+  &quot;chartLabel&quot;: &quot;&quot;,
+  &quot;allowSaveForLater&quot;: false,
+  &quot;errorMessage&quot;: {
+    &quot;custom&quot;: [],
+    &quot;default&quot;: null
+  },
+  &quot;wpm&quot;: false,
+  &quot;ssm&quot;: false,
+  &quot;pubsub&quot;: false,
+  &quot;message&quot;: {},
+  &quot;disOnTplt&quot;: false
+}</propertySetConfig>
+        <sequenceNumber>6.0</sequenceNumber>
+        <type>Step</type>
     </omniProcessElements>
 
     <!-- ══════════════════════════════════════════════════════════
-         STEP 3: Acreage and Location
-         DisturbanceAcres is the primary numeric CE threshold.
-         Extraordinary circumstances checkbox surfaces the EC gate.
+         STEP 3: Site and Environmental Factors
     ══════════════════════════════════════════════════════════ -->
     <omniProcessElements>
+        <childElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>nepa_disturbance_acres__c</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{
+  &quot;label&quot;: &quot;Surface Disturbance (acres)&quot;,
+  &quot;helpText&quot;: &quot;Total area of ground disturbance. Enter 0 if no ground disturbance. Key thresholds: &gt;5 acres typically triggers EA review; &gt;640 acres typically triggers EIS.&quot;,
+  &quot;required&quot;: true,
+  &quot;controlWidth&quot;: 6,
+  &quot;min&quot;: 0
+}</propertySetConfig>
+            <sequenceNumber>10.0</sequenceNumber>
+            <type>Number</type>
+        </childElements>
+        <childElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>ExtraordinaryCircumstances</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{
+  &quot;label&quot;: &quot;Extraordinary Circumstances Present?&quot;,
+  &quot;helpText&quot;: &quot;Check if any of the following apply: designated wilderness, critical habitat, wetlands, floodplains, cultural or historic properties, environmental justice communities, threatened/endangered species. See 40 CFR 1501.4(b). When in doubt, check this box — a coordinator will review.&quot;,
+  &quot;required&quot;: false,
+  &quot;controlWidth&quot;: 12
+}</propertySetConfig>
+            <sequenceNumber>11.0</sequenceNumber>
+            <type>Checkbox</type>
+        </childElements>
+        <childElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>nepa_applicant_naics__c</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{
+  &quot;label&quot;: &quot;NAICS Code (optional)&quot;,
+  &quot;helpText&quot;: &quot;Six-digit NAICS industry code for the applicant organization. Improves CE matching accuracy if known.&quot;,
+  &quot;required&quot;: false,
+  &quot;controlWidth&quot;: 6,
+  &quot;maxLength&quot;: 10
+}</propertySetConfig>
+            <sequenceNumber>12.0</sequenceNumber>
+            <type>Text</type>
+        </childElements>
+        <childElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>nepa_ec_multi_dod__c</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{
+  &quot;label&quot;: &quot;Does this project affect more than one DoD installation?&quot;,
+  &quot;helpText&quot;: &quot;Check if the project footprint spans multiple DoD installations. Triggers multi-installation NHPA Section 106 coordination and USACE Section 404 dual-track review.&quot;,
+  &quot;required&quot;: false,
+  &quot;controlWidth&quot;: 12,
+  &quot;show&quot;: {&quot;group&quot;: {&quot;operator&quot;: &quot;AND&quot;, &quot;rules&quot;: [{&quot;condition&quot;: &quot;=&quot;, &quot;field&quot;: &quot;nepa_project_sector__c&quot;, &quot;data&quot;: &quot;Military&quot;}]}},
+  &quot;conditionType&quot;: &quot;Hide if False&quot;
+}</propertySetConfig>
+            <sequenceNumber>12.2</sequenceNumber>
+            <type>Checkbox</type>
+        </childElements>
+        <childElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>nepa_ec_usace_czma__c</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{
+  &quot;label&quot;: &quot;Does the project cross jurisdictional waters?&quot;,
+  &quot;helpText&quot;: &quot;Check if the project discharges fill material into waters of the U.S., coastal zone areas, or essential fish habitat. Triggers USACE Section 404 pre-application coordination and CZMA federal consistency review.&quot;,
+  &quot;required&quot;: false,
+  &quot;controlWidth&quot;: 12,
+  &quot;show&quot;: {&quot;group&quot;: {&quot;operator&quot;: &quot;AND&quot;, &quot;rules&quot;: [{&quot;condition&quot;: &quot;=&quot;, &quot;field&quot;: &quot;nepa_project_sector__c&quot;, &quot;data&quot;: &quot;Water&quot;}]}},
+  &quot;conditionType&quot;: &quot;Hide if False&quot;
+}</propertySetConfig>
+            <sequenceNumber>12.4</sequenceNumber>
+            <type>Checkbox</type>
+        </childElements>
         <isActive>true</isActive>
         <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
         <level>0.0</level>
@@ -193,136 +351,115 @@
   &quot;showLabel&quot;: true,
   &quot;allowBack&quot;: true,
   &quot;allowSave&quot;: false,
-  &quot;stepNumber&quot;: &quot;3&quot;
+  &quot;showCount&quot;: false,
+  &quot;validationRequired&quot;: true,
+  &quot;previousLabel&quot;: &quot;Previous&quot;,
+  &quot;previousWidth&quot;: 3,
+  &quot;nextLabel&quot;: &quot;Next&quot;,
+  &quot;nextWidth&quot;: 3,
+  &quot;cancelLabel&quot;: &quot;Cancel&quot;,
+  &quot;cancelMessage&quot;: &quot;Are you sure?&quot;,
+  &quot;saveLabel&quot;: &quot;Save as Draft&quot;,
+  &quot;saveMessage&quot;: &quot;Are you sure you want to save it for later?&quot;,
+  &quot;completeLabel&quot;: &quot;Complete&quot;,
+  &quot;completeMessage&quot;: &quot;Are you sure you want to complete the script?&quot;,
+  &quot;instruction&quot;: &quot;&quot;,
+  &quot;showPersistentComponent&quot;: [
+    false,
+    false
+  ],
+  &quot;remoteClass&quot;: &quot;&quot;,
+  &quot;remoteMethod&quot;: &quot;&quot;,
+  &quot;remoteTimeout&quot;: 30000,
+  &quot;remoteOptions&quot;: {},
+  &quot;knowledgeOptions&quot;: {
+    &quot;language&quot;: &quot;English&quot;,
+    &quot;publishStatus&quot;: &quot;Online&quot;,
+    &quot;keyword&quot;: &quot;&quot;,
+    &quot;dataCategoryCriteria&quot;: &quot;&quot;,
+    &quot;remoteTimeout&quot;: 30000,
+    &quot;typeFilter&quot;: &quot;&quot;
+  },
+  &quot;show&quot;: null,
+  &quot;conditionType&quot;: &quot;Readonly if False&quot;,
+  &quot;HTMLTemplateId&quot;: &quot;&quot;,
+  &quot;instructionKey&quot;: &quot;&quot;,
+  &quot;chartLabel&quot;: &quot;&quot;,
+  &quot;allowSaveForLater&quot;: false,
+  &quot;errorMessage&quot;: {
+    &quot;custom&quot;: [],
+    &quot;default&quot;: null
+  },
+  &quot;wpm&quot;: false,
+  &quot;ssm&quot;: false,
+  &quot;pubsub&quot;: false,
+  &quot;message&quot;: {},
+  &quot;disOnTplt&quot;: false
 }</propertySetConfig>
         <sequenceNumber>9.0</sequenceNumber>
         <type>Step</type>
     </omniProcessElements>
 
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>1.0</level>
-        <name>nepa_disturbance_acres__c</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{
-  &quot;label&quot;: &quot;Surface Disturbance (acres)&quot;,
-  &quot;helpText&quot;: &quot;Total area of ground disturbance. Enter 0 if no ground disturbance (e.g., indoor or operational actions). Key thresholds: &gt;5 acres typically triggers EA review; &gt;640 acres typically triggers EIS.&quot;,
-  &quot;required&quot;: true,
-  &quot;min&quot;: 0,
-  &quot;precision&quot;: 2
-}</propertySetConfig>
-        <sequenceNumber>10.0</sequenceNumber>
-        <type>Number</type>
-    </omniProcessElements>
-
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>1.0</level>
-        <name>ExtraordinaryCircumstances</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{
-  &quot;label&quot;: &quot;Extraordinary Circumstances Present?&quot;,
-  &quot;helpText&quot;: &quot;Check if any of the following apply: designated wilderness, critical habitat, wetlands, floodplains, cultural or historic properties, environmental justice communities, threatened/endangered species. See 40 CFR 1501.4(b) for the full list. When in doubt, check this box — a coordinator will review.&quot;,
-  &quot;required&quot;: false
-}</propertySetConfig>
-        <sequenceNumber>11.0</sequenceNumber>
-        <type>Checkbox</type>
-    </omniProcessElements>
-
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>1.0</level>
-        <name>nepa_applicant_naics__c</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{
-  &quot;label&quot;: &quot;NAICS Code (optional)&quot;,
-  &quot;helpText&quot;: &quot;Six-digit NAICS industry code for the applicant organization. Improves CE matching accuracy if known.&quot;,
-  &quot;required&quot;: false,
-  &quot;maxLength&quot;: 10
-}</propertySetConfig>
-        <sequenceNumber>12.0</sequenceNumber>
-        <type>Text</type>
-    </omniProcessElements>
-
-    <!-- IMP-008: Military sector — multi-DoD extraordinary circumstances flag -->
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>1.0</level>
-        <name>EC_MultiDoDConditional</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{
-  &quot;conditionType&quot;: &quot;Show&quot;,
-  &quot;conditions&quot;: [{&quot;fieldName&quot;: &quot;nepa_project_sector__c&quot;, &quot;operator&quot;: &quot;==&quot;, &quot;value&quot;: &quot;Military&quot;}],
-  &quot;conditionLogic&quot;: &quot;1&quot;,
-  &quot;label&quot;: &quot;Military Sector — Federal Overhead Factors&quot;,
-  &quot;showLabel&quot;: true,
-  &quot;collapsible&quot;: false
-}</propertySetConfig>
-        <sequenceNumber>12.1</sequenceNumber>
-        <type>Block</type>
-    </omniProcessElements>
-
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>2.0</level>
-        <name>nepa_ec_multi_dod__c</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{
-  &quot;label&quot;: &quot;Does this project affect more than one DoD installation?&quot;,
-  &quot;helpText&quot;: &quot;Check if the project footprint spans multiple DoD installations. This triggers multi-installation NHPA Section 106 coordination and USACE Section 404 dual-track review, which adds federal overhead. Stage 16 analysis: Military sector carries a 1.65x federal friction multiplier driven primarily by multi-installation coordination requirements.&quot;,
-  &quot;required&quot;: false
-}</propertySetConfig>
-        <sequenceNumber>12.2</sequenceNumber>
-        <type>Checkbox</type>
-    </omniProcessElements>
-
-    <!-- IMP-008: Water/Coastal sector — USACE Section 404 / CZMA flag -->
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>1.0</level>
-        <name>EC_USACECZMAConditional</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{
-  &quot;conditionType&quot;: &quot;Show&quot;,
-  &quot;conditions&quot;: [{&quot;fieldName&quot;: &quot;nepa_project_sector__c&quot;, &quot;operator&quot;: &quot;==&quot;, &quot;value&quot;: &quot;Water/Coastal&quot;}],
-  &quot;conditionLogic&quot;: &quot;1&quot;,
-  &quot;label&quot;: &quot;Water/Coastal Sector — Federal Overhead Factors&quot;,
-  &quot;showLabel&quot;: true,
-  &quot;collapsible&quot;: false
-}</propertySetConfig>
-        <sequenceNumber>12.3</sequenceNumber>
-        <type>Block</type>
-    </omniProcessElements>
-
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>2.0</level>
-        <name>nepa_ec_usace_czma__c</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{
-  &quot;label&quot;: &quot;Does the project cross jurisdictional waters?&quot;,
-  &quot;helpText&quot;: &quot;Check if the project discharges fill material into waters of the U.S., coastal zone areas, or essential fish habitat (EFH). This triggers USACE Section 404 pre-application coordination and CZMA federal consistency review. Stage 16 analysis: Water/Coastal sector carries a 1.47x federal friction multiplier driven by CZMA consistency, EFH Magnuson-Stevens consultation, and dual-track 404 review.&quot;,
-  &quot;required&quot;: false
-}</propertySetConfig>
-        <sequenceNumber>12.4</sequenceNumber>
-        <type>Checkbox</type>
-    </omniProcessElements>
-
     <!-- ══════════════════════════════════════════════════════════
          STEP 4: CE Pre-Screening
-         Calls CEScreeningIP → returns preliminary recommendation
-         + matching CE Library entries for applicant review.
-         This step is read-only display; the authoritative BRE
-         classification runs after Step 6 (save).
     ══════════════════════════════════════════════════════════ -->
     <omniProcessElements>
+        <childElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>RunCEScreeningIP</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{&quot;integrationProcedureKey&quot;:&quot;NEPA_CEScreeningIP&quot;,&quot;inputMap&quot;:[{&quot;name&quot;:&quot;AgencyAbbr&quot;,&quot;value&quot;:&quot;%AgencyAbbr%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;DisturbanceAcres&quot;,&quot;value&quot;:&quot;%nepa_disturbance_acres__c%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;ExtraordinaryCircumstances&quot;,&quot;value&quot;:&quot;%ExtraordinaryCircumstances%&quot;,&quot;valueType&quot;:&quot;reference&quot;}],&quot;outputPath&quot;:&quot;ScreeningResult&quot;,&quot;failOnStepError&quot;:false,&quot;preAction&quot;:true}</propertySetConfig>
+            <sequenceNumber>14.0</sequenceNumber>
+            <type>Integration Procedure Action</type>
+        </childElements>
+        <childElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>RecommendationDisplay</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{
+  &quot;label&quot;: &quot;Preliminary Recommendation&quot;,
+  &quot;value&quot;: &quot;%ScreeningResult:Recommendation%&quot;,
+  &quot;helpText&quot;: &quot;This is a preliminary assessment. The authoritative CE determination is made by a NEPA coordinator after submission. Per OMB M-25-21: AI recommends, humans decide.&quot;,
+  &quot;readOnly&quot;: true,
+  &quot;controlWidth&quot;: 12
+}</propertySetConfig>
+            <sequenceNumber>15.0</sequenceNumber>
+            <type>Text</type>
+        </childElements>
+        <childElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>ClassificationBasisDisplay</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{
+  &quot;label&quot;: &quot;Basis&quot;,
+  &quot;value&quot;: &quot;%ScreeningResult:ClassificationBasis%&quot;,
+  &quot;readOnly&quot;: true,
+  &quot;controlWidth&quot;: 12
+}</propertySetConfig>
+            <sequenceNumber>16.0</sequenceNumber>
+            <type>Text Area</type>
+        </childElements>
+        <childElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>MatchingCEsDisplay</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{
+  &quot;label&quot;: &quot;Potentially Applicable Categorical Exclusions&quot;,
+  &quot;helpText&quot;: &quot;These are active CE catalog entries for the selected agency. Your coordinator will verify applicability after submission.&quot;,
+  &quot;text&quot;: &quot;%ScreeningResult:LibraryEntries%&quot;,
+  &quot;controlWidth&quot;: 12
+}</propertySetConfig>
+            <sequenceNumber>17.0</sequenceNumber>
+            <type>Text Block</type>
+        </childElements>
         <isActive>true</isActive>
         <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
         <level>0.0</level>
@@ -333,78 +470,91 @@
   &quot;showLabel&quot;: true,
   &quot;allowBack&quot;: true,
   &quot;allowSave&quot;: false,
-  &quot;stepNumber&quot;: &quot;4&quot;
+  &quot;showCount&quot;: false,
+  &quot;validationRequired&quot;: true,
+  &quot;previousLabel&quot;: &quot;Previous&quot;,
+  &quot;previousWidth&quot;: 3,
+  &quot;nextLabel&quot;: &quot;Next&quot;,
+  &quot;nextWidth&quot;: 3,
+  &quot;cancelLabel&quot;: &quot;Cancel&quot;,
+  &quot;cancelMessage&quot;: &quot;Are you sure?&quot;,
+  &quot;saveLabel&quot;: &quot;Save as Draft&quot;,
+  &quot;saveMessage&quot;: &quot;Are you sure you want to save it for later?&quot;,
+  &quot;completeLabel&quot;: &quot;Complete&quot;,
+  &quot;completeMessage&quot;: &quot;Are you sure you want to complete the script?&quot;,
+  &quot;instruction&quot;: &quot;&quot;,
+  &quot;showPersistentComponent&quot;: [
+    false,
+    false
+  ],
+  &quot;remoteClass&quot;: &quot;&quot;,
+  &quot;remoteMethod&quot;: &quot;&quot;,
+  &quot;remoteTimeout&quot;: 30000,
+  &quot;remoteOptions&quot;: {},
+  &quot;knowledgeOptions&quot;: {
+    &quot;language&quot;: &quot;English&quot;,
+    &quot;publishStatus&quot;: &quot;Online&quot;,
+    &quot;keyword&quot;: &quot;&quot;,
+    &quot;dataCategoryCriteria&quot;: &quot;&quot;,
+    &quot;remoteTimeout&quot;: 30000,
+    &quot;typeFilter&quot;: &quot;&quot;
+  },
+  &quot;show&quot;: null,
+  &quot;conditionType&quot;: &quot;Readonly if False&quot;,
+  &quot;HTMLTemplateId&quot;: &quot;&quot;,
+  &quot;instructionKey&quot;: &quot;&quot;,
+  &quot;chartLabel&quot;: &quot;&quot;,
+  &quot;allowSaveForLater&quot;: false,
+  &quot;errorMessage&quot;: {
+    &quot;custom&quot;: [],
+    &quot;default&quot;: null
+  },
+  &quot;wpm&quot;: false,
+  &quot;ssm&quot;: false,
+  &quot;pubsub&quot;: false,
+  &quot;message&quot;: {},
+  &quot;disOnTplt&quot;: false
 }</propertySetConfig>
         <sequenceNumber>13.0</sequenceNumber>
         <type>Step</type>
-    </omniProcessElements>
-
-    <!-- Integration Procedure call: CEScreeningIP -->
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>1.0</level>
-        <name>RunCEScreeningIP</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{&quot;integrationProcedureKey&quot;:&quot;NEPA_CEScreeningIP&quot;,&quot;inputMap&quot;:[{&quot;name&quot;:&quot;AgencyAbbr&quot;,&quot;value&quot;:&quot;%AgencyAbbr%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;DisturbanceAcres&quot;,&quot;value&quot;:&quot;%nepa_disturbance_acres__c%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;ExtraordinaryCircumstances&quot;,&quot;value&quot;:&quot;%ExtraordinaryCircumstances%&quot;,&quot;valueType&quot;:&quot;reference&quot;}],&quot;outputPath&quot;:&quot;ScreeningResult&quot;,&quot;failOnStepError&quot;:false,&quot;useFormulas&quot;:true,&quot;preAction&quot;:true}</propertySetConfig>
-        <sequenceNumber>14.0</sequenceNumber>
-        <type>Integration Procedure Action</type>
-    </omniProcessElements>
-
-    <!-- Display preliminary recommendation -->
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>1.0</level>
-        <name>RecommendationDisplay</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{
-  &quot;label&quot;: &quot;Preliminary Recommendation&quot;,
-  &quot;value&quot;: &quot;%ScreeningResult:Recommendation%&quot;,
-  &quot;helpText&quot;: &quot;This is a preliminary assessment based on acreage and extraordinary circumstances only. The authoritative CE determination is made by a NEPA coordinator after submission using the full BRE screening rule set. Per OMB M-25-21: AI recommends, humans decide.&quot;,
-  &quot;readOnly&quot;: true
-}</propertySetConfig>
-        <sequenceNumber>15.0</sequenceNumber>
-        <type>Text</type>
-    </omniProcessElements>
-
-    <!-- Display classification basis -->
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>1.0</level>
-        <name>ClassificationBasisDisplay</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{
-  &quot;label&quot;: &quot;Basis&quot;,
-  &quot;value&quot;: &quot;%ScreeningResult:ClassificationBasis%&quot;,
-  &quot;readOnly&quot;: true
-}</propertySetConfig>
-        <sequenceNumber>16.0</sequenceNumber>
-        <type>Text Area</type>
-    </omniProcessElements>
-
-    <!-- Display matching CE Library entries as formatted text block -->
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>1.0</level>
-        <name>MatchingCEsDisplay</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{
-  &quot;label&quot;: &quot;Potentially Applicable Categorical Exclusions&quot;,
-  &quot;helpText&quot;: &quot;These are active CE catalog entries for the selected agency. Your coordinator will verify applicability after submission.&quot;,
-  &quot;text&quot;: &quot;%ScreeningResult:LibraryEntries%&quot;,
-  &quot;readOnly&quot;: true
-}</propertySetConfig>
-        <sequenceNumber>17.0</sequenceNumber>
-        <type>Text Block</type>
     </omniProcessElements>
 
     <!-- ══════════════════════════════════════════════════════════
          STEP 5: CFR Citation and Agency Reference
     ══════════════════════════════════════════════════════════ -->
     <omniProcessElements>
+        <childElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>nepa_regulatory_citation__c</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{
+  &quot;label&quot;: &quot;Proposed CE Citation (optional)&quot;,
+  &quot;helpText&quot;: &quot;If you believe a specific CE applies, enter the CFR citation (e.g., 43 CFR 46.210(i)) or CE code (e.g., BLM B3.6). Leave blank if unsure.&quot;,
+  &quot;required&quot;: false,
+  &quot;controlWidth&quot;: 12,
+  &quot;maxLength&quot;: 255
+}</propertySetConfig>
+            <sequenceNumber>19.0</sequenceNumber>
+            <type>Text</type>
+        </childElements>
+        <childElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>nepa_agency_id__c</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{
+  &quot;label&quot;: &quot;Agency Project / Permit Number (optional)&quot;,
+  &quot;helpText&quot;: &quot;Your agency-assigned project or permit tracking number, if one has been issued.&quot;,
+  &quot;required&quot;: false,
+  &quot;controlWidth&quot;: 12,
+  &quot;maxLength&quot;: 100
+}</propertySetConfig>
+            <sequenceNumber>20.0</sequenceNumber>
+            <type>Text</type>
+        </childElements>
         <isActive>true</isActive>
         <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
         <level>0.0</level>
@@ -415,49 +565,91 @@
   &quot;showLabel&quot;: true,
   &quot;allowBack&quot;: true,
   &quot;allowSave&quot;: false,
-  &quot;stepNumber&quot;: &quot;5&quot;
+  &quot;showCount&quot;: false,
+  &quot;validationRequired&quot;: true,
+  &quot;previousLabel&quot;: &quot;Previous&quot;,
+  &quot;previousWidth&quot;: 3,
+  &quot;nextLabel&quot;: &quot;Next&quot;,
+  &quot;nextWidth&quot;: 3,
+  &quot;cancelLabel&quot;: &quot;Cancel&quot;,
+  &quot;cancelMessage&quot;: &quot;Are you sure?&quot;,
+  &quot;saveLabel&quot;: &quot;Save as Draft&quot;,
+  &quot;saveMessage&quot;: &quot;Are you sure you want to save it for later?&quot;,
+  &quot;completeLabel&quot;: &quot;Complete&quot;,
+  &quot;completeMessage&quot;: &quot;Are you sure you want to complete the script?&quot;,
+  &quot;instruction&quot;: &quot;&quot;,
+  &quot;showPersistentComponent&quot;: [
+    false,
+    false
+  ],
+  &quot;remoteClass&quot;: &quot;&quot;,
+  &quot;remoteMethod&quot;: &quot;&quot;,
+  &quot;remoteTimeout&quot;: 30000,
+  &quot;remoteOptions&quot;: {},
+  &quot;knowledgeOptions&quot;: {
+    &quot;language&quot;: &quot;English&quot;,
+    &quot;publishStatus&quot;: &quot;Online&quot;,
+    &quot;keyword&quot;: &quot;&quot;,
+    &quot;dataCategoryCriteria&quot;: &quot;&quot;,
+    &quot;remoteTimeout&quot;: 30000,
+    &quot;typeFilter&quot;: &quot;&quot;
+  },
+  &quot;show&quot;: null,
+  &quot;conditionType&quot;: &quot;Readonly if False&quot;,
+  &quot;HTMLTemplateId&quot;: &quot;&quot;,
+  &quot;instructionKey&quot;: &quot;&quot;,
+  &quot;chartLabel&quot;: &quot;&quot;,
+  &quot;allowSaveForLater&quot;: false,
+  &quot;errorMessage&quot;: {
+    &quot;custom&quot;: [],
+    &quot;default&quot;: null
+  },
+  &quot;wpm&quot;: false,
+  &quot;ssm&quot;: false,
+  &quot;pubsub&quot;: false,
+  &quot;message&quot;: {},
+  &quot;disOnTplt&quot;: false
 }</propertySetConfig>
         <sequenceNumber>18.0</sequenceNumber>
         <type>Step</type>
     </omniProcessElements>
 
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>1.0</level>
-        <name>nepa_regulatory_citation__c</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{
-  &quot;label&quot;: &quot;Proposed CE Citation (optional)&quot;,
-  &quot;helpText&quot;: &quot;If you believe a specific CE applies, enter the CFR citation (e.g., 43 CFR 46.210(i)) or CE code (e.g., BLM B3.6). Leave blank if unsure — the coordinator will identify the applicable authority.&quot;,
-  &quot;required&quot;: false,
-  &quot;maxLength&quot;: 255
-}</propertySetConfig>
-        <sequenceNumber>19.0</sequenceNumber>
-        <type>Text</type>
-    </omniProcessElements>
-
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>1.0</level>
-        <name>nepa_agency_id__c</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{
-  &quot;label&quot;: &quot;Agency Project / Permit Number (optional)&quot;,
-  &quot;helpText&quot;: &quot;Your agency-assigned project or permit tracking number, if one has been issued.&quot;,
-  &quot;required&quot;: false,
-  &quot;maxLength&quot;: 100
-}</propertySetConfig>
-        <sequenceNumber>20.0</sequenceNumber>
-        <type>Text</type>
-    </omniProcessElements>
-
     <!-- ══════════════════════════════════════════════════════════
          STEP 6: Review and Submit
-         Read-only summary before final submission.
     ══════════════════════════════════════════════════════════ -->
     <omniProcessElements>
+        <childElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>ReviewSummary</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{
+  &quot;label&quot;: &quot;Submission Summary&quot;,
+  &quot;controlWidth&quot;: 12,
+  &quot;fields&quot;: [
+    {&quot;label&quot;: &quot;Lead Agency&quot;,                 &quot;value&quot;: &quot;%AgencyAbbr%&quot;},
+    {&quot;label&quot;: &quot;Project Name&quot;,                &quot;value&quot;: &quot;%Name%&quot;},
+    {&quot;label&quot;: &quot;Action Type&quot;,                 &quot;value&quot;: &quot;%nepa_action_type__c%&quot;},
+    {&quot;label&quot;: &quot;Sector&quot;,                      &quot;value&quot;: &quot;%nepa_project_sector__c%&quot;},
+    {&quot;label&quot;: &quot;Surface Disturbance (ac)&quot;,    &quot;value&quot;: &quot;%nepa_disturbance_acres__c%&quot;},
+    {&quot;label&quot;: &quot;Extraordinary Circumstances&quot;, &quot;value&quot;: &quot;%ExtraordinaryCircumstances%&quot;},
+    {&quot;label&quot;: &quot;Preliminary Recommendation&quot;,  &quot;value&quot;: &quot;%ScreeningResult:Recommendation%&quot;}
+  ]
+}</propertySetConfig>
+            <sequenceNumber>22.0</sequenceNumber>
+            <type>Review Action</type>
+        </childElements>
+        <childElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>SaveCEIntake</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{&quot;integrationProcedureKey&quot;:&quot;NEPA_CESaveIP&quot;,&quot;inputMap&quot;:[{&quot;name&quot;:&quot;AgencyAbbr&quot;,&quot;value&quot;:&quot;%AgencyAbbr%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;Name&quot;,&quot;value&quot;:&quot;%Name%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;nepa_description__c&quot;,&quot;value&quot;:&quot;%nepa_description__c%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;nepa_purpose_need__c&quot;,&quot;value&quot;:&quot;%nepa_purpose_need__c%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;nepa_action_type__c&quot;,&quot;value&quot;:&quot;%nepa_action_type__c%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;nepa_disturbance_acres__c&quot;,&quot;value&quot;:&quot;%nepa_disturbance_acres__c%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;nepa_extraordinary_circumstances__c&quot;,&quot;value&quot;:&quot;%ExtraordinaryCircumstances%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;nepa_regulatory_citation__c&quot;,&quot;value&quot;:&quot;%nepa_regulatory_citation__c%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;nepa_agency_id__c&quot;,&quot;value&quot;:&quot;%nepa_agency_id__c%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;nepa_start_date__c&quot;,&quot;value&quot;:&quot;TODAY()&quot;,&quot;valueType&quot;:&quot;formula&quot;}],&quot;outputPath&quot;:&quot;SaveResult&quot;,&quot;failOnStepError&quot;:true,&quot;postAction&quot;:true}</propertySetConfig>
+            <sequenceNumber>23.0</sequenceNumber>
+            <type>Integration Procedure Action</type>
+        </childElements>
         <isActive>true</isActive>
         <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
         <level>0.0</level>
@@ -468,52 +660,75 @@
   &quot;showLabel&quot;: true,
   &quot;allowBack&quot;: true,
   &quot;allowSave&quot;: false,
-  &quot;stepNumber&quot;: &quot;6&quot;
+  &quot;showCount&quot;: false,
+  &quot;validationRequired&quot;: true,
+  &quot;previousLabel&quot;: &quot;Previous&quot;,
+  &quot;previousWidth&quot;: 3,
+  &quot;nextLabel&quot;: &quot;Next&quot;,
+  &quot;nextWidth&quot;: 3,
+  &quot;cancelLabel&quot;: &quot;Cancel&quot;,
+  &quot;cancelMessage&quot;: &quot;Are you sure?&quot;,
+  &quot;saveLabel&quot;: &quot;Save as Draft&quot;,
+  &quot;saveMessage&quot;: &quot;Are you sure you want to save it for later?&quot;,
+  &quot;completeLabel&quot;: &quot;Complete&quot;,
+  &quot;completeMessage&quot;: &quot;Are you sure you want to complete the script?&quot;,
+  &quot;instruction&quot;: &quot;&quot;,
+  &quot;showPersistentComponent&quot;: [
+    false,
+    false
+  ],
+  &quot;remoteClass&quot;: &quot;&quot;,
+  &quot;remoteMethod&quot;: &quot;&quot;,
+  &quot;remoteTimeout&quot;: 30000,
+  &quot;remoteOptions&quot;: {},
+  &quot;knowledgeOptions&quot;: {
+    &quot;language&quot;: &quot;English&quot;,
+    &quot;publishStatus&quot;: &quot;Online&quot;,
+    &quot;keyword&quot;: &quot;&quot;,
+    &quot;dataCategoryCriteria&quot;: &quot;&quot;,
+    &quot;remoteTimeout&quot;: 30000,
+    &quot;typeFilter&quot;: &quot;&quot;
+  },
+  &quot;show&quot;: null,
+  &quot;conditionType&quot;: &quot;Readonly if False&quot;,
+  &quot;HTMLTemplateId&quot;: &quot;&quot;,
+  &quot;instructionKey&quot;: &quot;&quot;,
+  &quot;chartLabel&quot;: &quot;&quot;,
+  &quot;allowSaveForLater&quot;: false,
+  &quot;errorMessage&quot;: {
+    &quot;custom&quot;: [],
+    &quot;default&quot;: null
+  },
+  &quot;wpm&quot;: false,
+  &quot;ssm&quot;: false,
+  &quot;pubsub&quot;: false,
+  &quot;message&quot;: {},
+  &quot;disOnTplt&quot;: false
 }</propertySetConfig>
         <sequenceNumber>21.0</sequenceNumber>
         <type>Step</type>
     </omniProcessElements>
 
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>1.0</level>
-        <name>ReviewSummary</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{
-  &quot;label&quot;: &quot;Submission Summary&quot;,
-  &quot;fields&quot;: [
-    {&quot;label&quot;: &quot;Lead Agency&quot;,              &quot;value&quot;: &quot;%AgencyAbbr%&quot;},
-    {&quot;label&quot;: &quot;Project Name&quot;,             &quot;value&quot;: &quot;%Name%&quot;},
-    {&quot;label&quot;: &quot;Action Type&quot;,              &quot;value&quot;: &quot;%nepa_action_type__c%&quot;},
-    {&quot;label&quot;: &quot;Sector&quot;,                   &quot;value&quot;: &quot;%nepa_project_sector__c%&quot;},
-    {&quot;label&quot;: &quot;Surface Disturbance (ac)&quot;, &quot;value&quot;: &quot;%nepa_disturbance_acres__c%&quot;},
-    {&quot;label&quot;: &quot;Extraordinary Circumstances&quot;, &quot;value&quot;: &quot;%ExtraordinaryCircumstances%&quot;},
-    {&quot;label&quot;: &quot;Preliminary Recommendation&quot;, &quot;value&quot;: &quot;%ScreeningResult:Recommendation%&quot;}
-  ]
-}</propertySetConfig>
-        <sequenceNumber>22.0</sequenceNumber>
-        <type>Review Action</type>
-    </omniProcessElements>
-
-    <!-- Integration Procedure call: CESaveIP — runs on Submit -->
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>1.0</level>
-        <name>SaveCEIntake</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{&quot;integrationProcedureKey&quot;:&quot;NEPA_CESaveIP&quot;,&quot;inputMap&quot;:[{&quot;name&quot;:&quot;AgencyAbbr&quot;,&quot;value&quot;:&quot;%AgencyAbbr%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;Name&quot;,&quot;value&quot;:&quot;%Name%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;nepa_description__c&quot;,&quot;value&quot;:&quot;%nepa_description__c%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;nepa_purpose_need__c&quot;,&quot;value&quot;:&quot;%nepa_purpose_need__c%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;nepa_action_type__c&quot;,&quot;value&quot;:&quot;%nepa_action_type__c%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;nepa_disturbance_acres__c&quot;,&quot;value&quot;:&quot;%nepa_disturbance_acres__c%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;nepa_extraordinary_circumstances__c&quot;,&quot;value&quot;:&quot;%ExtraordinaryCircumstances%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;nepa_regulatory_citation__c&quot;,&quot;value&quot;:&quot;%nepa_regulatory_citation__c%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;nepa_agency_id__c&quot;,&quot;value&quot;:&quot;%nepa_agency_id__c%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;nepa_start_date__c&quot;,&quot;value&quot;:&quot;TODAY()&quot;,&quot;valueType&quot;:&quot;formula&quot;}],&quot;outputPath&quot;:&quot;SaveResult&quot;,&quot;failOnStepError&quot;:true,&quot;useFormulas&quot;:true,&quot;postAction&quot;:true}</propertySetConfig>
-        <sequenceNumber>23.0</sequenceNumber>
-        <type>Integration Procedure Action</type>
-    </omniProcessElements>
-
     <!-- ══════════════════════════════════════════════════════════
          STEP 7: Confirmation
-         Shows submission confirmation with process ID and
-         honest message that BRE classification is pending.
     ══════════════════════════════════════════════════════════ -->
     <omniProcessElements>
+        <childElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>ConfirmationMessage</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{
+  &quot;label&quot;: &quot;Your CE screening request has been submitted.&quot;,
+  &quot;value&quot;: &quot;%SaveResult:ConfirmationMessage%&quot;,
+  &quot;readOnly&quot;: true,
+  &quot;controlWidth&quot;: 12,
+  &quot;helpText&quot;: &quot;Reference number: %SaveResult:ProcessId%&quot;
+}</propertySetConfig>
+            <sequenceNumber>25.0</sequenceNumber>
+            <type>Text Area</type>
+        </childElements>
         <isActive>true</isActive>
         <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
         <level>0.0</level>
@@ -524,27 +739,53 @@
   &quot;showLabel&quot;: true,
   &quot;allowBack&quot;: false,
   &quot;allowSave&quot;: false,
-  &quot;stepNumber&quot;: &quot;7&quot;,
-  &quot;hideStepMenu&quot;: true
+  &quot;showCount&quot;: false,
+  &quot;validationRequired&quot;: true,
+  &quot;previousLabel&quot;: &quot;Previous&quot;,
+  &quot;previousWidth&quot;: 3,
+  &quot;nextLabel&quot;: &quot;Next&quot;,
+  &quot;nextWidth&quot;: 3,
+  &quot;cancelLabel&quot;: &quot;Cancel&quot;,
+  &quot;cancelMessage&quot;: &quot;Are you sure?&quot;,
+  &quot;saveLabel&quot;: &quot;Save as Draft&quot;,
+  &quot;saveMessage&quot;: &quot;Are you sure you want to save it for later?&quot;,
+  &quot;completeLabel&quot;: &quot;Complete&quot;,
+  &quot;completeMessage&quot;: &quot;Are you sure you want to complete the script?&quot;,
+  &quot;instruction&quot;: &quot;&quot;,
+  &quot;showPersistentComponent&quot;: [
+    false,
+    false
+  ],
+  &quot;remoteClass&quot;: &quot;&quot;,
+  &quot;remoteMethod&quot;: &quot;&quot;,
+  &quot;remoteTimeout&quot;: 30000,
+  &quot;remoteOptions&quot;: {},
+  &quot;knowledgeOptions&quot;: {
+    &quot;language&quot;: &quot;English&quot;,
+    &quot;publishStatus&quot;: &quot;Online&quot;,
+    &quot;keyword&quot;: &quot;&quot;,
+    &quot;dataCategoryCriteria&quot;: &quot;&quot;,
+    &quot;remoteTimeout&quot;: 30000,
+    &quot;typeFilter&quot;: &quot;&quot;
+  },
+  &quot;show&quot;: null,
+  &quot;conditionType&quot;: &quot;Readonly if False&quot;,
+  &quot;HTMLTemplateId&quot;: &quot;&quot;,
+  &quot;instructionKey&quot;: &quot;&quot;,
+  &quot;chartLabel&quot;: &quot;&quot;,
+  &quot;allowSaveForLater&quot;: false,
+  &quot;errorMessage&quot;: {
+    &quot;custom&quot;: [],
+    &quot;default&quot;: null
+  },
+  &quot;wpm&quot;: false,
+  &quot;ssm&quot;: false,
+  &quot;pubsub&quot;: false,
+  &quot;message&quot;: {},
+  &quot;disOnTplt&quot;: false
 }</propertySetConfig>
         <sequenceNumber>24.0</sequenceNumber>
         <type>Step</type>
-    </omniProcessElements>
-
-    <omniProcessElements>
-        <isActive>true</isActive>
-        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
-        <level>1.0</level>
-        <name>ConfirmationMessage</name>
-        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{
-  &quot;label&quot;: &quot;Your CE screening request has been submitted.&quot;,
-  &quot;value&quot;: &quot;%SaveResult:ConfirmationMessage%&quot;,
-  &quot;readOnly&quot;: true,
-  &quot;helpText&quot;: &quot;Reference number: %SaveResult:ProcessId%&quot;
-}</propertySetConfig>
-        <sequenceNumber>25.0</sequenceNumber>
-        <type>Text Area</type>
     </omniProcessElements>
 
     <omniProcessKey>NEPACEIntake</omniProcessKey>
