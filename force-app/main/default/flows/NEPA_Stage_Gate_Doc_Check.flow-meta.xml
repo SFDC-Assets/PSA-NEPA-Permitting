@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>Before-save on ApplicationTimeline (create and update). When nepa_status__c is being set to Completed, looks up NEPA_Required_Document__mdt records whose Gate_Event_Type__c matches nepa_event_type__c. If any required document types are absent from the parent IndividualApplication's approved permit documents, blocks the save with a field-level error listing the missing documents. Runs before-save so the error appears inline in the record form without a DML round-trip. CMT queries are governor-exempt. One SOQL is consumed for the ContentVersion check.
+    <description>Before-save on ApplicationTimeline (create and update). When nepa_status__c is being set to Completed, looks up NEPA_Required_Document__mdt records whose Gate_Event_Type__c matches nepa_event_type__c. If any required document types are absent from the parent IndividualApplication's approved permit documents, blocks the save with a field-level error listing the missing documents. Also checks nepa_surveys_complete__c on the parent IA at Draft EA Published and Draft EIS Published gates — if false, appends a field survey incomplete message. At ROD/FONSI gates, checks for uninitiated critical-path permits. Runs before-save so the error appears inline in the record form without a DML round-trip. CMT queries are governor-exempt. One SOQL is consumed for the ContentVersion check.
 
 Design notes:
 - Cross-object field reference $Record.nepa_related_process__r.nepa_review_type__c avoids a Get Records call for the parent.
@@ -67,6 +67,23 @@ Design notes:
         </assignmentItems>
         <connector>
             <targetReference>Loop_RequiredDocs</targetReference>
+        </connector>
+    </assignments>
+
+    <assignments>
+        <name>Append_SurveysIncomplete</name>
+        <label>Append Field Surveys Incomplete to Error String</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>var_MissingDocs</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula_AppendSurveysIncomplete</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_IsRODOrFONSI</targetReference>
         </connector>
     </assignments>
 
@@ -203,6 +220,74 @@ Design notes:
         </rules>
     </decisions>
 
+    <!-- STEP 4a: At Draft EA/EIS Published gates, check field surveys complete -->
+    <decisions>
+        <name>Decision_IsDraftPublished</name>
+        <label>Is this a Draft EA or Draft EIS Published Gate?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Decision_IsRODOrFONSI</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Not Draft EA/EIS — skip survey check</defaultConnectorLabel>
+        <rules>
+            <name>IsDraftEA</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_event_type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Draft EA Published</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Decision_SurveysComplete</targetReference>
+            </connector>
+            <label>Draft EA Published</label>
+        </rules>
+        <rules>
+            <name>IsDraftEIS</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_event_type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Draft EIS Published</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Decision_SurveysComplete</targetReference>
+            </connector>
+            <label>Draft EIS Published</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_SurveysComplete</name>
+        <label>Field Surveys Complete on Parent Process?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Append_SurveysIncomplete</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Surveys not complete — append error</defaultConnectorLabel>
+        <rules>
+            <name>Surveys_Are_Complete</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_related_process__r.nepa_surveys_complete__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Decision_IsRODOrFONSI</targetReference>
+            </connector>
+            <label>Surveys complete — proceed</label>
+        </rules>
+    </decisions>
+
     <!-- STEP 4b: At ROD/FONSI gates, check for uninitiated critical-path permits -->
     <decisions>
         <name>Decision_IsRODOrFONSI</name>
@@ -285,6 +370,16 @@ Design notes:
     </formulas>
 
     <formulas>
+        <name>formula_AppendSurveysIncomplete</name>
+        <dataType>String</dataType>
+        <expression>IF(
+  ISBLANK({!var_MissingDocs}),
+  "Required field surveys (hard-gate discipline Visits) are not yet complete. All auto-generated hard-gate field surveys must be marked Completed before this milestone can be closed.",
+  {!var_MissingDocs} &amp; ", Required field surveys (hard-gate discipline Visits) are not yet complete. All auto-generated hard-gate field surveys must be marked Completed before this milestone can be closed."
+)</expression>
+    </formulas>
+
+    <formulas>
         <name>formula_AppendPermitGap</name>
         <dataType>String</dataType>
         <expression>IF(
@@ -306,7 +401,7 @@ Design notes:
             <targetReference>Assign_CurrentRequired</targetReference>
         </nextValueConnector>
         <noMoreValuesConnector>
-            <targetReference>Decision_IsRODOrFONSI</targetReference>
+            <targetReference>Decision_IsDraftPublished</targetReference>
         </noMoreValuesConnector>
     </loops>
 
