@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_ofd_target_days__c</fullName>
+    <description>One Federal Decision (OFD) target timeline in calendar days from application receipt to final federal authorization. Set by the lead agency coordinator at initiation for FAST-41 covered projects (nepa_fast41_covered__c = true). Used by NEPA_OFD_Variance_Alert to flag overruns when nepa_days_elapsed__c exceeds this value.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>OFD target completion days (from application receipt). Required for FAST-41 FPISC dashboard reporting.</inlineHelpText>
+    <label>OFD Target Days</label>
+    <precision>4</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackHistory>false</trackHistory>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

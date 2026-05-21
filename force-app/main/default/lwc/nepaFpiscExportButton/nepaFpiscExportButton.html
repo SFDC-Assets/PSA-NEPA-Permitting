@@ -1,0 +1,47 @@
+<template>
+    <lightning-card title="FPISC Export" icon-name="standard:report">
+        <div class="slds-card__body slds-card__body_inner">
+            <template if:true={error}>
+                <p class="slds-text-color_error">{error}</p>
+            </template>
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Generating export..." size="small"></lightning-spinner>
+            </template>
+            <template if:false={isLoading}>
+                <div class="slds-grid slds-gutters slds-wrap">
+                    <div class="slds-col">
+                        <p class="slds-text-body_small slds-m-bottom_x-small">
+                            Exports FAST-41 One Federal Decision (OFD) data for FPISC dashboard reporting.
+                            Includes days elapsed, OFD target, and variance for all covered processes.
+                        </p>
+                    </div>
+                </div>
+                <div class="slds-grid slds-gutters slds-m-top_small">
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-button
+                            label="Export This Project"
+                            title="Export FPISC data for this project only"
+                            onclick={handleExportProject}
+                            variant="brand"
+                            disabled={isLoading}>
+                        </lightning-button>
+                    </div>
+                    <div class="slds-col slds-size_1-of-2">
+                        <lightning-button
+                            label="Export All Active"
+                            title="Export FPISC data for all active FAST-41 covered processes"
+                            onclick={handleExportAll}
+                            variant="neutral"
+                            disabled={isLoading}>
+                        </lightning-button>
+                    </div>
+                </div>
+                <template if:true={rowCount}>
+                    <p class="slds-text-body_small slds-m-top_small slds-text-color_success">
+                        Last export: {rowCount} process(es) — file downloaded.
+                    </p>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+</template>

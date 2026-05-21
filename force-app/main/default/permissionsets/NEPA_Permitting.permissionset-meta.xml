@@ -490,6 +490,16 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_days_elapsed__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_fast41_covered__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>IndividualApplication.nepa_decision_document_type__c</field>
         <readable>true</readable>
@@ -692,6 +702,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>IndividualApplication.nepa_polygon__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_ofd_target_days__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

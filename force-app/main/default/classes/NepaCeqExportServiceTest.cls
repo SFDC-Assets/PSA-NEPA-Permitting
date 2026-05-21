@@ -658,6 +658,106 @@ private class NepaCeqExportServiceTest {
         }
     }
 
+    // ── generateFPISCExport ───────────────────────────────────────────────────
+
+    @IsTest
+    static void generateFPISCExport_noFast41Records_returnsEmptyList() {
+        Test.startTest();
+        List<NepaCeqExportService.FPISCRow> rows =
+            NepaCeqExportService.generateFPISCExport(null);
+        Test.stopTest();
+        // No FAST-41 covered IAs in test setup
+        System.assertNotEquals(null, rows, 'Result should not be null');
+        System.assertEquals(0, rows.size(), 'No FAST-41 records expected in base setup');
+    }
+
+    @IsTest
+    static void generateFPISCExport_withFast41Records_returnsRows() {
+        Program proj = NepaTestFactory.insertProgram('FPISC-001', 'Solar EIS FAST41', 'BLM');
+        IndividualApplication ia = NepaTestFactory.insertOpenProcess(proj.Id, 'EIS');
+        ia.nepa_fast41_covered__c  = true;
+        ia.nepa_ofd_target_days__c = 180;
+        ia.nepa_start_date__c      = Date.today().addDays(-200);
+        update ia;
+
+        Test.startTest();
+        List<NepaCeqExportService.FPISCRow> rows =
+            NepaCeqExportService.generateFPISCExport(null);
+        Test.stopTest();
+
+        System.assertEquals(1, rows.size(), 'Expected one FPISC row');
+        NepaCeqExportService.FPISCRow row = rows[0];
+        System.assertEquals(180, row.ofdTargetDays);
+        System.assertNotEquals(null, row.ofdVarianceDays,
+            'Variance should be calculated when both elapsed and target are set');
+        System.assert(row.ofdVarianceDays > 0, 'Expected positive variance for overdue process');
+    }
+
+    @IsTest
+    static void generateFPISCExport_scopedToProgram_returnsOnlyChildren() {
+        Program proj1 = NepaTestFactory.insertProgram('FPISC-P1', 'Project 1', 'BLM');
+        Program proj2 = NepaTestFactory.insertProgram('FPISC-P2', 'Project 2', 'DOE');
+        IndividualApplication ia1 = NepaTestFactory.insertOpenProcess(proj1.Id, 'EIS');
+        ia1.nepa_fast41_covered__c = true;
+        ia1.nepa_ofd_target_days__c = 180;
+        ia1.nepa_start_date__c = Date.today().addDays(-100);
+        update ia1;
+        IndividualApplication ia2 = NepaTestFactory.insertOpenProcess(proj2.Id, 'EA');
+        ia2.nepa_fast41_covered__c = true;
+        ia2.nepa_ofd_target_days__c = 90;
+        ia2.nepa_start_date__c = Date.today().addDays(-50);
+        update ia2;
+
+        Test.startTest();
+        List<NepaCeqExportService.FPISCRow> rows =
+            NepaCeqExportService.generateFPISCExport(proj1.Id);
+        Test.stopTest();
+
+        System.assertEquals(1, rows.size(), 'Scoped export should return only proj1 child');
+    }
+
+    // ── getYearOverYearTrend ──────────────────────────────────────────────────
+
+    @IsTest
+    static void getYearOverYearTrend_noCompletedRecords_returnsEmptyList() {
+        Test.startTest();
+        List<NepaCeqExportService.YoYTrendBucket> buckets =
+            NepaCeqExportService.getYearOverYearTrend(5);
+        Test.stopTest();
+        System.assertNotEquals(null, buckets);
+    }
+
+    @IsTest
+    static void getYearOverYearTrend_withCompletedRecords_returnsBuckets() {
+        Program proj = NepaTestFactory.insertProgram('YOY-001', 'YoY Test Project', 'BLM');
+        IndividualApplication ia = NepaTestFactory.insertClosedProcess(proj.Id);
+        ia.nepa_review_type__c   = 'EIS';
+        ia.nepa_process_status__c = 'completed';
+        ia.nepa_completion_date__c = Date.today().addDays(-30);
+        ia.nepa_start_date__c      = Date.today().addDays(-400);
+        update ia;
+
+        Test.startTest();
+        List<NepaCeqExportService.YoYTrendBucket> buckets =
+            NepaCeqExportService.getYearOverYearTrend(5);
+        Test.stopTest();
+
+        System.assert(buckets.size() >= 1, 'Expected at least one trend bucket');
+        NepaCeqExportService.YoYTrendBucket bucket = buckets[0];
+        System.assertNotEquals(null, bucket.calendarYear);
+        System.assertEquals('EIS', bucket.reviewType);
+        System.assertEquals(1, bucket.processCount);
+    }
+
+    @IsTest
+    static void getYearOverYearTrend_nullYearsParam_defaultsToFive() {
+        Test.startTest();
+        List<NepaCeqExportService.YoYTrendBucket> buckets =
+            NepaCeqExportService.getYearOverYearTrend(null);
+        Test.stopTest();
+        System.assertNotEquals(null, buckets, 'Null years param should default to 5, not throw');
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private static RestRequest buildRequest(String method, String uri, Map<String, String> params) {

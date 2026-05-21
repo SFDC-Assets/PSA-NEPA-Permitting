@@ -284,4 +284,121 @@ global with sharing class NepaCeqExportService {
             return defaultVal;
         }
     }
+
+    // ── FPISC / FAST-41 export ─────────────────────────────────────────────────
+
+    /** Per-process row for FPISC dashboard export. */
+    public class FPISCRow {
+        @AuraEnabled public String  projectName;
+        @AuraEnabled public String  federalUniqueId;
+        @AuraEnabled public String  leadAgency;
+        @AuraEnabled public String  reviewType;
+        @AuraEnabled public Integer daysElapsed;
+        @AuraEnabled public Integer ofdTargetDays;
+        @AuraEnabled public Integer ofdVarianceDays;
+        @AuraEnabled public String  stage;
+        @AuraEnabled public String  status;
+    }
+
+    /**
+     * Returns FPISC export rows for all active FAST-41-covered NEPA processes.
+     * When programId is provided, scopes to child processes of that Program.
+     * @param programId  Optional Program (project) Id to scope to one project
+     * @return           List of FPISCRow, one per covered IndividualApplication
+     */
+    @AuraEnabled(cacheable=false)
+    public static List<FPISCRow> generateFPISCExport(Id programId) {
+        List<IndividualApplication> records = queryFast41Records(programId);
+        List<FPISCRow> rows = new List<FPISCRow>();
+        for (IndividualApplication ia : records) {
+            FPISCRow row       = new FPISCRow();
+            row.projectName    = ia.Name;
+            row.federalUniqueId = ia.nepa_federal_unique_id__c;
+            row.leadAgency     = ia.nepa_data_source_agency__c;
+            row.reviewType     = ia.nepa_review_type__c;
+            row.daysElapsed    = ia.nepa_days_elapsed__c != null
+                ? ia.nepa_days_elapsed__c.intValue() : 0;
+            row.ofdTargetDays  = ia.nepa_ofd_target_days__c != null
+                ? ia.nepa_ofd_target_days__c.intValue() : null;
+            row.ofdVarianceDays = (row.ofdTargetDays != null)
+                ? row.daysElapsed - row.ofdTargetDays : null;
+            row.stage          = ia.nepa_process_stage__c;
+            row.status         = ia.nepa_process_status__c;
+            rows.add(row);
+        }
+        return rows;
+    }
+
+    @SuppressWarnings('PMD.ApexCRUDViolation')
+    private static List<IndividualApplication> queryFast41Records(Id programId) {
+        if (programId != null) {
+            return [
+                SELECT Id, Name, nepa_federal_unique_id__c,
+                       nepa_data_source_agency__c, nepa_review_type__c,
+                       nepa_days_elapsed__c, nepa_ofd_target_days__c,
+                       nepa_process_stage__c, nepa_process_status__c
+                FROM IndividualApplication
+                WHERE nepa_fast41_covered__c = true
+                  AND nepa_related_project__c = :programId
+                ORDER BY Name ASC
+            ];
+        }
+        return [
+            SELECT Id, Name, nepa_federal_unique_id__c,
+                   nepa_data_source_agency__c, nepa_review_type__c,
+                   nepa_days_elapsed__c, nepa_ofd_target_days__c,
+                   nepa_process_stage__c, nepa_process_status__c
+            FROM IndividualApplication
+            WHERE nepa_fast41_covered__c = true
+              AND nepa_process_status__c NOT IN ('Closed', 'Withdrawn', 'completed')
+            ORDER BY Name ASC
+        ];
+    }
+
+    // ── Year-over-year trend ───────────────────────────────────────────────────
+
+    /** One year-by-review-type trend bucket. */
+    public class YoYTrendBucket {
+        @AuraEnabled public Integer calendarYear;
+        @AuraEnabled public String  reviewType;
+        @AuraEnabled public Integer processCount;
+        @AuraEnabled public Decimal avgDaysToCompletion;
+    }
+
+    /**
+     * Returns aggregate year-over-year trend data for completed NEPA processes,
+     * grouped by calendar year and review type.
+     * @param years  Number of years back from today to include (e.g. 5)
+     * @return       List of YoYTrendBucket
+     */
+    @AuraEnabled(cacheable=true)
+    public static List<YoYTrendBucket> getYearOverYearTrend(Integer years) {
+        if (years == null || years < 1) { years = 5; }
+        Date cutoff = Date.today().addYears(-years);
+
+        List<AggregateResult> results = [
+            SELECT CALENDAR_YEAR(nepa_completion_date__c) yr,
+                   nepa_review_type__c reviewType,
+                   COUNT(Id) cnt,
+                   AVG(nepa_days_elapsed__c) avgDays
+            FROM IndividualApplication
+            WHERE nepa_process_status__c IN ('completed', 'Closed')
+              AND nepa_completion_date__c != null
+              AND nepa_completion_date__c >= :cutoff
+            GROUP BY CALENDAR_YEAR(nepa_completion_date__c), nepa_review_type__c
+            ORDER BY CALENDAR_YEAR(nepa_completion_date__c) ASC, nepa_review_type__c ASC
+        ];
+
+        List<YoYTrendBucket> buckets = new List<YoYTrendBucket>();
+        for (AggregateResult ar : results) {
+            YoYTrendBucket b    = new YoYTrendBucket();
+            b.calendarYear      = (Integer) ar.get('yr');
+            b.reviewType        = (String)  ar.get('reviewType');
+            b.processCount      = (Integer) ar.get('cnt');
+            b.avgDaysToCompletion = ar.get('avgDays') != null
+                ? ((Decimal) ar.get('avgDays')).setScale(1) : null;
+            buckets.add(b);
+        }
+        return buckets;
+    }
 }

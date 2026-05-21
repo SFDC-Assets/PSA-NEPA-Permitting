@@ -1042,4 +1042,12 @@ else
     echo "            → NEPA_GISProximityIP OmniIntegrationProcedure"
     echo "            → DRUpsertDetectedLayer DataRaptor (upserts nepa_detected_protection_layer__c)"
     echo "            → sets nepa_gis_proximity_complete__c = true"
+    echo ""
+    echo "    8. FPISC / FAST-41 OFD export (F-15):"
+    echo "       Add nepaFpiscExportButton LWC to Program or IndividualApplication record pages"
+    echo "       via Lightning App Builder. OFD Variance Alert (NEPA_OFD_Variance_Alert)"
+    echo "       runs daily at 07:00 UTC — no additional activation needed."
+    echo "       Verify: sf data query --query \"SELECT COUNT() FROM Flow WHERE DeveloperName = 'NEPA_OFD_Variance_Alert' AND Status = 'Active'\" --use-tooling-api --target-org $TARGET_ORG"
+    echo ""
+    echo "    Full post-deploy checklist with exact commands: DEVELOPER_GUIDE.md § Post-Deploy Checklist"
 fi

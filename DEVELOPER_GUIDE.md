@@ -9,19 +9,269 @@ This guide covers build tasks and the demo validation sprint, in priority order.
 
 ## Post-Deploy Checklist (Required After Every Deployment to a New Org)
 
-The `sf project deploy start` command (via `deploy.sh`) deploys all metadata and automates BRE row loading and activation. The following items still require manual Setup steps:
+Run `deploy.sh` first. It handles metadata, BRE row loading, OmniStudio deployment, agent publishing, LWC, and FlexiPages automatically. The steps below are what `deploy.sh` **cannot** automate — they require UI clicks, org-side configuration, or credentials that are not stored in source control.
 
-| # | Step | Where in Setup | Time |
-|---|---|---|---|
-| **1** | **Convert `nepa_process_stage__c` from Text to Picklist** (first-time only, or if deploying to an org with existing records) | Setup → Object Manager → IndividualApplication → Fields and Relationships → `nepa_process_stage__c` → Edit → change type to Picklist → Save. Then re-deploy the field. | ~3 min |
-| **2** | **Add ROD and FONSI record types** | Setup → Object Manager → IndividualApplication → Record Types → New. Add `ROD` and `FONSI` record types. Required for the `NEPA_Close_Administrative_Record` flow entry condition. | ~2 min |
+**Total time: ~15 minutes automated + ~25 minutes manual = ~40 minutes end-to-end for a full fresh-org deploy.**
 
-**BRE Decision Matrix rows and Expression Set activation are automated** by `deploy.sh` Phase 5b-data. No Setup UI steps are needed. If Phase 5b-data fails, re-run:
+---
+
+### Step 1 — Assign Permission Set (5 min)
+
 ```bash
-python3 scripts/load_decision_matrix_rows.py --org <alias> --activate-es
+sf org assign permset --name NEPA_Permitting --target-org <alias>
+# Or for a specific user:
+sf org assign permset --name NEPA_Permitting --on-behalf-of user@example.com --target-org <alias>
 ```
 
-**Total: ~15 minutes of automated deployment + ~5 minutes of manual post-deploy steps ≈ 20 minutes end-to-end.**
+The `NEPA_Permitting` permission set grants: all custom field access (FLS), custom object CRUD, Apex class access, tab visibility, and the NEPA Permitting Lightning app.
+
+---
+
+### Step 2 — One-time Schema Fixes (first deploy only, ~5 min)
+
+These are first-org-deploy-only steps. Skip if you've deployed before.
+
+| Step | Where | Why |
+|---|---|---|
+| Convert `nepa_process_stage__c` to Picklist | Setup → Object Manager → IndividualApplication → Fields → `nepa_process_stage__c` → Edit → change Type to Picklist → Save, then re-deploy the field | Salesforce does not allow the Metadata API to change a deployed Text field to Picklist on a live org. Must be done in UI first-time. |
+| Add `ROD` and `FONSI` record types | Setup → Object Manager → IndividualApplication → Record Types → New | Required by `NEPA_Close_Administrative_Record` flow entry condition. |
+
+---
+
+### Step 3 — Verify Flows Are Active (~2 min)
+
+All `NEPA_*` flows deploy with `status=Active`. Verify in Setup → Flows.
+
+**Exceptions — do NOT deploy these until Einstein generative AI is provisioned in the org:**
+```bash
+# Deploy only when Einstein AI is available:
+sf project deploy start --metadata "Flow:NEPA_EIS_Section_Assembler" --target-org <alias> --test-level NoTestRun --wait 30
+sf project deploy start --metadata "Flow:NEPA_EIS_Section_Draft_Trigger" --target-org <alias> --test-level NoTestRun --wait 30
+```
+
+**Verify the OFD Variance Alert scheduled flow ran:**
+```bash
+sf data query --query "SELECT COUNT() FROM Task WHERE Subject LIKE 'OFD Timeline Variance%'" --target-org <alias>
+```
+
+---
+
+### Step 4 — BRE Decision Matrices (~2 min, usually automated)
+
+`deploy.sh` Phase 5b-data loads all Decision Matrix rows and activates Expression Sets automatically. Verify:
+
+```bash
+# Check activation status of key Expression Sets
+sf data query --query "SELECT DeveloperName, IsActive FROM ExpressionSet WHERE DeveloperName LIKE 'NEPA_%'" --use-tooling-api --target-org <alias>
+```
+
+If Phase 5b-data failed, re-run:
+```bash
+python3 scripts/load_decision_matrix_rows.py --org <alias> --activate-es
+# Or reload a specific DM:
+python3 scripts/load_decision_matrix_rows.py --org <alias> --dm NEPA_Risk_Agency --no-skip
+# Or preview without writing:
+python3 scripts/load_decision_matrix_rows.py --org <alias> --dry-run
+```
+
+---
+
+### Step 5 — Verify Custom Metadata Records (~2 min)
+
+```bash
+# Check key CMT record counts
+sf data query --query "SELECT COUNT() FROM NEPA_Permit_Matrix__mdt WHERE Active__c = true" --target-org <alias>
+# Expected: 25
+
+sf data query --query "SELECT COUNT() FROM NEPA_Permit_Type_Catalog__mdt" --target-org <alias>
+# Expected: 49
+
+sf data query --query "SELECT COUNT() FROM NEPA_Layer_Discipline__mdt" --target-org <alias>
+# Expected: 7
+```
+
+**Verify regulatory code seed data:**
+```bash
+sf data query --query "SELECT COUNT() FROM RegulatoryAuthorizationType WHERE Name LIKE 'CWA%' OR Name LIKE 'ESA%'" --target-org <alias>
+# Expected: 49
+
+sf data query --query "SELECT COUNT() FROM RegulatoryCode" --target-org <alias>
+# Expected: 24
+```
+
+If counts are wrong:
+```bash
+sf data import tree --files data/seed/regulatory_authorization_type_seed.json --target-org <alias>
+sf data import tree --files data/seed/regulatory_code_seed.json --target-org <alias>
+```
+
+---
+
+### Step 6 — Load Reference Data (~3 min)
+
+**CE Library** (314 priority-agency records from CEQ CE Explorer v2.0):
+```bash
+python3 scripts/load_ce_library.py --org <alias>
+# Idempotent — safe to re-run. Uses nepa_ce_explorer_id__c as external ID.
+# Full 2,105-record dataset (requires exclusions.json in repo root):
+python3 scripts/load_ce_library.py --org <alias> --all
+```
+
+**NAICS code data** (2,129 records — loaded via Apex anonymous):
+```bash
+# Verify records exist first:
+sf data query --query "SELECT Level__c, COUNT(Id) cnt FROM NEPA_NAICS_Code__mdt GROUP BY Level__c" --target-org <alias>
+# Expected: Sector(20) SubSector(96) IndustryGroup(308) Industry(692) NationalIndustry(1013)
+```
+
+If missing, reload from the authoritative NAICS 2022 CSV using `Metadata.Operations.enqueueDeployment` in Apex anonymous (40-record batches).
+
+**Demo data** (optional):
+```bash
+sf apex run --file scripts/seed-sample-data.apex --target-org <alias>
+```
+
+**ServiceResource discipline values** (GIS team assembly):
+```bash
+sf apex run --file demo/import_data/21_postload_discipline.apex --target-org <alias>
+```
+
+---
+
+### Step 7 — Agentforce Agents (ACTION REQUIRED, ~5 min)
+
+`deploy.sh` Phase 15b runs `sf agent publish authoring-bundle` for each `.agent` file. Publishing deploys but does **not** activate. Activation requires a smoke test first.
+
+#### NEPA_Comment_Triage (Employee Agent)
+```bash
+# Preview and smoke test:
+sf agent preview start --api-name NEPA_Comment_Triage --target-org <alias> --simulate-actions
+# (send a few test comments, verify EJ gate fires before LLM call)
+sf agent preview end --target-org <alias>
+
+# Activate:
+sf agent activate --api-name NEPA_Comment_Triage --target-org <alias>
+```
+
+#### NEPA_PreApp_Screener (Service Agent — PUBLIC FACING)
+```bash
+# 1. Create the agent user (required before activation):
+sf org create agent-user --agent-api-name NEPA_PreApp_Screener --target-org <alias>
+
+# 2. Assign permission set to the agent user:
+sf org assign permset --name NEPA_Permitting \
+  --on-behalf-of nepa_preapp_agent@nepa.gov \
+  --target-org <alias>
+
+# 3. Preview with simulated actions:
+sf agent preview start --api-name NEPA_PreApp_Screener --target-org <alias> --simulate-actions
+# Test: "I want to build an oil and gas pipeline on BLM land in Wyoming"
+# Expected: sector_qualification → run_screening → results_display with CE/EA/EIS pathway
+sf agent preview end --target-org <alias>
+
+# 4. Activate:
+sf agent activate --api-name NEPA_PreApp_Screener --target-org <alias>
+```
+
+> **Note:** `NEPA_PreApp_Screener` is a Service Agent. The agent user (`nepa_preapp_agent@nepa.gov`) must exist and have API access before activation will succeed. If publish fails with "invalid Service Agent user", run `sf org create agent-user` first.
+
+---
+
+### Step 8 — OmniStudio Activation (ACTION REQUIRED, ~5 min)
+
+The Metadata API deploys OmniScript records but does **not** compile the LWC components that render them. Activation via OmniStudio Designer triggers the LWC compilation step.
+
+```bash
+# Open OmniStudio Designer:
+sf org open --target-org <alias> --path /lightning/setup/OmniStudioDesigner/home
+```
+
+In Designer, activate these OmniProcesses in order:
+
+| Type | Name | Path in Designer |
+|---|---|---|
+| Integration Procedure | NEPA / PreApp_Screening_IP / English / 1 | Integration Procedures tab → find → Activate |
+| OmniScript | NEPA / CE Intake / English / 1 | OmniScripts tab → find → Activate |
+
+> Without activation: OmniScripts render blank with LDS normalization errors in the console. Integration Procedures called from Apex or agents will still work — only the Designer UI preview and OmniScript embed require LWC compilation.
+
+---
+
+### Step 9 — ArcGIS Map Component (~3 min, ACTION REQUIRED if using site location picker)
+
+The `nepaSiteLocationPickerOmni` LWC requires:
+
+**a. Set ESRI API key:**
+Setup → Custom Metadata Types → `NEPA Map Config` → `API Key` → Edit → set Value
+
+**b. Add CSP Trusted Sites** (Setup → Security → CSP Trusted Sites):
+
+| Name | URL | Directive |
+|---|---|---|
+| `ArcGIS_JS_CDN` | `https://js.arcgis.com` | `script-src` |
+| `ArcGIS_Tiles` | `https://*.arcgis.com` | `connect-src` |
+
+Without the API key: map loads but basemap tiles are blank.
+Without CSP entries: ArcGIS SDK is blocked and the iframe shows blank.
+
+---
+
+### Step 10 — GIS Proximity Chain Verification (~2 min)
+
+```bash
+# Set lat/lon on a Program record and verify the chain fires:
+# Setup → Program record → set nepa_location_lat__c and nepa_location_lon__c
+# Wait ~10s, refresh — nepa_protection_areas__c should populate
+```
+
+Expected chain:
+1. `NEPA_GIS_Proximity_Check` flow fires (after-save on Program)
+2. → `NepaGISProximityIPInvoker` Apex (bridge to OmniStudio)
+3. → `NEPA_GISProximityIP` Integration Procedure
+4. → `DRUpsertDetectedLayer` DataRaptor (upserts `nepa_detected_protection_layer__c`)
+5. → sets `nepa_gis_proximity_complete__c = true`
+
+---
+
+### Step 11 — FPISC / FAST-41 Export Setup (~1 min)
+
+The `nepaFpiscExportButton` LWC must be added to the Program and/or IndividualApplication record pages manually via Lightning App Builder:
+
+```bash
+sf org open --target-org <alias> --path /lightning/setup/AppBuilder/home
+# → Edit Program_Record_Page → add nepaFpiscExportButton component to a column
+```
+
+For the OFD Variance Alert scheduled flow to fire, at least one IndividualApplication must have:
+- `nepa_fast41_covered__c = true`
+- `nepa_ofd_target_days__c` set (numeric days)
+- `nepa_start_date__c` set
+- Status not in Closed/Withdrawn/completed
+
+---
+
+### Quick Verification Commands
+
+After completing all steps, run these to confirm end-to-end health:
+
+```bash
+# Permission set assigned
+sf data query --query "SELECT COUNT() FROM PermissionSetAssignment WHERE PermissionSet.Name = 'NEPA_Permitting'" --target-org <alias>
+
+# Flows active
+sf data query --query "SELECT DeveloperName, Status FROM Flow WHERE DeveloperName LIKE 'NEPA_%' AND Status != 'Active'" --use-tooling-api --target-org <alias>
+# Should return 0 rows (except EIS Assembler/Draft Trigger if Einstein not provisioned)
+
+# Agents published (not necessarily active)
+sf agent list --target-org <alias>
+
+# CE Library loaded
+sf data query --query "SELECT COUNT() FROM nepa_ce_library__c WHERE nepa_active__c = true" --target-org <alias>
+# Expected: ~314 (priority) or ~2105 (full)
+
+# FAST-41 OFD monitoring live
+sf data query --query "SELECT COUNT() FROM IndividualApplication WHERE nepa_fast41_covered__c = true" --target-org <alias>
+```
 
 ---
 

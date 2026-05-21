@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_fast41_covered__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Indicates this NEPA process is subject to FAST-41 (42 USC 4370m) One Federal Decision requirements. When true, the OFD target days field (nepa_ofd_target_days__c) must be set and the NEPA_OFD_Variance_Alert scheduled flow will monitor for timeline overruns.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Check if this project is covered by FAST-41 (Fixing America's Surface Transportation Act) Title 41 permitting requirements.</inlineHelpText>
+    <label>FAST-41 Covered</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

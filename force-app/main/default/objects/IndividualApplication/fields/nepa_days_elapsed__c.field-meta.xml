@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_days_elapsed__c</fullName>
+    <description>Formula field: calendar days elapsed from nepa_start_date__c to today (or nepa_completion_date__c if the process is complete). Used by NEPA_OFD_Variance_Alert to compare against nepa_ofd_target_days__c for FAST-41 FPISC reporting.</description>
+    <externalId>false</externalId>
+    <formula>IF(
+  NOT(ISBLANK(nepa_completion_date__c)),
+  nepa_completion_date__c - nepa_start_date__c,
+  IF(
+    NOT(ISBLANK(nepa_start_date__c)),
+    TODAY() - nepa_start_date__c,
+    0
+  )
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Calendar days elapsed from application receipt to today (or completion date). Used for OFD variance monitoring.</inlineHelpText>
+    <label>Days Elapsed</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackHistory>false</trackHistory>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>
