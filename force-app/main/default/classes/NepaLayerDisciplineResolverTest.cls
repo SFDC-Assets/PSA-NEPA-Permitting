@@ -31,8 +31,8 @@ private class NepaLayerDisciplineResolverTest {
             'No detected layers → anyHitsFound must be false');
         System.assertEquals(0, res.teamMembersCreated,
             'No hits → no team members created');
-        System.assertEquals(0, res.workOrdersCreated,
-            'No hits → no work orders created');
+        System.assertEquals(0, res.visitsCreated,
+            'No hits → no visits created');
         System.assertEquals(null, res.errorMessage,
             'No exception expected when there are no hit layers');
     }

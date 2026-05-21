@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>Before-save on Visit (insert only). Fires when nepa_auto_generated__c = true and nepa_discipline__c is set. Looks up NEPA_Layer_Discipline__mdt for Is_Hard_Gate__c, Survey_Window_Start_Month__c, and Survey_Window_End_Month__c, then writes nepa_hard_gate__c and PlannedVisitStartTime/PlannedVisitEndTime onto the new Visit record in the same transaction — no extra DML required.</description>
+    <label>NEPA Visit Survey Window Setter</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Active</status>
+
+    <!-- ============================================================
+         TRIGGER: Visit before-save, insert only
+         Entry: auto-generated Visit with discipline set
+    ============================================================ -->
+    <start>
+        <locationX>176</locationX>
+        <locationY>48</locationY>
+        <object>Visit</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+        <filterLogic>1 AND 2</filterLogic>
+        <filters>
+            <field>nepa_auto_generated__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_discipline__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <connector>
+            <targetReference>Get_LayerDisciplineConfig</targetReference>
+        </connector>
+    </start>
+
+    <!-- ============================================================
+         LOOKUP: NEPA_Layer_Discipline__mdt by discipline
+         CMT queries are governor-exempt
+    ============================================================ -->
+    <recordLookups>
+        <name>Get_LayerDisciplineConfig</name>
+        <label>Get Layer Discipline Config</label>
+        <locationX>176</locationX>
+        <locationY>176</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_ConfigFound</targetReference>
+        </connector>
+        <filterLogic>1 AND 2</filterLogic>
+        <filters>
+            <field>Discipline__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.nepa_discipline__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Active__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>NEPA_Layer_Discipline__mdt</object>
+        <outputReference>var_LayerConfig</outputReference>
+        <queriedFields>Is_Hard_Gate__c</queriedFields>
+        <queriedFields>Survey_Window_Start_Month__c</queriedFields>
+        <queriedFields>Survey_Window_End_Month__c</queriedFields>
+    </recordLookups>
+
+    <!-- ============================================================
+         DECISION: did we get a config record?
+    ============================================================ -->
+    <decisions>
+        <name>Decision_ConfigFound</name>
+        <label>Config Found?</label>
+        <locationX>176</locationX>
+        <locationY>304</locationY>
+        <defaultConnector>
+            <targetReference>Decision_HasWindowStart</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Config Found</defaultConnectorLabel>
+        <rules>
+            <name>Rule_NoConfig</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_LayerConfig</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <label>No Config — exit with defaults</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         DECISION: does this discipline have a survey window?
+    ============================================================ -->
+    <decisions>
+        <name>Decision_HasWindowStart</name>
+        <label>Has Survey Window?</label>
+        <locationX>176</locationX>
+        <locationY>432</locationY>
+        <defaultConnector>
+            <targetReference>Assign_HardGateOnly</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Window — set hard gate only</defaultConnectorLabel>
+        <rules>
+            <name>Rule_HasWindow</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_LayerConfig.Survey_Window_Start_Month__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_WindowAndGate</targetReference>
+            </connector>
+            <label>Has Survey Window</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         ASSIGN: set hard gate from CMT only (no seasonal window)
+    ============================================================ -->
+    <assignments>
+        <name>Assign_HardGateOnly</name>
+        <label>Set Hard Gate (no seasonal window)</label>
+        <locationX>400</locationX>
+        <locationY>432</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.nepa_hard_gate__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_LayerConfig.Is_Hard_Gate__c</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+
+    <!-- ============================================================
+         ASSIGN: set hard gate + computed survey window dates
+         Formula_NextWindowStart: next occurrence of window start month
+           - if today's month <= start month: DATE(this year, startMonth, 1)
+           - else: DATE(next year, startMonth, 1)
+         Formula_WindowEnd: day 28 of end month in same year as start
+           (day 28 is always valid; coordinators adjust for Feb/month-end precision)
+    ============================================================ -->
+    <assignments>
+        <name>Assign_WindowAndGate</name>
+        <label>Set Hard Gate + Survey Window Dates</label>
+        <locationX>176</locationX>
+        <locationY>560</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.nepa_hard_gate__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_LayerConfig.Is_Hard_Gate__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.PlannedVisitStartTime</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Formula_NextWindowStart</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.PlannedVisitEndTime</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Formula_WindowEnd</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+
+    <!-- ============================================================
+         FORMULAS
+    ============================================================ -->
+    <formulas>
+        <name>Formula_NextWindowStart</name>
+        <dataType>Date</dataType>
+        <expression>IF(
+  MONTH(TODAY()) &lt;= {!var_LayerConfig.Survey_Window_Start_Month__c},
+  DATE(YEAR(TODAY()), {!var_LayerConfig.Survey_Window_Start_Month__c}, 1),
+  DATE(YEAR(TODAY()) + 1, {!var_LayerConfig.Survey_Window_Start_Month__c}, 1)
+)</expression>
+    </formulas>
+
+    <formulas>
+        <name>Formula_WindowEnd</name>
+        <dataType>Date</dataType>
+        <expression>IF(
+  MONTH({!Formula_NextWindowStart}) &lt;= {!var_LayerConfig.Survey_Window_End_Month__c},
+  DATE(YEAR({!Formula_NextWindowStart}), {!var_LayerConfig.Survey_Window_End_Month__c}, 28),
+  DATE(YEAR({!Formula_NextWindowStart}) + 1, {!var_LayerConfig.Survey_Window_End_Month__c}, 28)
+)</expression>
+    </formulas>
+
+    <!-- ============================================================
+         VARIABLES
+    ============================================================ -->
+    <variables>
+        <name>var_LayerConfig</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>NEPA_Layer_Discipline__mdt</objectType>
+    </variables>
+
+</Flow>

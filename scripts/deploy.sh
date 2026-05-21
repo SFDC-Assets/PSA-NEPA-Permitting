@@ -706,6 +706,9 @@ FLOWS=(
     NEPA_Team_Assembly_Orchestrator
     NEPA_Close_Administrative_Record
     NEPA_Comment_Duplicate_Check
+    # Visit survey automation flows (depend on NEPA_Error_Logger)
+    NEPA_Visit_Survey_Window_Setter
+    NEPA_Visit_Completion_Assessor
     # Flows that depend on NEPA_EJTribal_Router (must come after it)
     NEPA_Comment_AI_Router
     NEPA_Comment_ResponseTask_Creator

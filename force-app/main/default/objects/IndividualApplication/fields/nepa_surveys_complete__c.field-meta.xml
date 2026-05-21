@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_surveys_complete__c</fullName>
+    <label>Field Surveys Complete</label>
+    <type>Checkbox</type>
+    <defaultValue>false</defaultValue>
+    <description>Set to true by NEPA_Visit_Completion_Assessor when all auto-generated hard-gate Visits on this process are Completed. Cleared to false automatically when a new auto-generated hard-gate Visit is created. Used by NEPA_Stage_Gate_Doc_Check to gate process advancement past Draft EA/EIS stages.</description>
+    <trackHistory>false</trackHistory>
+</CustomField>

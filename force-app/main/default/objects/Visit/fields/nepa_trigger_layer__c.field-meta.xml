@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_trigger_layer__c</fullName>
+    <label>Trigger Layer</label>
+    <type>Lookup</type>
+    <referenceTo>nepa_detected_protection_layer__c</referenceTo>
+    <relationshipLabel>Triggered Field Survey Visits</relationshipLabel>
+    <relationshipName>Triggered_Field_Survey_Visits</relationshipName>
+    <required>false</required>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>The nepa_detected_protection_layer__c record that caused this Visit to be created. Links the field survey back to the specific federal protection layer that triggered it.</description>
+    <inlineHelpText>The detected federal protection layer (e.g., NWI Wetlands) that triggered this field survey visit.</inlineHelpText>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+</CustomField>

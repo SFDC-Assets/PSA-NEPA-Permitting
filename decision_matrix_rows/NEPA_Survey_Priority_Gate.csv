@@ -1,0 +1,22 @@
+Discipline,ReviewType,Priority,IsHardGate,WindowStartMonth,WindowEndMonth
+Hydrology,EIS,High,true,3,9
+Hydrology,EA,High,true,3,9
+Hydrology,CE,Medium,true,3,9
+Wildlife Biologist,EIS,High,true,4,7
+Wildlife Biologist,EA,High,true,4,7
+Wildlife Biologist,CE,Medium,false,4,7
+Botanist,EIS,High,true,5,8
+Botanist,EA,High,true,5,8
+Botanist,CE,Medium,false,5,8
+Aquatic Biologist,EIS,High,true,3,6
+Aquatic Biologist,EA,High,true,3,6
+Aquatic Biologist,CE,Medium,false,3,6
+Geologist,EIS,Medium,false,1,12
+Geologist,EA,Medium,false,1,12
+Geologist,CE,Medium,false,1,12
+NEPA Specialist,EIS,Medium,false,1,12
+NEPA Specialist,EA,Medium,false,1,12
+NEPA Specialist,CE,Medium,false,1,12
+*,EIS,Medium,false,1,12
+*,EA,Medium,false,1,12
+*,CE,Low,false,1,12

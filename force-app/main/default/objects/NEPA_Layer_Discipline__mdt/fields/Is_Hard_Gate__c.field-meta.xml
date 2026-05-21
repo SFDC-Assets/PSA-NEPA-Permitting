@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Is_Hard_Gate__c</fullName>
+    <label>Is Hard Gate</label>
+    <type>Checkbox</type>
+    <defaultValue>false</defaultValue>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <description>When true, the Visit created for this discipline blocks stage advancement on the parent IndividualApplication until marked Completed. NEPA_Visit_Survey_Window_Setter copies this value to Visit.nepa_hard_gate__c at insert time. Disciplines with extraordinary-circumstances potential (wetlands, critical habitat) should be flagged true.</description>
+</CustomField>

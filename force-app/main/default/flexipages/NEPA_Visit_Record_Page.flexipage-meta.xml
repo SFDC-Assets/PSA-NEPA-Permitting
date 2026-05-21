@@ -13,18 +13,6 @@
                     <name>enableActionsConfiguration</name>
                     <value>false</value>
                 </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>enableActionsInNative</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>hideChatterActions</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>numVisibleActions</name>
-                    <value>3</value>
-                </componentInstanceProperties>
                 <componentName>force:highlightsPanel</componentName>
                 <identifier>force_highlightsPanel</identifier>
             </componentInstance>
@@ -34,18 +22,8 @@
         <type>Region</type>
     </flexiPageRegions>
 
-    <!-- WORK ORDER — Column 1 -->
+    <!-- SECTION: Field Survey Details — Column 1 -->
     <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.Subject</fieldItem>
-                <identifier>wo_subject</identifier>
-            </fieldInstance>
-        </itemInstances>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
@@ -53,53 +31,7 @@
                     <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.Status</fieldItem>
-                <identifier>wo_status</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.Priority</fieldItem>
-                <identifier>wo_priority</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.WorkTypeId</fieldItem>
-                <identifier>wo_work_type</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.Duration</fieldItem>
-                <identifier>wo_duration</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>wo-core-c1</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- WORK ORDER — Column 2 -->
-    <flexiPageRegions>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_process__c</fieldItem>
-                <identifier>wo_nepa_process</identifier>
+                <identifier>visit_status</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -109,7 +41,7 @@
                     <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_discipline__c</fieldItem>
-                <identifier>wo_nepa_discipline</identifier>
+                <identifier>visit_discipline</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -118,8 +50,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_trigger_layer__c</fieldItem>
-                <identifier>wo_nepa_trigger_layer</identifier>
+                <fieldItem>Record.VisitPriority</fieldItem>
+                <identifier>visit_priority</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -129,7 +61,7 @@
                     <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_auto_generated__c</fieldItem>
-                <identifier>wo_nepa_auto_generated</identifier>
+                <identifier>visit_auto_generated</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -139,7 +71,23 @@
                     <value>none</value>
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_hard_gate__c</fieldItem>
-                <identifier>wo_nepa_hard_gate</identifier>
+                <identifier>visit_hard_gate</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>visit-details-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Field Survey Details — Column 2 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.PlannedVisitStartTime</fieldItem>
+                <identifier>visit_start_time</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -148,67 +96,67 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.AccountId</fieldItem>
-                <identifier>wo_account</identifier>
+                <fieldItem>Record.PlannedVisitEndTime</fieldItem>
+                <identifier>visit_end_time</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>wo-core-c2</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- WORK ORDER — Columns Wrapper -->
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>wo-core-c1</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>wo_core_col1</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>wo-core-c2</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:column</componentName>
-                <identifier>wo_core_col2</identifier>
-            </componentInstance>
-        </itemInstances>
-        <name>wo-core-cols</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-
-    <!-- DESCRIPTION — full width -->
-    <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.Description</fieldItem>
-                <identifier>wo_description</identifier>
+                <fieldItem>Record.ContextId</fieldItem>
+                <identifier>visit_context</identifier>
             </fieldInstance>
         </itemInstances>
-        <name>wo-desc-c1</name>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_process__c</fieldItem>
+                <identifier>visit_nepa_process</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_trigger_layer__c</fieldItem>
+                <identifier>visit_trigger_layer</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>visit-details-c2</name>
         <type>Facet</type>
     </flexiPageRegions>
+
+    <!-- SECTION: Field Survey Details — Columns Wrapper -->
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
                     <name>body</name>
-                    <value>wo-desc-c1</value>
+                    <value>visit-details-c1</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:column</componentName>
-                <identifier>wo_desc_col1</identifier>
+                <identifier>visit_details_col1</identifier>
             </componentInstance>
         </itemInstances>
-        <name>wo-desc-cols</name>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>visit-details-c2</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>visit_details_col2</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>visit-details-cols</name>
         <type>Facet</type>
     </flexiPageRegions>
 
@@ -218,7 +166,7 @@
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
-                    <value>wo-core-cols</value>
+                    <value>visit-details-cols</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>horizontalAlignment</name>
@@ -226,28 +174,10 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>label</name>
-                    <value>Work Order Details</value>
+                    <value>Field Survey Details</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
-                <identifier>wo_section_core</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>columns</name>
-                    <value>wo-desc-cols</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>horizontalAlignment</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>label</name>
-                    <value>Description</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:fieldSection</componentName>
-                <identifier>wo_section_desc</identifier>
+                <identifier>visit_section_details</identifier>
             </componentInstance>
         </itemInstances>
         <mode>Replace</mode>
@@ -328,7 +258,7 @@
         <type>Region</type>
     </flexiPageRegions>
 
-    <!-- SIDEBAR -->
+    <!-- SIDEBAR: Activity -->
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
@@ -383,9 +313,9 @@
         <type>Region</type>
     </flexiPageRegions>
 
-    <masterLabel>NEPA Work Order Record Page</masterLabel>
+    <masterLabel>NEPA Visit Record Page</masterLabel>
     <parentFlexiPage>flexipage__default_rec_L</parentFlexiPage>
-    <sobjectType>WorkOrder</sobjectType>
+    <sobjectType>Visit</sobjectType>
     <template>
         <name>flexipage:recordHomeTemplateDesktop</name>
     </template>

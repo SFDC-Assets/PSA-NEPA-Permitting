@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Survey_Window_End_Month__c</fullName>
+    <label>Survey Window End Month</label>
+    <type>Number</type>
+    <precision>2</precision>
+    <scale>0</scale>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <description>Month (1–12) when the survey window closes for this discipline. NEPA_Visit_Survey_Window_Setter uses this to set PlannedVisitEndTime to the last day of this month in the same year as the start. Leave blank if no seasonal constraint applies.</description>
+</CustomField>

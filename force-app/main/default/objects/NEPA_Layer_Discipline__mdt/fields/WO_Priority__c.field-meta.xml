@@ -5,5 +5,5 @@
     <type>Text</type>
     <length>10</length>
     <fieldManageability>DeveloperControlled</fieldManageability>
-    <description>WorkOrder.Priority to set at creation. Must be a valid picklist value: High or Normal. Layers with extraordinary-circumstances potential (wetlands, critical habitat) default to High; informational layers (EJScreen) default to Normal.</description>
+    <description>Visit.VisitPriority to set at creation. Maps to VisitPriority picklist: Critical, High, Medium, Low. Layers with extraordinary-circumstances potential (wetlands, critical habitat) default to High; informational layers (EJScreen) default to Medium.</description>
 </CustomField>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_hard_gate__c</fullName>
+    <label>Hard Gate</label>
+    <type>Checkbox</type>
+    <defaultValue>false</defaultValue>
+    <description>When true, this visit blocks stage advancement on the related IndividualApplication. The NEPA_Stage_Gate flow checks for any open visit with nepa_hard_gate__c = true before allowing process stage transition. Set to true by NEPA_Plaintiff_Intelligence for tribal consultation visits and by NEPA_CE_Screener for extraordinary-circumstances visits.</description>
+    <inlineHelpText>This visit is a hard gate. The process cannot advance to the next stage until this visit is completed.</inlineHelpText>
+    <trackHistory>false</trackHistory>
+</CustomField>

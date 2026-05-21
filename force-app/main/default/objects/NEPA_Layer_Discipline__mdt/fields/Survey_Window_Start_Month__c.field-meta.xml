@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Survey_Window_Start_Month__c</fullName>
+    <label>Survey Window Start Month</label>
+    <type>Number</type>
+    <precision>2</precision>
+    <scale>0</scale>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <description>Month (1–12) when the survey window opens for this discipline. NEPA_Visit_Survey_Window_Setter uses this to set PlannedVisitStartTime to the next occurrence of this month at or after today. Leave blank to allow scheduling any time of year.</description>
+</CustomField>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_discipline__c</fullName>
+    <label>Discipline</label>
+    <type>Text</type>
+    <length>100</length>
+    <required>false</required>
+    <description>Specialist discipline for this field survey visit (e.g., Hydrology, Sage-Grouse, Botany). Must exactly match ServiceResource.nepa_discipline__c and NEPA_Layer_Discipline__mdt.Discipline__c. Populated by NEPA_Team_Assembly_Orchestrator.</description>
+    <inlineHelpText>The specialist discipline required for this field survey (e.g., Hydrology, Botany).</inlineHelpText>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <unique>false</unique>
+    <caseSensitive>false</caseSensitive>
+    <externalId>false</externalId>
+</CustomField>

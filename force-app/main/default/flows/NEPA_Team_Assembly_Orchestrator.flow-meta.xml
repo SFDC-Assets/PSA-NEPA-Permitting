@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>After-save async flow on Program. Fires when nepa_gis_proximity_complete__c changes to true. Delegates CMT-to-hit-layer matching, ServiceResource lookup, team member creation, and Work Order creation to NepaLayerDisciplineResolver (Apex invocable). On re-run, deactivates existing auto-assembled team members and cancels auto-generated Work Orders before re-assembling via filter-based recordUpdates.</description>
+    <description>After-save async flow on Program. Fires when nepa_gis_proximity_complete__c changes to true. Delegates CMT-to-hit-layer matching, ServiceResource lookup, team member creation, and Visit creation to NepaLayerDisciplineResolver (Apex invocable). On re-run, deactivates existing auto-assembled team members and cancels auto-generated Visits before re-assembling via filter-based recordUpdates.</description>
     <environments>Default</environments>
     <interviewLabel>NEPA Team Assembly Orchestrator {!$Flow.CurrentDateTime}</interviewLabel>
     <label>NEPA Team Assembly Orchestrator</label>
@@ -84,7 +84,7 @@
         <locationY>528</locationY>
         <defaultConnectorLabel>First Time — Assemble Team</defaultConnectorLabel>
         <defaultConnector>
-            <targetReference>Assemble_TeamAndWOs</targetReference>
+            <targetReference>Assemble_TeamAndVisits</targetReference>
         </defaultConnector>
         <rules>
             <name>IsReRun</name>
@@ -103,28 +103,28 @@
         </rules>
     </decisions>
     <decisions>
-        <name>Decision_AutoWOsExist</name>
-        <label>Auto WOs to Cancel?</label>
+        <name>Decision_AutoVisitsExist</name>
+        <label>Auto Visits to Cancel?</label>
         <locationX>176</locationX>
         <locationY>888</locationY>
-        <defaultConnectorLabel>No Auto WOs — Assemble Team</defaultConnectorLabel>
+        <defaultConnectorLabel>No Auto Visits — Assemble Team</defaultConnectorLabel>
         <defaultConnector>
-            <targetReference>Assemble_TeamAndWOs</targetReference>
+            <targetReference>Assemble_TeamAndVisits</targetReference>
         </defaultConnector>
         <rules>
-            <name>AutoWOsExist</name>
+            <name>AutoVisitsExist</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>var_ExistingAutoWOs</leftValueReference>
+                <leftValueReference>var_ExistingAutoVisits</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Update_CancelledWOs</targetReference>
+                <targetReference>Update_CancelledVisits</targetReference>
             </connector>
-            <label>Auto WOs Exist</label>
+            <label>Auto Visits Exist</label>
         </rules>
     </decisions>
     <decisions>
@@ -181,8 +181,8 @@
     </decisions>
     <!-- ═══════════════════════════════════════════════════════════════════ -->
     <actionCalls>
-        <name>Assemble_TeamAndWOs</name>
-        <label>Assemble Team and Create Work Orders</label>
+        <name>Assemble_TeamAndVisits</name>
+        <label>Assemble Team and Create Visits</label>
         <locationX>176</locationX>
         <locationY>1128</locationY>
         <actionName>NepaLayerDisciplineResolver</actionName>
@@ -228,8 +228,8 @@
             <name>teamMembersCreated</name>
         </outputParameters>
         <outputParameters>
-            <assignToReference>var_ApexWorkOrdersCreated</assignToReference>
-            <name>workOrdersCreated</name>
+            <assignToReference>var_ApexVisitsCreated</assignToReference>
+            <name>visitsCreated</name>
         </outputParameters>
         <storeOutputAutomatically>false</storeOutputAutomatically>
     </actionCalls>
@@ -272,7 +272,7 @@
         <inputAssignments>
             <field>Description</field>
             <value>
-                <stringValue>GIS proximity check completed but no active IndividualApplication (NEPA Process) was found linked to this project. Create an IndividualApplication and set nepa_related_project__c to this Program to enable automated team assembly and Work Order creation.</stringValue>
+                <stringValue>GIS proximity check completed but no active IndividualApplication (NEPA Process) was found linked to this project. Create an IndividualApplication and set nepa_related_project__c to this Program to enable automated team assembly and field survey Visit creation.</stringValue>
             </value>
         </inputAssignments>
         <object>Task</object>
@@ -407,7 +407,7 @@
         <inputAssignments>
             <field>Description</field>
             <value>
-                <stringValue>GIS proximity check completed with no protection layer hits. No specialist team assembly or Work Orders were required. If you believe hits should have been detected, verify the project coordinates and NEPA_GIS_Layer__mdt buffer distance configurations.</stringValue>
+                <stringValue>GIS proximity check completed with no protection layer hits. No specialist team assembly or field survey Visits were required. If you believe hits should have been detected, verify the project coordinates and NEPA_GIS_Layer__mdt buffer distance configurations.</stringValue>
             </value>
         </inputAssignments>
         <object>Task</object>
@@ -526,13 +526,13 @@
         <queriedFields>Id</queriedFields>
     </recordLookups>
     <recordLookups>
-        <name>GetExistingAutoWOs</name>
-        <label>Get Existing Auto-Generated Work Orders</label>
+        <name>GetExistingAutoVisits</name>
+        <label>Get Existing Auto-Generated Visits</label>
         <locationX>176</locationX>
         <locationY>768</locationY>
         <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Decision_AutoWOsExist</targetReference>
+            <targetReference>Decision_AutoVisitsExist</targetReference>
         </connector>
         <faultConnector>
             <targetReference>Handle_Error</targetReference>
@@ -553,8 +553,8 @@
             </value>
         </filters>
         <getFirstRecordOnly>false</getFirstRecordOnly>
-        <object>WorkOrder</object>
-        <outputReference>var_ExistingAutoWOs</outputReference>
+        <object>Visit</object>
+        <outputReference>var_ExistingAutoVisits</outputReference>
         <queriedFields>Id</queriedFields>
     </recordLookups>
     <!-- ═══════════════════════════════════════════════════════════════════ -->
@@ -564,7 +564,7 @@
         <locationX>176</locationX>
         <locationY>648</locationY>
         <connector>
-            <targetReference>GetExistingAutoWOs</targetReference>
+            <targetReference>GetExistingAutoVisits</targetReference>
         </connector>
         <faultConnector>
             <targetReference>Handle_Error</targetReference>
@@ -600,12 +600,12 @@
         <object>nepa_process_team_member__c</object>
     </recordUpdates>
     <recordUpdates>
-        <name>Update_CancelledWOs</name>
-        <label>Bulk Cancel Auto Work Orders</label>
+        <name>Update_CancelledVisits</name>
+        <label>Bulk Cancel Auto Visits</label>
         <locationX>176</locationX>
         <locationY>1008</locationY>
         <connector>
-            <targetReference>Assemble_TeamAndWOs</targetReference>
+            <targetReference>Assemble_TeamAndVisits</targetReference>
         </connector>
         <faultConnector>
             <targetReference>Handle_Error</targetReference>
@@ -638,7 +638,7 @@
                 <stringValue>Canceled</stringValue>
             </value>
         </inputAssignments>
-        <object>WorkOrder</object>
+        <object>Visit</object>
     </recordUpdates>
     <!-- code-analyzer-suppress flow:MissingFaultHandler - terminal error handler; fault on error logger would be circular -->
     <subflows>
@@ -682,12 +682,12 @@
         <objectType>nepa_process_team_member__c</objectType>
     </variables>
     <variables>
-        <name>var_ExistingAutoWOs</name>
+        <name>var_ExistingAutoVisits</name>
         <dataType>SObject</dataType>
         <isCollection>true</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
-        <objectType>WorkOrder</objectType>
+        <objectType>Visit</objectType>
     </variables>
     <variables>
         <name>var_ErrorMessage</name>
@@ -726,7 +726,7 @@
         <scale>0</scale>
     </variables>
     <variables>
-        <name>var_ApexWorkOrdersCreated</name>
+        <name>var_ApexVisitsCreated</name>
         <dataType>Number</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>

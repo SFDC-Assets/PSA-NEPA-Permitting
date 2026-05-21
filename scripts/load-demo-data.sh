@@ -174,10 +174,6 @@ print('    Org: {} ({})'.format(d.get('alias', '?'), d.get('instanceUrl', '?')))
 print('    User: {}'.format(d.get('username', '?')))
 "
 
-# ── step 01: OperatingHours ───────────────────────────────────────────────────
-step_header "Step 01: OperatingHours"
-upsert_csv "OperatingHours" "OperatingHours" "01_OperatingHours.csv" "External_ID__c"
-
 # ── step 02: Account ──────────────────────────────────────────────────────────
 step_header "Step 02: Account"
 upsert_csv "Account" "Account" "02_Account.csv" "External_ID__c"
@@ -185,10 +181,6 @@ upsert_csv "Account" "Account" "02_Account.csv" "External_ID__c"
 # ── step 03: Contact ──────────────────────────────────────────────────────────
 step_header "Step 03: Contact"
 upsert_csv "Contact" "Contact" "03_Contact.csv" "External_ID__c"
-
-# ── step 04: ServiceTerritory ─────────────────────────────────────────────────
-step_header "Step 04: ServiceTerritory"
-upsert_csv "ServiceTerritory" "ServiceTerritory" "04_ServiceTerritory.csv" "External_ID__c"
 
 # ── step 05: WorkType ─────────────────────────────────────────────────────────
 step_header "Step 05: WorkType"
@@ -201,12 +193,6 @@ upsert_csv "WorkType" "WorkType" "05_WorkType.csv" "External_ID__c"
 # a fresh demo org. Skip CSV load for this object.
 step_header "Step 06: ServiceResource (via post-load Apex)"
 echo "    Skipping CSV — ServiceResource created in step 18 (requires User ID)"
-
-# ── step 07: ServiceTerritoryMember ──────────────────────────────────────────
-# ServiceTerritoryMember depends on ServiceResources created in step 18.
-# The post-load Apex handles STM creation after ServiceResources exist.
-step_header "Step 07: ServiceTerritoryMember (via post-load Apex)"
-echo "    Skipping CSV — ServiceTerritoryMembers created in step 18 (depends on ServiceResources)"
 
 # ── step 08: Program ──────────────────────────────────────────────────────────
 step_header "Step 08: Program (Project)"
@@ -238,21 +224,6 @@ upsert_csv "nepa_engagement__c" "nepa_engagement__c" "11_nepa_engagement__c.csv"
 # ── step 12: ApplicationTimeline ─────────────────────────────────────────────
 step_header "Step 12: ApplicationTimeline (Case Events)"
 upsert_csv "ApplicationTimeline" "ApplicationTimeline" "12_ApplicationTimeline.csv" "External_ID__c"
-
-# ── step 13: WorkOrder ────────────────────────────────────────────────────────
-step_header "Step 13: WorkOrder"
-upsert_csv "WorkOrder" "WorkOrder" "13_WorkOrder.csv" "External_ID__c"
-
-# ── step 14: ServiceAppointment ──────────────────────────────────────────────
-# ServiceAppointment.ParentRecordId is a polymorphic field — Bulk API v2 cannot
-# resolve it via external ID.  ServiceAppointments and AssignedResources are
-# created in the post-load Apex (step 18) which queries WorkOrder IDs at runtime.
-step_header "Step 14: ServiceAppointment (via post-load Apex)"
-echo "    Skipping CSV — ServiceAppointment created in step 18 (polymorphic ParentRecordId)"
-
-# ── step 15: AssignedResource ─────────────────────────────────────────────────
-step_header "Step 15: AssignedResource (via post-load Apex)"
-echo "    Skipping CSV — AssignedResource created in step 18 (depends on ServiceAppointments)"
 
 # ── step 16: PublicComplaint ──────────────────────────────────────────────────
 step_header "Step 16: PublicComplaint (Public Comments)"
@@ -327,12 +298,9 @@ echo "    is missing. Re-run seed: sf data import tree --files data/seed/regulat
 echo ""
 echo "    To clean up all demo records:"
 echo "      sf data delete bulk --sobject Task --where \"External_ID__c LIKE 'DEMO_TASK_%'\" --target-org $TARGET_ORG --async"
-echo "      sf data delete bulk --sobject AssignedResource --where \"External_ID__c LIKE 'DEMO_AR_%'\" --target-org $TARGET_ORG --async"
-echo "      sf data delete bulk --sobject ServiceAppointment --where \"External_ID__c LIKE 'DEMO_SA_%'\" --target-org $TARGET_ORG --async"
-echo "      sf data delete bulk --sobject WorkOrder --where \"nepa_auto_generated__c = true AND nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'\" --target-org $TARGET_ORG --async"
+echo "      sf data delete bulk --sobject Visit --where \"nepa_auto_generated__c = true AND nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject nepa_process_team_member__c --where \"nepa_assembly_source__c = 'GIS_Auto_Assembly' AND nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject nepa_detected_protection_layer__c --where \"nepa_program__r.nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'\" --target-org $TARGET_ORG --async"
-echo "      sf data delete bulk --sobject WorkOrder --where \"External_ID__c LIKE 'DEMO_WO_%'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject PublicComplaint --where \"Subject LIKE 'DEMO_PC%' OR Subject LIKE 'ICL Comment%' OR Subject LIKE 'OSC Comment%'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject nepa_litigation__c --where \"nepa_citation__c LIKE '%9th Cir%'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject ApplicationTimeline --where \"nepa_related_process__r.nepa_federal_unique_id__c = 'IDI-38709'\" --target-org $TARGET_ORG --async"
@@ -340,10 +308,7 @@ echo "      sf data delete bulk --sobject nepa_engagement__c --where \"nepa_proc
 echo "      sf data delete bulk --sobject ContentVersion --where \"Title LIKE 'Carrie Placer Mine%'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject IndividualApplication --where \"nepa_federal_unique_id__c = 'IDI-38709'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject Program --where \"nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'\" --target-org $TARGET_ORG --async"
-echo "      sf data delete bulk --sobject ServiceTerritoryMember --where \"External_ID__c LIKE 'DEMO_STM_%'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject ServiceResource --where \"External_ID__c LIKE 'DEMO_SR_%'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject WorkType --where \"External_ID__c LIKE 'DEMO_WT_%'\" --target-org $TARGET_ORG --async"
-echo "      sf data delete bulk --sobject ServiceTerritory --where \"External_ID__c LIKE 'DEMO_TERR_%'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject Contact --where \"External_ID__c LIKE 'DEMO_CON_%'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject Account --where \"External_ID__c LIKE 'DEMO_ACCT_%'\" --target-org $TARGET_ORG --async"
-echo "      sf data delete bulk --sobject OperatingHours --where \"External_ID__c LIKE 'DEMO_OH_%'\" --target-org $TARGET_ORG --async"

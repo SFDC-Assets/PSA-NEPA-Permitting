@@ -80,6 +80,11 @@ DM_CONFIG = {
         "input_cols": ["Sector", "ProjectType"],
         "output_cols": ["RequiredPermits", "CooperatingAgencies"],
     },
+    "NEPA_Survey_Priority_Gate_V1": {
+        "csv": "NEPA_Survey_Priority_Gate.csv",
+        "input_cols": ["Discipline", "ReviewType"],
+        "output_cols": ["Priority", "IsHardGate", "WindowStartMonth", "WindowEndMonth"],
+    },
 }
 
 # Expression Set version developer names to activate.

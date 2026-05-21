@@ -5,5 +5,5 @@
     <type>Text</type>
     <length>80</length>
     <fieldManageability>DeveloperControlled</fieldManageability>
-    <description>Matches WorkType.ExternalId for the field survey Work Order type to create. Used by NEPA_Work_Order_Generator to look up the correct WorkType record. Example: DEMO_WT_001 (Hydrology and Water Quality Assessment).</description>
+    <description>Matches WorkType.External_ID__c for the field survey Visit type to create. Used by NepaLayerDisciplineResolver to look up the correct WorkType (VisitType) record. Example: DEMO_WT_001 (Hydrology and Water Quality Assessment).</description>
 </CustomField>

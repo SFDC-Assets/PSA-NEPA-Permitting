@@ -6,5 +6,5 @@
     <precision>5</precision>
     <scale>0</scale>
     <fieldManageability>DeveloperControlled</fieldManageability>
-    <description>Default WorkOrder.Duration in minutes. Used by NEPA_Work_Order_Generator when creating field survey Work Orders. Field coordinators can adjust the duration on individual Work Orders after creation. Example: 480 = one full field day.</description>
+    <description>Default Visit duration in minutes. Used by NepaLayerDisciplineResolver when creating field survey Visits. Field coordinators can adjust the duration on individual Visits after creation. Example: 480 = one full field day.</description>
 </CustomField>

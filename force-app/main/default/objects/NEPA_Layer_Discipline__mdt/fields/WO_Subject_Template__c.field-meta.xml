@@ -5,5 +5,5 @@
     <type>Text</type>
     <length>255</length>
     <fieldManageability>DeveloperControlled</fieldManageability>
-    <description>Template string for WorkOrder.Subject. Supports {LayerLabel} and {ProjectName} as substitution tokens, replaced at Work Order creation time. Example: "Hydrology and Water Quality Assessment - {ProjectName}".</description>
+    <description>Template string for the Visit Description/subject. Supports {LayerLabel} and {ProjectName} as substitution tokens, replaced at Visit creation time. Example: "Hydrology and Water Quality Assessment - {ProjectName}".</description>
 </CustomField>

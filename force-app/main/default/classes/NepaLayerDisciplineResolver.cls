@@ -1,12 +1,12 @@
 /**
  * Invocable action for NEPA_Team_Assembly_Orchestrator.
  * Performs all CMT-to-hit-layer matching, ServiceResource lookup, team member
- * creation, and Work Order creation in a single Apex transaction — avoiding the
+ * creation, and Visit creation in a single Apex transaction — avoiding the
  * platform restriction that rejects dot-field access on SObject collection
  * variables (outputReference or storeOutputAutomatically) inside Flow loops.
  *
  * The Flow handles deactivation/cancellation via filter-based recordUpdates,
- * then calls this action once per program to assemble the team and create WOs.
+ * then calls this action once per program to assemble the team and create Visits.
  */
 @SuppressWarnings('PMD.StdCyclomaticComplexity,PMD.NcssMethodCount')
 public with sharing class NepaLayerDisciplineResolver {
@@ -25,8 +25,8 @@ public with sharing class NepaLayerDisciplineResolver {
     public class Result {
         @InvocableVariable(label='Team Members Created')
         public Integer teamMembersCreated;
-        @InvocableVariable(label='Work Orders Created')
-        public Integer workOrdersCreated;
+        @InvocableVariable(label='Visits Created')
+        public Integer visitsCreated;
         @InvocableVariable(label='Any Hits Found')
         public Boolean anyHitsFound;
         @InvocableVariable(label='Unmatched Disciplines')
@@ -36,15 +36,10 @@ public with sharing class NepaLayerDisciplineResolver {
     }
 
     @InvocableMethod(
-        label='Assemble NEPA Team and Create Work Orders'
-        description='Matches active NEPA_Layer_Discipline__mdt records against detected GIS hits for a Program, finds ServiceResources by discipline, and bulk-inserts nepa_process_team_member__c and WorkOrder records.'
+        label='Assemble NEPA Team and Create Visits'
+        description='Matches active NEPA_Layer_Discipline__mdt records against detected GIS hits for a Program, finds ServiceResources by discipline, and bulk-inserts nepa_process_team_member__c and Visit records.'
         category='NEPA'
     )
-    /**
-     * Processes each request and assembles a team for the associated program.
-     * @param requests List of Request with programId, relatedAppId, and optional accountId
-     * @return List of Result with team/WO counts and any error messages
-     */
     public static List<Result> assemble(List<Request> requests) {
         List<Result> results = new List<Result>();
         for (Request req : requests) {
@@ -53,16 +48,11 @@ public with sharing class NepaLayerDisciplineResolver {
         return results;
     }
 
-    /**
-     * Assembles team members and work orders for one program request.
-     * @param req Request containing programId, relatedAppId, and optional accountId
-     * @return Result with counts, unmatched disciplines, and any error message
-     */
     @SuppressWarnings('PMD.NcssCount,PMD.CyclomaticComplexity,PMD.CognitiveComplexity')
     private static Result assembleOne(Request req) {
         Result res = new Result();
         res.teamMembersCreated = 0;
-        res.workOrdersCreated = 0;
+        res.visitsCreated = 0;
         res.anyHitsFound = false;
         res.unmatchedDisciplines = '';
 
@@ -128,7 +118,7 @@ public with sharing class NepaLayerDisciplineResolver {
                 }
             }
 
-            // 4. Look up WorkTypes by ExternalId
+            // 4. Look up WorkTypes by External_ID__c (used as VisitType)
             Set<String> workTypeDeveloperNames = new Set<String>();
             for (NEPA_Layer_Discipline__mdt cmt : matchedCMTs) {
                 if (String.isNotBlank(cmt.Work_Type_Developer_Name__c)) {
@@ -138,7 +128,7 @@ public with sharing class NepaLayerDisciplineResolver {
             Map<String, Id> workTypeExtIdToId = new Map<String, Id>();
             if (!workTypeDeveloperNames.isEmpty()) {
                 for (WorkType wt : [
-                    SELECT Id, External_ID__c
+                    SELECT Id, External_ID__c, Survey_Window_Start__c, Survey_Window_End__c
                     FROM WorkType
                     WHERE External_ID__c IN :workTypeDeveloperNames
                     WITH SECURITY_ENFORCED
@@ -147,14 +137,23 @@ public with sharing class NepaLayerDisciplineResolver {
                 }
             }
 
-            // 5. Build team members and work orders
+            // 5. Build team members and visits
             List<nepa_process_team_member__c> newMembers = new List<nepa_process_team_member__c>();
-            List<WorkOrder> newWOs = new List<WorkOrder>();
+            List<Visit> newVisits = new List<Visit>();
             List<String> unmatched = new List<String>();
 
-            String programName = '';
-            List<Program> programs = [SELECT Name FROM Program WHERE Id = :req.programId WITH SECURITY_ENFORCED LIMIT 1];
-            if (!programs.isEmpty()) { programName = programs[0].Name; }
+            // Determine visit priority label
+            Map<String, String> disciplineToWTPriority = new Map<String, String>();
+            if (!workTypeDeveloperNames.isEmpty()) {
+                for (WorkType wt : [
+                    SELECT Id, External_ID__c, Survey_Window_Start__c, Survey_Window_End__c
+                    FROM WorkType
+                    WHERE External_ID__c IN :workTypeDeveloperNames
+                    WITH SECURITY_ENFORCED
+                ]) {
+                    disciplineToWTPriority.put(wt.External_ID__c, null);
+                }
+            }
 
             for (NEPA_Layer_Discipline__mdt cmt : matchedCMTs) {
                 Id layerId = disciplineToLayerId.get(cmt.Discipline__c);
@@ -175,37 +174,36 @@ public with sharing class NepaLayerDisciplineResolver {
                     newMembers.add(member);
                 }
 
-                // Build WO regardless of SR match
-                String woSubject = tokenReplace(cmt.WO_Subject_Template__c, programName, cmt.Discipline__c);
-                String woDesc   = tokenReplace(cmt.WO_Description_Template__c, programName, cmt.Discipline__c);
-                Id workTypeId   = String.isNotBlank(cmt.Work_Type_Developer_Name__c)
-                                  ? workTypeExtIdToId.get(cmt.Work_Type_Developer_Name__c)
-                                  : null;
+                // Build Visit regardless of SR match — VisitorId optional
+                Id workTypeId = String.isNotBlank(cmt.Work_Type_Developer_Name__c)
+                                ? workTypeExtIdToId.get(cmt.Work_Type_Developer_Name__c)
+                                : null;
 
-                WorkOrder wo = new WorkOrder(
-                    Subject                = woSubject,
-                    Description            = woDesc,
-                    WorkTypeId             = workTypeId,
-                    AccountId              = String.isNotBlank(req.accountId) ? (Id) req.accountId : null,
-                    Duration               = cmt.WO_Duration_Minutes__c,
-                    DurationType           = 'Minutes',
-                    Priority               = String.isNotBlank(cmt.WO_Priority__c) ? cmt.WO_Priority__c : 'Normal',
-                    Status                 = 'New',
+                String visitSubject = tokenReplace(cmt.WO_Subject_Template__c, '', cmt.Discipline__c);
+
+                Visit v = new Visit(
+                    VisitTypeId            = workTypeId,
+                    VisitorId              = srId,
+                    ContextId              = req.relatedAppId,
+                    PlaceId                = null,
+                    Status                 = 'Planned',
+                    VisitPriority          = mapPriority(cmt.WO_Priority__c),
+                    Description            = tokenReplace(cmt.WO_Description_Template__c, '', cmt.Discipline__c),
                     nepa_process__c        = req.relatedAppId,
                     nepa_discipline__c     = cmt.Discipline__c,
                     nepa_trigger_layer__c  = layerId,
                     nepa_auto_generated__c = true
                 );
-                newWOs.add(wo);
+                newVisits.add(v);
             }
 
             if (!newMembers.isEmpty()) {
                 insert as user newMembers;
                 res.teamMembersCreated = newMembers.size();
             }
-            if (!newWOs.isEmpty()) {
-                insert as user newWOs;
-                res.workOrdersCreated = newWOs.size();
+            if (!newVisits.isEmpty()) {
+                insert as user newVisits;
+                res.visitsCreated = newVisits.size();
             }
             if (!unmatched.isEmpty()) {
                 res.unmatchedDisciplines = String.join(unmatched, '; ');
@@ -222,5 +220,12 @@ public with sharing class NepaLayerDisciplineResolver {
         return template
             .replace('{ProjectName}', projectName != null ? projectName : '')
             .replace('{LayerLabel}', layerLabel != null ? layerLabel : '');
+    }
+
+    private static String mapPriority(String woPriority) {
+        if (woPriority == 'Critical') { return 'Critical'; }
+        if (woPriority == 'High')     { return 'High'; }
+        if (woPriority == 'Low')      { return 'Low'; }
+        return 'Medium';
     }
 }

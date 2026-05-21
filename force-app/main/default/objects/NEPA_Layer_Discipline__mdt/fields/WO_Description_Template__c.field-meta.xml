@@ -6,5 +6,5 @@
     <length>1024</length>
     <visibleLines>5</visibleLines>
     <fieldManageability>DeveloperControlled</fieldManageability>
-    <description>Template for WorkOrder.Description. Supports {LayerLabel} and {ProjectName} substitution tokens. Should include regulatory trigger context, survey scope, and applicable statutes (e.g., ESA Section 7, CWA Section 404, MBTA).</description>
+    <description>Template for Visit.Description. Supports {LayerLabel} and {ProjectName} substitution tokens. Should include regulatory trigger context, survey scope, and applicable statutes (e.g., ESA Section 7, CWA Section 404, MBTA).</description>
 </CustomField>
