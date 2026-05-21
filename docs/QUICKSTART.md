@@ -30,6 +30,8 @@ The deploy script automates nearly everything. The following steps still require
 | **CE Library data load** | Run `python3 scripts/load_ce_library.py --org NEPADEV` to populate 314 CE reference records | After Step 3 (deploy), see Step 4e |
 | **Lightning Record Page assignment** | In Setup → Lightning App Builder, assign **8** custom pages as Org Default (IndividualApplication, Program, PublicComplaint, Engagement, Litigation, CE Library, Decision Payload, Decision Log) | After Step 3 (deploy), see Step 4d |
 | **Agency Named Credential URLs** | In Setup → Security → Named Credentials, update the 3 agency credentials (`NEPA_Agency_USACE`, `NEPA_Agency_USFWS`, `NEPA_Agency_BLM`) from placeholder hostnames to real agency NEPA API URLs | After Step 3 (deploy), see DEVELOPER_GUIDE.md Task 6 |
+| **ArcGIS API key + CSP** | Set `NEPA_Map_Config__mdt.ApiKey` to your ESRI key; add 2 CSP Trusted Sites for `js.arcgis.com` | After Step 3 (deploy), see Step 4h |
+| **NAICS code data load** | 2,129 `NEPA_NAICS_Code__mdt` records loaded via Apex anonymous — verify with count query | After Step 3 (deploy), see Step 4i |
 
 **BRE Decision Matrix rows and activation are now fully automated.** `deploy.sh` Phase 5b-data calls `scripts/load_decision_matrix_rows.py`, which inserts `CalculationMatrixRow` records from the CSVs and activates each Decision Matrix and Expression Set version via the Salesforce Tooling API. No Setup UI steps are required. If Phase 5b-data reports errors, re-run manually: `python3 scripts/load_decision_matrix_rows.py --org <alias> --activate-es`. See [Step 4b](#4b-bre-decision-matrix-verification) for verification queries.
 
@@ -138,21 +140,22 @@ The script deploys in dependency order:
 
 | Phase | Contents |
 |---|---|
-| 1 | Custom object schemas and custom metadata type schemas (`nepa_ce_library__c`, `nepa_decision_payload__c`, `nepa_decision_log__c`, `nepa_decision_element__c`, `NEPA_Process_Model__mdt` included) |
+| 1 | Custom object schemas and custom metadata type schemas (`nepa_ce_library__c`, `nepa_decision_payload__c`, `nepa_decision_log__c`, `nepa_decision_element__c`, `NEPA_Process_Model__mdt`, `NEPA_Map_Config__mdt`, `NEPA_NAICS_Code__mdt` included) |
 | 2 | Custom fields on Program, IndividualApplication, ContentVersion, PublicComplaint, ApplicationTimeline |
 | 3 | Custom labels |
 | 4 | NEPA_Permitting permission set |
-| 5 | Custom metadata seed records (CE rules, risk weights, SLA configs, permit matrix, required docs, `NEPA_Process_Model__mdt` process type definitions) |
+| 5 | Custom metadata seed records (CE rules, risk weights, SLA configs, permit matrix, required docs, `NEPA_Process_Model__mdt` process type definitions, `NEPA_Map_Config__mdt` map defaults) |
 | 5b | BRE Decision Matrix definitions (schema deploy) |
 | 5b-data | BRE Decision Matrix rows loaded + versions activated via Tooling API (automated) |
 | 5c | BRE Expression Set definitions |
 | 5c-activate | BRE Expression Set versions activated via Tooling API (automated) |
 | 6 | Remote site settings and named credentials |
 | 7 | Apex classes (with RunLocalTests) |
+| 7b | Visualforce pages (`NEPA_Site_Location_Page` — ArcGIS map iframe for site location picker) |
 | 8 | Flows (deployed individually with retry) |
 | 8b | Action Plan Templates |
 | 8c | OmniStudio DataRaptors and Integration Procedures |
-| 9–16 | Tabs, report types, reports, dashboards, layouts, LWC, FlexiPages, Lightning app |
+| 9–16 | Tabs, report types, reports, dashboards, layouts, LWC (incl. `nepaIndustryCodePickerOmni`, `nepaSiteLocationPickerOmni`), FlexiPages, Lightning app |
 
 Expected automated deploy time: 10–15 minutes. Add ~10 minutes for manual post-deploy steps (flow activation, field type conversion, record type setup) documented in DEVELOPER_GUIDE.md Post-Deploy Checklist. BRE row loading and activation are handled automatically during deploy. **Total end-to-end: ~25 minutes.**
 
@@ -359,6 +362,58 @@ The Integration Procedures (`NEPA_CEScreeningIP`, `NEPA_CESaveIP`) were deployed
 ### 4g. Configure Named Credentials for GIS Services
 
 Three Named Credentials (USGS NHD, BLM Tribal Cadastral, BLM PLSS) were deployed by the script but require OAuth configuration in your org before GIS proximity checks will fire. See [GIS-Proximity-Guide.md](GIS-Proximity-Guide.md) for the step-by-step Named Credential setup procedure. GIS checks are called at intake when project coordinates are saved; without configured Named Credentials, the proximity check flow will fault and log an error to `NEPA_Flow_Error__c`.
+
+### 4h. Configure the ArcGIS API Key (site location picker)
+
+The `nepaSiteLocationPickerOmni` OmniScript component embeds an ArcGIS map via the `NEPA_Site_Location_Page` Visualforce page. Two manual steps are required before the map will render:
+
+**1. Set the ESRI API key:**
+
+1. Go to **Setup → Custom Metadata Types → NEPA Map Config → Manage Records**
+2. Click **Edit** next to **API Key**
+3. Set **Value** to your ArcGIS Location Platform API key
+4. Save
+
+Without a valid API key the map container loads but basemap tiles do not render (grey canvas).
+
+**2. Add CSP Trusted Sites:**
+
+1. Go to **Setup → Security → CSP Trusted Sites**
+2. Add the following two entries:
+
+| CSP Trusted Site Name | URL | Directives |
+|---|---|---|
+| `ArcGIS_JS_CDN` | `https://js.arcgis.com` | script-src |
+| `ArcGIS_Tiles` | `https://*.arcgis.com` | connect-src |
+
+Without the CSP entries the browser blocks the ArcGIS JS SDK and the iframe renders blank with a console CSP violation error.
+
+**Verify the map works:** Add `nepaSiteLocationPickerOmni` as a Custom LWC element in a test OmniScript. The map iframe should load centered on the continental US (39.5°N, 98.35°W). Draw a polygon and click **Capture Location** — confirm `omniJsonData.siteLocation` contains `{lat, lng, geometry}`.
+
+### 4i. Verify NAICS Code Data
+
+The `nepaIndustryCodePickerOmni` OmniScript component reads from `NEPA_NAICS_Code__mdt`. All 2,129 NAICS 2022 records are loaded via Apex anonymous (not included in the metadata deploy) and must be present for the picker to function.
+
+**Verify records are loaded:**
+
+```bash
+sf data query \
+  --query "SELECT Level__c, COUNT(Id) cnt FROM NEPA_NAICS_Code__mdt GROUP BY Level__c ORDER BY Level__c" \
+  --target-org NEPADEV
+```
+
+**Expected counts:**
+
+| Level | Count |
+|---|---|
+| Sector | 20 |
+| SubSector | 96 |
+| IndustryGroup | 308 |
+| Industry | 692 |
+| NationalIndustry | 1,013 |
+| **Total** | **2,129** |
+
+If records are missing, reload using Apex anonymous with `Metadata.Operations.enqueueDeployment` in 40-record batches from the authoritative NAICS 2022 CSV (`Two-Six Digit NAICS.csv` in the repo root of your local clone). See `NepaIndustryCodePickerController.cls` for the `queryLevel()` method to verify data is accessible after load.
 
 ---
 
@@ -674,7 +729,7 @@ sf apex run test \
 ```
 
 **Expected results:**
-- All 509+ tests pass across 37 test classes
+- All 514+ tests pass across 38 test classes
 - Overall Apex code coverage ≥ 75%
 - Zero failures
 

@@ -1096,6 +1096,54 @@ public class TimelineEvent {
 }
 ```
 
+### 12.6 `NepaIndustryCodePickerController`
+
+Apex controller for the `nepaIndustryCodePickerOmni` OmniScript LWC. Reads NAICS 2022 code hierarchy from `NEPA_NAICS_Code__mdt` and returns all five levels in a single cacheable call.
+
+| Method | Signature | Cacheable | Returns |
+|---|---|---|---|
+| `getAllOptions` | `()` | `true` | `PickerOptions` |
+
+**Inner classes:**
+
+```apex
+public class PickerOptions {
+    @AuraEnabled public List<PickerOption> sectorOptions;
+    @AuraEnabled public List<PickerOption> subSectorOptions;
+    @AuraEnabled public List<PickerOption> industryGroupOptions;
+    @AuraEnabled public List<PickerOption> industryOptions;
+    @AuraEnabled public List<PickerOption> nationalIndustryOptions;
+}
+
+public class PickerOption {
+    @AuraEnabled public String value;       // NAICS code (e.g. "11", "111", "111110")
+    @AuraEnabled public String label;       // Full official NAICS title
+    @AuraEnabled public String parentValue; // Parent code for cascading filter
+}
+```
+
+**OmniScript wiring:** Add a Custom LWC element with `componentName: nepaIndustryCodePickerOmni`. Optionally pass `fieldName` (default `naicsCode`), `sectorFieldName`, `subSectorFieldName`, `industryGroupFieldName`, `industryFieldName`. The component writes all selected level values via `omniUpdateDataJson()`.
+
+**Data requirement:** Requires 2,129 `NEPA_NAICS_Code__mdt` records across 5 levels (Sector, SubSector, IndustryGroup, Industry, NationalIndustry) loaded via Apex anonymous. See QUICKSTART.md Step 4i for verification and reload instructions.
+
+---
+
+### 12.7 `NepaMapCreateCtr`
+
+Apex controller for the `NEPA_Site_Location_Page` Visualforce page, which is embedded as an iframe inside `nepaSiteLocationPickerOmni`. Provides URL resolution methods needed for LWR-compatible postMessage origin validation.
+
+| Method | Signature | Cacheable | Returns |
+|---|---|---|---|
+| `fetchCommunityURL` | `()` | `true` | `String` — Experience Cloud site secure URL (postMessage origin for VF → LWC) |
+| `fetchVFDomainURL` | `()` | `true` | `String` — VF domain URL (postMessage origin for LWC → VF) |
+| `defaultAddressCoordinates` | `(String inputAddress)` | `true` | `String` — `'longitude\|latitude'` from `NEPA_Map_Config__mdt` defaults |
+
+**Configuration dependency:** Reads API key and default coordinates from `NEPA_Map_Config__mdt`. The `ApiKey` record must be set to a valid ESRI key after deploy (Setup → Custom Metadata Types → NEPA Map Config). Default coordinates ship as US center (39.5°N, 98.35°W).
+
+**OmniScript wiring:** Add a Custom LWC element with `componentName: nepaSiteLocationPickerOmni`. Set `fieldName` (default `siteLocation`); optionally set `latFieldName` and `lngFieldName` for flat lat/lng fields. The component writes `{ lat, lng, geometry }` via `omniUpdateDataJson()`.
+
+**CSP requirement:** The `NEPA_Site_Location_Page` VF page loads the ArcGIS JS SDK v4.29 from CDN. Two CSP Trusted Sites must be configured in Setup: `https://js.arcgis.com` (script-src) and `https://*.arcgis.com` (connect-src). See QUICKSTART.md Step 4h.
+
 ---
 
 ## 13. Experience Cloud Configuration

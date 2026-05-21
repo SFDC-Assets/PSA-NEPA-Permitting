@@ -4,7 +4,7 @@ End-to-end test scenarios for the PSA-NEPA accelerator's live-integration and UI
 
 **Prerequisites:** Solution deployed, permission set assigned, BRE Decision Matrix rows loaded (automated by Phase 5b-data in `deploy.sh`), 33 core flows active (see QUICKSTART.md Step 4c for the activation list; 4 flows are deferred and not required for testing), sample data loaded. See QUICKSTART.md Steps 3–5 if any of these are incomplete.
 
-**Test suite size:** 37 test classes, 519+ test methods across all feature areas. Run `sf apex run test --test-level RunLocalTests` to execute the full automated suite (see [Section 20](#20-apex-test-suite)).
+**Test suite size:** 38 test classes, 524+ test methods across all feature areas. Run `sf apex run test --test-level RunLocalTests` to execute the full automated suite (see [Section 20](#20-apex-test-suite)).
 
 ---
 
@@ -303,7 +303,7 @@ sf apex run test \
 ```
 
 **Expected:**
-- **All tests pass**, 0 failures. The current baseline is 519+ test methods; the exact count increases as tests are added. When using `--result-format json`, a passing run shows `"summary": { "outcome": "Passed", "failing": 0 }` and the `summary.passing` field shows the current count.
+- **All tests pass**, 0 failures. The current baseline is 524+ test methods; the exact count increases as tests are added. When using `--result-format json`, a passing run shows `"summary": { "outcome": "Passed", "failing": 0 }` and the `summary.passing` field shows the current count.
 - Overall Apex coverage ≥ 75%
 - All five key test classes pass:
   - `NepaApiComplianceTest` (55 tests)
@@ -350,6 +350,7 @@ sf apex run test \
 | `NepaActionPlanLauncherTest` | 5 | Action plan launcher flow |
 | `NepaGISProximityCheckTest` | 20 | GIS proximity check (logic + CMT integrity) |
 | `NepaGISProximityIPInvokerTest` | 4 | GIS proximity IP invoker |
+| `NepaMapCreateCtrTest` | 5 | ArcGIS map VF controller — VF domain URL, community URL, address coordinates, constructor |
 | `NepaRfpRequirementsTest` | 3 | RFP requirements coverage |
 | `NepaErrorHandlingTest` | 4 | Error handling architecture |
 
@@ -575,7 +576,7 @@ Use this matrix to track test execution. Mark each test ✅ Pass, ❌ Fail, or �
 | 12d | AI AUP | AI classification read-only; human field editable | | |
 | 16a | GIS Proximity | Coordinates trigger IP; layers written back | | |
 | 17a | CEQ Export | REST API returns 9-entity payload | | |
-| 20a | Test Suite | All tests pass (514+ methods, 0 failures), ≥ 75% coverage | | |
+| 20a | Test Suite | All tests pass (524+ methods, 0 failures), ≥ 75% coverage | | |
 | 20b | Test Suite | NepaBREConfigTest (46 tests) passes | | |
 | 20c | Test Suite | NepaApiComplianceTest (55 tests) passes | | |
 | 20d | Test Suite | NepaEntity789Test (25 tests) passes | | |
@@ -587,6 +588,9 @@ Use this matrix to track test execution. Mark each test ✅ Pass, ❌ Fail, or �
 | 20j | Test Suite | NepaStageGateTest (17 tests) passes | | |
 | 20k | Test Suite | NepaAgencyPermitServiceTest (5 tests) passes | | |
 | 20k | Cross-Agency | Permit Dependencies LWC renders on IA record page | | |
+| 20l | Map Controller | NepaMapCreateCtrTest (5 tests) passes | | |
+| 22a | NAICS Picker | NAICS code query returns 2,129 records across 5 levels | | |
+| 22b | Site Picker | `nepaSiteLocationPickerOmni` map loads; polygon capture writes `siteLocation` to OmniScript JSON | | |
 | 21a | BRE Config | All DM row counts match expected | | |
 | 21b | BRE Config | 3 Expression Sets Active | | |
 
