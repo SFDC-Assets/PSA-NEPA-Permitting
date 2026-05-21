@@ -23,6 +23,7 @@
 #   5c BRE Expression Sets     — ExpressionSetDefinition metadata (must follow DMs they reference)
 #   6  Remote sites + creds    — needed before any callout-capable flows compile
 #   7  Apex classes            — must precede flows that call @InvocableMethod actions
+#   7b Visualforce pages       — NEPA_Site_Location_Page (ArcGIS iframe); must follow Phase 7 (references controller)
 #   8  Flows (one-at-a-time)   — Metadata API UNKNOWN_EXCEPTION on batch flow deployments;
 #                                each flow deployed individually with retry on transient failure
 #   9  Tabs                    — custom object tabs referenced by the Lightning app
@@ -402,6 +403,8 @@ deploy "object schemas" \
     --metadata "CustomObject:NEPA_Agency_Scoping_Baseline__mdt" \
     --metadata "CustomObject:NEPA_Sector_Circuit_Risk__mdt" \
     --metadata "CustomObject:NEPA_Permit_Type_Catalog__mdt" \
+    --metadata "CustomObject:NEPA_Map_Config__mdt" \
+    --metadata "CustomObject:NEPA_NAICS_Code__mdt" \
     --target-org "$TARGET_ORG"
 
 # ── phase 2: custom fields on all objects ─────────────────────────────────────
@@ -632,6 +635,19 @@ deploy "apex" \
     --source-dir force-app/main/default/classes \
     --test-level NoTestRun \
     --target-org "$TARGET_ORG"
+
+# ── phase 7b: visualforce pages ──────────────────────────────────────────────
+# Must deploy after Phase 7 (Apex) — VF pages reference their controller class.
+# NEPA_Site_Location_Page is the ArcGIS iframe for the nepaSiteLocationPickerOmni LWC.
+phase_header "Phase 7b: Visualforce pages"
+if [[ -d force-app/main/default/pages ]] && \
+   [[ -n "$(find force-app/main/default/pages -name '*.page' 2>/dev/null)" ]]; then
+    deploy "visualforce pages" \
+        --source-dir force-app/main/default/pages \
+        --target-org "$TARGET_ORG"
+else
+    echo "    (no Visualforce pages to deploy)"
+fi
 
 # ── phase 4b: permission set (post-apex) ─────────────────────────────────────
 # Deployed here rather than Phase 4 because the permset references:
@@ -967,6 +983,22 @@ else
     echo "         sf org open --target-org $TARGET_ORG --path /lightning/setup/OmniStudioDesigner/home"
     echo "         → OmniScripts tab → find NEPA / CE Intake / English / 1 → click Activate"
     echo "       Without this step the OmniScript renders blank with LDS normalization errors."
+    echo ""
+    echo "    6b. ArcGIS map component (nepaSiteLocationPickerOmni) — two manual steps required:"
+    echo "        a. Set ESRI API key:"
+    echo "           Setup > Custom Metadata Types > NEPA Map Config > API Key > Edit > set Value"
+    echo "        b. Add CSP Trusted Sites (Setup > Security > CSP Trusted Sites):"
+    echo "           Name: ArcGIS_JS_CDN  URL: https://js.arcgis.com   Directive: script-src"
+    echo "           Name: ArcGIS_Tiles   URL: https://*.arcgis.com    Directive: connect-src"
+    echo "        Without the API key the map loads but no basemap tiles render."
+    echo "        Without CSP entries the ArcGIS SDK is blocked and the iframe shows blank."
+    echo ""
+    echo "    6c. NAICS code data — 2,129 records loaded via Apex anonymous, not metadata."
+    echo "        Verify records exist:"
+    echo "          sf data query --query \"SELECT Level__c, COUNT(Id) cnt FROM NEPA_NAICS_Code__mdt GROUP BY Level__c\" --target-org $TARGET_ORG"
+    echo "        Expected: Sector(20) SubSector(96) IndustryGroup(308) Industry(692) NationalIndustry(1013)"
+    echo "        If records are missing, reload from the authoritative NAICS 2022 CSV"
+    echo "        using Metadata.Operations.enqueueDeployment in Apex anonymous (40-record batches)."
     echo ""
     echo "    7. GIS proximity trigger chain verification:"
     echo "       Set nepa_location_lat__c + nepa_location_lon__c on a Program record."
