@@ -911,6 +911,26 @@ deploy "Program_Record_Page" allow-failure \
     --metadata "FlexiPage:Program_Record_Page" \
     --target-org "$TARGET_ORG"
 
+# ── phase 15b: agentforce agents (Agent Script bundles) ──────────────────────
+# Deploys .agent bundles via sf agent publish authoring-bundle.
+# Runs after OmniStudio (Phase 8c) so that flow:// and apex:// targets are live.
+# Activation is intentionally separate — run sf agent activate after smoke-testing.
+phase_header "Phase 15b: Agentforce Agent Script bundles"
+if [[ -d force-app/main/default/agents ]] && \
+   [[ -n "$(find force-app/main/default/agents -name '*.agent' 2>/dev/null)" ]]; then
+    for agent_file in force-app/main/default/agents/*/*.agent; do
+        agent_dir=$(dirname "$agent_file")
+        agent_name=$(basename "$agent_dir")
+        echo "    Publishing agent bundle: $agent_name"
+        sf agent publish authoring-bundle \
+            --api-name "$agent_name" \
+            --target-org "$TARGET_ORG" \
+            --json || echo "    WARN: agent publish failed for $agent_name — check org agent user and action targets"
+    done
+else
+    echo "    (no Agent Script bundles to deploy)"
+fi
+
 # ── phase 16: lightning app ───────────────────────────────────────────────────
 phase_header "Phase 16: Lightning app"
 deploy "app" \
@@ -975,7 +995,17 @@ else
     echo "    5c. Seed ServiceResource discipline values (GIS team assembly):"
     echo "       sf apex run --file demo/import_data/21_postload_discipline.apex --target-org $TARGET_ORG"
     echo ""
-    echo "    6. OmniStudio — deployed automatically in Phase 8c above."
+    echo "    6. Agentforce agents — published automatically in Phase 15b above."
+    echo "       Publishing deploys the agent but does NOT activate it."
+    echo "       ACTION REQUIRED after smoke-testing each agent:"
+    echo "         sf agent activate --api-name NEPA_Comment_Triage --target-org $TARGET_ORG"
+    echo "         sf agent activate --api-name NEPA_PreApp_Screener --target-org $TARGET_ORG"
+    echo "       NEPA_PreApp_Screener is a Service Agent — verify the agent user exists first:"
+    echo "         sf org create agent-user --agent-api-name NEPA_PreApp_Screener --target-org $TARGET_ORG"
+    echo "       Preview before activation:"
+    echo "         sf agent preview start --api-name NEPA_PreApp_Screener --target-org $TARGET_ORG --simulate-actions"
+    echo ""
+    echo "    6b. OmniStudio — deployed automatically in Phase 8c above."
     echo "       Phase 8c handles the DRUpsertDetectedLayer two-step (globalKey patching)"
     echo "       and deploys OmniIntegrationProcedures via the omniIntegrationProcedures/ directory."
     echo ""
@@ -985,9 +1015,10 @@ else
     echo "       Steps:"
     echo "         sf org open --target-org $TARGET_ORG --path /lightning/setup/OmniStudioDesigner/home"
     echo "         → OmniScripts tab → find NEPA / CE Intake / English / 1 → click Activate"
-    echo "       Without this step the OmniScript renders blank with LDS normalization errors."
+    echo "         → Also activate NEPA / PreApp_Screening_IP / English / 1"
+    echo "       Without this step OmniScripts render blank with LDS normalization errors."
     echo ""
-    echo "    6b. ArcGIS map component (nepaSiteLocationPickerOmni) — two manual steps required:"
+    echo "    6c. ArcGIS map component (nepaSiteLocationPickerOmni) — two manual steps required:"
     echo "        a. Set ESRI API key:"
     echo "           Setup > Custom Metadata Types > NEPA Map Config > API Key > Edit > set Value"
     echo "        b. Add CSP Trusted Sites (Setup > Security > CSP Trusted Sites):"
@@ -996,7 +1027,7 @@ else
     echo "        Without the API key the map loads but no basemap tiles render."
     echo "        Without CSP entries the ArcGIS SDK is blocked and the iframe shows blank."
     echo ""
-    echo "    6c. NAICS code data — 2,129 records loaded via Apex anonymous, not metadata."
+    echo "    6d. NAICS code data — 2,129 records loaded via Apex anonymous, not metadata."
     echo "        Verify records exist:"
     echo "          sf data query --query \"SELECT Level__c, COUNT(Id) cnt FROM NEPA_NAICS_Code__mdt GROUP BY Level__c\" --target-org $TARGET_ORG"
     echo "        Expected: Sector(20) SubSector(96) IndustryGroup(308) Industry(692) NationalIndustry(1013)"

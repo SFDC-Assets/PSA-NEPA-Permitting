@@ -1,0 +1,188 @@
+{
+  "Name": "NEPA_PreApp_Screening_IP",
+  "Type": "NEPA",
+  "SubType": "PreApp_Screening_IP",
+  "Language": "English",
+  "VersionNumber": 1,
+  "IsActive": true,
+  "IsIntegrationProcedure": true,
+  "Description": "Pre-Application Screening Integration Procedure. Guest-safe: reads NEPA_Permit_Matrix__mdt CMT only (no record DML). Accepts SectorKey, NAICSCode, LeadAgencyKey, ProjectDescription, and ProjectState. Calls the NEPA_CE_Screener BRE Expression Set for pathway classification, then overlays the Permit Matrix CMT row for RequiredPermits, AdjacentReviews, TypicalTimelineMonths, and EISLikelihoodPct. Called by NepaPreAppScreeningController (Agentforce action) and directly by the NEPA_PreApp_Screener OmniScript screening step.",
+  "PropertySetConfig": "{\"persistentComponent\":true,\"trackingCustomData\":{},\"enableLWCRuntime\":true}",
+  "WebComponentKey": "NEPA/PreApp_Screening_IP/English/1",
+  "Elements": [
+    {
+      "Name": "BuildBREInputs",
+      "Type": "Set Values",
+      "SequenceNumber": 1,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "assignmentRules": [
+          {
+            "name": "AgencyAbbr",
+            "value": "%LeadAgencyKey%",
+            "valueType": "reference"
+          },
+          {
+            "name": "NAICSCode",
+            "value": "%NAICSCode%",
+            "valueType": "reference"
+          },
+          {
+            "name": "SectorKey",
+            "value": "%SectorKey%",
+            "valueType": "reference"
+          },
+          {
+            "name": "TypeKey",
+            "value": "",
+            "valueType": "value"
+          },
+          {
+            "name": "ActionType",
+            "value": "New",
+            "valueType": "value"
+          },
+          {
+            "name": "DisturbanceAcres",
+            "value": "0",
+            "valueType": "value"
+          }
+        ]
+      }
+    },
+    {
+      "Name": "CallCEScreenerBRE",
+      "Type": "Expression Set",
+      "SequenceNumber": 2,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "expressionSetApiName": "NEPA_CE_Screener",
+        "inputMap": [
+          {
+            "name": "AgencyAbbr",
+            "value": "%AgencyAbbr%",
+            "valueType": "reference"
+          },
+          {
+            "name": "NAICSCode",
+            "value": "%NAICSCode%",
+            "valueType": "reference"
+          },
+          {
+            "name": "SectorKey",
+            "value": "%SectorKey%",
+            "valueType": "reference"
+          },
+          {
+            "name": "TypeKey",
+            "value": "%TypeKey%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ActionType",
+            "value": "%ActionType%",
+            "valueType": "reference"
+          },
+          {
+            "name": "DisturbanceAcres",
+            "value": "%DisturbanceAcres%",
+            "valueType": "reference"
+          }
+        ],
+        "outputPath": "BREResult",
+        "chainOnStep": "BuildBREInputs",
+        "failOnStepError": false,
+        "mergeOutputWithParent": false
+      }
+    },
+    {
+      "Name": "GetPermitMatrixRow",
+      "Type": "DataRaptor Extract Action",
+      "SequenceNumber": 3,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "bundleName": "DR_Extract_PreApp_PermitMatrix",
+        "inputMap": [
+          {
+            "name": "SectorKey",
+            "value": "%SectorKey%",
+            "valueType": "reference"
+          },
+          {
+            "name": "LeadAgencyKey",
+            "value": "%LeadAgencyKey%",
+            "valueType": "reference"
+          }
+        ],
+        "outputPath": "MatrixData",
+        "chainOnStep": "CallCEScreenerBRE",
+        "failOnStepError": false,
+        "mergeOutputWithParent": false
+      }
+    },
+    {
+      "Name": "BuildScreeningResponse",
+      "Type": "Set Values",
+      "SequenceNumber": 4,
+      "Level": 0,
+      "IsActive": true,
+      "PropertySetConfig": {
+        "assignmentRules": [
+          {
+            "name": "ReviewType",
+            "value": "%BREResult:ReviewType%",
+            "valueType": "reference"
+          },
+          {
+            "name": "CECode",
+            "value": "%BREResult:CECode%",
+            "valueType": "reference"
+          },
+          {
+            "name": "Confidence",
+            "value": "%BREResult:Confidence%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ClassificationBasis",
+            "value": "%BREResult:ClassificationBasis%",
+            "valueType": "reference"
+          },
+          {
+            "name": "RequiredPermits",
+            "value": "%MatrixData:Required_Permits__c%",
+            "valueType": "reference"
+          },
+          {
+            "name": "AdjacentReviews",
+            "value": "%MatrixData:Adjacent_Reviews__c%",
+            "valueType": "reference"
+          },
+          {
+            "name": "TypicalTimelineMonths",
+            "value": "%MatrixData:Typical_Timeline_Months__c%",
+            "valueType": "reference"
+          },
+          {
+            "name": "EISLikelihoodPct",
+            "value": "%MatrixData:EIS_Likelihood_Pct__c%",
+            "valueType": "reference"
+          },
+          {
+            "name": "LeadAgency",
+            "value": "%MatrixData:Lead_Agency_Key__c%",
+            "valueType": "reference"
+          },
+          {
+            "name": "ScreeningComplete",
+            "value": "true",
+            "valueType": "value"
+          }
+        ]
+      }
+    }
+  ]
+}
