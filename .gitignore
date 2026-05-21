@@ -13,6 +13,7 @@ CLAUDE.md
 docs/NEPA-Compliance-Improvement-Plan.md
 docs/NEPA-Permitting-Acceleration-Plan.md
 docs/NEPA-Risk-Intelligence-Plan.md
+docs/COMPETITIVE-FEATURE-ROADMAP.md
 data insights/
 # Generated CE Library load artifacts (derived from exclusions.json; not source)
 # Allow data/seed/ through — it contains importable JSON seed files tracked as source
