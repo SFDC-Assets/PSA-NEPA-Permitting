@@ -2,7 +2,7 @@
 
 **Program:** CEQ Permitting Innovators
 **Submission Deadline:** June 2, 2026
-**Entrant:** Shannon Schupbach (U.S.-incorporated)
+**Entrant:** GPS Accelerators — Salesforce Public Sector
 
 ---
 
@@ -66,7 +66,7 @@ The `nepa_required_permit__c` object and `NEPA_Agency_Endpoint__mdt` CMT impleme
 
 ## Team Capacity
 
-This solution is built on **Salesforce** — the world's leading SaaS/PaaS provider — and submitted by **Shannon Schupbach**, Salesforce Public Sector solution architect and sole developer of this accelerator. Salesforce's **Global Public Sector Solution Engineering organization** includes 400+ solution engineers who support public sector customers across federal, state, local, and international government; that platform depth is embedded in every design choice throughout this accelerator.
+This solution is built on **Salesforce** — the world's leading SaaS/PaaS provider — and submitted by the **GPS Accelerators** team within Salesforce Public Sector Solution Engineering. Salesforce's **Global Public Sector Solution Engineering organization** includes 400+ solution engineers who support public sector customers across federal, state, local, and international government; that platform depth is embedded in every design choice throughout this accelerator.
 
 The environmental and policy disciplines required to build a defensible NEPA intelligence system were embedded through rigorous federal dataset analysis. A 16-stage calibration pipeline was built over the same primary data sources that federal researchers use:
 
@@ -80,7 +80,7 @@ Every CE screening rule traces to a specific CFR citation. Every risk weight tra
 
 **Evaluator access:** A persistent NEPADEMO sandbox org with the complete Carrie Placer Mine dataset is available for hands-on review — the closest operational reference available outside a live agency deployment. Access credentials are available on request.
 
-Shannon Schupbach is a U.S.-based Salesforce Public Sector architect.
+GPS Accelerators is part of the U.S.-based Salesforce Public Sector Solution Engineering organization.
 
 ---
 

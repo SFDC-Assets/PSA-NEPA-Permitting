@@ -96,7 +96,7 @@ Terms, acronyms, and concepts used throughout the NEPA and Permitting Data Model
 
 **FlexCard** — An OmniStudio component for building data-driven card UI in Experience Cloud or the Salesforce app.
 
-**FSL (Field Service Lightning)** — Salesforce's field service management product. Used in the demo for NEPA specialist work order scheduling; requires FSL license.
+**FSL (Field Service Lightning)** — Salesforce's field service management product. Not used in this Accelerator. NEPA field survey scheduling uses the standard `Visit` object and Action Plan Templates, which do not require an FSL license.
 
 **IndividualApplication** — A PSS standard object (API name: `IndividualApplication`) used in this Accelerator for CEQ Entity 2 (Process). Chosen over `BusinessLicenseApplication` because NEPA proponents include individuals, tribes, and agencies — not exclusively commercial entities.
 

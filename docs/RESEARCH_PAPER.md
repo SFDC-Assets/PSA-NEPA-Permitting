@@ -1,6 +1,6 @@
 # Quantifying Federal NEPA Permitting Risk: An AI-Assisted Analysis of Timelines, Litigation Patterns, and Scoping Bottlenecks
 
-**Shannon Schupbach**  
+**GPS Accelerators, Salesforce Public Sector**  
 *Published: May 2026*
 
 ---

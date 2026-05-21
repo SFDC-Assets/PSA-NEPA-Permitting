@@ -28,7 +28,7 @@ The deploy script automates nearly everything. The following steps still require
 |---|---|---|
 | **Scheduled flow configuration** | Open `NEPA_SLA_Escalation_Monitor` in Flow Builder, set schedule to Daily 7 AM, activate | After Step 4c (Flow activation) |
 | **CE Library data load** | Run `python3 scripts/load_ce_library.py --org NEPADEV` to populate 314 CE reference records | After Step 3 (deploy), see Step 4e |
-| **Lightning Record Page assignment** | In Setup → Lightning App Builder, assign **8** custom pages as Org Default (IndividualApplication, Program, PublicComplaint, Engagement, Litigation, CE Library, Decision Payload, Decision Log) | After Step 3 (deploy), see Step 4d |
+| **Lightning Record Page assignment** | In Setup → Lightning App Builder, assign **9** custom pages as Org Default (IndividualApplication, Program, PublicComplaint, Engagement, Litigation, CE Library, Decision Payload, Decision Log, Visit) | After Step 3 (deploy), see Step 4d |
 | **Agency Named Credential URLs** | In Setup → Security → Named Credentials, update the 3 agency credentials (`NEPA_Agency_USACE`, `NEPA_Agency_USFWS`, `NEPA_Agency_BLM`) from placeholder hostnames to real agency NEPA API URLs | After Step 3 (deploy), see DEVELOPER_GUIDE.md Task 6 |
 | **ArcGIS API key + CSP** | Set `NEPA_Map_Config__mdt.ApiKey` to your ESRI key; add 2 CSP Trusted Sites for `js.arcgis.com` | After Step 3 (deploy), see Step 4h |
 | **NAICS code data load** | 2,129 `NEPA_NAICS_Code__mdt` records loaded via Apex anonymous — verify with count query | After Step 3 (deploy), see Step 4i |
@@ -238,7 +238,7 @@ See [decision_matrix_rows/README.md](../decision_matrix_rows/README.md) for the 
 
 ### 4c. Activate Flows
 
-Deploy sets all **37 flows** to Draft. Activate the 33 flows listed below in order to avoid trigger dependency errors. The remaining 4 flows (`NEPA_Comment_Triage_Save`, `NEPA_EIS_Section_Assembler`, `NEPA_EIS_Section_Draft_Trigger`, `NEPA_Work_Order_Generator`) are deferred — see the Notes section at the end of the activation list. Total deployed: 37 flows; activate now: 33.
+Deploy sets all **39 flows** to Draft. Activate the 35 flows listed below in order to avoid trigger dependency errors. The remaining 4 flows (`NEPA_Comment_Triage_Save`, `NEPA_EIS_Section_Assembler`, `NEPA_EIS_Section_Draft_Trigger`, `NEPA_Work_Order_Generator`) are deferred — see the Notes section at the end of the activation list. Total deployed: 39 flows; activate now: 35.
 
 - `NEPA_Comment_Triage_Save` — activate only when deploying the Comment Triage Agentforce agent
 - `NEPA_EIS_Section_Assembler` — requires Einstein Generative AI; activate when enabling AI document drafting
@@ -258,46 +258,48 @@ Go to **Setup → Flows** in your org and activate in this order:
 6. `NEPA_SLA_Due_Date_Setter`
 7. `NEPA_FRA_Page_Limit_Setter`
 8. `NEPA_Stage_Gate`
+9. `NEPA_Visit_Survey_Window_Setter` — before-save on Visit insert; sets `nepa_hard_gate__c` and survey window dates from `NEPA_Layer_Discipline__mdt`
 
 **Activate third (after-save triggers):**
-9. `NEPA_Record_Completeness_Scorer`
-10. `NEPA_SLA_Due_Date_Setter` *(if not already active)*
-11. `NEPA_Litigation_Risk_Scorer`
-12. `NEPA_CE_Screener`
-13. `NEPA_CE_Determination_Router`
-14. `NEPA_CE_Intake`
-15. `NEPA_Challenge_Predictor`
-16. `NEPA_Defensibility_Trigger_ContentVersion`
-17. `NEPA_Defensibility_Trigger_Engagement`
-18. `NEPA_Timeline_Risk_Assessor`
-19. `NEPA_Stage_Gate_Orchestrator`
-20. `NEPA_Permit_Coordinator`
-21. `NEPA_Plaintiff_Intelligence`
-22. `NEPA_Administrative_Record_Checker`
-23. `NEPA_AdminRecord_AutoCreate`
-24. `NEPA_EIS_Section_Draft_Trigger`
-25. `NEPA_ActionPlan_Launcher` — fires after review type is determined; creates the matching NEPA Action Plan from `NEPA_ActionPlan_Config__mdt` templates
-26. `NEPA_Close_Administrative_Record` — fires async when `nepa_review_type__c` transitions to ROD or FONSI
-27. `NEPA_Comment_AI_Router` — entry trigger for Agentforce comment triage; activate with or before the Comment Triage agent
-28. `NEPA_Comment_Duplicate_Check` — called from comment triage pipeline; activate with Comment AI Router
-29. `NEPA_Comment_ResponseTask_Creator` — called from comment triage pipeline; activate with Comment AI Router
-30. `NEPA_EJTribal_Router` — unconditional EJ/tribal keyword gate; activate with Comment AI Router
+10. `NEPA_Record_Completeness_Scorer`
+11. `NEPA_SLA_Due_Date_Setter` *(if not already active)*
+12. `NEPA_Litigation_Risk_Scorer`
+13. `NEPA_CE_Screener`
+14. `NEPA_CE_Determination_Router`
+15. `NEPA_CE_Intake`
+16. `NEPA_Challenge_Predictor`
+17. `NEPA_Defensibility_Trigger_ContentVersion`
+18. `NEPA_Defensibility_Trigger_Engagement`
+19. `NEPA_Timeline_Risk_Assessor`
+20. `NEPA_Stage_Gate_Orchestrator`
+21. `NEPA_Permit_Coordinator`
+22. `NEPA_Plaintiff_Intelligence`
+23. `NEPA_Administrative_Record_Checker`
+24. `NEPA_AdminRecord_AutoCreate`
+25. `NEPA_EIS_Section_Draft_Trigger`
+26. `NEPA_ActionPlan_Launcher` — fires after review type is determined; creates the matching NEPA Action Plan from `NEPA_ActionPlan_Config__mdt` templates
+27. `NEPA_Close_Administrative_Record` — fires async when `nepa_review_type__c` transitions to ROD or FONSI
+28. `NEPA_Visit_Completion_Assessor` — async after-save on Visit; sets `nepa_surveys_complete__c = true` on parent IA when all auto-generated hard-gate Visits are Completed
+29. `NEPA_Comment_AI_Router` — entry trigger for Agentforce comment triage; activate with or before the Comment Triage agent
+30. `NEPA_Comment_Duplicate_Check` — called from comment triage pipeline; activate with Comment AI Router
+31. `NEPA_Comment_ResponseTask_Creator` — called from comment triage pipeline; activate with Comment AI Router
+32. `NEPA_EJTribal_Router` — unconditional EJ/tribal keyword gate; activate with Comment AI Router
 
 **Activate fourth (agency intelligence — async after-save):**
-31. `NEPA_Agency_Tier_Setter` — fires AsyncAfterCommit when `Program.nepa_record_owner_agency__c` changes; writes Agency Performance Tier from `NEPA_Agency_Scoping_Baseline__mdt`
+33. `NEPA_Agency_Tier_Setter` — fires AsyncAfterCommit when `Program.nepa_record_owner_agency__c` changes; writes Agency Performance Tier from `NEPA_Agency_Scoping_Baseline__mdt`
 
 **Activate fifth (platform event and autolaunched):**
-32. `NEPA_Error_Event_Handler`
+34. `NEPA_Error_Event_Handler`
 
 **Configure the scheduled flow manually in Flow Builder:**
-33. `NEPA_SLA_Escalation_Monitor` — open in Flow Builder, click the Start element, set schedule to **Daily at 7:00 AM**, then activate.
+35. `NEPA_SLA_Escalation_Monitor` — open in Flow Builder, click the Start element, set schedule to **Daily at 7:00 AM**, then activate.
 
 **Notes on flows not included in the activation list above:**
 - `NEPA_Comment_Triage_Save` — Agentforce agent script target; activate only if deploying the Comment Triage agent.
 - `NEPA_EIS_Section_Assembler` — requires **Einstein Generative AI** to be provisioned in the org (uses `generateText` action). Skipped by `deploy.sh` if Einstein AI is not available. Deploy manually once enabled: `sf project deploy start --metadata "Flow:NEPA_EIS_Section_Assembler" --target-org NEPADEV --test-level NoTestRun --wait 30`. Once deployed, `NEPA_EIS_Section_Draft_Trigger` can also be activated.
 - `NEPA_Work_Order_Generator` — stub; flow file not yet implemented.
 
-**Verify activation:** In Setup → Flows, filter by Status = Active. You should see 33 active flows. If a flow fails to activate, the error appears inline in the Flows list — the most common cause is activating an after-save flow before its subflow dependencies (items 1–4 in the activation list) are already active.
+**Verify activation:** In Setup → Flows, filter by Status = Active. You should see 35 active flows. If a flow fails to activate, the error appears inline in the Flows list — the most common cause is activating an after-save flow before its subflow dependencies (items 1–4 in the activation list) are already active.
 
 ### 4d. Assign Lightning Record Pages
 
@@ -313,6 +315,7 @@ The deployment includes custom Lightning Record Pages for all 6 CEQ entities. As
    - `NEPA CE Library Record Page`
    - `NEPA Decision Payload Record Page`
    - `NEPA Decision Log Record Page`
+   - `NEPA Visit Record Page`
 
 ### 4e. Load CE Library Reference Data
 
@@ -729,7 +732,7 @@ sf apex run test \
 ```
 
 **Expected results:**
-- All 514+ tests pass across 38 test classes
+- All 527+ tests pass across 38 test classes
 - Overall Apex code coverage ≥ 75%
 - Zero failures
 

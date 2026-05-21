@@ -1133,21 +1133,13 @@ Run each command and wait for it to complete before running the next:
 ALIAS=nepademoscratch
 DATA=outputs/demo/import_data
 
-sf data import bulk --file $DATA/01_OperatingHours.csv          --sobject OperatingHours        --target-org $ALIAS --wait 5
 sf data import bulk --file $DATA/02_Account.csv                 --sobject Account               --target-org $ALIAS --wait 5
 sf data import bulk --file $DATA/03_Contact.csv                 --sobject Contact               --target-org $ALIAS --wait 5
-sf data import bulk --file $DATA/04_ServiceTerritory.csv        --sobject ServiceTerritory      --target-org $ALIAS --wait 5
 sf data import bulk --file $DATA/05_WorkType.csv                --sobject WorkType              --target-org $ALIAS --wait 5
 sf data import bulk --file $DATA/06_ServiceResource.csv         --sobject ServiceResource       --target-org $ALIAS --wait 5
-sf data import bulk --file $DATA/07_ServiceTerritoryMember.csv  --sobject ServiceTerritoryMember --target-org $ALIAS --wait 5
 sf data import bulk --file $DATA/08_Program.csv                 --sobject Program               --target-org $ALIAS --wait 5
-sf data import bulk --file $DATA/09_IndividualApplication.csv   --sobject IndividualApplication --target-org $ALIAS --wait 5
-sf data import bulk --file $DATA/10_ContentVersion.csv          --sobject ContentVersion        --target-org $ALIAS --wait 5
 sf data import bulk --file $DATA/11_nepa_engagement__c.csv      --sobject nepa_engagement__c    --target-org $ALIAS --wait 5
 sf data import bulk --file $DATA/12_ApplicationTimeline.csv     --sobject ApplicationTimeline   --target-org $ALIAS --wait 5
-sf data import bulk --file $DATA/13_WorkOrder.csv               --sobject WorkOrder             --target-org $ALIAS --wait 5
-sf data import bulk --file $DATA/14_ServiceAppointment.csv      --sobject ServiceAppointment    --target-org $ALIAS --wait 5
-sf data import bulk --file $DATA/15_AssignedResource.csv        --sobject AssignedResource      --target-org $ALIAS --wait 5
 sf data import bulk --file $DATA/16_PublicComplaint.csv         --sobject PublicComplaint       --target-org $ALIAS --wait 5
 sf data import bulk --file $DATA/17_nepa_litigation__c.csv      --sobject nepa_litigation__c    --target-org $ALIAS --wait 5
 
@@ -1173,10 +1165,11 @@ Walk through each scene using `outputs/demo/carrie_placer_mine_demo_story.md` as
 - Confirm the 7 resource contacts are populated (botanist, hydrologist, wildlife biologist, etc.)
 - Confirm the CE Intake Wizard fired and `NEPA_Pathway__c = "EA"` (it correctly escalated because of the sage-grouse extraordinary circumstance)
 
-**Scene 2: Optimization engine sequences work orders**
-- Open the Service Appointment timeline for the application
-- Confirm the 8 work orders are scheduled in the correct seasonal windows (no overlap on gate access)
-- The botanical survey should be in May–July; the aquatic survey should be before April 15
+**Scene 2: GIS proximity detection auto-creates discipline visits**
+- Open the Program record for Carrie Placer Mine
+- Confirm `nepa_gis_proximity_complete__c = true` and `nepa_extraordinary_circumstances__c = true`
+- Navigate to the related Visits list — confirm 3 auto-generated Visits (Hydrology, Wildlife Biologist, NEPA Specialist) with `nepa_auto_generated__c = true`
+- Each Visit has an associated Action Plan (check the Action Plans related list on each Visit)
 
 **Scene 3: Plaintiff intelligence and comment routing**
 - Open `PublicComplaint DEMO_PC_001` (Idaho Conservation League)

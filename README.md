@@ -1,3 +1,5 @@
+![GPS Accelerators Logo](docs/Logo_GPSAccelerators_v01.png)
+
 # PSA-NEPA Permitting Accelerator
 
 **Open-source NEPA permitting data model, workflow automation, GIS proximity screening, live cross-agency permit status, Agentforce comment triage, and litigation risk intelligence — built on Salesforce Agentforce for Public Sector. Aligned to CEQ NEPA and Permitting Data and Technology Standard v1.2. All 10 MFRs addressed. Deployable end-to-end in ~30 minutes (15 min automated CLI deployment + ~15 min manual post-deploy steps).**
@@ -485,7 +487,7 @@ This section is written for legal professionals assessing IP ownership, third-pa
 
 **✅ Resolved (2025-05-16).**
 
-This project is licensed under the **MIT License**, copyright 2025 Shannon Schupbach. `LICENSE.txt` has been updated to contain the correct MIT license text. The prior Apache 2.0 / Salesforce, Inc. text was boilerplate carried over from the Salesforce open-source project template used to bootstrap the repository structure; it did not reflect the intended license and has been replaced. Shannon Schupbach is the sole author and copyright holder of all original work in this repository. No employment relationship vesting copyright in another party applies.
+This project is licensed under the **MIT License**, copyright 2026 salesforce.com, inc. `LICENSE.txt` contains the full license text.
 
 ---
 
@@ -493,10 +495,10 @@ This project is licensed under the **MIT License**, copyright 2025 Shannon Schup
 
 | Item | Claimed Owner | Basis |
 |---|---|---|
-| Salesforce metadata structure (object definitions, Flow XML, permission set XML, FlexiPage XML) | Shannon Schupbach | Custom-authored; does not copy Salesforce source code. Salesforce platform objects (IndividualApplication, Program, etc.) are used per Salesforce platform license but not copied. |
-| Apex classes (`NepaCeqExportService`, `NepaGISProximityIPInvoker`, and 45 others) | Shannon Schupbach | Original source code; no third-party Apex libraries incorporated. No Salesforce-proprietary source copied. |
-| LWC components | Shannon Schupbach | Custom-authored; uses Salesforce Lightning Design System (SLDS) via standard platform APIs. SLDS is available under Salesforce's standard license for use within the platform — no separate licensing required. |
-| Risk weight calibration methodology and 13-stage PermitTEC pipeline | Shannon Schupbach | Original analytical methodology. Inputs (PermitTEC corpus) are third-party; outputs (numeric weights baked into custom metadata) are derived works authored by Shannon Schupbach. |
+| Salesforce metadata structure (object definitions, Flow XML, permission set XML, FlexiPage XML) | Salesforce, Inc. / GPS Accelerators | Custom-authored; does not copy Salesforce source code. Salesforce platform objects (IndividualApplication, Program, etc.) are used per Salesforce platform license but not copied. |
+| Apex classes (`NepaCeqExportService`, `NepaGISProximityIPInvoker`, and 45 others) | Salesforce, Inc. / GPS Accelerators | Original source code; no third-party Apex libraries incorporated. No Salesforce-proprietary source copied. |
+| LWC components | Salesforce, Inc. / GPS Accelerators | Custom-authored; uses Salesforce Lightning Design System (SLDS) via standard platform APIs. SLDS is available under Salesforce's standard license for use within the platform — no separate licensing required. |
+| Risk weight calibration methodology and 13-stage PermitTEC pipeline | Salesforce, Inc. / GPS Accelerators | Original analytical methodology. Inputs (PermitTEC corpus) are third-party; outputs (numeric weights baked into custom metadata) are derived works authored by GPS Accelerators. |
 | CE Library records (2,105 records) | U.S. Government / public domain | Sourced from CEQ CE Explorer v2.0, a federal government publication. Federal government works are generally not subject to copyright under 17 U.S.C. § 105. No redistribution restriction identified. |
 | CEQ EIS Timeline Data (1,903 records) | U.S. Government / public domain | Published by CEQ. Same public domain basis as above. |
 | PermitTEC v0.1 dataset (761 cases) | Pacific Northwest National Laboratory / DOE | PNNL is a DOE national laboratory. DOE-funded data is released under DOE Order 241.1B open data policy. No redistribution restriction on dataset landing page. Only derived numeric weights are included in this repository — no raw case records redistributed. |
@@ -577,7 +579,7 @@ The following registered trademarks and service marks are referenced in this pro
 
 This project makes no patent claims and does not implement any technology known to be subject to patent encumbrance. The risk intelligence algorithms are statistical scoring models using published court outcome data. The CE screening logic implements publicly available CFR regulatory criteria. No novel computational methods subject to patent protection have been identified.
 
-This project is MIT-licensed (see Section 1 and `LICENSE.txt`). The MIT license does not include an express patent license grant or patent retaliation clause. Agencies requiring an express patent license for open-source adoption should note this distinction.
+This project is MIT-licensed (see `LICENSE.txt`). The MIT license does not include an express patent license grant or patent retaliation clause. Agencies requiring an express patent license for open-source adoption should note this distinction.
 
 ---
 
@@ -588,8 +590,8 @@ This project is MIT-licensed (see Section 1 and `LICENSE.txt`). The MIT license 
 | Does the project contain GPL/LGPL/AGPL code? | No. All dev dependencies are MIT. No runtime dependencies. |
 | Does the project copy or embed any third-party open-source code? | No third-party source code is incorporated. Salesforce platform APIs are called, not copied. |
 | Does the project redistribute any dataset under a license that restricts redistribution? | No. CEQ data is U.S. Government public domain. PNNL data is covered by DOE's open data policy; only derived weights (not raw records) are included. See Section 5. |
-| Are there any contributor license agreements (CLAs) in place? | `CONTRIBUTING.md` references the Salesforce CLA (`cla.salesforce.com/sign-cla`) as template boilerplate. This is a sole-author project; no CLA is required. The reference will be updated in a future cleanup. |
-| Is the copyright holder clearly identified? | **Yes — resolved 2025-05-16.** MIT license, copyright Shannon Schupbach 2025. `LICENSE.txt` has been corrected. |
+| Are there any contributor license agreements (CLAs) in place? | `CONTRIBUTING.md` references the Salesforce CLA (`cla.salesforce.com/sign-cla`). External contributors should sign before submitting pull requests. |
+| Is the copyright holder clearly identified? | **Yes.** MIT license, copyright salesforce.com, inc. 2026. `LICENSE.txt` contains the full license text. |
 
 ---
 
@@ -597,10 +599,10 @@ This project is MIT-licensed (see Section 1 and `LICENSE.txt`). The MIT license 
 
 | Item | Status |
 |---|---|
-| License file mismatch | **Resolved 2025-05-16** — `LICENSE.txt` updated to MIT. Copyright Shannon Schupbach 2025. |
+| License | **MIT** — `LICENSE.txt` contains the full license text. Copyright salesforce.com, inc. 2026. |
 | PNNL data redistribution rights | **Resolved 2025-05-16** — DOE Order 241.1B open data policy covers PNNL datasets; only derived weights (not raw records) redistributed. See Section 5. |
 | Trademark attribution | **Complete** — Section 4 of this document contains Salesforce trademark acknowledgments consistent with Salesforce's open-source trademark guidelines. |
-| CLA verification | **Not applicable** — sole-author project. `CONTRIBUTING.md` CLA reference is Salesforce template boilerplate. |
+| CLA verification | External contributors should sign the Salesforce CLA at `cla.salesforce.com/sign-cla` before submitting pull requests. |
 
 ---
 
@@ -608,4 +610,4 @@ This project is MIT-licensed (see Section 1 and `LICENSE.txt`). The MIT license 
 
 This project is released under the **MIT License**. See [LICENSE.txt](LICENSE.txt). Accelerators are provided as-is and are not supported by Salesforce.
 
-Built by Shannon Schupbach.
+Built by [GPS Accelerators](https://gpsaccelerators.developer.salesforce.com/) — Salesforce Public Sector.

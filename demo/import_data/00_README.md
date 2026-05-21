@@ -27,21 +27,15 @@ Load files strictly in number order. Each file's parent records must exist befor
 
 | # | File | Object | Records | Upsert Key | Key Dependency |
 |---|---|---|---|---|---|
-| 01 | `01_OperatingHours.csv` | OperatingHours | 1 | `External_ID__c` | None |
 | 02 | `02_Account.csv` | Account | 5 | `External_ID__c` | None |
 | 03 | `03_Contact.csv` | Contact | 9 | `External_ID__c` | Account (02) |
-| 04 | `04_ServiceTerritory.csv` | ServiceTerritory | 1 | `External_ID__c` | OperatingHours (01) |
 | 05 | `05_WorkType.csv` | WorkType | 7 | `External_ID__c` | None |
 | 06 | *(skipped — Apex step 18)* | ServiceResource | 1 | — | `RelatedRecordId` requires User ID; created by Apex with running user |
-| 07 | *(skipped — Apex step 18)* | ServiceTerritoryMember | 1 | — | Depends on ServiceResource created in step 18 |
 | 08 | `08_Program.csv` | Program | 1 | `nepa_project_id__c` | Account (02) |
 | 09 | *(skipped — Apex step 18)* | IndividualApplication | 1 | — | `LicenseTypeId` requires runtime RegulatoryAuthorizationType ID |
 | 10 | *(skipped — Apex step 18)* | ContentVersion | 6 | — | `VersionData` (Blob) cannot be set via Bulk API v2 CSV |
 | 11 | `11_nepa_engagement__c.csv` | nepa_engagement__c | 5 | `External_ID__c` | `nepa_process__c` wired by Apex step 18 |
 | 12 | `12_ApplicationTimeline.csv` | ApplicationTimeline | 25 | `External_ID__c` | `nepa_related_process__c` wired by Apex step 18 |
-| 13 | `13_WorkOrder.csv` | WorkOrder | 10 | `External_ID__c` | Account (02), ServiceTerritory (04), WorkType (05) |
-| 14 | *(skipped — Apex step 18)* | ServiceAppointment | 10 | — | `ParentRecordId` polymorphic; Bulk API v2 cannot resolve via external ID |
-| 15 | *(skipped — Apex step 18)* | AssignedResource | 10 | — | Depends on ServiceAppointments created in step 18 |
 | 16 | `16_PublicComplaint.csv` | PublicComplaint | 3 | `External_ID__c` | Account (02), IndividualApplication (09) |
 | 17 | `17_nepa_litigation__c.csv` | nepa_litigation__c | 2 | `External_ID__c` | Program (08) |
 | 18 | `18_postload_polymorphic.apex` | **Apex script** | — | — | Run after all CSVs; wires polymorphic lookups |
@@ -59,9 +53,8 @@ Load files strictly in number order. Each file's parent records must exist befor
 
 ## External ID Strategy
 
-**FSL / standard objects** — `External_ID__c` (capital ID) is a managed external ID field:
-- OperatingHours, Account, Contact, ServiceTerritory, WorkType, ServiceResource,
-  ServiceTerritoryMember, WorkOrder, ServiceAppointment, AssignedResource, Task
+**Standard objects** — `External_ID__c` (capital ID) is a managed external ID field:
+- Account, Contact, WorkType, ServiceResource, Task
 
 **APS / custom objects** — use the domain natural ID or `External_ID__c`:
 - `Program` → upsert on `nepa_project_id__c`
@@ -81,11 +74,8 @@ The following fields cannot be set via CSV bulk upsert. `18_postload_polymorphic
 | Field / Object | Why Apex | Resolution |
 |---|---|---|
 | ServiceResource `RelatedRecordId` | Requires User ID (not Contact) | Created with running user's ID; 1 SR for demo (APS enforces 1 Technician per User) |
-| ServiceTerritoryMember | Depends on SR created at runtime | Single STM created after SR |
 | IndividualApplication `LicenseTypeId` | Org-specific `RegulatoryAuthorizationType` ID | Apex queries/creates "NEPA Environmental Review" RAT at runtime |
 | ContentVersion `VersionData` | Bulk API v2 cannot supply base64 Blob in CSV | Created with `Blob.valueOf(' ')` placeholder; 6 documents including Comment Response required by FONSI gate CMT |
-| ServiceAppointment `ParentRecordId` | Polymorphic — Bulk API v2 cannot resolve via external ID notation | SA created after querying actual WorkOrder IDs |
-| AssignedResource | Depends on SA created at runtime | AR created after SA |
 | Task `WhatId` / `WhoId` | Polymorphic lookups | Wired by querying IA and Contact IDs after all records exist |
 | `nepa_process__c` | Cross-object wiring for engagement, timeline, complaint, CV | Wired by querying `nepa_federal_unique_id__c = 'IDI-38709'` |
 
@@ -99,13 +89,9 @@ sf apex run --file demo/import_data/18_postload_polymorphic.apex --target-org <a
 ## Relationship Map
 
 ```
-OperatingHours (01)
-  └── ServiceTerritory.OperatingHoursId (04)
-
 Account (02)
   ├── Contact.AccountId (03)
   ├── Program.AccountId (08)
-  ├── WorkOrder.AccountId (13)
   └── PublicComplaint.AccountId (16)
 
 Contact (03)  [polymorphic — wired by Apex]
@@ -113,14 +99,8 @@ Contact (03)  [polymorphic — wired by Apex]
   ├── ServiceResource.RelatedRecordId (06)
   └── Task.WhoId (19)
 
-ServiceTerritory (04)
-  ├── ServiceTerritoryMember.ServiceTerritoryId (07)
-  ├── WorkOrder.ServiceTerritoryId (13)
-  └── ServiceAppointment.ServiceTerritoryId (14)
-
 ServiceResource (06)
-  ├── ServiceTerritoryMember.ServiceResourceId (07)
-  └── AssignedResource.ServiceResourceId (15)
+  └── Visit.VisitorId (22) — auto-generated Visits from GIS assembly
 
 Program (08)  [nepa_project_id__c = DOI-BLM-ID-B030-2019-0014-EA]
   ├── IndividualApplication.nepa_related_project__c (09)
@@ -156,16 +136,11 @@ IndividualApplication (09)  [also — GIS auto-assembly from step 22]
   │     ├── Hydrologist            ← triggered by NWI_Wetlands layer
   │     ├── Wildlife Biologist (Sage-Grouse) ← triggered by FWS_Critical_Habitat layer
   │     └── NEPA Specialist        ← triggered by EJScreen_EJ_Index layer
-  └── WorkOrder (nepa_auto_generated__c = true) × 3
-        ├── Hydrology and Water Quality Assessment       (High,   480 min, DEMO_WT_001)
-        ├── Critical Habitat and Species Survey         (High,   480 min, DEMO_WT_002)
-        └── Environmental Justice Analysis              (Normal, 240 min, DEMO_WT_001)
-
-WorkOrder (13)
-  └── ServiceAppointment.ParentRecordId (14)
-
-ServiceAppointment (14)
-  └── AssignedResource.ServiceAppointmentId (15)
+  └── Visit (nepa_auto_generated__c = true) × 3 [ContextId = IndividualApplication]
+        ├── Hydrology and Water Quality Assessment  (High)
+        ├── Critical Habitat and Species Survey     (High)
+        └── Environmental Justice Analysis          (Medium)
+            Each Visit → ActionPlan via NepaVisitAfterInsert trigger + NepaVisitActionPlanLauncher
 ```
 
 ---
@@ -187,15 +162,11 @@ ServiceAppointment (14)
 | Demo Scene | Records |
 |---|---|
 | Sam books pre-app; system auto-assembles ID Team | `DEMO_ENG_001`; `DEMO_CON_001–007`; `DEMO_SR_001–007` |
-| Optimization engine sequences 6 work orders against seasonal windows | `DEMO_WO_001–008`; `DEMO_WT_001–007` |
-| Colleen Trese closes sage-grouse WO from mobile at Jordan Creek trailhead | `DEMO_WO_001`; `DEMO_SA_001` |
-| Gate access non-overlap (shared resource constraint enforced) | `DEMO_SA_001–008` — no overlapping gate dates |
-| Hydrologist closes WO → IDWR permit task auto-fires | `DEMO_WO_002`; `DEMO_TASK_001` |
-| Geologist closes WO → EPA NPDES NOI task auto-fires | `DEMO_WO_003`; `DEMO_TASK_002` |
 | GIS check fires on lat/lon save; detects NWI Wetlands + FWS Critical Habitat → EC flag set | `nepa_detected_protection_layer__c` × 4; `Program.nepa_extraordinary_circumstances__c = true` |
-| System auto-assembles ID Team from GIS results; creates 3 scoping WOs | GIS_Auto_Assembly `nepa_process_team_member__c` × 3; `nepa_auto_generated__c` WorkOrder × 3 |
-| Plaintiff Intelligence flags ICL; routes as work order | `DEMO_PC_001`; `DEMO_WO_009`; `DEMO_TASK_004` |
-| OSC comment routed as work order | `DEMO_PC_002`; `DEMO_WO_010`; `DEMO_TASK_005` |
+| System auto-assembles ID Team from GIS results; creates 3 auto-generated Visits | GIS_Auto_Assembly `nepa_process_team_member__c` × 3; `nepa_auto_generated__c` Visit × 3 |
+| Each auto-generated Visit gets an Action Plan via NepaVisitAfterInsert trigger | Visit × 3 → ActionPlan × 3 (one per discipline) |
+| Plaintiff Intelligence flags ICL; creates Task for legal review | `DEMO_PC_001`; `DEMO_TASK_004` |
+| OSC comment creates Task for NEPA coordinator | `DEMO_PC_002`; `DEMO_TASK_005` |
 | Required Document Registry all five green | Documents in ContentVersion load; `DEMO_TASK_007` |
 | Field Manager issues Decision Record; applicant notified | ApplicationTimeline Decision Record event; `DEMO_TASK_008` |
 | Decision payload shows FONSI, Alt B, 3 alternatives, 5 mitigations | `nepa_decision_payload__c` (step 24) |
@@ -286,9 +257,6 @@ Apex scripts are idempotent for the step-20 entities (upsert-safe). Steps 18 and
 TARGET=NEPADEMO
 
 sf data delete bulk --sobject Task                   --where "External_ID__c LIKE 'DEMO_TASK_%'"  --target-org $TARGET --async
-sf data delete bulk --sobject AssignedResource        --where "External_ID__c LIKE 'DEMO_AR_%'"    --target-org $TARGET --async
-sf data delete bulk --sobject ServiceAppointment      --where "External_ID__c LIKE 'DEMO_SA_%'"    --target-org $TARGET --async
-sf data delete bulk --sobject WorkOrder               --where "External_ID__c LIKE 'DEMO_WO_%'"    --target-org $TARGET --async
 sf data delete bulk --sobject PublicComplaint         --where "External_ID__c LIKE 'DEMO_PC_%'"   --target-org $TARGET --async
 sf data delete bulk --sobject nepa_litigation__c      --where "External_ID__c LIKE 'DEMO_LIT_%'"  --target-org $TARGET --async
 sf data delete bulk --sobject ApplicationTimeline     --where "External_ID__c LIKE 'DEMO_AT_%'"   --target-org $TARGET --async
@@ -304,8 +272,8 @@ sf data delete bulk --sobject Contact                 --where "External_ID__c LI
 sf data delete bulk --sobject Account                 --where "External_ID__c LIKE 'DEMO_ACCT_%'"  --target-org $TARGET --async
 sf data delete bulk --sobject OperatingHours          --where "External_ID__c LIKE 'DEMO_OH_%'"    --target-org $TARGET --async
 
-# Step 22 cleanup (run before WorkOrder and IndividualApplication deletes above)
-sf data delete bulk --sobject WorkOrder --where "nepa_auto_generated__c = true AND nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
+# Step 22 cleanup (run before IndividualApplication deletes above)
+sf data delete bulk --sobject Visit --where "nepa_auto_generated__c = true AND nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
 sf data delete bulk --sobject nepa_process_team_member__c --where "nepa_assembly_source__c = 'GIS_Auto_Assembly' AND nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
 sf data delete bulk --sobject nepa_detected_protection_layer__c --where "nepa_program__r.nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'" --target-org $TARGET --async
 

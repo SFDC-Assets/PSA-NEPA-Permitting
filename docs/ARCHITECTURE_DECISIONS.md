@@ -1,7 +1,7 @@
 # Architecture Decision Records
 
 **Project:** PSA-NEPA-Permitting-Data-Model
-**Maintainer:** Shannon Schupbach
+**Maintainer:** GPS Accelerators
 **Last Updated:** 2026-05-17
 
 Open-source NEPA permitting accelerator built on Salesforce Agentforce for Public Sector (APS). Maps CEQ NEPA and Permitting Data and Technology Standard v1.2 entities — which define MFRs (Minimum Functional Requirements) as CEQ's baseline capability benchmarks — to PSS standard objects, adds custom objects and 12+ declarative flows for risk intelligence, and prepares for Phase 2 OmniStudio + Agentforce portal delivery.
@@ -32,7 +32,7 @@ Open-source NEPA permitting accelerator built on Salesforce Agentforce for Publi
 
 **Status:** Accepted
 **Date:** 2026-04-29
-**Deciders:** Shannon Schupbach
+**Deciders:** GPS Accelerators
 
 ### Context
 
@@ -66,7 +66,7 @@ The key architectural decision was choosing `IndividualApplication` over `Busine
 
 **Status:** Accepted
 **Date:** 2026-04-29
-**Deciders:** Shannon Schupbach
+**Deciders:** GPS Accelerators
 
 ### Context
 
@@ -98,7 +98,7 @@ All risk intelligence automation is implemented as declarative components — Fl
 
 **Status:** Accepted
 **Date:** 2026-04-29
-**Deciders:** Shannon Schupbach
+**Deciders:** GPS Accelerators
 
 ### Context
 
@@ -128,7 +128,7 @@ All flow fault paths call the `NEPA_Error_Logger` subflow, which publishes `NEPA
 
 **Status:** Accepted
 **Date:** 2026-04-29
-**Deciders:** Shannon Schupbach
+**Deciders:** GPS Accelerators
 
 ### Context
 
@@ -173,7 +173,7 @@ Nine Custom Metadata Types (CMTs — configuration records deployed as metadata 
 
 **Status:** Accepted
 **Date:** 2026-04-29
-**Deciders:** Shannon Schupbach
+**Deciders:** GPS Accelerators
 
 ### Context
 
@@ -213,7 +213,7 @@ These flows accept record IDs as inputs and return structured outputs. Their inp
 
 **Status:** Accepted
 **Date:** 2026-04-29
-**Deciders:** Shannon Schupbach
+**Deciders:** GPS Accelerators
 
 ### Context
 
@@ -246,7 +246,7 @@ Raw comment body (`PublicComplaint` standard body fields) is internal-only. A se
 
 **Status:** Accepted
 **Date:** 2026-04-29
-**Deciders:** Shannon Schupbach
+**Deciders:** GPS Accelerators
 
 ### Context
 
@@ -287,7 +287,7 @@ Salesforce sharing recalculation on a parent record triggers a rebuild of all ch
 
 **Status:** Accepted
 **Date:** 2026-04-29
-**Deciders:** Shannon Schupbach
+**Deciders:** GPS Accelerators
 
 ### Context
 
@@ -318,7 +318,7 @@ Phase 1 (v1.1) implemented comment and document metadata fields for Agentforce/R
 
 **Status:** Accepted
 **Date:** 2026-05-07
-**Deciders:** Shannon Schupbach
+**Deciders:** GPS Accelerators
 
 ### Context
 
@@ -414,7 +414,7 @@ Complete all items in this checklist before deploying the accelerator to a produ
 
 **Status:** Accepted
 **Date:** 2026-05-12
-**Deciders:** Shannon Schupbach
+**Deciders:** GPS Accelerators
 
 ### Context
 
@@ -457,7 +457,7 @@ Replace `NEPA_CE_Code__mdt` as the primary CE catalog with `nepa_ce_library__c` 
 
 **Status:** Accepted
 **Date:** 2026-05-12
-**Deciders:** Shannon Schupbach
+**Deciders:** GPS Accelerators
 
 ### Context
 
@@ -505,7 +505,7 @@ Implement the CE intake wizard as an OmniScript backed by two Integration Proced
 
 **Status:** Accepted
 **Date:** 2026-05-15
-**Deciders:** Shannon Schupbach
+**Deciders:** GPS Accelerators
 
 ### Context
 
@@ -574,7 +574,7 @@ This accelerator implements two distinct and non-overlapping tribal protections:
 
 **Status:** Accepted
 **Date:** 2026-05-17
-**Deciders:** Shannon Schupbach
+**Deciders:** GPS Accelerators
 
 ### Context
 

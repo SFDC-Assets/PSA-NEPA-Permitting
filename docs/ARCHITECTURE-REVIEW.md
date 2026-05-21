@@ -77,7 +77,7 @@ Total bytes copied ≈ n² × avg_size / 2 ≈ 12.5 billion bytes of string copy
 
 ### Implementation Status
 
-The accelerator contains **37 record-triggered and supporting flows**, not 31. The figure "31" predates the addition of: `NEPA_Error_Event_Handler` (platform event subscriber), `NEPA_Comment_Triage_Save` (Agentforce agent target), `NEPA_Defensibility_Trigger_Engagement`, `NEPA_WO_Milestone_Setter`, `NEPA_FlowError_CountIncrementer`, `NEPA_EJTribal_Router`, and `NEPA_Plaintiff_Intelligence`.
+The accelerator contains **38 record-triggered and supporting flows**, not 31. The figure "31" predates the addition of: `NEPA_Error_Event_Handler` (platform event subscriber), `NEPA_Comment_Triage_Save` (Agentforce agent target), `NEPA_Defensibility_Trigger_Engagement`, `NEPA_FlowError_CountIncrementer`, `NEPA_EJTribal_Router`, `NEPA_Plaintiff_Intelligence`, `NEPA_Visit_Survey_Window_Setter`, and `NEPA_Visit_Completion_Assessor`. (`NEPA_WO_Milestone_Setter` has been replaced by the `NepaVisitAfterInsert` Apex trigger + `NepaVisitActionPlanLauncher` handler.)
 
 ### Full Trigger Map
 
@@ -111,7 +111,10 @@ The accelerator contains **37 record-triggered and supporting flows**, not 31. T
 | | `NEPA_GIS_Proximity_Check` | RecordAfterSave (async) | After-commit async |
 | | `NEPA_Team_Assembly_Orchestrator` | RecordAfterSave (async) | After-commit async |
 | | `NEPA_Agency_Tier_Setter` | RecordAfterSave (async) | After-commit async |
-| **WorkOrder (1)** | `NEPA_WO_Milestone_Setter` | RecordAfterSave (async) | After-commit async |
+| **Visit (3)** | | | |
+| | `NEPA_Visit_Survey_Window_Setter` | RecordBeforeSave (insert only) | Before-save sync |
+| | `NEPA_Visit_Completion_Assessor` | RecordAfterSave (async) | After-commit async |
+| | `NepaVisitAfterInsert` → `NepaVisitActionPlanLauncher` | Apex trigger (after insert) | Synchronous after-insert |
 | **NEPA_Flow_Error__c (1)** | `NEPA_FlowError_CountIncrementer` | RecordAfterSave (async) | After-commit async |
 | **NEPA_Error_Event__e (1)** | `NEPA_Error_Event_Handler` | PlatformEvent | Platform event subscriber |
 | **Scheduled (1)** | `NEPA_SLA_Escalation_Monitor` | Scheduled | Daily batch |
@@ -150,7 +153,11 @@ The platform does not guarantee sequencing among async flows. They may execute i
 
 **`NEPA_CE_Screener` (async)** writes `nepa_ce_pathway_recommendation__c` and `nepa_screening_confidence__c`. `NEPA_CE_Determination_Router` fires when those two fields change (`IsChanged = true` filter on each). `CE_Determination_Router` writes to `ApplicationTimeline` (inserts a CE Determination event record) and `Task` — it does **not** write back to any `IndividualApplication` fields that `CE_Screener` watches. **No loop.** (Confirmed by reviewing `CE_Determination_Router` RecordCreate/RecordUpdate element targets.)
 
-**`NEPA_ActionPlan_Launcher` (async)** creates WorkOrder records → triggers `NEPA_WO_Milestone_Setter` on the WorkOrder object. `NEPA_WO_Milestone_Setter` writes to WorkOrder fields only. **Cross-object, no re-entry.**
+**`NEPA_Visit_Survey_Window_Setter` (before-save, insert only)** reads `NEPA_Layer_Discipline__mdt` (CMT query, governor-exempt) and writes `nepa_hard_gate__c`, `PlannedVisitStartTime`, `PlannedVisitEndTime` to `$Record`. Entry filter limits to insert + `nepa_auto_generated__c = true`. The flow itself causes no DML and does not re-trigger. **No loop.**
+
+**`NEPA_Visit_Completion_Assessor` (async, on Status change to Completed)** queries open hard-gate Visits and updates `nepa_surveys_complete__c` on `IndividualApplication`. Entry condition requires `Status IsChanged = true` AND `nepa_hard_gate__c = true`. The `IndividualApplication` update does not touch any Visit field. **Cross-object, no re-entry.**
+
+**`NepaVisitAfterInsert` (Apex trigger, after insert)** calls `NepaVisitActionPlanLauncher.createActionPlans()` which queries `NEPA_Layer_Discipline__mdt` and inserts `ActionPlan` records targeting the Visit. `ActionPlan` insert does not trigger any Visit flow. **Cross-object, no re-entry.**
 
 **`NEPA_Defensibility_Trigger_ContentVersion` (async on ContentVersion)** calls `NEPA_Defensibility_Gap_Checker` (invocable). That checker writes `nepa_defensibility_score__c` and `nepa_defensibility_gaps__c` on IndividualApplication. If `NEPA_Timeline_Risk_Assessor` watches either of those fields, a chain could form. This interaction should be verified before adding defensibility output fields to Timeline_Risk_Assessor's entry conditions.
 
