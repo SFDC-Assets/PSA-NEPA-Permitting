@@ -1,28 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ActionPlanTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>Field survey milestones for a Fisheries and Wildlife Biologist (Aquatic) Work Order. Covers riparian survey, amphibian presence/absence, and CWA Section 404 memo. Target object: WorkOrder.</description>
+    <description>Field survey milestones for a Fisheries and Wildlife Biologist (Aquatic) Work Order. Covers riparian survey, amphibian presence/absence, and CWA Section 404 memo. Target object: Visit.</description>
     <isAdHocItemCreationEnabled>false</isAdHocItemCreationEnabled>
     <name>NEPA WO Aquatic Milestones</name>
-    <targetEntityType>WorkOrder</targetEntityType>
-    <uniqueName>NEPA_WO_Aquatic_Milestones</uniqueName>
+    <targetEntityType>Visit</targetEntityType>
+    <uniqueName>NEPA_WO_Aquatic_Milestones_BLM</uniqueName>
     <actionPlanTemplateItem>
         <displayOrder>1</displayOrder>
         <isRequired>true</isRequired>
-        <itemEntityType>Task</itemEntityType>
+        <itemEntityType>AssessmentTask</itemEntityType>
         <name>Aquatic Species Desktop Review</name>
-        <uniqueName>NEPA_WO_Aqua_1_Desktop</uniqueName>
+        <uniqueName>NEPA_WO_Aqua_1_Desktop_BLM</uniqueName>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Subject</name>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Name</name>
             <valueLiteral>Aquatic Species Desktop Review</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Priority</name>
-            <valueLiteral>High</valueLiteral>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>TaskType</name>
+            <valueLiteral>InspectionChecklist</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Status</name>
+            <valueLiteral>NotStarted</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>IsRequired</name>
+            <valueLiteral>true</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
             <valueLiteral>Query USFWS IPaC, NatureServe, and state Natural Heritage Program for T&amp;E fish, amphibian, and aquatic invertebrate species with confirmed occurrences within the HUC-12 watershed containing the project APE. Review state fish passage barrier databases for context. Pull NHD reaches and classify all water features within 1,000 feet of project footprint as perennial, intermittent, or ephemeral. Identify Section 7 ESA consultation history for the watershed and any applicable BO terms and conditions.</valueLiteral>
         </actionPlanTemplateItemValue>
@@ -30,21 +40,31 @@
     <actionPlanTemplateItem>
         <displayOrder>2</displayOrder>
         <isRequired>true</isRequired>
-        <itemEntityType>Task</itemEntityType>
+        <itemEntityType>AssessmentTask</itemEntityType>
         <name>Riparian Survey and Fish Habitat Assessment</name>
-        <uniqueName>NEPA_WO_Aqua_2_Riparian</uniqueName>
+        <uniqueName>NEPA_WO_Aqua_2_Riparian_BLM</uniqueName>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Subject</name>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Name</name>
             <valueLiteral>Riparian Survey and Fish Habitat Assessment</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Priority</name>
-            <valueLiteral>High</valueLiteral>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>TaskType</name>
+            <valueLiteral>InspectionChecklist</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Status</name>
+            <valueLiteral>NotStarted</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>IsRequired</name>
+            <valueLiteral>true</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
             <valueLiteral>Conduct habitat assessment of all water features within 300 feet of project APE per Proper Functioning Condition (PFC) or Rosgen method. Document channel condition, substrate composition, pool-riffle ratio, riparian vegetation density and composition, bank stability, and stream flow regime. Conduct visual electrofishing or snorkel survey for fish species documentation where flow allows. Sample macroinvertebrates at representative riffles for biotic integrity index. Note any evidence of channelization, culverts requiring fish passage review, or historic channel avulsion.</valueLiteral>
         </actionPlanTemplateItemValue>
@@ -52,21 +72,31 @@
     <actionPlanTemplateItem>
         <displayOrder>3</displayOrder>
         <isRequired>true</isRequired>
-        <itemEntityType>Task</itemEntityType>
+        <itemEntityType>AssessmentTask</itemEntityType>
         <name>Amphibian Presence/Absence Survey</name>
-        <uniqueName>NEPA_WO_Aqua_3_Amphibian</uniqueName>
+        <uniqueName>NEPA_WO_Aqua_3_Amphibian_BLM</uniqueName>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Subject</name>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Name</name>
             <valueLiteral>Amphibian Presence/Absence Survey</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Priority</name>
-            <valueLiteral>High</valueLiteral>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>TaskType</name>
+            <valueLiteral>InspectionChecklist</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Status</name>
+            <valueLiteral>NotStarted</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>IsRequired</name>
+            <valueLiteral>true</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
             <valueLiteral>Conduct presence/absence surveys for T&amp;E amphibian species (e.g., boreal toad, Columbia spotted frog, western toad) using visual encounter surveys and call playback where appropriate. Survey all suitable breeding habitat (ponds, slow-water reaches, seeps) within project APE. Conduct three surveys spaced at least 7 days apart during active breeding season. Document water temperature, pH, and presence of chytrid fungus (Bd) if sampling warranted by protocol. Photograph all detections. Note any evidence of livestock trampling or vehicle disturbance at breeding sites.</valueLiteral>
         </actionPlanTemplateItemValue>
@@ -74,21 +104,31 @@
     <actionPlanTemplateItem>
         <displayOrder>4</displayOrder>
         <isRequired>true</isRequired>
-        <itemEntityType>Task</itemEntityType>
+        <itemEntityType>AssessmentTask</itemEntityType>
         <name>CWA Section 404 and ESA Section 7 Memo</name>
-        <uniqueName>NEPA_WO_Aqua_4_Memo</uniqueName>
+        <uniqueName>NEPA_WO_Aqua_4_Memo_BLM</uniqueName>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Subject</name>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Name</name>
             <valueLiteral>CWA Section 404 and ESA Section 7 Aquatic Species Memo</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Priority</name>
-            <valueLiteral>High</valueLiteral>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>TaskType</name>
+            <valueLiteral>InspectionChecklist</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Status</name>
+            <valueLiteral>NotStarted</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>IsRequired</name>
+            <valueLiteral>true</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
             <valueLiteral>Compile riparian survey, fish habitat assessment, and amphibian survey results. Provide CWA Section 404 jurisdictional determination memo documenting waters of the U.S. within APE. Document ESA Section 7 effect determination (no effect / may affect, not likely to adversely affect / may affect, likely to adversely affect) for each aquatic T&amp;E species. If formal Section 7 consultation with USFWS is required, draft the Biological Assessment sections covering project description, species account, effects analysis, and minimization measures. Upload report as ContentVersion. Mark Work Order Status = Completed when report is approved.</valueLiteral>
         </actionPlanTemplateItemValue>

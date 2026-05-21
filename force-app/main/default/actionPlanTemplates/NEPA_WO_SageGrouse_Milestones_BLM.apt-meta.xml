@@ -1,28 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ActionPlanTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>Field survey milestones for a Wildlife Biologist (Sage-Grouse) Work Order triggered by FWS Critical Habitat detection. Covers lek survey window compliance, ARMPA conformance check, and survey report. Target object: WorkOrder.</description>
+    <description>Field survey milestones for a Wildlife Biologist (Sage-Grouse) Visit triggered by FWS Critical Habitat detection. Covers lek survey window compliance, ARMPA conformance check, and survey report. Target object: Visit.</description>
     <isAdHocItemCreationEnabled>false</isAdHocItemCreationEnabled>
     <name>NEPA WO Sage-Grouse Milestones</name>
-    <targetEntityType>WorkOrder</targetEntityType>
-    <uniqueName>NEPA_WO_SageGrouse_Milestones</uniqueName>
+    <targetEntityType>Visit</targetEntityType>
+    <uniqueName>NEPA_WO_SageGrouse_Milestones_BLM</uniqueName>
     <actionPlanTemplateItem>
         <displayOrder>1</displayOrder>
         <isRequired>true</isRequired>
-        <itemEntityType>Task</itemEntityType>
+        <itemEntityType>AssessmentTask</itemEntityType>
         <name>Sage-Grouse Desktop Pre-Assessment</name>
-        <uniqueName>NEPA_WO_SGrouse_1_Desktop</uniqueName>
+        <uniqueName>NEPA_WO_SGrouse_1_Desktop_BLM</uniqueName>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Subject</name>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Name</name>
             <valueLiteral>Sage-Grouse Desktop Pre-Assessment</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Priority</name>
-            <valueLiteral>High</valueLiteral>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>TaskType</name>
+            <valueLiteral>InspectionChecklist</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Status</name>
+            <valueLiteral>NotStarted</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>IsRequired</name>
+            <valueLiteral>true</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
             <valueLiteral>Review USFWS Critical Habitat designation maps and FWS Critical Habitat layer GIS hit data. Determine applicable GRSG Management Plan category (Core Area, Important Habitat, General Habitat) and applicable ARMPA sub-object thresholds. Identify any known lek locations within 4 miles via BLM lek database. Determine if lek survey season (April 1 – May 15 for active leks) timing permits field survey this cycle or requires scheduling for next season window.</valueLiteral>
         </actionPlanTemplateItemValue>
@@ -30,21 +40,31 @@
     <actionPlanTemplateItem>
         <displayOrder>2</displayOrder>
         <isRequired>true</isRequired>
-        <itemEntityType>Task</itemEntityType>
+        <itemEntityType>AssessmentTask</itemEntityType>
         <name>Lek Survey — Active Season Window</name>
-        <uniqueName>NEPA_WO_SGrouse_2_LekSurvey</uniqueName>
+        <uniqueName>NEPA_WO_SGrouse_2_LekSurvey_BLM</uniqueName>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Subject</name>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Name</name>
             <valueLiteral>Lek Survey — Active Season Window (April 1 – May 15)</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Priority</name>
-            <valueLiteral>High</valueLiteral>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>TaskType</name>
+            <valueLiteral>InspectionChecklist</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Status</name>
+            <valueLiteral>NotStarted</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>IsRequired</name>
+            <valueLiteral>true</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
             <valueLiteral>Conduct dawn lek count surveys per Wyoming/state protocol (minimum 3 visits during peak display: 30 min before to 1 hr after sunrise). Record male attendance, strutting ground activity, and female presence. GPS all lek center points. Photograph strutting males if possible without disturbing display. Document buffer distance from proposed project footprint to nearest active lek center. Note: if survey window has closed, document in work order and schedule for next April-May window.</valueLiteral>
         </actionPlanTemplateItemValue>
@@ -52,21 +72,31 @@
     <actionPlanTemplateItem>
         <displayOrder>3</displayOrder>
         <isRequired>true</isRequired>
-        <itemEntityType>Task</itemEntityType>
+        <itemEntityType>AssessmentTask</itemEntityType>
         <name>ARMPA Conformance Check</name>
-        <uniqueName>NEPA_WO_SGrouse_3_ARMPA</uniqueName>
+        <uniqueName>NEPA_WO_SGrouse_3_ARMPA_BLM</uniqueName>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Subject</name>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Name</name>
             <valueLiteral>ARMPA Conformance Check and Waivers Review</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Priority</name>
-            <valueLiteral>High</valueLiteral>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>TaskType</name>
+            <valueLiteral>InspectionChecklist</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Status</name>
+            <valueLiteral>NotStarted</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>IsRequired</name>
+            <valueLiteral>true</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
             <valueLiteral>Map project footprint against ARMPA habitat category. Apply applicable ARMPA stipulations: seasonal timing restrictions (April 1 – June 30 no-surface-disturbance), density caps for surface disturbance, powerline height restrictions in core habitat. Document any applicable waivers, exceptions, or modifications. Evaluate cumulative surface disturbance against Wyoming or applicable state lek buffer and Core Area caps. Record conformant/non-conformant determination with citation.</valueLiteral>
         </actionPlanTemplateItemValue>
@@ -74,21 +104,31 @@
     <actionPlanTemplateItem>
         <displayOrder>4</displayOrder>
         <isRequired>true</isRequired>
-        <itemEntityType>Task</itemEntityType>
+        <itemEntityType>AssessmentTask</itemEntityType>
         <name>Sage-Grouse Survey Report</name>
-        <uniqueName>NEPA_WO_SGrouse_4_Report</uniqueName>
+        <uniqueName>NEPA_WO_SGrouse_4_Report_BLM</uniqueName>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Subject</name>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Name</name>
             <valueLiteral>Sage-Grouse Survey and ARMPA Conformance Report</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Priority</name>
-            <valueLiteral>High</valueLiteral>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>TaskType</name>
+            <valueLiteral>InspectionChecklist</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Status</name>
+            <valueLiteral>NotStarted</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>IsRequired</name>
+            <valueLiteral>true</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
             <valueLiteral>Compile lek survey results, ARMPA conformance determination, seasonal timing restriction analysis, and recommended avoidance/mitigation measures into a single report. Upload to ContentVersion linked to the Work Order and NEPA IndividualApplication. Coordinate BLM/USFWS review if non-conformance waivers are required. Mark Work Order Status = Completed when report is approved by NEPA lead.</valueLiteral>
         </actionPlanTemplateItemValue>

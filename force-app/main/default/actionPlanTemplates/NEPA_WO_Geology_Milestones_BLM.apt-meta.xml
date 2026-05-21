@@ -1,28 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ActionPlanTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>Field survey milestones for a Geologist Work Order triggered by EPA Superfund NPL or contamination-related GIS layer detection. Covers soils assessment, access road erosion review, CERCLA coordination, and reclamation bond memo. Target object: WorkOrder.</description>
+    <description>Field survey milestones for a Geologist Visit triggered by EPA Superfund NPL or contamination-related GIS layer detection. Covers soils assessment, access road erosion review, CERCLA coordination, and reclamation bond memo. Target object: Visit.</description>
     <isAdHocItemCreationEnabled>false</isAdHocItemCreationEnabled>
     <name>NEPA WO Geology Milestones</name>
-    <targetEntityType>WorkOrder</targetEntityType>
-    <uniqueName>NEPA_WO_Geology_Milestones</uniqueName>
+    <targetEntityType>Visit</targetEntityType>
+    <uniqueName>NEPA_WO_Geology_Milestones_BLM</uniqueName>
     <actionPlanTemplateItem>
         <displayOrder>1</displayOrder>
         <isRequired>true</isRequired>
-        <itemEntityType>Task</itemEntityType>
+        <itemEntityType>AssessmentTask</itemEntityType>
         <name>Geology and Soils Desktop Review</name>
-        <uniqueName>NEPA_WO_Geo_1_Desktop</uniqueName>
+        <uniqueName>NEPA_WO_Geo_1_Desktop_BLM</uniqueName>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Subject</name>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Name</name>
             <valueLiteral>Geology and Soils Desktop Review</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Priority</name>
-            <valueLiteral>High</valueLiteral>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>TaskType</name>
+            <valueLiteral>InspectionChecklist</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Status</name>
+            <valueLiteral>NotStarted</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>IsRequired</name>
+            <valueLiteral>true</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
             <valueLiteral>Review EPA Superfund NPL hit data and site Record of Decision (ROD) if available on EPA CERCLIS. Pull NRCS Web Soil Survey data for project APE — document all map units, erodibility (K-factor), and limitations for proposed land use. Review state geological survey maps for bedrock depth, fault zones, and groundwater vulnerability. Identify any prior Phase I or Phase II ESA reports for the parcel from regulatory agency records. Document CERCLA institutional controls applicable to project footprint.</valueLiteral>
         </actionPlanTemplateItemValue>
@@ -30,21 +40,31 @@
     <actionPlanTemplateItem>
         <displayOrder>2</displayOrder>
         <isRequired>true</isRequired>
-        <itemEntityType>Task</itemEntityType>
+        <itemEntityType>AssessmentTask</itemEntityType>
         <name>Field Soils Assessment and Road Review</name>
-        <uniqueName>NEPA_WO_Geo_2_Field</uniqueName>
+        <uniqueName>NEPA_WO_Geo_2_Field_BLM</uniqueName>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Subject</name>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Name</name>
             <valueLiteral>Field Soils Assessment and Access Road Erosion Review</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Priority</name>
-            <valueLiteral>High</valueLiteral>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>TaskType</name>
+            <valueLiteral>InspectionChecklist</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Status</name>
+            <valueLiteral>NotStarted</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>IsRequired</name>
+            <valueLiteral>true</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
             <valueLiteral>Conduct field reconnaissance of project APE. Excavate soil pits to characterize texture, structure, organic matter, and presence of contamination indicators. Photograph and describe all access road crossings — note slope, drainage structures, cut/fill configuration, and erosion potential. Collect soil samples for laboratory analysis if visual contamination indicators are present. GPS all sample locations. Assess caliche, hardpan, or high-sodium soils that may affect reclamation seed establishment.</valueLiteral>
         </actionPlanTemplateItemValue>
@@ -52,21 +72,31 @@
     <actionPlanTemplateItem>
         <displayOrder>3</displayOrder>
         <isRequired>true</isRequired>
-        <itemEntityType>Task</itemEntityType>
+        <itemEntityType>AssessmentTask</itemEntityType>
         <name>CERCLA Coordination and Phase I/II Trigger</name>
-        <uniqueName>NEPA_WO_Geo_3_CERCLA</uniqueName>
+        <uniqueName>NEPA_WO_Geo_3_CERCLA_BLM</uniqueName>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Subject</name>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Name</name>
             <valueLiteral>CERCLA Coordination and Phase I/II ESA Trigger Assessment</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Priority</name>
-            <valueLiteral>High</valueLiteral>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>TaskType</name>
+            <valueLiteral>InspectionChecklist</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Status</name>
+            <valueLiteral>NotStarted</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>IsRequired</name>
+            <valueLiteral>true</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
             <valueLiteral>Determine if project activities disturb CERCLA-regulated media or require EPA/state oversight notification under the NPL site ROD. Evaluate whether Phase I ESA triggers apply under ASTM E1527-21 (all appropriate inquiries). If contamination indicators were found in field assessment, document Phase II ESA scope and timeline. Coordinate with EPA or state cleanup program if remediation oversight applies. Document any CERCLA contribution protections needed for federal land status.</valueLiteral>
         </actionPlanTemplateItemValue>
@@ -74,21 +104,31 @@
     <actionPlanTemplateItem>
         <displayOrder>4</displayOrder>
         <isRequired>true</isRequired>
-        <itemEntityType>Task</itemEntityType>
+        <itemEntityType>AssessmentTask</itemEntityType>
         <name>Reclamation Bond and Geology Report</name>
-        <uniqueName>NEPA_WO_Geo_4_Report</uniqueName>
+        <uniqueName>NEPA_WO_Geo_4_Report_BLM</uniqueName>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Subject</name>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Name</name>
             <valueLiteral>Reclamation Bond Memo and Geology Assessment Report</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Priority</name>
-            <valueLiteral>High</valueLiteral>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>TaskType</name>
+            <valueLiteral>InspectionChecklist</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Status</name>
+            <valueLiteral>NotStarted</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>IsRequired</name>
+            <valueLiteral>true</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
             <valueLiteral>Compile soils assessment, road erosion risk findings, CERCLA coordination memo, and Phase I/II trigger determination into geology report. Provide reclamation bond cost estimate per applicable state or federal bond schedule, including topsoil salvage, revegetation, and contamination contingency costs. Upload report as ContentVersion linked to Work Order and NEPA IndividualApplication. Recommend reclamation seed mix appropriate to soil type. Mark Work Order Status = Completed when report is approved.</valueLiteral>
         </actionPlanTemplateItemValue>

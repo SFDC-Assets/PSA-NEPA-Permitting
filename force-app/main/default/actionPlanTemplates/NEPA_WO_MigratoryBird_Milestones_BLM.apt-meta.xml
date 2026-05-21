@@ -1,28 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ActionPlanTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>Field survey milestones for a Wildlife Biologist (Avian) Work Order. Covers spring nesting window survey (April–August), MBTA compliance, and avian collision risk assessment. Target object: WorkOrder.</description>
+    <description>Field survey milestones for a Wildlife Biologist (Avian) Work Order. Covers spring nesting window survey (April–August), MBTA compliance, and avian collision risk assessment. Target object: Visit.</description>
     <isAdHocItemCreationEnabled>false</isAdHocItemCreationEnabled>
     <name>NEPA WO Migratory Bird Milestones</name>
-    <targetEntityType>WorkOrder</targetEntityType>
-    <uniqueName>NEPA_WO_MigratoryBird_Milestones</uniqueName>
+    <targetEntityType>Visit</targetEntityType>
+    <uniqueName>NEPA_WO_MigratoryBird_Milestones_BLM</uniqueName>
     <actionPlanTemplateItem>
         <displayOrder>1</displayOrder>
         <isRequired>true</isRequired>
-        <itemEntityType>Task</itemEntityType>
+        <itemEntityType>AssessmentTask</itemEntityType>
         <name>Avian Desktop Review and Raptor Nest Search</name>
-        <uniqueName>NEPA_WO_Bird_1_Desktop</uniqueName>
+        <uniqueName>NEPA_WO_Bird_1_Desktop_BLM</uniqueName>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Subject</name>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Name</name>
             <valueLiteral>Avian Desktop Review and Raptor Nest Pre-Search</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Priority</name>
-            <valueLiteral>High</valueLiteral>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>TaskType</name>
+            <valueLiteral>InspectionChecklist</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Status</name>
+            <valueLiteral>NotStarted</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>IsRequired</name>
+            <valueLiteral>true</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
             <valueLiteral>Query eBird, GBIF, USFWS IPaC, and state Natural Heritage Program for T&amp;E and MBTA-protected avian species with confirmed occurrences within 5 miles of project APE. Pull BLM raptor nest database and state raptor nesting surveys for golden eagle, bald eagle, ferruginous hawk, and prairie falcon within 0.5-mile radius. Review USFWS Eagle Conservation Plan for wind/transmission projects if applicable. Identify species-specific survey protocols and MBTA-compliant no-disturbance buffer distances during nesting season. Document project intersection with Important Bird Areas (IBAs) or Partners in Flight priority habitats.</valueLiteral>
         </actionPlanTemplateItemValue>
@@ -30,21 +40,31 @@
     <actionPlanTemplateItem>
         <displayOrder>2</displayOrder>
         <isRequired>true</isRequired>
-        <itemEntityType>Task</itemEntityType>
+        <itemEntityType>AssessmentTask</itemEntityType>
         <name>Nesting Season Survey — Spring/Summer Window</name>
-        <uniqueName>NEPA_WO_Bird_2_NestSurvey</uniqueName>
+        <uniqueName>NEPA_WO_Bird_2_NestSurvey_BLM</uniqueName>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Subject</name>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Name</name>
             <valueLiteral>Nesting Season Survey — Spring/Summer Window (April–August)</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Priority</name>
-            <valueLiteral>High</valueLiteral>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>TaskType</name>
+            <valueLiteral>InspectionChecklist</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Status</name>
+            <valueLiteral>NotStarted</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>IsRequired</name>
+            <valueLiteral>true</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
             <valueLiteral>Conduct comprehensive nesting bird survey of project APE plus 100-foot buffer during peak nesting window (April 15 – August 15). Use point count method (5-minute, 50-meter radius, unlimited distance) at systematically placed stations. Conduct separate raptor nest surveys via circular transects at 0.5-mile radius using binoculars and spotting scope. Document all active nests with GPS coordinates, species, stage of nesting, and distance to project features. Photograph nests from maximum safe distance. Note grassland nesting species (mountain plover, long-billed curlew, burrowing owl) in appropriate habitats.</valueLiteral>
         </actionPlanTemplateItemValue>
@@ -52,21 +72,31 @@
     <actionPlanTemplateItem>
         <displayOrder>3</displayOrder>
         <isRequired>true</isRequired>
-        <itemEntityType>Task</itemEntityType>
+        <itemEntityType>AssessmentTask</itemEntityType>
         <name>MBTA Compliance Analysis</name>
-        <uniqueName>NEPA_WO_Bird_3_MBTA</uniqueName>
+        <uniqueName>NEPA_WO_Bird_3_MBTA_BLM</uniqueName>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Subject</name>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Name</name>
             <valueLiteral>MBTA Compliance and BGEPA Applicability Analysis</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Priority</name>
-            <valueLiteral>High</valueLiteral>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>TaskType</name>
+            <valueLiteral>InspectionChecklist</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Status</name>
+            <valueLiteral>NotStarted</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>IsRequired</name>
+            <valueLiteral>true</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
             <valueLiteral>Document proposed construction and operational activities that could result in incidental take under MBTA (including vegetation clearing, ground disturbance, powerline installation). Identify take-avoidance measures: construction timing windows avoiding active nests, pre-construction nest sweeps, raptor nest buffer distances. Assess Bald and Golden Eagle Protection Act (BGEPA) applicability for any eagle nests within 0.5 miles of project components. Document Eagle Take Permit applicability if avoidance is not achievable. Identify species requiring individual USFWS coordination letters. Note: clearing within 300 feet of active raptor nests without incidental take authorization is prohibited under BGEPA.</valueLiteral>
         </actionPlanTemplateItemValue>
@@ -74,21 +104,31 @@
     <actionPlanTemplateItem>
         <displayOrder>4</displayOrder>
         <isRequired>true</isRequired>
-        <itemEntityType>Task</itemEntityType>
+        <itemEntityType>AssessmentTask</itemEntityType>
         <name>Avian Survey Report and MBTA Compliance Memo</name>
-        <uniqueName>NEPA_WO_Bird_4_Report</uniqueName>
+        <uniqueName>NEPA_WO_Bird_4_Report_BLM</uniqueName>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Subject</name>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Name</name>
             <valueLiteral>Avian Survey Report and MBTA/BGEPA Compliance Memo</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Priority</name>
-            <valueLiteral>High</valueLiteral>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>TaskType</name>
+            <valueLiteral>InspectionChecklist</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Status</name>
+            <valueLiteral>NotStarted</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>IsRequired</name>
+            <valueLiteral>true</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
             <valueLiteral>Compile nesting survey results, raptor nest map, MBTA compliance analysis, BGEPA applicability determination, and recommended avoidance/minimization measures into final avian report. Document species-specific buffer distances, construction timing restrictions, and pre-construction sweep requirements to be included in project conditions of approval. Upload report as ContentVersion linked to Work Order and NEPA IndividualApplication. Mark Work Order Status = Completed when report is approved by NEPA lead.</valueLiteral>
         </actionPlanTemplateItemValue>

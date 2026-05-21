@@ -1,28 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ActionPlanTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>Field survey milestones for a Wildlife Biologist (Big Game) Work Order. Covers shoulder-season assessment, winter range mapping, and pronghorn/elk migration corridor analysis. Target object: WorkOrder.</description>
+    <description>Field survey milestones for a Wildlife Biologist (Big Game) Work Order. Covers shoulder-season assessment, winter range mapping, and pronghorn/elk migration corridor analysis. Target object: Visit.</description>
     <isAdHocItemCreationEnabled>false</isAdHocItemCreationEnabled>
     <name>NEPA WO Big Game Milestones</name>
-    <targetEntityType>WorkOrder</targetEntityType>
-    <uniqueName>NEPA_WO_BigGame_Milestones</uniqueName>
+    <targetEntityType>Visit</targetEntityType>
+    <uniqueName>NEPA_WO_BigGame_Milestones_BLM</uniqueName>
     <actionPlanTemplateItem>
         <displayOrder>1</displayOrder>
         <isRequired>true</isRequired>
-        <itemEntityType>Task</itemEntityType>
+        <itemEntityType>AssessmentTask</itemEntityType>
         <name>Big Game Desktop Review</name>
-        <uniqueName>NEPA_WO_BG_1_Desktop</uniqueName>
+        <uniqueName>NEPA_WO_BG_1_Desktop_BLM</uniqueName>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Subject</name>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Name</name>
             <valueLiteral>Big Game Desktop Review — Range and Migration Corridor</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Priority</name>
-            <valueLiteral>Normal</valueLiteral>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>TaskType</name>
+            <valueLiteral>InspectionChecklist</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Status</name>
+            <valueLiteral>NotStarted</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>IsRequired</name>
+            <valueLiteral>true</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
             <valueLiteral>Query state wildlife agency GIS portal and BLM for mapped big game winter range, crucial winter range, production (fawning/calving) habitat, and migration corridors within 2 miles of project APE. Species of concern: mule deer, pronghorn, elk, bighorn sheep (as applicable to project region). Review state agency management plans, habitat objectives, and density standards for the applicable game management unit. Identify any mapped priority migration corridors (e.g., Wyoming Migration Initiative, Wyoming Range mule deer corridor) overlapping project footprint. Compile historical telemetry data if available from state agency coordination.</valueLiteral>
         </actionPlanTemplateItemValue>
@@ -30,21 +40,31 @@
     <actionPlanTemplateItem>
         <displayOrder>2</displayOrder>
         <isRequired>true</isRequired>
-        <itemEntityType>Task</itemEntityType>
+        <itemEntityType>AssessmentTask</itemEntityType>
         <name>Shoulder-Season Field Assessment</name>
-        <uniqueName>NEPA_WO_BG_2_Field</uniqueName>
+        <uniqueName>NEPA_WO_BG_2_Field_BLM</uniqueName>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Subject</name>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Name</name>
             <valueLiteral>Shoulder-Season Big Game Field Assessment</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Priority</name>
-            <valueLiteral>Normal</valueLiteral>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>TaskType</name>
+            <valueLiteral>InspectionChecklist</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Status</name>
+            <valueLiteral>NotStarted</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>IsRequired</name>
+            <valueLiteral>true</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
             <valueLiteral>Conduct field reconnaissance of project APE during shoulder season (April–May or September–October) to document habitat quality, forage species composition, cover, and evidence of big game use (tracks, pellets, rubs, wallows, trails). Map any topographic features that concentrate or funnel migration (drainages, ridgelines, fence crossings). Document existing infrastructure (fences, roads, pipelines) and assess permeability to big game movement. Note any livestock grazing impacts to forage base or water sources used by big game. GPS all significant observations.</valueLiteral>
         </actionPlanTemplateItemValue>
@@ -52,21 +72,31 @@
     <actionPlanTemplateItem>
         <displayOrder>3</displayOrder>
         <isRequired>true</isRequired>
-        <itemEntityType>Task</itemEntityType>
+        <itemEntityType>AssessmentTask</itemEntityType>
         <name>Winter Range Mapping and Fragmentation Analysis</name>
-        <uniqueName>NEPA_WO_BG_3_WinterRange</uniqueName>
+        <uniqueName>NEPA_WO_BG_3_WinterRange_BLM</uniqueName>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Subject</name>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Name</name>
             <valueLiteral>Winter Range Mapping and Habitat Fragmentation Analysis</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Priority</name>
-            <valueLiteral>Normal</valueLiteral>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>TaskType</name>
+            <valueLiteral>InspectionChecklist</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Status</name>
+            <valueLiteral>NotStarted</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>IsRequired</name>
+            <valueLiteral>true</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
             <valueLiteral>Overlay project footprint with state-mapped crucial winter range and production habitat polygons. Calculate acres of each habitat type directly impacted versus acres disturbed within each habitat category. Assess edge effects and effective habitat loss using species-specific disturbance buffer distances (e.g., 0.25-mile noise buffer for mule deer wintering habitat). Evaluate cumulative fragmentation effect with existing infrastructure. Identify fence modification recommendations (wildlife-friendly fence standards: 42-inch max height, smooth bottom wire, 12-inch gap at base). Document proposed crossing structures or migration permeability enhancements.</valueLiteral>
         </actionPlanTemplateItemValue>
@@ -74,21 +104,31 @@
     <actionPlanTemplateItem>
         <displayOrder>4</displayOrder>
         <isRequired>true</isRequired>
-        <itemEntityType>Task</itemEntityType>
+        <itemEntityType>AssessmentTask</itemEntityType>
         <name>Big Game Assessment Report</name>
-        <uniqueName>NEPA_WO_BG_4_Report</uniqueName>
+        <uniqueName>NEPA_WO_BG_4_Report_BLM</uniqueName>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Subject</name>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Name</name>
             <valueLiteral>Big Game Assessment Report — Final Submission</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
-            <name>Priority</name>
-            <valueLiteral>Normal</valueLiteral>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>TaskType</name>
+            <valueLiteral>InspectionChecklist</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
-            <itemEntityType>Task</itemEntityType>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>Status</name>
+            <valueLiteral>NotStarted</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
+            <name>IsRequired</name>
+            <valueLiteral>true</valueLiteral>
+        </actionPlanTemplateItemValue>
+        <actionPlanTemplateItemValue>
+            <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
             <valueLiteral>Compile desktop review, field assessment, winter range mapping, fragmentation analysis, and mitigation recommendations into big game wildlife report. Include state agency coordination letters or concurrences where obtained. Recommend project conditions: seasonal timing restrictions (winter no-disturbance window if applicable), fence modification requirements, reclamation forage species, weed control requirements affecting forage base. Upload report as ContentVersion linked to Work Order and NEPA IndividualApplication. Mark Work Order Status = Completed when report is approved by NEPA lead.</valueLiteral>
         </actionPlanTemplateItemValue>
