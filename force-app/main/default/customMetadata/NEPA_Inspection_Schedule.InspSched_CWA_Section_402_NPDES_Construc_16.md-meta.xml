@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Insp Schedule | CWA Section 402 NPDES Construc 16</label>
+    <protected>false</protected>
+    <values>
+        <field>Permit_Type__c</field>
+        <value xsi:type="xsd:string">CWA Section 402 NPDES Construction</value>
+    </values>
+    <values>
+        <field>Sector__c</field>
+        <value xsi:type="xsd:string">Materials and Manufacturing</value>
+    </values>
+    <values>
+        <field>Lead_Agency__c</field>
+        <value xsi:type="xsd:string">BLM</value>
+    </values>
+    <values>
+        <field>Inspection_Type__c</field>
+        <value xsi:type="xsd:string">Stormwater Pollution Prevention Plan (SWPPP) Inspection</value>
+    </values>
+    <values>
+        <field>Frequency_Days__c</field>
+        <value xsi:type="xsd:decimal">7</value>
+    </values>
+    <values>
+        <field>Field_Inspection_Required__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>Responsible_Agency__c</field>
+        <value xsi:type="xsd:string">Project Operator / EPA</value>
+    </values>
+    <values>
+        <field>Noncompliance_Trigger__c</field>
+        <value xsi:type="xsd:string">Uncontrolled stormwater discharge; SWPPP not implemented</value>
+    </values>
+    <values>
+        <field>Post_Permit_Litigation_Risk__c</field>
+        <value xsi:type="xsd:string">MEDIUM</value>
+    </values>
+    <values>
+        <field>Statutory_Authority__c</field>
+        <value xsi:type="xsd:string">33 USC §1342; 40 CFR §122.26</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

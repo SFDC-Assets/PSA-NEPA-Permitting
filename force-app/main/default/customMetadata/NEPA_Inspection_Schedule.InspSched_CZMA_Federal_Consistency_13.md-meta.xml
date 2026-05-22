@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Insp Schedule | CZMA Federal Consistency 13</label>
+    <protected>false</protected>
+    <values>
+        <field>Permit_Type__c</field>
+        <value xsi:type="xsd:string">CZMA Federal Consistency</value>
+    </values>
+    <values>
+        <field>Sector__c</field>
+        <value xsi:type="xsd:string">Transportation and Infrastructure</value>
+    </values>
+    <values>
+        <field>Lead_Agency__c</field>
+        <value xsi:type="xsd:string">USACE</value>
+    </values>
+    <values>
+        <field>Inspection_Type__c</field>
+        <value xsi:type="xsd:string">Coastal Consistency Monitoring</value>
+    </values>
+    <values>
+        <field>Frequency_Days__c</field>
+        <value xsi:type="xsd:decimal">365</value>
+    </values>
+    <values>
+        <field>Field_Inspection_Required__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>Responsible_Agency__c</field>
+        <value xsi:type="xsd:string">NOAA / State Coastal Management Agency</value>
+    </values>
+    <values>
+        <field>Noncompliance_Trigger__c</field>
+        <value xsi:type="xsd:string">Project modification affecting coastal zone; state concurrence withdrawal</value>
+    </values>
+    <values>
+        <field>Post_Permit_Litigation_Risk__c</field>
+        <value xsi:type="xsd:string">MEDIUM</value>
+    </values>
+    <values>
+        <field>Statutory_Authority__c</field>
+        <value xsi:type="xsd:string">16 USC §1456; 15 CFR Part 930</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

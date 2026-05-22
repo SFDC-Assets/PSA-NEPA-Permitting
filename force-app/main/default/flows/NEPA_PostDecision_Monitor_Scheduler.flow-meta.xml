@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>Record-triggered after-save on IndividualApplication. Fires when nepa_ar_locked__c changes to true (ROD/FONSI issuance gate). Queries NEPA_Required_Document__mdt for all active records where Stage_Required_By__c = "Post-Decision" matching the process type (CE/EA/EIS or ALL). Creates one Task per document with: subject = "[Statutory basis] Document due: [document name]", due_date = today + Frequency_Days__c, assigned to NEPA Coordinator. Tasks recur on completion via NEPA_Permit_SLA_Monitor pattern. This is F-09 core scheduling — legally sourced, auto-generated, zero manual configuration. Fault connector routes to NEPA_Error_Logger per ADR 003.</description>
+    <label>NEPA Post-Decision Monitor Scheduler</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Active</status>
+    <triggerType>RecordAfterSave</triggerType>
+    <object>IndividualApplication</object>
+    <recordTriggerType>Update</recordTriggerType>
+    <triggerOrder>300</triggerOrder>
+
+    <!-- ENTRY CRITERIA: nepa_ar_locked__c changed to true -->
+    <start>
+        <locationX>176</locationX>
+        <locationY>48</locationY>
+        <connector>
+            <targetReference>Get_PostDecisionDocs</targetReference>
+        </connector>
+        <filterLogic>1 AND 2</filterLogic>
+        <filters>
+            <field>nepa_ar_locked__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_ar_locked__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>IndividualApplication</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+
+    <!-- VARIABLES -->
+    <variables>
+        <name>var_ReviewType</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <elementReference>$Record.nepa_review_type__c</elementReference>
+        </value>
+    </variables>
+    <variables>
+        <name>var_NewTasks</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Task</objectType>
+    </variables>
+    <variables>
+        <name>var_SingleTask</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Task</objectType>
+    </variables>
+
+    <!-- FORMULAS -->
+    <formulas>
+        <name>formula_Today</name>
+        <dataType>Date</dataType>
+        <expression>TODAY()</expression>
+    </formulas>
+
+    <!-- RECORD LOOKUPS: Get all active post-decision doc requirements for this review type -->
+    <recordLookups>
+        <name>Get_PostDecisionDocs</name>
+        <label>Get Post-Decision Document Requirements</label>
+        <locationX>176</locationX>
+        <locationY>156</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_DocsFound</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>(1 OR 2) AND 3 AND 4</filterLogic>
+        <filters>
+            <field>Review_Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_ReviewType</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Review_Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>ALL</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Stage_Required_By__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Post-Decision</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Active__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>NEPA_Required_Document__mdt</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+
+    <!-- DECISIONS -->
+    <decisions>
+        <name>Decision_DocsFound</name>
+        <label>Post-Decision Docs Found?</label>
+        <locationX>176</locationX>
+        <locationY>264</locationY>
+        <defaultConnectorLabel>No post-decision docs — exit</defaultConnectorLabel>
+        <rules>
+            <name>Docs_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_PostDecisionDocs</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Loop_PostDecisionDocs</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+
+    <!-- LOOP: one Task per document requirement -->
+    <loops>
+        <name>Loop_PostDecisionDocs</name>
+        <label>Loop: One Task per Post-Decision Document</label>
+        <locationX>176</locationX>
+        <locationY>372</locationY>
+        <collectionReference>Get_PostDecisionDocs</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Build_MonitoringTask</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Create_Tasks</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+
+    <!-- ASSIGNMENTS: build task record for current doc -->
+    <assignments>
+        <name>Build_MonitoringTask</name>
+        <label>Build Monitoring Task</label>
+        <locationX>352</locationX>
+        <locationY>372</locationY>
+        <assignmentItems>
+            <assignToReference>var_SingleTask.WhatId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_SingleTask.Subject</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Post-Decision Monitoring: {!Loop_PostDecisionDocs.Document_Type__c}</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_SingleTask.Priority</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>High</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_SingleTask.Status</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Not Started</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewTasks</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>var_SingleTask</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_PostDecisionDocs</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- RECORD CREATE: bulk create all tasks -->
+    <recordCreates>
+        <name>Create_Tasks</name>
+        <label>Create Monitoring Tasks</label>
+        <locationX>176</locationX>
+        <locationY>480</locationY>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputReference>var_NewTasks</inputReference>
+    </recordCreates>
+
+    <!-- FAULT HANDLER -->
+    <subflows>
+        <name>Handle_Error</name>
+        <label>Log Error</label>
+        <locationX>528</locationX>
+        <locationY>156</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value>
+                <stringValue>NEPA_PostDecision_Monitor_Scheduler</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+
+</Flow>

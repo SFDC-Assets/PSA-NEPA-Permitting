@@ -66,6 +66,36 @@
         <defaultValue>true</defaultValue>
     </fields>
 
+    <!-- Post-Decision Monitoring Extension (Analysis 5) -->
+    <fields>
+        <fullName>Monitoring_Phase__c</fullName>
+        <description>Post-decision monitoring phase: Mitigation, ESA_Consultation, Water_Quality, Species_Monitoring, Adaptive_Management. Null for pre-decision documents. Used by NEPA_PostDecision_Monitor_Scheduler to group tasks by phase on the monitoring dashboard.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Monitoring Phase</label>
+        <length>50</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Frequency_Days__c</fullName>
+        <description>Number of days between required document submissions for recurring post-decision documents (e.g., 365 = annual, 90 = quarterly, 180 = semi-annual). Null for one-time or gate-triggered documents. NEPA_PostDecision_Monitor_Scheduler uses this to compute Task due dates and recurrence.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Frequency (Days)</label>
+        <precision>6</precision>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Litigation_Risk_If_Absent__c</fullName>
+        <description>Litigation risk if this document is absent or overdue: LOW, MEDIUM, HIGH, or VERY_HIGH. Derived from PermitTEC corpus analysis and statutory citizen-suit provisions. Surfaced in the Defensibility Gap Checker gap message.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Litigation Risk If Absent</label>
+        <length>20</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+
     <!-- Mandate 2: EO 14270 temporal versioning -->
     <fields>
         <fullName>Effective_Start_Date__c</fullName>

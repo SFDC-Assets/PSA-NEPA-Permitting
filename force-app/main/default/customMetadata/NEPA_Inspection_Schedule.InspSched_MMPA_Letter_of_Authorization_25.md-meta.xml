@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Insp Schedule | MMPA Letter of Authorization 25</label>
+    <protected>false</protected>
+    <values>
+        <field>Permit_Type__c</field>
+        <value xsi:type="xsd:string">MMPA Letter of Authorization</value>
+    </values>
+    <values>
+        <field>Sector__c</field>
+        <value xsi:type="xsd:string">Military, Defense, and Emergency Response</value>
+    </values>
+    <values>
+        <field>Lead_Agency__c</field>
+        <value xsi:type="xsd:string">DoD (Army/Navy/USCG)</value>
+    </values>
+    <values>
+        <field>Inspection_Type__c</field>
+        <value xsi:type="xsd:string">Annual On-Site Monitoring Program</value>
+    </values>
+    <values>
+        <field>Frequency_Days__c</field>
+        <value xsi:type="xsd:decimal">365</value>
+    </values>
+    <values>
+        <field>Field_Inspection_Required__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>Responsible_Agency__c</field>
+        <value xsi:type="xsd:string">NMFS / USFWS (DoD projects)</value>
+    </values>
+    <values>
+        <field>Noncompliance_Trigger__c</field>
+        <value xsi:type="xsd:string">Stranding event; take above LOA level</value>
+    </values>
+    <values>
+        <field>Post_Permit_Litigation_Risk__c</field>
+        <value xsi:type="xsd:string">HIGH</value>
+    </values>
+    <values>
+        <field>Statutory_Authority__c</field>
+        <value xsi:type="xsd:string">16 USC §1371(a)(5)(A); 50 CFR §216.106</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

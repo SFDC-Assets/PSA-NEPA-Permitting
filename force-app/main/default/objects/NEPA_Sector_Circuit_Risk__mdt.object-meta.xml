@@ -78,6 +78,26 @@
             </valueSetDefinition>
         </valueSet>
     </fields>
+    <!-- Post-ROD Phase Extension (Analysis 1) -->
+    <fields>
+        <fullName>Phase__c</fullName>
+        <description>NEPA process phase for this risk cell: Pre-Decision or Post-Decision. Pre-Decision cells (default) apply to the standard review period. Post-Decision cells apply after ROD/FONSI issuance and are activated when NEPA_Litigation_Risk_Scorer receives a post-ROD phase flag. Seeded with 5 post-ROD cells from Analysis 1 (trigger type × circuit high-risk combinations).</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Phase</label>
+        <length>20</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Trigger_Type__c</fullName>
+        <description>Post-decision trigger category for post-ROD cells: BiOp_Challenge, Permit_Condition, Mitigation_Compliance, Enforcement_Action, Monitoring_Obligation, Inspection_Related. Null for pre-decision cells.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Trigger Type</label>
+        <length>50</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+
     <fields>
         <fullName>Active__c</fullName>
         <description>Whether this sector-circuit risk cell is active in the scoring model.</description>

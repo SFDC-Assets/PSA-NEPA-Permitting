@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>Record-triggered after-save on nepa_required_permit__c. Fires when nepa_permit_status__c changes to "Issued". Queries NEPA_Inspection_Schedule__mdt by Permit_Type__c match, then creates a series of Visit inspection tasks with pre-populated statutory authority, inspection type, and due dates. State risk context (from NEPA_State_Risk_Profile__mdt via parent IA) is written to Visit.nepa_trigger_layer__c for display in the mobile OmniScript. Fault connector routes to NEPA_Error_Logger per ADR 003.</description>
+    <label>NEPA Permit Issued Schedule Creator</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Active</status>
+    <triggerType>RecordAfterSave</triggerType>
+    <object>nepa_required_permit__c</object>
+    <recordTriggerType>CreateAndUpdate</recordTriggerType>
+    <triggerOrder>100</triggerOrder>
+
+    <!-- ENTRY CRITERIA: status changed to Issued -->
+    <start>
+        <locationX>176</locationX>
+        <locationY>48</locationY>
+        <connector>
+            <targetReference>Get_InspectionSchedules</targetReference>
+        </connector>
+        <filterLogic>1</filterLogic>
+        <filters>
+            <field>nepa_permit_status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Issued</stringValue>
+            </value>
+        </filters>
+        <object>nepa_required_permit__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+
+    <!-- VARIABLES -->
+    <variables>
+        <name>var_PermitType</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <elementReference>$Record.nepa_permit_type__c</elementReference>
+        </value>
+    </variables>
+    <variables>
+        <name>var_IAId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <elementReference>$Record.nepa_process__c</elementReference>
+        </value>
+    </variables>
+    <variables>
+        <name>var_NewVisits</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Visit</objectType>
+    </variables>
+    <variables>
+        <name>var_SingleVisit</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Visit</objectType>
+    </variables>
+
+    <!-- FORMULAS -->
+    <formulas>
+        <name>formula_IssuedDate</name>
+        <dataType>Date</dataType>
+        <expression>TODAY()</expression>
+    </formulas>
+
+    <!-- RECORD LOOKUPS -->
+    <recordLookups>
+        <name>Get_InspectionSchedules</name>
+        <label>Get Inspection Schedules for Permit Type</label>
+        <locationX>176</locationX>
+        <locationY>156</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_SchedulesFound</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>1 AND 2</filterLogic>
+        <filters>
+            <field>Permit_Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_PermitType</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Active__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>NEPA_Inspection_Schedule__mdt</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+
+    <recordLookups>
+        <name>Get_ParentIA</name>
+        <label>Get Parent IndividualApplication</label>
+        <locationX>352</locationX>
+        <locationY>264</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_StateRiskProfile</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>1</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_IAId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>IndividualApplication</object>
+        <outputAssignments>
+            <assignToReference>var_StateCode</assignToReference>
+            <field>nepa_state_code__c</field>
+        </outputAssignments>
+        <storeOutputAutomatically>false</storeOutputAutomatically>
+    </recordLookups>
+
+    <recordLookups>
+        <name>Get_StateRiskProfile</name>
+        <label>Get State Risk Profile</label>
+        <locationX>352</locationX>
+        <locationY>372</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_Schedules</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>1</filterLogic>
+        <filters>
+            <field>State_Code__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_StateCode</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>NEPA_State_Risk_Profile__mdt</object>
+        <outputAssignments>
+            <assignToReference>var_StateWarning</assignToReference>
+            <field>Field_Inspector_Warning__c</field>
+        </outputAssignments>
+        <storeOutputAutomatically>false</storeOutputAutomatically>
+    </recordLookups>
+
+    <!-- DECISIONS -->
+    <decisions>
+        <name>Decision_SchedulesFound</name>
+        <label>Schedules Found?</label>
+        <locationX>176</locationX>
+        <locationY>264</locationY>
+        <defaultConnectorLabel>No schedules — exit</defaultConnectorLabel>
+        <rules>
+            <name>Schedules_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_InspectionSchedules</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_ParentIA</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+
+    <!-- EXTRA VARIABLES for state lookup -->
+    <variables>
+        <name>var_StateCode</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_StateWarning</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_CurrentSchedule</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>NEPA_Inspection_Schedule__mdt</objectType>
+    </variables>
+
+    <!-- LOOP: one Visit per schedule record -->
+    <loops>
+        <name>Loop_Schedules</name>
+        <label>Loop: One Visit per Schedule</label>
+        <locationX>352</locationX>
+        <locationY>480</locationY>
+        <collectionReference>Get_InspectionSchedules</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Build_Visit</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Create_Visits</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+
+    <!-- ASSIGNMENTS -->
+    <assignments>
+        <name>Build_Visit</name>
+        <label>Build Visit Record</label>
+        <locationX>528</locationX>
+        <locationY>480</locationY>
+        <assignmentItems>
+            <assignToReference>var_SingleVisit.nepa_process__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_IAId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_SingleVisit.nepa_discipline__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_Schedules.Inspection_Type__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_SingleVisit.nepa_trigger_layer__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_Schedules.Statutory_Authority__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_SingleVisit.nepa_auto_generated__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_SingleVisit.nepa_hard_gate__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_NewVisits</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>var_SingleVisit</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_Schedules</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- RECORD CREATE -->
+    <recordCreates>
+        <name>Create_Visits</name>
+        <label>Create Visit Records</label>
+        <locationX>352</locationX>
+        <locationY>588</locationY>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputReference>var_NewVisits</inputReference>
+    </recordCreates>
+
+    <!-- FAULT HANDLER -->
+    <subflows>
+        <name>Handle_Error</name>
+        <label>Log Error</label>
+        <locationX>704</locationX>
+        <locationY>156</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value>
+                <stringValue>NEPA_Permit_Issued_Schedule_Creator</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+
+</Flow>

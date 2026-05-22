@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>NPDES DMR Quarterly</label>
+    <protected>false</protected>
+    <values>
+        <field>Review_Type__c</field>
+        <value xsi:type="xsd:string">ALL</value>
+    </values>
+    <values>
+        <field>Document_Type__c</field>
+        <value xsi:type="xsd:string">MONITORING_REPORT</value>
+    </values>
+    <values>
+        <field>Gate_Event_Type__c</field>
+        <value xsi:type="xsd:string"></value>
+    </values>
+    <values>
+        <field>Is_Required__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>Stage_Required_By__c</field>
+        <value xsi:type="xsd:string">Post-Decision</value>
+    </values>
+    <values>
+        <field>Display_Order__c</field>
+        <value xsi:type="xsd:decimal">104</value>
+    </values>
+    <values>
+        <field>Monitoring_Phase__c</field>
+        <value xsi:type="xsd:string">Water_Quality</value>
+    </values>
+    <values>
+        <field>Frequency_Days__c</field>
+        <value xsi:type="xsd:decimal">90</value>
+    </values>
+    <values>
+        <field>Litigation_Risk_If_Absent__c</field>
+        <value xsi:type="xsd:string">HIGH</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

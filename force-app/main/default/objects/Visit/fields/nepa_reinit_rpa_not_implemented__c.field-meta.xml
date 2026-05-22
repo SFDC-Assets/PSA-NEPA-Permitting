@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_reinit_rpa_not_implemented__c</fullName>
+    <label>BiOp Reinit: RPA Not Implemented</label>
+    <type>Checkbox</type>
+    <defaultValue>false</defaultValue>
+    <description>ESA §7 BiOp reinitiation trigger per 50 CFR &amp;#167;402.16(b) + APA &amp;#167;706. When checked by a field inspector, NEPA_BiOp_Reinitiation_Checker fires and creates a High-priority ESA Coordinator Task if an active BiOp exists on the parent IndividualApplication. Also adds +12 pts to nepa_challenge_risk_delta__c.</description>
+    <inlineHelpText>[50 CFR &amp;#167;402.16(b) + APA &amp;#167;706] Reasonable and Prudent Alternative measures not implemented as required. Field detection: RPA compliance checklist at each inspection — each RPA measure verified as implemented</inlineHelpText>
+    <trackHistory>false</trackHistory>
+</CustomField>

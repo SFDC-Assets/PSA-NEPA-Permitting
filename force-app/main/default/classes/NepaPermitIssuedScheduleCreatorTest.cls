@@ -8,13 +8,12 @@ private class NepaPermitIssuedScheduleCreatorTest {
             'PISC-TEST-001', 'Permit Issued Schedule Creator Test', 'BLM'
         );
         IndividualApplication ia = NepaTestFactory.makeProcess(proj.Id, 'EA', null, null);
-        ia.nepa_state_code__c = 'CO';
         insert ia;
     }
 
     private static IndividualApplication getIA() {
         return [
-            SELECT Id, nepa_state_code__c
+            SELECT Id
             FROM IndividualApplication
             WHERE nepa_related_project__r.nepa_project_id__c = 'PISC-TEST-001'
             LIMIT 1
@@ -125,9 +124,7 @@ private class NepaPermitIssuedScheduleCreatorTest {
 
         List<IndividualApplication> ias = new List<IndividualApplication>();
         for (Integer i = 0; i < 5; i++) {
-            IndividualApplication ia = NepaTestFactory.makeProcess(proj.Id, 'EA', null, null);
-            ia.nepa_state_code__c = 'CO';
-            ias.add(ia);
+            ias.add(NepaTestFactory.makeProcess(proj.Id, 'EA', null, null));
         }
         insert ias;
 

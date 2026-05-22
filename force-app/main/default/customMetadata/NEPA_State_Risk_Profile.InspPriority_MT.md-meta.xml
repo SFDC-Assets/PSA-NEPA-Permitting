@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>State Risk | Montana</label>
+    <protected>false</protected>
+    <values>
+        <field>State__c</field>
+        <value xsi:type="xsd:string">Montana</value>
+    </values>
+    <values>
+        <field>State_Code__c</field>
+        <value xsi:type="xsd:string">MT</value>
+    </values>
+    <values>
+        <field>Litigation_Risk_Tier__c</field>
+        <value xsi:type="xsd:string">MEDIUM</value>
+    </values>
+    <values>
+        <field>Challenger_Win_Rate_Pct__c</field>
+        <value xsi:type="xsd:decimal">28.6</value>
+    </values>
+    <values>
+        <field>Risk_Multiplier__c</field>
+        <value xsi:type="xsd:decimal">1.0</value>
+    </values>
+    <values>
+        <field>Composite_Inspection_Priority_Score__c</field>
+        <value xsi:type="xsd:decimal">2.0</value>
+    </values>
+    <values>
+        <field>Primary_Circuit__c</field>
+        <value xsi:type="xsd:string">9th</value>
+    </values>
+    <values>
+        <field>Dominant_Plaintiffs__c</field>
+        <value xsi:type="xsd:string">Alliance for the Wild Rockies; Native Ecosystems Council; Montana Environmental Information Center</value>
+    </values>
+    <values>
+        <field>Dominant_Challenge_Types__c</field>
+        <value xsi:type="xsd:string">Forest vegetation/timber projects; Bull Mountains coal mine plan</value>
+    </values>
+    <values>
+        <field>Field_Inspector_Warning__c</field>
+        <value xsi:type="xsd:string">Standard risk state (28.6% challenger win rate). Follow standard monitoring protocol.</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

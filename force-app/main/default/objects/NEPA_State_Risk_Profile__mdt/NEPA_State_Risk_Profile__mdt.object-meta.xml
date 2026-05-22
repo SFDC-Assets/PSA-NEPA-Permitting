@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Geographic field inspection priority profiles derived from Analysis 3 of the 26-state PermitTEC geographic risk map. Composite score = state litigation risk multiplier × monitoring permit intensity × challenger win rate. Read by NEPA_Permit_Issued_Schedule_Creator and rendered in nepaFieldInspectionCard LWC at mobile form open. One record per state.</description>
+    <label>NEPA State Risk Profile</label>
+    <pluralLabel>NEPA State Risk Profiles</pluralLabel>
+    <fields>
+        <fullName>State__c</fullName>
+        <description>Full state name (e.g., "Utah").</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>State</label>
+        <length>100</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>State_Code__c</fullName>
+        <description>Two-character USPS state abbreviation (e.g., "UT"). Matched against IndividualApplication.nepa_state_code__c to look up the profile.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>State Code</label>
+        <length>2</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Litigation_Risk_Tier__c</fullName>
+        <description>Tier classification: LOW, MEDIUM, HIGH, VERY_HIGH. Drives the risk badge color in nepaFieldInspectionCard LWC.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Litigation Risk Tier</label>
+        <length>20</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Challenger_Win_Rate_Pct__c</fullName>
+        <description>Percentage of PermitTEC cases in this state where the challenger prevailed (0–100). Displayed in the field inspector warning panel.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Challenger Win Rate (%)</label>
+        <precision>5</precision>
+        <scale>1</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Risk_Multiplier__c</fullName>
+        <description>State litigation risk multiplier used in composite priority score calculation. Higher = more litigious state relative to baseline.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Risk Multiplier</label>
+        <precision>4</precision>
+        <scale>2</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Composite_Inspection_Priority_Score__c</fullName>
+        <description>Composite priority score (multiplier × monitoring intensity × win rate / baseline). Used to sort and tier states for field deployment prioritization.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Composite Priority Score</label>
+        <precision>6</precision>
+        <scale>2</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Primary_Circuit__c</fullName>
+        <description>Federal circuit court with jurisdiction over this state. Informs litigation risk context displayed in the inspector briefing.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Primary Circuit</label>
+        <length>20</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Dominant_Plaintiffs__c</fullName>
+        <description>Semicolon-delimited list of top plaintiff organizations that have filed NEPA challenges in this state (from PermitTEC corpus). Displayed in the inspector briefing panel.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Dominant Plaintiffs</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Dominant_Challenge_Types__c</fullName>
+        <description>Semicolon-delimited primary challenge types in this state (e.g., "BLM Travel Management Plans; RMP route designations"). Displayed in the inspector briefing.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Dominant Challenge Types</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Field_Inspector_Warning__c</fullName>
+        <description>Pre-composed warning text surfaced in the F-05 mobile OmniScript at inspection form open. Includes win rate, dominant plaintiffs, and primary challenge types. Rendered by nepaFieldInspectionCard LWC as a risk briefing panel at the top of every Visit record.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Field Inspector Warning</label>
+        <length>1000</length>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>Active__c</fullName>
+        <description>Inactive profiles are excluded from risk context rendering. SubscriberControlled so agencies can suppress states outside their program area.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
+        <label>Active</label>
+        <type>Checkbox</type>
+        <defaultValue>true</defaultValue>
+    </fields>
+</CustomObject>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>State Risk | Maine</label>
+    <protected>false</protected>
+    <values>
+        <field>State__c</field>
+        <value xsi:type="xsd:string">Maine</value>
+    </values>
+    <values>
+        <field>State_Code__c</field>
+        <value xsi:type="xsd:string">ME</value>
+    </values>
+    <values>
+        <field>Litigation_Risk_Tier__c</field>
+        <value xsi:type="xsd:string">LOW</value>
+    </values>
+    <values>
+        <field>Challenger_Win_Rate_Pct__c</field>
+        <value xsi:type="xsd:decimal">0.0</value>
+    </values>
+    <values>
+        <field>Risk_Multiplier__c</field>
+        <value xsi:type="xsd:decimal">0.55</value>
+    </values>
+    <values>
+        <field>Composite_Inspection_Priority_Score__c</field>
+        <value xsi:type="xsd:decimal">0.0</value>
+    </values>
+    <values>
+        <field>Primary_Circuit__c</field>
+        <value xsi:type="xsd:string">1st/D.C.</value>
+    </values>
+    <values>
+        <field>Dominant_Plaintiffs__c</field>
+        <value xsi:type="xsd:string">Sierra Club; Historic Bridge Foundation; Friends of Animals</value>
+    </values>
+    <values>
+        <field>Dominant_Challenge_Types__c</field>
+        <value xsi:type="xsd:string">Section 404; ESA incidental take</value>
+    </values>
+    <values>
+        <field>Field_Inspector_Warning__c</field>
+        <value xsi:type="xsd:string">Standard risk state (0.0% challenger win rate). Follow standard monitoring protocol.</value>
+    </values>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+</CustomMetadata>

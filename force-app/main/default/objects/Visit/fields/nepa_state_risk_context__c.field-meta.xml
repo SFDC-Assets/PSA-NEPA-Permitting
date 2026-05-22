@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_state_risk_context__c</fullName>
+    <label>State Risk Context</label>
+    <type>LongTextArea</type>
+    <length>2000</length>
+    <visibleLines>4</visibleLines>
+    <description>Pre-composed litigation risk briefing for the state where this inspection occurs. Populated by NEPA_Permit_Issued_Schedule_Creator from NEPA_State_Risk_Profile__mdt.Field_Inspector_Warning__c. Rendered as a read-only risk panel at the top of the nepaFieldInspectionCard LWC in the F-05 mobile OmniScript. Includes challenger win rate, dominant plaintiffs, and primary challenge types derived from 761 PermitTEC cases.</description>
+    <inlineHelpText>Litigation risk context for this inspection state. Read-only — populated automatically at permit issuance from the 761-case PermitTEC corpus.</inlineHelpText>
+    <trackHistory>false</trackHistory>
+</CustomField>

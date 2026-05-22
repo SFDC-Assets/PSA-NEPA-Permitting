@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Statutory post-permit inspection schedules derived from Analysis 2 of the PermitTEC/permit-matrix corpus. Seeded with 30 sector-permit combinations covering NPDES, SMCRA, MMPA, CWA 401, CZMA, and related monitoring obligations. Read by NEPA_Permit_Issued_Schedule_Creator to auto-generate inspection tasks when a permit is issued.</description>
+    <label>NEPA Inspection Schedule</label>
+    <pluralLabel>NEPA Inspection Schedules</pluralLabel>
+    <fields>
+        <fullName>Permit_Type__c</fullName>
+        <description>Permit type string matching nepa_permit_type__c on nepa_required_permit__c (e.g., "CWA Section 402 NPDES Construction").</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Permit Type</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Sector__c</fullName>
+        <description>Sector key matching nepa_sector__c on IndividualApplication (e.g., "Energy Production and Management").</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Sector</label>
+        <length>100</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Lead_Agency__c</fullName>
+        <description>Lead federal agency responsible for this permit type (e.g., "BLM", "FERC/DOE", "USACE").</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Lead Agency</label>
+        <length>100</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Inspection_Type__c</fullName>
+        <description>Type of inspection required (e.g., "SWPPP Inspection", "MMPA Visual Survey", "SMCRA Site Inspection", "DMR Quarterly"). Populates Visit.nepa_discipline__c when tasks are auto-created.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Inspection Type</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Frequency_Days__c</fullName>
+        <description>Interval in days between required inspections (e.g., 7 = weekly, 90 = quarterly, 365 = annual). Used by NEPA_Permit_Issued_Schedule_Creator to compute task due dates.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Frequency (Days)</label>
+        <precision>6</precision>
+        <scale>0</scale>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Field_Inspection_Required__c</fullName>
+        <description>True when a physical field inspection is required (not just a report submission). Drives the mobile F-05 inspection form creation vs. a document-only task.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Field Inspection Required</label>
+        <type>Checkbox</type>
+        <defaultValue>true</defaultValue>
+    </fields>
+    <fields>
+        <fullName>Responsible_Agency__c</fullName>
+        <description>Agency or party responsible for conducting the inspection (may differ from permit-issuing agency, e.g., "Project Operator / EPA").</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Responsible Agency</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Noncompliance_Trigger__c</fullName>
+        <description>Condition that constitutes noncompliance and triggers enforcement action or litigation. Surfaced in the mobile inspection form as a compliance checklist item.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Noncompliance Trigger</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Post_Permit_Litigation_Risk__c</fullName>
+        <description>Litigation risk if this inspection obligation is not met: LOW, MEDIUM, HIGH, or VERY_HIGH. Derived from PermitTEC corpus analysis and statutory citizen-suit provisions.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Post-Permit Litigation Risk</label>
+        <length>20</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Statutory_Authority__c</fullName>
+        <description>CFR or USC citation for the inspection obligation (e.g., "33 USC §1342; 40 CFR §122.26"). Populated on Task subject line for statutory traceability.</description>
+        <fieldManageability>DeveloperControlled</fieldManageability>
+        <label>Statutory Authority</label>
+        <length>255</length>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Active__c</fullName>
+        <description>Inactive schedules are excluded from task creation. SubscriberControlled so agencies can disable permit types not applicable to their program.</description>
+        <fieldManageability>SubscriberControlled</fieldManageability>
+        <label>Active</label>
+        <type>Checkbox</type>
+        <defaultValue>true</defaultValue>
+    </fields>
+</CustomObject>

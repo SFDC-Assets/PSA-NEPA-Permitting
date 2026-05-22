@@ -885,4 +885,27 @@ IF({!var_PermitGapPoints} &gt; 0,
         <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
+
+    <!-- Post-ROD Phase flag (Analysis 1 integration) -->
+    <!-- When inp_PostRODPhase = true, the scorer appends post-ROD sector-circuit -->
+    <!-- risk cells (Phase__c = 'Post-Decision') to the composite score.         -->
+    <!-- Callers: NEPA_BiOp_Reinitiation_Checker sets this via subflow invocation -->
+    <!-- after adding the +12 risk delta. Regular pre-decision scoring ignores it. -->
+    <variables>
+        <name>inp_PostRODPhase</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
+    <variables>
+        <name>inp_PostRODTriggerType</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
 </Flow>

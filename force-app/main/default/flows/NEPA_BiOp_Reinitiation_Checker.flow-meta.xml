@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>Record-triggered after-save on Visit. Fires when any of the five 50 CFR §402.16 BiOp reinitiation checkboxes is checked (nepa_reinit_new_species_listing__c, nepa_reinit_amount_or_extent_exceeded__c, nepa_reinit_new_information__c, nepa_reinit_action_modified__c, nepa_reinit_rpa_not_implemented__c). If triggered: (1) checks whether the parent IndividualApplication has an active BiOp on record; (2) if yes, creates a High-priority Task for ESA Coordinator; (3) adds +12 pts to IndividualApplication.nepa_challenge_risk_delta__c to feed the Litigation Risk Scorer re-evaluation. Fault connector routes to NEPA_Error_Logger per ADR 003.</description>
+    <label>NEPA BiOp Reinitiation Checker</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Active</status>
+    <triggerType>RecordAfterSave</triggerType>
+    <object>Visit</object>
+    <recordTriggerType>CreateAndUpdate</recordTriggerType>
+    <triggerOrder>200</triggerOrder>
+
+    <!-- ENTRY CRITERIA: any reinitiation checkbox is true -->
+    <start>
+        <locationX>176</locationX>
+        <locationY>48</locationY>
+        <connector>
+            <targetReference>Decision_AnyTriggered</targetReference>
+        </connector>
+        <filterLogic>1 OR 2 OR 3 OR 4 OR 5</filterLogic>
+        <filters>
+            <field>nepa_reinit_new_species_listing__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_reinit_amount_or_extent_exceeded__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_reinit_new_information__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_reinit_action_modified__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_reinit_rpa_not_implemented__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>Visit</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+
+    <!-- VARIABLES -->
+    <variables>
+        <name>var_IAId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <elementReference>$Record.nepa_process__c</elementReference>
+        </value>
+    </variables>
+    <variables>
+        <name>var_BiOpExists</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
+    <variables>
+        <name>var_CurrentRiskDelta</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+        <value>
+            <numberValue>0.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <name>var_TriggeredFields</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <!-- FORMULAS -->
+    <formulas>
+        <name>formula_TriggeredFieldList</name>
+        <dataType>String</dataType>
+        <expression>IF({!$Record.nepa_reinit_new_species_listing__c}, "New Species Listing [50 CFR §402.16(a)(1)]; ", "") &amp;
+IF({!$Record.nepa_reinit_amount_or_extent_exceeded__c}, "Take Exceeded [50 CFR §402.16(a)(2)]; ", "") &amp;
+IF({!$Record.nepa_reinit_new_information__c}, "New Information [50 CFR §402.16(a)(3)]; ", "") &amp;
+IF({!$Record.nepa_reinit_action_modified__c}, "Action Modified [50 CFR §402.16(a)(4)]; ", "") &amp;
+IF({!$Record.nepa_reinit_rpa_not_implemented__c}, "RPA Not Implemented [50 CFR §402.16(b)]; ", "")</expression>
+    </formulas>
+    <formulas>
+        <name>formula_TaskDue</name>
+        <dataType>Date</dataType>
+        <expression>TODAY() + 3</expression>
+    </formulas>
+
+    <!-- DECISIONS -->
+    <decisions>
+        <name>Decision_AnyTriggered</name>
+        <label>Any Reinitiation Trigger Checked?</label>
+        <locationX>176</locationX>
+        <locationY>156</locationY>
+        <defaultConnectorLabel>No triggers — exit</defaultConnectorLabel>
+        <rules>
+            <name>At_Least_One_Triggered</name>
+            <conditionLogic>1 OR 2 OR 3 OR 4 OR 5</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_reinit_new_species_listing__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.nepa_reinit_amount_or_extent_exceeded__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.nepa_reinit_new_information__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.nepa_reinit_action_modified__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.nepa_reinit_rpa_not_implemented__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_ParentIA</targetReference>
+            </connector>
+            <label>Yes — reinitiation triggered</label>
+        </rules>
+    </decisions>
+
+    <decisions>
+        <name>Decision_BiOpExists</name>
+        <label>Active BiOp on IA?</label>
+        <locationX>176</locationX>
+        <locationY>372</locationY>
+        <defaultConnectorLabel>No BiOp — exit</defaultConnectorLabel>
+        <rules>
+            <name>BiOp_Found</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_ParentIA.nepa_has_active_biop__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_ESATask</targetReference>
+            </connector>
+            <label>Yes — active BiOp present</label>
+        </rules>
+    </decisions>
+
+    <!-- RECORD LOOKUPS -->
+    <recordLookups>
+        <name>Get_ParentIA</name>
+        <label>Get Parent IndividualApplication</label>
+        <locationX>176</locationX>
+        <locationY>264</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_BiOpExists</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>1</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_IAId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>IndividualApplication</object>
+        <outputAssignments>
+            <assignToReference>var_CurrentRiskDelta</assignToReference>
+            <field>nepa_challenge_risk_delta__c</field>
+        </outputAssignments>
+        <storeOutputAutomatically>false</storeOutputAutomatically>
+    </recordLookups>
+
+    <!-- RECORD CREATES — ESA Coordinator Task -->
+    <recordCreates>
+        <name>Create_ESATask</name>
+        <label>Create ESA Coordinator Reinitiation Task</label>
+        <locationX>176</locationX>
+        <locationY>480</locationY>
+        <connector>
+            <targetReference>Update_RiskDelta</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <stringValue>ESA §7 Reinitiation Required — Review BiOp Compliance</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhatId</field>
+            <value>
+                <elementReference>var_IAId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Priority</field>
+            <value>
+                <stringValue>High</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Not Started</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ActivityDate</field>
+            <value>
+                <elementReference>formula_TaskDue</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Description</field>
+            <value>
+                <elementReference>formula_TriggeredFieldList</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Task</object>
+    </recordCreates>
+
+    <!-- RECORD UPDATES — +12 risk delta on IA -->
+    <recordUpdates>
+        <name>Update_RiskDelta</name>
+        <label>Add +12 to Challenge Risk Delta</label>
+        <locationX>176</locationX>
+        <locationY>588</locationY>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>1</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_IAId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>nepa_challenge_risk_delta__c</field>
+            <value>
+                <elementReference>formula_NewRiskDelta</elementReference>
+            </value>
+        </inputAssignments>
+        <object>IndividualApplication</object>
+    </recordUpdates>
+
+    <!-- FORMULA for +12 -->
+    <formulas>
+        <name>formula_NewRiskDelta</name>
+        <dataType>Number</dataType>
+        <scale>0</scale>
+        <expression>{!var_CurrentRiskDelta} + 12</expression>
+    </formulas>
+
+    <!-- FAULT HANDLER -->
+    <subflows>
+        <name>Handle_Error</name>
+        <label>Log Error</label>
+        <locationX>528</locationX>
+        <locationY>264</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value>
+                <stringValue>NEPA_BiOp_Reinitiation_Checker</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+
+</Flow>
