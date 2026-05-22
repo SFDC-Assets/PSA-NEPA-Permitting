@@ -4,7 +4,7 @@
     <description>Recalculates nepa_record_completeness__c on the parent IndividualApplication whenever a ContentVersion with record type nepa_permit_document is uploaded, updated, or deleted. Uses NEPA_Required_Document__mdt to determine which document types are required for the application's current review type, counts how many are present and approved, and writes back the completeness percentage. Fires after-save on ContentVersion (type = nepa_permit_document) when nepa_related_case_event__c or nepa_document_type__c changes, and on create/delete.</description>
     <label>NEPA Record Completeness Scorer</label>
     <processType>AutoLaunchedFlow</processType>
-    <status>Draft</status>
+    <status>Active</status>
     <assignments>
         <name>Assign_CurrentRequiredDoc</name>
         <label>Set Current Required Doc</label>

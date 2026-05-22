@@ -235,6 +235,10 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <inputAssignments>
+            <field>Name</field>
+            <value><stringValue>CE Determination</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
             <field>nepa_related_process__c</field>
             <value><elementReference>$Record.Id</elementReference></value>
         </inputAssignments>

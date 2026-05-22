@@ -11,6 +11,31 @@ private class NepaStageGateDocCheckTest {
         return [SELECT Id FROM Program WHERE nepa_project_id__c = 'SGDC-001' LIMIT 1];
     }
 
+    private static void insertApprovedDoc(Id processId, String docType) {
+        List<RecordType> rts = [
+            SELECT Id FROM RecordType
+            WHERE SObjectType = 'ContentVersion' AND DeveloperName = 'nepa_permit_document'
+            LIMIT 1
+        ];
+        if (rts.isEmpty()) {
+            return;
+        }
+        Integer counter = Integer.valueOf(Math.random() * 100000);
+        String label = docType.replaceAll('[^a-zA-Z0-9]', '_') + '_' + counter;
+        ContentVersion cv = new ContentVersion();
+        cv.Title                  = label;
+        cv.PathOnClient           = label + '.pdf';
+        cv.VersionData            = Blob.valueOf('test content');
+        cv.FirstPublishLocationId = processId;
+        cv.nepa_process__c        = processId;
+        cv.nepa_document_type__c  = docType;
+        cv.nepa_status__c         = 'Approved';
+        cv.nepa_publish_date__c   = Date.today();
+        cv.nepa_public_access__c  = true;
+        cv.RecordTypeId           = rts[0].Id;
+        insert cv;
+    }
+
     private static Boolean tryCompleteEvent(Id processId, String eventType) {
         ApplicationTimeline evt = new ApplicationTimeline();
         evt.Name                    = 'Test Event ' + eventType;
@@ -52,6 +77,7 @@ private class NepaStageGateDocCheckTest {
         IndividualApplication ia = NepaTestFactory.insertProcess(proj.Id, 'EA', null, null);
         ia.nepa_surveys_complete__c = true;
         update ia;
+        insertApprovedDoc(ia.Id, 'Environmental Assessment');
 
         Test.startTest();
         Boolean saved = tryCompleteEvent(ia.Id, 'Draft EA Published');
@@ -82,6 +108,7 @@ private class NepaStageGateDocCheckTest {
         IndividualApplication ia = NepaTestFactory.insertProcess(proj.Id, 'EIS', null, null);
         ia.nepa_surveys_complete__c = true;
         update ia;
+        insertApprovedDoc(ia.Id, 'Draft EIS');
 
         Test.startTest();
         Boolean saved = tryCompleteEvent(ia.Id, 'Draft EIS Published');
@@ -116,6 +143,7 @@ private class NepaStageGateDocCheckTest {
         ia.nepa_surveys_complete__c = true;
         update ia;
         NepaTestFactory.insertRequiredPermit(ia.Id, 'In Progress', true, null);
+        insertApprovedDoc(ia.Id, 'ROD');
 
         Test.startTest();
         Boolean saved = tryCompleteEvent(ia.Id, 'ROD');
@@ -150,6 +178,7 @@ private class NepaStageGateDocCheckTest {
         ia.nepa_surveys_complete__c = true;
         update ia;
         NepaTestFactory.insertRequiredPermit(ia.Id, 'Not Started', false, null);
+        insertApprovedDoc(ia.Id, 'FONSI');
 
         Test.startTest();
         Boolean saved = tryCompleteEvent(ia.Id, 'FONSI');
