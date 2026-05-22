@@ -100,10 +100,12 @@ private class NepaStageGateOrchestratorTest {
     @IsTest
     static void decision_completedEvent_advancesToClosed() {
         Program proj = getProgram();
-        IndividualApplication ia = makeIAAtStage(proj.Id, 'Decision', 'EIS');
-        // Clear climate flags so NEPA_Phase2_Climate_Gate validation rule doesn't block the update
+        // Insert at non-Decision stage so Phase2 setter doesn't conflict with Decision VR
+        IndividualApplication ia = makeIAAtStage(proj.Id, 'Review', 'EIS');
+        // Satisfy climate gate then advance to Decision
         ia.nepa_phase2_applicable__c = false;
         ia.nepa_climate_assessment_required__c = false;
+        ia.nepa_process_stage__c = 'Decision';
         update ia;
 
         Test.startTest();

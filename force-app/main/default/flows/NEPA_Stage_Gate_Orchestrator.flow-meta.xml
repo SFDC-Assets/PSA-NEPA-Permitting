@@ -726,13 +726,6 @@
                 <stringValue>Completed</stringValue>
             </value>
         </filters>
-        <filters>
-            <field>nepa_status__c</field>
-            <operator>IsChanged</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
         <connector>
             <targetReference>Decision_HasParentProcess</targetReference>
         </connector>
