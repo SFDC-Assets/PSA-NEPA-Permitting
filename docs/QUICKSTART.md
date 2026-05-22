@@ -144,6 +144,7 @@ The script deploys in dependency order:
 | 2 | Custom fields on all objects (Program, IndividualApplication, ContentVersion, PublicComplaint, ApplicationTimeline, and all custom objects) |
 | 3 | Custom labels |
 | 3b | Custom tabs (deployed before Phase 4b because the permission set references tab names at deploy time) |
+| 3c | Queues (`NEPA_EJ_Tribal_Liaison`, `NEPA_Comment_Triage`) — must exist before Phase 8 flows; `NEPA_EJTribal_Router` queries for the EJ queue by `DeveloperName` at runtime; if missing it silently drops EJ/tribal comments |
 | 5 | Custom metadata seed records (CE rules, risk weights, SLA configs, permit matrix, required docs, `NEPA_Process_Model__mdt` process type definitions, `NEPA_Map_Config__mdt` map defaults, `NEPA_Template_Catalog__mdt` 46 APT entries) |
 | 5b | BRE Decision Matrix definitions (schema deploy) |
 | 5b-data | BRE Decision Matrix rows loaded + versions activated via Tooling API (automated) |
@@ -153,13 +154,14 @@ The script deploys in dependency order:
 | 5e | CE Library reference data: 314 `nepa_ce_library__c` records loaded from CEQ CE Explorer filtered dataset via `scripts/load_ce_library.py` (idempotent upsert; skipped gracefully if `exclusions_filtered.json` not present) |
 | 6 | Remote site settings, named credentials, and CSP Trusted Sites (`ArcGIS_JS_CDN`, `ArcGIS_Tiles`) |
 | 7 | Apex classes (no tests yet — tests run in Phase 8d after flows are live) |
+| 7a | Apex trigger (`NepaVisitAfterInsert`) — must follow Phase 7; calls `NepaVisitActionPlanLauncher`; without it GIS-generated Visits do not automatically launch Action Plans |
 | 7b | Visualforce pages (`NEPA_Site_Location_Page` — ArcGIS map iframe for site location picker) |
 | 4b | `NEPA_Permitting` permission set (after Apex so Apex class references resolve) |
 | 8 | 48 flows deployed individually with retry; ordered by subflow dependency tier |
 | 8b | Action Plan Templates |
 | 8c | OmniStudio DataRaptors, Integration Procedures, OmniScripts |
 | 8d | `RunLocalTests` (all Apex tests, after flows and permission set are live) |
-| 10–16 | Report types, reports, dashboards, layouts, LWC, FlexiPages (19 record and home pages), Lightning app |
+| 10–16 | Report types, reports, dashboards, layouts, LWC, FlexiPages (19 record and home pages), Path Assistant (`IndividualApplication_NEPA_Process_Path`), Lightning app |
 
 Expected automated deploy time: 10–15 minutes. Add ~10 minutes for manual post-deploy steps (flow activation, field type conversion, record type setup) documented in DEVELOPER_GUIDE.md Post-Deploy Checklist. BRE row loading and activation are handled automatically during deploy. **Total end-to-end: ~25 minutes.**
 

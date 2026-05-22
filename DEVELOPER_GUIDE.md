@@ -394,36 +394,211 @@ sf data query \
 
 ---
 
-### Quick Verification Commands
+### Post-Deploy Verification Checklist
 
-After completing all steps, run these to confirm end-to-end health:
+Run these checks in order after completing all steps above. Each block tests a different deployment layer and tells you exactly what to fix when the count or result is wrong.
+
+#### 1. Permission Set and Access
 
 ```bash
-# Permission set assigned
-sf data query --query "SELECT COUNT() FROM PermissionSetAssignment WHERE PermissionSet.Name = 'NEPA_Permitting'" --target-org <alias>
+# Permission set assigned to at least one user
+sf data query \
+  --query "SELECT COUNT() FROM PermissionSetAssignment WHERE PermissionSet.Name = 'NEPA_Permitting'" \
+  --target-org <alias>
+# Expected: ≥ 1
+```
 
-# Flows active
-sf data query --query "SELECT DeveloperName, Status FROM Flow WHERE DeveloperName LIKE 'NEPA_%' AND Status != 'Active'" --use-tooling-api --target-org <alias>
-# Should return 0 rows (except EIS Assembler/Draft Trigger if Einstein not provisioned)
+If 0: run `sf org assign permset --name NEPA_Permitting --target-org <alias>`
 
-# Agents published (not necessarily active)
-sf agent list --target-org <alias>
+#### 2. Flows and Trigger
 
-# CE Library loaded
-sf data query --query "SELECT COUNT() FROM nepa_ce_library__c WHERE nepa_active__c = true" --target-org <alias>
-# Expected: ~314 (priority) or ~2105 (full)
+```bash
+# Flows that are NOT Active (should be empty except known exclusions)
+sf data query \
+  --query "SELECT DeveloperName, Status FROM Flow WHERE DeveloperName LIKE 'NEPA_%' AND Status != 'Active' ORDER BY DeveloperName" \
+  --use-tooling-api \
+  --target-org <alias>
+# Expected: 0 rows (or only the 4 known exclusions: EIS_Section_Assembler,
+# EIS_Section_Draft_Trigger, Slack_Stage_Notifier, Slack_Risk_Alert)
+```
 
-# FAST-41 OFD monitoring live
-sf data query --query "SELECT COUNT() FROM IndividualApplication WHERE nepa_fast41_covered__c = true" --target-org <alias>
+```bash
+# Apex trigger is deployed and active
+sf data query \
+  --query "SELECT Name, Status FROM ApexTrigger WHERE Name = 'NepaVisitAfterInsert'" \
+  --use-tooling-api \
+  --target-org <alias>
+# Expected: 1 row, Status = Active
+```
 
-# Slack config seeded
-sf data query --query "SELECT DeveloperName, Default_Channel_Id__c, Risk_Alert_Threshold__c FROM NEPA_Slack_Config__mdt" --target-org <alias>
-# Expected: 1 row; channel IDs should not be PLACEHOLDER values in a live org
+If trigger is missing: `sf project deploy start --source-dir force-app/main/default/triggers --target-org <alias> --wait 30`
 
-# Template catalog seeded
+#### 3. Queues (Critical — EJ/Tribal Comment Routing)
+
+```bash
+# Both NEPA queues must exist. If either is missing, EJ/tribal comments are
+# silently dropped by NEPA_EJTribal_Router with no error.
+sf data query \
+  --query "SELECT DeveloperName, Name FROM Group WHERE Type = 'Queue' AND DeveloperName LIKE 'NEPA%' ORDER BY DeveloperName" \
+  --target-org <alias>
+# Expected: 2 rows — NEPA_Comment_Triage and NEPA_EJ_Tribal_Liaison
+```
+
+If either is missing: `sf project deploy start --metadata "Queue:NEPA_EJ_Tribal_Liaison" --metadata "Queue:NEPA_Comment_Triage" --target-org <alias> --wait 30`
+
+#### 4. Custom Metadata Record Counts
+
+```bash
+# Core CMT record counts — spot-check the most critical types
+sf data query --query "SELECT COUNT() FROM NEPA_CE_Screening_Rule__mdt" --target-org <alias>
+# Expected: ≥ 17 (CE screening rules)
+
+sf data query --query "SELECT COUNT() FROM NEPA_Circuit_Risk_Weight__mdt" --target-org <alias>
+# Expected: 14 (13 circuits + Default)
+
+sf data query --query "SELECT COUNT() FROM NEPA_Permit_Matrix__mdt WHERE Active__c = true" --target-org <alias>
+# Expected: 25
+
+sf data query --query "SELECT COUNT() FROM NEPA_Layer_Discipline__mdt" --target-org <alias>
+# Expected: 7
+
 sf data query --query "SELECT COUNT() FROM NEPA_Template_Catalog__mdt WHERE Is_Active__c = true" --target-org <alias>
 # Expected: 46
 ```
+
+If counts are wrong: `sf project deploy start --source-dir force-app/main/default/customMetadata --target-org <alias> --wait 30`
+
+#### 5. BRE Decision Matrices and Expression Sets
+
+```bash
+# All 8 DM versions should be enabled (IsEnabled = true)
+sf data query \
+  --query "SELECT Name, IsEnabled FROM CalculationMatrixVersion WHERE Name LIKE 'NEPA%' ORDER BY Name" \
+  --target-org <alias>
+# Expected: 8 rows, all IsEnabled = true
+
+# All 3 Expression Sets should be active
+sf data query \
+  --query "SELECT DeveloperName, IsActive FROM ExpressionSet WHERE DeveloperName LIKE 'NEPA%'" \
+  --use-tooling-api \
+  --target-org <alias>
+# Expected: 3 rows (NEPA_CE_Screener, NEPA_Permit_Coordinator, NEPA_Litigation_Risk_Scorer), all IsActive = true
+```
+
+If DMs are not enabled or ESDs are inactive: `python3 scripts/load_decision_matrix_rows.py --org <alias> --activate-es`
+
+#### 6. Regulatory Seed Data
+
+```bash
+sf data query --query "SELECT COUNT() FROM RegulatoryAuthorizationType" --target-org <alias>
+# Expected: 49
+
+sf data query --query "SELECT COUNT() FROM RegulatoryCode" --target-org <alias>
+# Expected: 24
+```
+
+If missing: `sf data import tree --files data/seed/regulatory_authorization_type_seed.json --target-org <alias>`
+
+#### 7. CE Library and NAICS
+
+```bash
+# CE Library
+sf data query \
+  --query "SELECT COUNT() FROM nepa_ce_library__c WHERE nepa_active__c = true" \
+  --target-org <alias>
+# Expected: 314 (priority load) or 2105 (full load)
+
+# NAICS — verify by level
+sf data query \
+  --query "SELECT Level__c, COUNT(Id) cnt FROM NEPA_NAICS_Code__mdt GROUP BY Level__c ORDER BY Level__c" \
+  --target-org <alias>
+# Expected: Sector(20) SubSector(96) IndustryGroup(308) Industry(692) NationalIndustry(1013)
+```
+
+CE Library missing: `python3 scripts/load_ce_library.py --org <alias>`  
+NAICS missing: load via `Metadata.Operations.enqueueDeployment` in Apex anonymous (40-record batches from NAICS 2022 CSV)
+
+#### 8. Action Plan Templates
+
+```bash
+# All APTs should be active (IsActive = true)
+sf data query \
+  --query "SELECT COUNT() FROM ActionPlanTemplate WHERE DeveloperName LIKE 'NEPA_%' AND IsActive = true" \
+  --target-org <alias>
+# Expected: 46
+
+# Any inactive?
+sf data query \
+  --query "SELECT DeveloperName FROM ActionPlanTemplate WHERE DeveloperName LIKE 'NEPA_%' AND IsActive = false" \
+  --target-org <alias>
+# Expected: 0 rows
+```
+
+If inactive APTs appear: Setup → Action Plans → Templates → open each → Activate
+
+#### 9. OmniStudio Components
+
+```bash
+# Integration Procedures deployed
+sf data query \
+  --query "SELECT Name, Type FROM OmniProcess WHERE Type = 'IntegrationProcedure' AND Name LIKE 'NEPA%' ORDER BY Name" \
+  --target-org <alias>
+# Expected: ≥ 5 rows (CEScreeningIP, CESaveIP, GISProximityIP, PreAppScreeningIP, CEScreeningIPTest)
+
+# OmniScripts deployed
+sf data query \
+  --query "SELECT Name, Type FROM OmniProcess WHERE Type = 'OmniScript' AND Name LIKE 'NEPA%'" \
+  --target-org <alias>
+# Expected: ≥ 1 row (NEPA_CEIntake)
+```
+
+If OmniScripts are missing their LWC components (render blank in UI): OmniStudio Designer → OmniScripts → NEPA / CE Intake → Activate
+
+#### 10. Agentforce Agents
+
+```bash
+sf agent list --target-org <alias>
+# Expected: NEPA_Comment_Triage and NEPA_PreApp_Screener listed
+# Status will be Inactive until you activate them (see Step 7 above)
+```
+
+#### 11. Path Assistant (Stage Progress Bar)
+
+```bash
+sf data query \
+  --query "SELECT DeveloperName, MasterLabel FROM PathAssistant WHERE DeveloperName = 'IndividualApplication_NEPA_Process_Path'" \
+  --use-tooling-api \
+  --target-org <alias>
+# Expected: 1 row
+```
+
+If missing: `sf project deploy start --source-dir force-app/main/default/pathAssistants --target-org <alias> --wait 30`
+
+#### 12. CSP Trusted Sites
+
+```bash
+sf data query \
+  --query "SELECT DeveloperName, EndpointUrl, IsActive FROM CspTrustedSite WHERE DeveloperName LIKE 'ArcGIS%'" \
+  --use-tooling-api \
+  --target-org <alias>
+# Expected: 2 rows — ArcGIS_JS_CDN (https://js.arcgis.com) and ArcGIS_Tiles (https://*.arcgis.com), both IsActive = true
+```
+
+If missing: `sf project deploy start --source-dir force-app/main/default/cspTrustedSites --target-org <alias> --wait 30`
+
+#### 13. Apex Test Coverage (Final Gate)
+
+```bash
+sf apex run test \
+  --target-org <alias> \
+  --test-level RunLocalTests \
+  --code-coverage \
+  --result-format human \
+  --wait 15
+# Expected: all tests pass, overall coverage ≥ 75%
+```
+
+A passing test suite with ≥ 75% coverage is the single best signal that the full stack — fields, flows, Apex, permission set, and data — is wired together correctly in the org.
 
 ---
 

@@ -16,6 +16,8 @@
 #   1  Custom object schemas   — object defs before fields/permsets/flows reference them
 #   2  Custom fields           — full objects/ dir (fields on APS + custom objects)
 #   3  Custom labels           — referenced by Apex and flows
+#   3b Custom tabs             — tab names referenced by permission set tabSettings
+#   3c Queues                  — must exist before Phase 8 flows; EJTribal_Router queries by DeveloperName
 #   4  Permission set          — FLS grants require fields to exist first
 #   5  Custom metadata records — CMT records used by flow decision logic
 #   5b BRE Decision Matrices   — DecisionMatrixDefinition metadata schema deploy
@@ -25,6 +27,7 @@
 #   6  Remote sites + creds    — needed before any callout-capable flows compile
 #                                Also deploys CSP Trusted Sites (ArcGIS_JS_CDN, ArcGIS_Tiles)
 #   7  Apex classes            — must precede flows that call @InvocableMethod actions
+#   7a Apex triggers           — must follow Phase 7 (NepaVisitAfterInsert calls NepaVisitActionPlanLauncher)
 #   7b Visualforce pages       — NEPA_Site_Location_Page (ArcGIS iframe); must follow Phase 7 (references controller)
 #   8  Flows (one-at-a-time)   — Metadata API UNKNOWN_EXCEPTION on batch flow deployments;
 #                                each flow deployed individually with retry on transient failure
@@ -35,6 +38,8 @@
 #  13  Layouts                 — compact layouts for related-list display
 #  14  LWC                     — custom components referenced by FlexiPages
 #  15  FlexiPages              — depend on fields, layouts, LWC
+#  15a Path Assistants         — depends on nepa_process_stage__c picklist (Phase 2) and IA page (Phase 15)
+#  15b Agentforce agents       — depends on Flow/Apex targets being live
 #  16  Lightning app           — depends on tabs; app visibility granted via NEPA_Permitting permset (Phase 4b)
 #
 # NOTE: BRE Decision Matrix rows are loaded and activated automatically in
@@ -468,6 +473,18 @@ deploy "tabs" \
     --metadata "CustomTab:nepaTemplateCatalog" \
     --target-org "$TARGET_ORG"
 
+# ── phase 3c: queues ─────────────────────────────────────────────────────────
+# Must deploy before Phase 8 (flows). NEPA_EJTribal_Router does a dynamic
+# SOQL lookup: Group WHERE DeveloperName = 'NEPA_EJ_Tribal_Liaison' AND Type = 'Queue'.
+# If the queue doesn't exist the flow catches null and routes to End — silently
+# dropping every EJ/tribal comment without any error visible to the deployer.
+# Deploying queues early eliminates this failure mode.
+phase_header "Phase 3c: Queues"
+deploy "queues" \
+    --metadata "Queue:NEPA_EJ_Tribal_Liaison" \
+    --metadata "Queue:NEPA_Comment_Triage" \
+    --target-org "$TARGET_ORG"
+
 # ── phase 4: permission set ──────────────────────────────────────────────────
 # NOTE: Permission set is deployed AFTER Phase 7 (Apex) because it references
 # ApexClass entries (NepaLayerDisciplineResolver, NepaActionPlanLauncher) that
@@ -702,6 +719,22 @@ deploy "apex" \
     --source-dir force-app/main/default/classes \
     --test-level NoTestRun \
     --target-org "$TARGET_ORG"
+
+# ── phase 7a: apex triggers ──────────────────────────────────────────────────
+# Must deploy after Phase 7 (Apex) — NepaVisitAfterInsert calls
+# NepaVisitActionPlanLauncher.createActionPlans() which must exist first.
+# Without this trigger, Visit inserts created by GIS proximity detection
+# (NEPA_GIS_Proximity_Check → NEPA_Team_Assembly_Orchestrator) do not
+# automatically launch Action Plans. No error fires — plans are silently skipped.
+phase_header "Phase 7a: Apex triggers"
+if [[ -d force-app/main/default/triggers ]] && \
+   [[ -n "$(find force-app/main/default/triggers -name '*.trigger' 2>/dev/null)" ]]; then
+    deploy "apex triggers" \
+        --source-dir force-app/main/default/triggers \
+        --target-org "$TARGET_ORG"
+else
+    echo "    (no Apex triggers to deploy)"
+fi
 
 # ── phase 7b: visualforce pages ──────────────────────────────────────────────
 # Must deploy after Phase 7 (Apex) — VF pages reference their controller class.
@@ -1001,6 +1034,20 @@ deploy "flexipages (non-Program)" \
 deploy "Program_Record_Page" allow-failure \
     --metadata "FlexiPage:Program_Record_Page" \
     --target-org "$TARGET_ORG"
+
+# ── phase 15a: path assistants ───────────────────────────────────────────────
+# Must deploy after Phase 2 (fields) and Phase 15 (FlexiPages).
+# IndividualApplication_NEPA_Process_Path renders the stage progress bar on the
+# IA record page. Without it the path bar area is blank.
+phase_header "Phase 15a: Path Assistants"
+if [[ -d force-app/main/default/pathAssistants ]] && \
+   [[ -n "$(find force-app/main/default/pathAssistants -name '*.pathAssistant-meta.xml' 2>/dev/null)" ]]; then
+    deploy "path assistants" \
+        --source-dir force-app/main/default/pathAssistants \
+        --target-org "$TARGET_ORG"
+else
+    echo "    (no Path Assistants to deploy)"
+fi
 
 # ── phase 15b: agentforce agents (Agent Script bundles) ──────────────────────
 # Deploys .agent bundles via sf agent publish authoring-bundle.
