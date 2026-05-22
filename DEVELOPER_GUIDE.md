@@ -11,7 +11,7 @@ This guide covers build tasks and the demo validation sprint, in priority order.
 
 Run `deploy.sh` first. It handles metadata, BRE row loading, OmniStudio deployment, agent publishing, LWC, and FlexiPages automatically. The steps below are what `deploy.sh` **cannot** automate — they require UI clicks, org-side configuration, or credentials that are not stored in source control.
 
-**Total time: ~15 minutes automated + ~25 minutes manual = ~40 minutes end-to-end for a full fresh-org deploy.**
+**Total time: ~15 minutes automated + ~20 minutes manual = ~35 minutes end-to-end for a full fresh-org deploy.**
 
 ---
 
@@ -119,9 +119,15 @@ sf data import tree --files data/seed/regulatory_code_seed.json --target-org <al
 
 ---
 
-### Step 6 — Load Reference Data (~3 min)
+### Step 6 — Verify Reference Data (~2 min)
 
-**CE Library** (314 priority-agency records from CEQ CE Explorer v2.0):
+**CE Library** — loaded automatically by `deploy.sh` Phase 5e (314 priority-agency records from CEQ CE Explorer v2.0). Verify:
+```bash
+sf data query --query "SELECT COUNT() FROM nepa_ce_library__c WHERE nepa_active__c = true" --target-org <alias>
+# Expected: 314 (priority load)
+```
+
+If Phase 5e was skipped (`exclusions_filtered.json` not in repo root) or failed, run manually:
 ```bash
 python3 scripts/load_ce_library.py --org <alias>
 # Idempotent — safe to re-run. Uses nepa_ce_explorer_id__c as external ID.
@@ -209,22 +215,17 @@ In Designer, activate these OmniProcesses in order:
 
 ---
 
-### Step 9 — ArcGIS Map Component (~3 min, ACTION REQUIRED if using site location picker)
+### Step 9 — ArcGIS Map Component (~1 min, ACTION REQUIRED if using site location picker)
 
 The `nepaSiteLocationPickerOmni` LWC requires:
 
-**a. Set ESRI API key:**
+**CSP Trusted Sites** (`ArcGIS_JS_CDN`, `ArcGIS_Tiles`) are deployed automatically in Phase 6. No Setup UI action required.
+
+**Set ESRI API key** (still manual — credentials are not stored in source):
+
 Setup → Custom Metadata Types → `NEPA Map Config` → `API Key` → Edit → set Value
 
-**b. Add CSP Trusted Sites** (Setup → Security → CSP Trusted Sites):
-
-| Name | URL | Directive |
-|---|---|---|
-| `ArcGIS_JS_CDN` | `https://js.arcgis.com` | `script-src` |
-| `ArcGIS_Tiles` | `https://*.arcgis.com` | `connect-src` |
-
-Without the API key: map loads but basemap tiles are blank.
-Without CSP entries: ArcGIS SDK is blocked and the iframe shows blank.
+Without the API key: map loads but basemap tiles are blank (grey canvas).
 
 ---
 
