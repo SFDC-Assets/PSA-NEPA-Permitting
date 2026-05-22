@@ -85,6 +85,9 @@ private class NepaStageGateOrchestratorTest {
     static void review_completedEvent_advancesToDecision() {
         Program proj = getProgram();
         IndividualApplication ia = makeIAAtStage(proj.Id, 'Review', 'EIS');
+        // Satisfy climate gate so flow can advance to Decision
+        ia.nepa_climate_assessment_complete__c = true;
+        update ia;
 
         Test.startTest();
         completeTimelineEvent(ia.Id, 'Review Complete');
@@ -100,11 +103,10 @@ private class NepaStageGateOrchestratorTest {
     @IsTest
     static void decision_completedEvent_advancesToClosed() {
         Program proj = getProgram();
-        // Insert at non-Decision stage so Phase2 setter doesn't conflict with Decision VR
+        // Insert at non-Decision stage first
         IndividualApplication ia = makeIAAtStage(proj.Id, 'Review', 'EIS');
-        // Satisfy climate gate then advance to Decision
-        ia.nepa_phase2_applicable__c = false;
-        ia.nepa_climate_assessment_required__c = false;
+        // Complete climate assessment, then advance stage to Decision
+        ia.nepa_climate_assessment_complete__c = true;
         ia.nepa_process_stage__c = 'Decision';
         update ia;
 

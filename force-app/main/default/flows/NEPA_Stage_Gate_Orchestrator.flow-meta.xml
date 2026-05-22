@@ -501,7 +501,7 @@
         <inputAssignments>
             <field>Status</field>
             <value>
-                <stringValue>Open</stringValue>
+                <stringValue>Not Started</stringValue>
             </value>
         </inputAssignments>
         <inputAssignments>
