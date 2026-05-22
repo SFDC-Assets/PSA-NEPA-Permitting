@@ -342,6 +342,42 @@ private class NepaGISProximityCheckTest {
         System.assertNotEquals(null, r2[0], 'Second result must not be null');
     }
 
+    // ── Null coordinates via invoker (IP guard path) ─────────────────────────
+
+    @IsTest
+    static void nullCoordinates_viaInvoker_guardPathDoesNotThrow() {
+        // The IP's GuardCoordinates ConditionalBlock → Stop path is exercised when
+        // the project has no lat/lon. The invoker must not propagate an exception;
+        // it must return success=false with a populated errorMessage, or success=true
+        // if the IP exits cleanly via the Stop element.
+        Program proj = insertProjectWithoutCoordinates('GIS-NULLCOORD-INVOKER-001');
+
+        Test.startTest();
+        NepaGISProximityIPInvoker.InvokerResult result = invokeAndRequireResult(proj.Id);
+        Test.stopTest();
+
+        if (!result.success) {
+            System.assertNotEquals(null, result.errorMessage,
+                'Null-coordinates guard path must populate errorMessage, not swallow silently');
+        }
+    }
+
+    @IsTest
+    static void onlyLongitudeSet_viaInvoker_doesNotThrow() {
+        Program proj = NepaTestFactory.insertProgram('GIS-LONONLY-001', 'Lon Only', 'BLM');
+        proj.nepa_location_lon__c = -111.8833;
+        update proj;
+
+        Test.startTest();
+        NepaGISProximityIPInvoker.InvokerResult result = invokeAndRequireResult(proj.Id);
+        Test.stopTest();
+
+        if (!result.success) {
+            System.assertNotEquals(null, result.errorMessage,
+                'Partial-coordinate fault path must populate errorMessage');
+        }
+    }
+
     // ── GIS layer CMT integrity ───────────────────────────────────────────────
 
     @IsTest
