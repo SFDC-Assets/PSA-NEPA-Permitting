@@ -376,6 +376,10 @@ print('    User: {}'.format(d.get('username', '?')))
 
 # ── phase 1: custom object schemas ────────────────────────────────────────────
 phase_header "Phase 1: Custom object schemas"
+# All custom objects, CMT types, and the platform event must deploy before Phase 2
+# adds fields to them, and before Phase 5 deploys CMT records into them.
+# Missing an object here causes Phase 2 to fail with "no CustomObject named X found"
+# and Phase 5 to fail with "no CustomMetadata type named X found" on a fresh org.
 deploy "object schemas" \
     --metadata "CustomObject:NEPA_Flow_Error__c" \
     --metadata "CustomObject:nepa_engagement__c" \
@@ -384,16 +388,37 @@ deploy "object schemas" \
     --metadata "CustomObject:nepa_decision_modification__c" \
     --metadata "CustomObject:nepa_process_related_agencies__c" \
     --metadata "CustomObject:nepa_project_agency_relationship__c" \
+    --metadata "CustomObject:nepa_decision_element__c" \
+    --metadata "CustomObject:nepa_decision_log__c" \
+    --metadata "CustomObject:nepa_comment_attribution__c" \
+    --metadata "CustomObject:nepa_project_analogous_case__c" \
+    --metadata "CustomObject:nepa_required_permit__c" \
+    --metadata "CustomObject:nepa_gis_data_element__c" \
+    --metadata "CustomObject:NEPA_Error_Event__e" \
     --metadata "CustomObject:NEPA_Agency_Risk_Rate__mdt" \
+    --metadata "CustomObject:NEPA_Agency_Duration_Cost__mdt" \
+    --metadata "CustomObject:NEPA_Agency_Endpoint__mdt" \
+    --metadata "CustomObject:NEPA_ActionPlan_Config__mdt" \
     --metadata "CustomObject:NEPA_Circuit_Risk_Weight__mdt" \
     --metadata "CustomObject:NEPA_Challenge_Prediction_Rule__mdt" \
     --metadata "CustomObject:NEPA_CE_Screening_Rule__mdt" \
     --metadata "CustomObject:NEPA_CE_Code__mdt" \
+    --metadata "CustomObject:NEPA_Doc_Count_Threshold__mdt" \
     --metadata "CustomObject:NEPA_Required_Document__mdt" \
     --metadata "CustomObject:NEPA_Statute_Risk_Weight__mdt" \
     --metadata "CustomObject:NEPA_GIS_Layer__mdt" \
+    --metadata "CustomObject:NEPA_Inspection_Schedule__mdt" \
+    --metadata "CustomObject:NEPA_MFR_Assessment__mdt" \
+    --metadata "CustomObject:NEPA_OFD_Milestone__mdt" \
+    --metadata "CustomObject:NEPA_Permit_Matrix__mdt" \
     --metadata "CustomObject:NEPA_Plaintiff_Profile__mdt" \
     --metadata "CustomObject:NEPA_Layer_Discipline__mdt" \
+    --metadata "CustomObject:NEPA_Risk_Threshold__mdt" \
+    --metadata "CustomObject:NEPA_SLA_Config__mdt" \
+    --metadata "CustomObject:NEPA_Slack_Config__mdt" \
+    --metadata "CustomObject:NEPA_Stage_Baseline_Duration__mdt" \
+    --metadata "CustomObject:NEPA_State_Risk_Profile__mdt" \
+    --metadata "CustomObject:NEPA_Template_Catalog__mdt" \
     --metadata "CustomObject:nepa_detected_protection_layer__c" \
     --metadata "CustomObject:nepa_ce_library__c" \
     --metadata "CustomObject:nepa_decision_payload__c" \
@@ -669,12 +694,13 @@ deploy "permission set" \
 # Real parse/compile errors abort immediately.
 phase_header "Phase 8: Flows (deployed individually with retry)"
 FLOWS=(
-    # Leaf subflows — no dependencies; must deploy first
-    NEPA_FlowError_CountIncrementer
-    NEPA_Error_Logger
-    NEPA_Error_Event_Handler
-    NEPA_EJTribal_Router
-    # Independent flows with no subflow dependencies
+    # ── Tier 0: leaf subflows — no flow dependencies; must deploy first ──────────
+    NEPA_FlowError_CountIncrementer   # called by NEPA_Error_Logger
+    NEPA_Error_Logger                 # called by nearly every flow below
+    NEPA_Error_Event_Handler          # platform event handler; no subflow deps
+    NEPA_EJTribal_Router              # called by NEPA_Comment_AI_Router
+
+    # ── Tier 1: flows with no subflow dependencies ───────────────────────────────
     NEPA_SLA_Due_Date_Setter
     NEPA_Stage_Gate
     NEPA_Stage_Gate_Doc_Check
@@ -682,11 +708,11 @@ FLOWS=(
     NEPA_Comment_Triage_Save
     NEPA_GIS_Proximity_Check
     NEPA_FRA_Page_Limit_Setter
-    NEPA_WO_Milestone_Setter
     NEPA_Agency_Tier_Setter
     NEPA_Phase2_Applicability_Setter
     NEPA_ActionPlan_Launcher
-    # Flows that depend on NEPA_Error_Logger
+
+    # ── Tier 2: flows that call NEPA_Error_Logger as subflow ─────────────────────
     NEPA_Litigation_Risk_Scorer
     NEPA_Challenge_Predictor
     NEPA_Defensibility_Gap_Checker
@@ -702,26 +728,35 @@ FLOWS=(
     NEPA_Administrative_Record_Checker
     NEPA_Plaintiff_Intelligence
     NEPA_Permit_Coordinator
-    NEPA_Permit_Record_Creator
+    NEPA_Permit_Record_Creator           # creates nepa_required_permit__c records
     NEPA_Permit_SLA_Monitor
     NEPA_AdminRecord_AutoCreate
     NEPA_Team_Assembly_Orchestrator
     NEPA_Close_Administrative_Record
     NEPA_Comment_Duplicate_Check
-    # Visit survey automation flows (depend on NEPA_Error_Logger)
+    NEPA_BiOp_Reinitiation_Checker       # after-save on Visit; calls NEPA_Error_Logger
+    NEPA_Permit_Issued_Schedule_Creator  # after-save on nepa_required_permit__c; calls NEPA_Error_Logger
+    NEPA_PostDecision_Monitor_Scheduler  # scheduled; calls NEPA_Error_Logger
+
+    # ── Visit survey automation (call NEPA_Error_Logger) ────────────────────────
     NEPA_Visit_Survey_Window_Setter
     NEPA_Visit_Completion_Assessor
-    # Flows that depend on NEPA_EJTribal_Router (must come after it)
-    NEPA_Comment_AI_Router
+
+    # ── Flows that depend on NEPA_EJTribal_Router ────────────────────────────────
+    NEPA_Comment_AI_Router               # calls NEPA_EJTribal_Router as subflow
     NEPA_Comment_ResponseTask_Creator
-    # F-03 — pre-application screening sector qualifier
+
+    # ── F-03: pre-application screening ─────────────────────────────────────────
     NEPA_PreApp_Qualify_Sector
-    # F-15 — FAST-41 OFD variance alert (scheduled, daily 07:00 UTC)
+
+    # ── F-15: FAST-41 OFD variance alert (scheduled, daily 07:00 UTC) ───────────
     NEPA_OFD_Variance_Alert
-    # F-12 — Slack notifications (deployed as Draft; see post-deploy Step 9)
-    # These require the Salesforce for Slack managed package + workspace connection.
-    # They will fail on orgs without the package — wrap in deploy_flow which retries
-    # but will ultimately warn and continue (non-blocking).
+
+    # ── F-12: Slack notifications ────────────────────────────────────────────────
+    # Deployed as Draft. Require the Salesforce for Slack managed package + workspace
+    # connection. Will fail to activate on orgs without the package — deploy_flow
+    # retries transiently but will warn and continue rather than abort the pipeline.
+    # See post-deploy Step 9 for full Slack setup instructions.
     NEPA_Slack_Stage_Notifier
     NEPA_Slack_Risk_Alert
 )
@@ -851,11 +886,10 @@ if [[ "$DRY_RUN" == "false" ]]; then
         --target-org "$TARGET_ORG"
 fi
 
-# ── phase 9: custom tabs ──────────────────────────────────────────────────────
-# Tabs were already deployed in Phase 3b (required before permission set).
-# This phase is a no-op but retained for documentation of deployment order.
-phase_header "Phase 9: Custom tabs (already deployed in Phase 3b)"
-echo "    (tabs deployed in Phase 3b — skipping)"
+# ── phase 9: (merged into Phase 3b) ──────────────────────────────────────────
+# Custom tabs were deployed in Phase 3b (tabs must precede the permission set
+# because the permset references tabSettings by name and the platform validates
+# their existence at deploy time). Nothing to do here.
 
 # ── phase 10: report types ────────────────────────────────────────────────────
 # Only the two NEPA report types — the others are installed by the managed pkg.
@@ -905,18 +939,23 @@ fi
 phase_header "Phase 15: FlexiPages (NEPA record and home pages)"
 deploy "flexipages (non-Program)" \
     --metadata "FlexiPage:ApplicationTimeline_Record_Page" \
-    --metadata "FlexiPage:Individual_Application_Record_Page" \
     --metadata "FlexiPage:IndividualApplication_Record_Page" \
     --metadata "FlexiPage:NEPA_AR_Export_Record_Page" \
+    --metadata "FlexiPage:NEPA_CE_Library_Record_Page" \
+    --metadata "FlexiPage:NEPA_Decision_Log_Record_Page" \
+    --metadata "FlexiPage:NEPA_Decision_Payload_Record_Page" \
+    --metadata "FlexiPage:NEPA_Detected_Protection_Layer_Record_Page" \
     --metadata "FlexiPage:NEPA_Engagement_Record_Page" \
     --metadata "FlexiPage:NEPA_GIS_Data_Element_Record_Page" \
-    --metadata "FlexiPage:NEPA_Legal_Structure_Record_Page" \
+    --metadata "FlexiPage:NEPA_GIS_Data_Record_Page" \
     --metadata "FlexiPage:NEPA_Litigation_Record_Page" \
+    --metadata "FlexiPage:nepa_litigation__c_Record_Page" \
     --metadata "FlexiPage:NEPA_Permitting_Home" \
     --metadata "FlexiPage:NEPA_Process_Team_Member_Record_Page" \
+    --metadata "FlexiPage:NEPA_Required_Permit_Record_Page" \
+    --metadata "FlexiPage:NEPA_Visit_Record_Page" \
     --metadata "FlexiPage:Public_Comment_Record_Page" \
-    --metadata "FlexiPage:NEPA_CE_Library_Record_Page" \
-    --metadata "FlexiPage:NEPA_Decision_Payload_Record_Page" \
+    --metadata "FlexiPage:RegulatoryCode_Record_Page" \
     --target-org "$TARGET_ORG"
 
 deploy "Program_Record_Page" allow-failure \
@@ -1060,9 +1099,9 @@ else
     echo "            → sets nepa_gis_proximity_complete__c = true"
     echo ""
     echo "    8. FPISC / FAST-41 OFD export (F-15):"
-    echo "       Add nepaFpiscExportButton LWC to Program or IndividualApplication record pages"
-    echo "       via Lightning App Builder. OFD Variance Alert (NEPA_OFD_Variance_Alert)"
-    echo "       runs daily at 07:00 UTC — no additional activation needed."
+    echo "       nepaFpiscExportButton is deployed to IndividualApplication_Record_Page"
+    echo "       automatically in Phase 15 — no manual Lightning App Builder step required."
+    echo "       OFD Variance Alert (NEPA_OFD_Variance_Alert) runs daily at 07:00 UTC."
     echo "       Verify: sf data query --query \"SELECT COUNT() FROM Flow WHERE DeveloperName = 'NEPA_OFD_Variance_Alert' AND Status = 'Active'\" --use-tooling-api --target-org $TARGET_ORG"
     echo ""
     echo "    9. Slack Integration Hub (F-12) — REQUIRES MANUAL SETUP:"
