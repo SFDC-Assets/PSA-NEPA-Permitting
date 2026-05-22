@@ -21,7 +21,9 @@
 #   5b BRE Decision Matrices   — DecisionMatrixDefinition metadata schema deploy
 #   5b-data                   — row insertion + activation via Tooling API (replaces manual UI workflow)
 #   5c BRE Expression Sets     — ExpressionSetDefinition metadata (must follow DMs they reference)
+#   5e CE Library data         — 314 nepa_ce_library__c records via scripts/load_ce_library.py (idempotent)
 #   6  Remote sites + creds    — needed before any callout-capable flows compile
+#                                Also deploys CSP Trusted Sites (ArcGIS_JS_CDN, ArcGIS_Tiles)
 #   7  Apex classes            — must precede flows that call @InvocableMethod actions
 #   7b Visualforce pages       — NEPA_Site_Location_Page (ArcGIS iframe); must follow Phase 7 (references controller)
 #   8  Flows (one-at-a-time)   — Metadata API UNKNOWN_EXCEPTION on batch flow deployments;
@@ -635,8 +637,36 @@ else
     echo "      sf data import tree --files data/seed/regulatory_code_seed.json --target-org <org>"
 fi
 
-# ── phase 6: remote sites + named credentials ─────────────────────────────────
-phase_header "Phase 6: Remote site settings and named credentials"
+# ── phase 5e: ce library reference data ──────────────────────────────────────
+# Loads 314 nepa_ce_library__c records from the CEQ CE Explorer filtered dataset.
+# Uses nepa_ce_explorer_id__c as the external ID — idempotent, safe to re-run.
+# The full 2,105-record load requires exclusions.json in the repo root (not included);
+# the default 314-record priority-agency load uses exclusions_filtered.json.
+#
+# Skipped in --check mode (no org writes during validation).
+# Skipped silently if exclusions_filtered.json is not present (allows repo clones
+# without the dataset file to still deploy cleanly).
+if [[ "$DRY_RUN" == "false" ]]; then
+    phase_header "Phase 5e: CE Library reference data (314 priority-agency records)"
+    if [[ -f exclusions_filtered.json ]]; then
+        python3 scripts/load_ce_library.py \
+            --org "$TARGET_ORG" \
+            2>&1 | sed 's/^/    /' \
+            || echo "    WARNING: CE Library load encountered errors — see output above"
+        echo "    Verify: sf data query --query \"SELECT COUNT() FROM nepa_ce_library__c\" --target-org $TARGET_ORG"
+    else
+        echo "    (exclusions_filtered.json not found in repo root — skipping CE Library load)"
+        echo "    To load manually: python3 scripts/load_ce_library.py --org $TARGET_ORG"
+        echo "    Full dataset (2,105 records): curl -o exclusions.json https://ce.permitting.innovation.gov/data/exclusions.json"
+        echo "    then: python3 scripts/load_ce_library.py --org $TARGET_ORG --all"
+    fi
+else
+    phase_header "Phase 5e: CE Library reference data (SKIPPED in --check)"
+    echo "    (skipped — dry-run mode; run: python3 scripts/load_ce_library.py --org $TARGET_ORG)"
+fi
+
+# ── phase 6: remote sites, named credentials, csp trusted sites ───────────────
+phase_header "Phase 6: Remote site settings, named credentials, and CSP Trusted Sites"
 REMOTE_DIRS=()
 [[ -d force-app/main/default/remoteSiteSettings ]] && \
     [[ -n "$(find force-app/main/default/remoteSiteSettings -name '*.xml' 2>/dev/null)" ]] && \
@@ -649,6 +679,16 @@ if [[ ${#REMOTE_DIRS[@]} -gt 0 ]]; then
     deploy "remote sites + creds" "${REMOTE_DIRS[@]}" --target-org "$TARGET_ORG"
 else
     echo "    (no remote sites or named credentials to deploy)"
+fi
+
+# CSP Trusted Sites for ArcGIS (nepaSiteLocationPickerOmni map component)
+if [[ -d force-app/main/default/cspTrustedSites ]] && \
+   [[ -n "$(find force-app/main/default/cspTrustedSites -name '*.xml' 2>/dev/null)" ]]; then
+    deploy "CSP Trusted Sites" \
+        --source-dir force-app/main/default/cspTrustedSites \
+        --target-org "$TARGET_ORG"
+else
+    echo "    (no CSP Trusted Sites to deploy)"
 fi
 
 # ── phase 7: apex classes ─────────────────────────────────────────────────────
@@ -1038,11 +1078,13 @@ else
     echo "         sf data import tree --files data/seed/regulatory_authorization_type_seed.json --target-org $TARGET_ORG"
     echo "         sf data import tree --files data/seed/regulatory_code_seed.json --target-org $TARGET_ORG"
     echo ""
-    echo "    5. Load CE Library reference data (314 priority-agency records from CEQ CE Explorer v2.0):"
-    echo "       python3 scripts/load_ce_library.py --org $TARGET_ORG"
-    echo "       This is idempotent — safe to re-run. Uses nepa_ce_explorer_id__c as external ID."
-    echo "       To load the full 2,105-record dataset (requires exclusions.json in repo root):"
-    echo "       python3 scripts/load_ce_library.py --org $TARGET_ORG --all"
+    echo "    5. CE Library reference data — loaded automatically in Phase 5e above."
+    echo "       If Phase 5e was skipped (exclusions_filtered.json missing) or failed, re-run:"
+    echo "         python3 scripts/load_ce_library.py --org $TARGET_ORG"
+    echo "       Full 2,105-record dataset (requires exclusions.json in repo root):"
+    echo "         curl -o exclusions.json https://ce.permitting.innovation.gov/data/exclusions.json"
+    echo "         python3 scripts/load_ce_library.py --org $TARGET_ORG --all"
+    echo "       Verify: sf data query --query \"SELECT COUNT() FROM nepa_ce_library__c\" --target-org $TARGET_ORG"
     echo ""
     echo "    5b. Seed demo data (optional):"
     echo "       sf apex run --file scripts/seed-sample-data.apex --target-org $TARGET_ORG"
@@ -1073,14 +1115,11 @@ else
     echo "         → Also activate NEPA / PreApp_Screening_IP / English / 1"
     echo "       Without this step OmniScripts render blank with LDS normalization errors."
     echo ""
-    echo "    6c. ArcGIS map component (nepaSiteLocationPickerOmni) — two manual steps required:"
-    echo "        a. Set ESRI API key:"
-    echo "           Setup > Custom Metadata Types > NEPA Map Config > API Key > Edit > set Value"
-    echo "        b. Add CSP Trusted Sites (Setup > Security > CSP Trusted Sites):"
-    echo "           Name: ArcGIS_JS_CDN  URL: https://js.arcgis.com   Directive: script-src"
-    echo "           Name: ArcGIS_Tiles   URL: https://*.arcgis.com    Directive: connect-src"
-    echo "        Without the API key the map loads but no basemap tiles render."
-    echo "        Without CSP entries the ArcGIS SDK is blocked and the iframe shows blank."
+    echo "    6c. ArcGIS map component (nepaSiteLocationPickerOmni):"
+    echo "        CSP Trusted Sites (ArcGIS_JS_CDN, ArcGIS_Tiles) deployed automatically in Phase 6."
+    echo "        ACTION REQUIRED — set ESRI API key:"
+    echo "          Setup > Custom Metadata Types > NEPA Map Config > API Key > Edit > set Value"
+    echo "        Without the API key the map loads but no basemap tiles render (grey canvas)."
     echo ""
     echo "    6d. NAICS code data — 2,129 records loaded via Apex anonymous, not metadata."
     echo "        Verify records exist:"

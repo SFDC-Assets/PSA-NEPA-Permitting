@@ -26,12 +26,12 @@ The deploy script automates nearly everything. The following steps still require
 
 | Step | What you'll do | When |
 |---|---|---|
-| **Scheduled flow configuration** | Open `NEPA_SLA_Escalation_Monitor` in Flow Builder, set schedule to Daily 7 AM, activate | After Step 4c (Flow activation) |
-| **CE Library data load** | Run `python3 scripts/load_ce_library.py --org NEPADEV` to populate 314 CE reference records | After Step 3 (deploy), see Step 4e |
-| **Lightning Record Page assignment** | In Setup → Lightning App Builder, assign **9** pages as Org Default (IndividualApplication, Program, PublicComplaint, Engagement, Litigation, CE Library, Decision Payload, Decision Log, Visit). The remaining 10 pages (GIS Data, Detected Protection Layer, Required Permit, AR Export, Process Team Member, Decision Log, Visit, RegulatoryCode, Litigation, Permitting Home) auto-apply via object assignment. | After Step 3 (deploy), see Step 4d |
+| **Lightning Record Page assignment** | In Setup → Lightning App Builder, assign **9** pages as Org Default (IndividualApplication, Program, PublicComplaint, Engagement, Litigation, CE Library, Decision Payload, Decision Log, Visit). The remaining 10 pages auto-apply via object assignment at deploy time. | After Step 3 (deploy), see Step 4d |
 | **Agency Named Credential URLs** | In Setup → Security → Named Credentials, update the 3 agency credentials (`NEPA_Agency_USACE`, `NEPA_Agency_USFWS`, `NEPA_Agency_BLM`) from placeholder hostnames to real agency NEPA API URLs | After Step 3 (deploy), see DEVELOPER_GUIDE.md Task 6 |
-| **ArcGIS API key + CSP** | Set `NEPA_Map_Config__mdt.ApiKey` to your ESRI key; add 2 CSP Trusted Sites for `js.arcgis.com` | After Step 3 (deploy), see Step 4h |
+| **ArcGIS API key** | Set `NEPA_Map_Config__mdt.ApiKey` to your ESRI key (Setup → Custom Metadata Types → NEPA Map Config → API Key → Edit). CSP Trusted Sites for ArcGIS are deployed automatically in Phase 6. | After Step 3 (deploy), see Step 4h |
 | **NAICS code data load** | 2,129 `NEPA_NAICS_Code__mdt` records loaded via Apex anonymous — verify with count query | After Step 3 (deploy), see Step 4i |
+
+**CE Library data and ArcGIS CSP Trusted Sites are now fully automated.** `deploy.sh` Phase 5e calls `scripts/load_ce_library.py` to populate 314 CE reference records, and Phase 6 deploys `ArcGIS_JS_CDN` and `ArcGIS_Tiles` CSP Trusted Sites from source. No Setup UI steps are required for either. If Phase 5e reports errors, re-run manually: `python3 scripts/load_ce_library.py --org <alias>`.
 
 **BRE Decision Matrix rows and activation are now fully automated.** `deploy.sh` Phase 5b-data calls `scripts/load_decision_matrix_rows.py`, which inserts `CalculationMatrixRow` records from the CSVs and activates each Decision Matrix and Expression Set version via the Salesforce Tooling API. No Setup UI steps are required. If Phase 5b-data reports errors, re-run manually: `python3 scripts/load_decision_matrix_rows.py --org <alias> --activate-es`. See [Step 4b](#4b-bre-decision-matrix-verification) for verification queries.
 
@@ -150,7 +150,8 @@ The script deploys in dependency order:
 | 5c | BRE Expression Set definitions |
 | 5c-activate | BRE Expression Set versions activated via Tooling API (automated) |
 | 5d | Regulatory seed data: 49 `RegulatoryAuthorizationType` records + 24 `RegulatoryCode` records |
-| 6 | Remote site settings and named credentials |
+| 5e | CE Library reference data: 314 `nepa_ce_library__c` records loaded from CEQ CE Explorer filtered dataset via `scripts/load_ce_library.py` (idempotent upsert; skipped gracefully if `exclusions_filtered.json` not present) |
+| 6 | Remote site settings, named credentials, and CSP Trusted Sites (`ArcGIS_JS_CDN`, `ArcGIS_Tiles`) |
 | 7 | Apex classes (no tests yet — tests run in Phase 8d after flows are live) |
 | 7b | Visualforce pages (`NEPA_Site_Location_Page` — ArcGIS map iframe for site location picker) |
 | 4b | `NEPA_Permitting` permission set (after Apex so Apex class references resolve) |
@@ -239,70 +240,46 @@ python3 scripts/load_decision_matrix_rows.py --org <alias> --dry-run
 
 See [decision_matrix_rows/README.md](../decision_matrix_rows/README.md) for the full re-run reference.
 
-### 4c. Activate Flows
+### 4c. Verify Flow Activation
 
-Deploy sets all **39 flows** to Draft. Activate the 35 flows listed below in order to avoid trigger dependency errors. The remaining 4 flows (`NEPA_Comment_Triage_Save`, `NEPA_EIS_Section_Assembler`, `NEPA_EIS_Section_Draft_Trigger`, `NEPA_Work_Order_Generator`) are deferred — see the Notes section at the end of the activation list. Total deployed: 39 flows; activate now: 35.
+**All 48 flows deploy with `status=Active` from source XML — no manual activation step is required.** The deploy script deploys each flow individually with retry logic (see Phase 8 in the table above). On a successful deploy, all flows are live immediately.
 
-- `NEPA_Comment_Triage_Save` — activate only when deploying the Comment Triage Agentforce agent
-- `NEPA_EIS_Section_Assembler` — requires Einstein Generative AI; activate when enabling AI document drafting
-- `NEPA_Work_Order_Generator` — stub placeholder; not yet implemented
-- `NEPA_CE_Intake` (screen flow) — OmniScript CEIntake is the preferred path for OmniStudio orgs; retain as fallback
+**Verify activation:**
 
-Go to **Setup → Flows** in your org and activate in this order:
+```bash
+sf data query \
+  --query "SELECT DeveloperName, Status FROM Flow WHERE DeveloperName LIKE 'NEPA%' AND Status = 'Active' ORDER BY DeveloperName" \
+  --use-tooling-api \
+  --target-org NEPADEV
+```
 
-**Activate first (subflows and error infrastructure):**
-1. `NEPA_Error_Logger`
-2. `NEPA_FlowError_CountIncrementer`
-3. `NEPA_Defensibility_Gap_Checker`
-4. `NEPA_Stage_Gate_Doc_Check`
+Expected: 48 active flows. Excludes 4 flows that are not deployed by the script:
 
-**Activate second (before-save triggers):**
-5. `NEPA_Comment_Period_Gate`
-6. `NEPA_SLA_Due_Date_Setter`
-7. `NEPA_FRA_Page_Limit_Setter`
-8. `NEPA_Stage_Gate`
-9. `NEPA_Visit_Survey_Window_Setter` — before-save on Visit insert; sets `nepa_hard_gate__c` and survey window dates from `NEPA_Layer_Discipline__mdt`
+| Flow | Why excluded |
+|---|---|
+| `NEPA_EIS_Section_Assembler` | Requires Einstein Generative AI (`generateText` action). Not deployed by script. |
+| `NEPA_EIS_Section_Draft_Trigger` | Calls `NEPA_EIS_Section_Assembler` as subflow — cannot deploy until the assembler exists. |
+| `NEPA_Slack_Stage_Notifier` | Requires Salesforce for Slack managed package. Deploys as Draft; activates once package is installed. See Step 9. |
+| `NEPA_Slack_Risk_Alert` | Same Slack package requirement. |
 
-**Activate third (after-save triggers):**
-10. `NEPA_Record_Completeness_Scorer`
-11. `NEPA_SLA_Due_Date_Setter` *(if not already active)*
-12. `NEPA_Litigation_Risk_Scorer`
-13. `NEPA_CE_Screener`
-14. `NEPA_CE_Determination_Router`
-15. `NEPA_CE_Intake`
-16. `NEPA_Challenge_Predictor`
-17. `NEPA_Defensibility_Trigger_ContentVersion`
-18. `NEPA_Defensibility_Trigger_Engagement`
-19. `NEPA_Timeline_Risk_Assessor`
-20. `NEPA_Stage_Gate_Orchestrator`
-21. `NEPA_Permit_Coordinator`
-22. `NEPA_Plaintiff_Intelligence`
-23. `NEPA_Administrative_Record_Checker`
-24. `NEPA_AdminRecord_AutoCreate`
-25. `NEPA_EIS_Section_Draft_Trigger`
-26. `NEPA_ActionPlan_Launcher` — fires after review type is determined; creates the matching NEPA Action Plan from `NEPA_ActionPlan_Config__mdt` templates
-27. `NEPA_Close_Administrative_Record` — fires async when `nepa_review_type__c` transitions to ROD or FONSI
-28. `NEPA_Visit_Completion_Assessor` — async after-save on Visit; sets `nepa_surveys_complete__c = true` on parent IA when all auto-generated hard-gate Visits are Completed
-29. `NEPA_Comment_AI_Router` — entry trigger for Agentforce comment triage; activate with or before the Comment Triage agent
-30. `NEPA_Comment_Duplicate_Check` — called from comment triage pipeline; activate with Comment AI Router
-31. `NEPA_Comment_ResponseTask_Creator` — called from comment triage pipeline; activate with Comment AI Router
-32. `NEPA_EJTribal_Router` — unconditional EJ/tribal keyword gate; activate with Comment AI Router
+**Deploy the EIS flows manually when Einstein AI is provisioned:**
 
-**Activate fourth (agency intelligence — async after-save):**
-33. `NEPA_Agency_Tier_Setter` — fires AsyncAfterCommit when `Program.nepa_record_owner_agency__c` changes; writes Agency Performance Tier from `NEPA_Agency_Scoping_Baseline__mdt`
+```bash
+sf project deploy start --metadata "Flow:NEPA_EIS_Section_Assembler" --target-org NEPADEV --test-level NoTestRun --wait 30
+sf project deploy start --metadata "Flow:NEPA_EIS_Section_Draft_Trigger" --target-org NEPADEV --test-level NoTestRun --wait 30
+```
 
-**Activate fifth (platform event and autolaunched):**
-34. `NEPA_Error_Event_Handler`
+**If any flow shows Draft or Inactive** after deploy (transient deploy failure), re-deploy individually:
 
-**Configure the scheduled flow manually in Flow Builder:**
-35. `NEPA_SLA_Escalation_Monitor` — open in Flow Builder, click the Start element, set schedule to **Daily at 7:00 AM**, then activate.
+```bash
+sf project deploy start --metadata "Flow:NEPA_Error_Logger" --target-org NEPADEV --test-level NoTestRun --wait 30
+```
 
-**Notes on flows not included in the activation list above:**
-- `NEPA_Comment_Triage_Save` — Agentforce agent script target; activate only if deploying the Comment Triage agent.
-- `NEPA_EIS_Section_Assembler` — requires **Einstein Generative AI** to be provisioned in the org (uses `generateText` action). Skipped by `deploy.sh` if Einstein AI is not available. Deploy manually once enabled: `sf project deploy start --metadata "Flow:NEPA_EIS_Section_Assembler" --target-org NEPADEV --test-level NoTestRun --wait 30`. Once deployed, `NEPA_EIS_Section_Draft_Trigger` can also be activated.
-- `NEPA_Work_Order_Generator` — stub; flow file not yet implemented.
+The most common transient error is `UNKNOWN_EXCEPTION` on the Salesforce pod — the deploy script retries each flow automatically up to 3 times, but re-running manually once more resolves persistent cases.
 
-**Verify activation:** In Setup → Flows, filter by Status = Active. You should see 48 active flows (45 core + `NEPA_BiOp_Reinitiation_Checker`, `NEPA_Permit_Issued_Schedule_Creator`, `NEPA_PostDecision_Monitor_Scheduler`). Excludes the 2 EIS flows (require Einstein AI) and 2 Slack flows (require managed package). If a flow fails to activate, the error appears inline in the Flows list — the most common cause is activating an after-save flow before its subflow dependencies (items 1–4 in the activation list) are already active.
+**Scheduled flows** (`NEPA_OFD_Variance_Alert`, `NEPA_Permit_SLA_Monitor`) deploy with their schedules defined in source XML — daily at 07:00 UTC and 06:00 UTC respectively. No Flow Builder configuration is needed.
+
+> **Note:** `NEPA_SLA_Escalation_Monitor` is a **record-triggered** after-save flow (not a scheduled flow). It fires on IndividualApplication saves, not on a clock schedule. No "set schedule in Flow Builder" step is required.
 
 ### 4d. Assign Lightning Record Pages
 
@@ -322,25 +299,29 @@ Phase 15 deploys **19 custom Lightning Record Pages**. Nine of these serve the 6
 
 The remaining 10 pages (`NEPA_GIS_Data_Record_Page`, `NEPA_GIS_Data_Element_Record_Page`, `NEPA_Detected_Protection_Layer_Record_Page`, `NEPA_Required_Permit_Record_Page`, `NEPA_AR_Export_Record_Page`, `NEPA_Process_Team_Member_Record_Page`, `nepa_litigation__c_Record_Page`, `RegulatoryCode_Record_Page`, `ApplicationTimeline_Record_Page`, `NEPA_Permitting_Home`) are assigned automatically to their object at deploy time and do not require manual activation.
 
-### 4e. Load CE Library Reference Data
+### 4e. CE Library Reference Data (Automated)
 
-Populate the `nepa_ce_library__c` searchable CE reference library with priority-agency records from the CEQ CE Explorer v2.0 dataset (314 records covering USACE, DOE, BLM, USFWS, FHWA, and FERC):
+**Phase 5e of `deploy.sh` calls `scripts/load_ce_library.py` automatically.** You should see output like this during deploy:
+
+```
+==> Phase 5e: CE Library reference data (314 priority-agency records)
+    Loading records from exclusions_filtered.json...
+    Upserted 314/314 records
+    Verify: sf data query --query "SELECT COUNT() FROM nepa_ce_library__c" ...
+```
+
+This uses `sf data upsert bulk` with `nepa_ce_explorer_id__c` as the external ID — idempotent, safe to re-run.
+
+**If Phase 5e was skipped** (because `exclusions_filtered.json` was not in the repo root when you ran deploy), load manually:
 
 ```bash
 python3 scripts/load_ce_library.py --org NEPADEV
 ```
 
-This uses `sf data upsert bulk` with `nepa_ce_explorer_id__c` as the external ID — safe to re-run after a dataset update (upsert with an external ID will not create duplicates).
-
-**For a trial org or proof of concept, the 314-record load is recommended** — it covers the 6 most common federal agencies and runs faster. Use `--all` only if your use case requires full 79-agency CE coverage.
-
-To load the full 2,105-record federal catalog instead (requires downloading `exclusions.json` first):
+To load the full 2,105-record federal catalog (all 79 agencies):
 
 ```bash
-# Download full dataset
 curl -o exclusions.json https://ce.permitting.innovation.gov/data/exclusions.json
-
-# Load all records
 python3 scripts/load_ce_library.py --org NEPADEV --all
 ```
 
@@ -373,9 +354,11 @@ Three Named Credentials (USGS NHD, BLM Tribal Cadastral, BLM PLSS) were deployed
 
 ### 4h. Configure the ArcGIS API Key (site location picker)
 
-The `nepaSiteLocationPickerOmni` OmniScript component embeds an ArcGIS map via the `NEPA_Site_Location_Page` Visualforce page. Two manual steps are required before the map will render:
+The `nepaSiteLocationPickerOmni` OmniScript component embeds an ArcGIS map via the `NEPA_Site_Location_Page` Visualforce page.
 
-**1. Set the ESRI API key:**
+**CSP Trusted Sites are deployed automatically in Phase 6.** The two entries (`ArcGIS_JS_CDN` for `https://js.arcgis.com` and `ArcGIS_Tiles` for `https://*.arcgis.com`) are checked into source and require no Setup UI action.
+
+**One manual step is required — set the ESRI API key:**
 
 1. Go to **Setup → Custom Metadata Types → NEPA Map Config → Manage Records**
 2. Click **Edit** next to **API Key**
@@ -383,18 +366,6 @@ The `nepaSiteLocationPickerOmni` OmniScript component embeds an ArcGIS map via t
 4. Save
 
 Without a valid API key the map container loads but basemap tiles do not render (grey canvas).
-
-**2. Add CSP Trusted Sites:**
-
-1. Go to **Setup → Security → CSP Trusted Sites**
-2. Add the following two entries:
-
-| CSP Trusted Site Name | URL | Directives |
-|---|---|---|
-| `ArcGIS_JS_CDN` | `https://js.arcgis.com` | script-src |
-| `ArcGIS_Tiles` | `https://*.arcgis.com` | connect-src |
-
-Without the CSP entries the browser blocks the ArcGIS JS SDK and the iframe renders blank with a console CSP violation error.
 
 **Verify the map works:** Add `nepaSiteLocationPickerOmni` as a Custom LWC element in a test OmniScript. The map iframe should load centered on the continental US (39.5°N, 98.35°W). Draw a polygon and click **Capture Location** — confirm `omniJsonData.siteLocation` contains `{lat, lng, geometry}`.
 
@@ -979,7 +950,7 @@ Expected: 1 or more CE Library records matching the term "pipeline" across exclu
 Verify the flow version that is Active is the correct one. Check Setup → Flows → click the flow name → confirm the Active version is the latest.
 
 **`CANNOT_INSERT_UPDATE_ACTIVATE_ENTITY` on flow activation**
-Activate subflows before parent flows. The activation order in Step 4c is designed to prevent this. If you see it, check which subflow the error names and activate that first.
+Flows deploy with `status=Active` from source so this error should not occur during a normal deploy. If it does (e.g., when manually activating a flow that failed to deploy), activate subflows before parent flows. The subflow dependency tiers are documented in the Phase 8 section of `scripts/deploy.sh` — check which subflow the error names and deploy/activate that first.
 
 **Risk score is 0 after setting `nepa_review_type__c`**
 The `NEPA_Litigation_Risk_Scorer` fires async (`AsyncAfterCommit`). Wait 5–10 seconds and refresh. If still 0, check two things: (1) the related project has `nepa_circuit__c` and `nepa_lead_agency__c` set — the scorer reads both from the parent Program; (2) the BRE Decision Matrices have rows loaded (Phase 5b-data during deploy). Without rows, DM lookups return 0 for ReviewType, Agency, and Circuit — only statute points will appear. Verify with the SOQL query in Step 4b or re-run `python3 scripts/load_decision_matrix_rows.py --org <alias>`.
