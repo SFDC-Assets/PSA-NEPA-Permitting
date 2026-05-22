@@ -201,8 +201,8 @@ Scores ≥58 auto-create a Legal Review Task. All weights are traceable to speci
 
 | Path | Contents | Why It Matters |
 |---|---|---|
-| `force-app/main/default/objects/` | 13 CEQ entity object definitions + 15 custom metadata type schemas | The complete data model — start here to understand the schema |
-| `force-app/main/default/flows/` | 38 flow XML files | All automation: stage gates, risk scoring, CE screening, comment triage, AR close, plaintiff intelligence, scoping baselines, error logging, AI EIS section drafting |
+| `force-app/main/default/objects/` | 13 CEQ entity object definitions + 17 custom metadata type schemas | The complete data model — start here to understand the schema |
+| `force-app/main/default/flows/` | 40 flow XML files | All automation: stage gates, risk scoring, CE screening, comment triage, AR close, plaintiff intelligence, scoping baselines, error logging, AI EIS section drafting, post-permit inspection scheduling, BiOp reinitiation detection, post-decision monitoring |
 | `force-app/main/default/agents/` | `NEPA_Comment_Triage.agent` | Agentforce comment classification and routing agent |
 | `force-app/main/default/expressionSetDefinition/` | 3 BRE Expression Set definitions | The deterministic scoring engines (CE Screener, Litigation Risk Scorer, Permit Coordinator) |
 | `force-app/main/default/decisionMatrixDefinition/` | 8 BRE Decision Matrix definitions | Rule tables that feed the Expression Sets |
@@ -221,7 +221,7 @@ Scores ≥58 auto-create a Legal Review Task. All weights are traceable to speci
 | `docs/SUBMISSION-NARRATIVE.md` | CEQ Permitting Innovators submission narrative | Full solution narrative around 5 evaluation criteria |
 | `docs/AI-Use-Policy.md` | OMB M-25-21 AI disclosure | Training data sources, limitations, prohibited uses, human confirmation requirements |
 | `docs/ARCHITECTURE_DECISIONS.md` | ADRs 001–011 | Every significant design choice with context, rationale, and consequences |
-| `docs/FLOW-ARCHITECTURE.md` | 31-flow design: error chain, stage gates, defensibility wrapper | Flow orchestration reference |
+| `docs/FLOW-ARCHITECTURE.md` | 40-flow design: error chain, stage gates, defensibility wrapper, post-permit inspection and monitoring | Flow orchestration reference |
 
 ---
 
@@ -402,6 +402,20 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
 
 ## Revision History
 
+**3.4 (2026-05-22)** — Post-permit inspection intelligence: F-05/F-09 data model foundation (Analysis 1–5 corpus integration)
+
+- **`NEPA_Inspection_Schedule__mdt`** (new CMT type): 30 sector×permit monitoring combinations covering NPDES, SMCRA, MMPA, CWA 401, CZMA — each with statutory CFR citation, inspection type, frequency, and litigation risk rating derived from PermitTEC corpus.
+- **`NEPA_State_Risk_Profile__mdt`** (new CMT type): 26-state inspection priority matrix. Composite score = state litigation risk multiplier × monitoring intensity × challenger win rate. Includes pre-composed `field_inspector_warning__c` text (challenger win rate + dominant plaintiffs + primary challenge types) surfaced at mobile form open.
+- **`NEPA_Permit_Issued_Schedule_Creator`** (new flow): After-save on `nepa_required_permit__c` (status → Issued). Queries `NEPA_Inspection_Schedule__mdt` by permit type and bulk-creates Visit inspection tasks with statutory authority and state risk context from `NEPA_State_Risk_Profile__mdt`.
+- **`NEPA_BiOp_Reinitiation_Checker`** (new flow): After-save on Visit. Any of 5 `nepa_reinit_*__c` checkboxes triggers a check for active BiOp on parent IA; if present, creates High-priority ESA Coordinator Task and adds +12 to `nepa_challenge_risk_delta__c` (50 CFR §402.16 compliance).
+- **`NEPA_PostDecision_Monitor_Scheduler`** (new flow): After-save on IndividualApplication (`nepa_ar_locked__c` → true / ROD-FONSI). Bulk-creates monitoring Tasks for all `NEPA_Required_Document__mdt` records where `Stage_Required_By__c = Post-Decision` — zero new architecture, extends existing gap checker CMT pattern.
+- **5 BiOp reinitiation fields on Visit** (`nepa_reinit_new_species_listing__c`, `nepa_reinit_amount_or_extent_exceeded__c`, `nepa_reinit_new_information__c`, `nepa_reinit_action_modified__c`, `nepa_reinit_rpa_not_implemented__c`).
+- **`nepa_state_risk_context__c`** LongTextArea on Visit — litigation briefing for mobile inspection form.
+- **10 post-decision `NEPA_Required_Document__mdt` records** (`Stage_Required_By__c = Post-Decision`): MMRP Annual, MMRP Construction Verification, BiOp ITS Compliance, BiOp RPA Implementation, NPDES DMR Quarterly, SWPPP Inspection Log, SMCRA Reclamation Progress, Adaptive Management Assessment, Supplemental NEPA Trigger Evaluation, MMPA Annual Monitoring.
+- **4 post-ROD `NEPA_Sector_Circuit_Risk__mdt` cells** (`Phase__c = Post-Decision`) — Inspection-Related/10th, Mitigation Compliance/Federal, Energy Post-Permit, Energy/PostROD.
+- **Schema additions to existing CMT types:** `Monitoring_Phase__c`, `Frequency_Days__c`, `Litigation_Risk_If_Absent__c` on `NEPA_Required_Document__mdt`; `Phase__c`, `Trigger_Type__c` on `NEPA_Sector_Circuit_Risk__mdt`; `inp_PostRODPhase`, `inp_PostRODTriggerType` input variables on `NEPA_Litigation_Risk_Scorer`.
+- **Custom Metadata Types:** 23 → 25. **Flows:** 38 → 40 (37 → 38 was v3.3; see below). **Visit fields:** +6.
+
 **3.3 (2026-05-18)** — IMP-001–010: v3 bifurcated risk score, OFD coordination tracker, federal friction multipliers, ESA low-confidence disclosure, agency duration CMT, sector-specific EC intake questions, `nepaRiskIntelligenceCard` LWC
 
 - **v3 litigation risk score (IMP-001):** Score bifurcated into Litigation Probability Score (85% weight, 6 factors) + Litigation Cost Exposure (15% weight, normalized agency duration dimension). Per-agency median durations from CourtListener bulk docket analysis (71M+ records): BOEM 6.5mo → FTA 33.4mo. Stored in `nepa_litigation_duration_cost__c`.
@@ -414,7 +428,7 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
 - **Test suite:** 514+ → 519+. 5 new test methods added for cost dimension, ESA disclosure, and OFD track validation.
 - **Custom Metadata Types:** 20 → 23 (`NEPA_Agency_Duration_Cost__mdt`, `NEPA_OFD_Milestone__mdt`, `NEPA_Risk_Threshold__mdt` added).
 - **LWC count:** 1 → 2 (`nepaRiskIntelligenceCard` added alongside `nepaPermitDependencies`).
-- **Flows:** 37 → 38.
+- **Flows:** 37 → 38. (→ 40 in v3.4)
 
 **3.2 (2026-05-17)** — Cross-agency permit dependency tracking and live NEPA REST API status
 

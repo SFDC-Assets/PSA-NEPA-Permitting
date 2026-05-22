@@ -2,7 +2,7 @@
 
 End-to-end test scenarios for the PSA-NEPA accelerator's live-integration and UI-dependent flows. Automated Apex tests cover logic correctness for all features; the steps in this guide verify production integration paths — async flow triggers, HTTP callouts, REST connectivity, BRE activation state, and UI-layer behavior that Apex cannot reach.
 
-**Prerequisites:** Solution deployed, permission set assigned, BRE Decision Matrix rows loaded (automated by Phase 5b-data in `deploy.sh`), 33 core flows active (see QUICKSTART.md Step 4c for the activation list; 4 flows are deferred and not required for testing), sample data loaded. See QUICKSTART.md Steps 3–5 if any of these are incomplete.
+**Prerequisites:** Solution deployed, permission set assigned, BRE Decision Matrix rows loaded (automated by Phase 5b-data in `deploy.sh`), 36 core flows active (see QUICKSTART.md Step 4c for the activation list; 4 flows are deferred and not required for testing), sample data loaded. See QUICKSTART.md Steps 3–5 if any of these are incomplete.
 
 **Test suite size:** 63 test classes, 615+ test methods across all feature areas. Run `sf apex run test --test-level RunLocalTests` to execute the full automated suite (see [Section 20](#20-apex-test-suite)).
 
@@ -563,6 +563,73 @@ sf apex run test \
 
 ---
 
+## 20q. Targeted Test — Permit Issued Schedule Creator (F-05 foundation)
+
+```bash
+sf apex run test \
+  --tests NepaPermitIssuedScheduleCreatorTest \
+  --target-org $ALIAS \
+  --result-format human \
+  --wait 10
+```
+
+**Expected:** Visit records are auto-created when `nepa_permit_status__c` changes to `Issued` on a `nepa_required_permit__c` record. `nepa_discipline__c` populated from `NEPA_Inspection_Schedule__mdt.Inspection_Type__c`; `nepa_trigger_layer__c` populated from `Statutory_Authority__c`; `nepa_auto_generated__c = true`. No Visits created when status is not `Issued`.
+
+**Manual smoke test:**
+1. Open a `nepa_required_permit__c` record where `nepa_permit_type__c` matches a seeded `NEPA_Inspection_Schedule__mdt` record (e.g., "CWA Section 402 NPDES Construction")
+2. Change `nepa_permit_status__c` to `Issued` and save
+3. Navigate to the related Visits list — confirm Visit records created with `nepa_auto_generated__c = true`, `nepa_discipline__c` populated, `nepa_trigger_layer__c` containing the CFR citation
+
+---
+
+### 20r. Targeted Test — BiOp Reinitiation Checker (F-05 / ESA §7)
+
+**Manual smoke test** (no Apex test class yet — flow-only):
+1. Open a Visit record linked to an `IndividualApplication` that has `nepa_has_active_biop__c = true`
+2. Check `nepa_reinit_new_species_listing__c` and save
+3. Confirm: a High-priority Task is created on the parent `IndividualApplication` with subject "ESA §7 Reinitiation Required — Review BiOp Compliance"; `nepa_challenge_risk_delta__c` on the IA increased by 12
+4. Repeat with `nepa_reinit_rpa_not_implemented__c` — verify Task description lists both triggered fields
+
+**Expected non-trigger:** Check a reinitiation box on a Visit whose parent IA has `nepa_has_active_biop__c = false` — no Task should be created.
+
+---
+
+### 20s. Targeted Test — Post-Decision Monitor Scheduler (F-09 foundation)
+
+**Manual smoke test** (no Apex test class yet — flow-only):
+1. Open an `IndividualApplication` with `nepa_review_type__c = EIS` where `nepa_ar_locked__c = false`
+2. Set `nepa_ar_locked__c = true` and save (simulates ROD/FONSI issuance)
+3. Navigate to the Tasks related list — confirm Tasks created for each active `NEPA_Required_Document__mdt` record where `Stage_Required_By__c = Post-Decision` and `Review_Type__c` matches `EIS` or `ALL`
+4. Verify Task subjects contain the document type; Priority = High
+
+**SOQL verification:**
+```bash
+sf data query \
+  --query "SELECT Subject, Priority, Status FROM Task WHERE WhatId = '<IA_Id>' AND Subject LIKE 'Post-Decision%' ORDER BY Subject" \
+  --target-org $ALIAS
+```
+Expected: 7–10 Tasks depending on review type (ALL records + EIS-specific records).
+
+---
+
+### 20t. CMT Seed Counts — Post-Permit Intelligence
+
+```bash
+sf data query \
+  --query "SELECT COUNT(Id) cnt FROM NEPA_Inspection_Schedule__mdt WHERE Active__c = true" \
+  --target-org $ALIAS
+sf data query \
+  --query "SELECT COUNT(Id) cnt FROM NEPA_State_Risk_Profile__mdt WHERE Active__c = true" \
+  --target-org $ALIAS
+sf data query \
+  --query "SELECT COUNT(Id) cnt FROM NEPA_Required_Document__mdt WHERE Stage_Required_By__c = 'Post-Decision' AND Active__c = true" \
+  --target-org $ALIAS
+```
+
+**Expected:** 30, 26, 10.
+
+---
+
 ## 21. BRE Configuration Integrity
 
 **Tests:** All Decision Matrix row counts correct; all Expression Sets are Active; CMT types have records. CMT record counts (agency risk rates, circuit weights, scoping baselines, challenge prediction rules, plaintiff profiles) are verified programmatically by `NepaBREConfigTest` — run Section 20b to verify those. The steps below verify BRE activation state that has no Apex API surface.
@@ -653,6 +720,10 @@ Use this matrix to track test execution. Mark each test ✅ Pass, ❌ Fail, or �
 | 20n | F-12 Slack Config | NepaSlackFlowConfigTest (8 tests) passes | | |
 | 20o | F-15 OFD Variance | NepaOFDVarianceAlertFlowTest (7 tests) passes | | |
 | 20p | F-03 PreApp Screener | NepaPreAppQualifySectorFlowTest (7) + NepaPreAppScreeningControllerTest (6) pass | | |
+| 20q | F-05 Permit Schedule | NepaPermitIssuedScheduleCreatorTest passes; Visits created at permit issuance | | |
+| 20r | F-05 BiOp Reinit | Reinitiation checkbox → ESA Task + +12 risk delta | | |
+| 20s | F-09 Post-Decision | nepa_ar_locked__c → true creates monitoring Tasks | | |
+| 20t | CMT Seed Counts | 30 Inspection Schedules, 26 State Profiles, 10 Post-Decision docs | | |
 | 22a | NAICS Picker | NAICS code query returns 2,129 records across 5 levels | | |
 | 22b | Site Picker | `nepaSiteLocationPickerOmni` map loads; polygon capture writes `siteLocation` to OmniScript JSON | | |
 | 21a | BRE Config | All DM row counts match expected | | |
@@ -676,3 +747,6 @@ Use this matrix to track test execution. Mark each test ✅ Pass, ❌ Fail, or �
 | `INVALID_FIELD` on SOQL | Permission set not assigned | Run `sf org assign permset --name NEPA_Permitting --target-org $ALIAS` |
 | `Internal Salesforce Error: 723447963` in ContentVersion tests | Pre-existing sandbox platform bug in NEPADEMO on `ContentVersion` insert | Known issue — not fixable in code; tests include `try/catch` guards; open a Salesforce Support case if critical |
 | SLA warning record incorrectly flagged overdue in mixed-batch run | `NEPA_SLA_Escalation_Monitor` flow loop variable state contamination | Ensure the deployed flow has reset assignments in both `Build_OverdueUpdate` (`nepa_sla_warning_sent__c = false`) and `Build_WarningUpdate` (`nepa_sla_overdue__c = false`) |
+| No Visits created after permit status → Issued | `NEPA_Permit_Issued_Schedule_Creator` not active, or `nepa_permit_type__c` value doesn't match any `NEPA_Inspection_Schedule__mdt` record | Activate the flow; verify `Permit_Type__c` CMT field matches exactly (case-sensitive) |
+| BiOp reinitiation Task not created | `NEPA_BiOp_Reinitiation_Checker` not active, or parent IA `nepa_has_active_biop__c = false` | Activate the flow; set `nepa_has_active_biop__c = true` on the parent IA before testing |
+| No post-decision Tasks after AR lock | `NEPA_PostDecision_Monitor_Scheduler` not active, or no `NEPA_Required_Document__mdt` records with `Stage_Required_By__c = Post-Decision` and matching `Review_Type__c` | Activate the flow; verify CMT records deployed (run section 20t SOQL) |

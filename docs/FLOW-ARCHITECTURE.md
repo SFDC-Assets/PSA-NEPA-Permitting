@@ -1,6 +1,6 @@
 # NEPA Flow Architecture
 
-37 flows total. This document explains the three non-obvious structural patterns — why the error handling, stage gate, and defensibility scoring are split the way they are.
+40 flows total. This document explains the three non-obvious structural patterns — why the error handling, stage gate, and defensibility scoring are split the way they are.
 
 ---
 
@@ -94,3 +94,6 @@ flowchart TD
 | NEPA_Team_Assembly_Orchestrator | After-save | IndividualApplication insert |
 | NEPA_Timeline_Risk_Assessor | After-save | IndividualApplication update (stage change) |
 | NEPA_WO_Milestone_Setter | Before-save | ApplicationTimeline insert/update |
+| NEPA_BiOp_Reinitiation_Checker | After-save | Visit update — any of 5 nepa_reinit_*__c checkboxes set to true. If parent IA has active BiOp, creates High-priority ESA Coordinator Task and adds +12 to nepa_challenge_risk_delta__c (50 CFR §402.16) |
+| NEPA_Permit_Issued_Schedule_Creator | After-save | nepa_required_permit__c (nepa_permit_status__c → Issued). Queries NEPA_Inspection_Schedule__mdt by permit type, queries NEPA_State_Risk_Profile__mdt via parent IA state code, bulk-creates Visit inspection tasks with statutory authority and state risk context |
+| NEPA_PostDecision_Monitor_Scheduler | After-save | IndividualApplication (nepa_ar_locked__c → true / ROD-FONSI issuance). Queries NEPA_Required_Document__mdt for Stage_Required_By__c = Post-Decision records matching the review type; bulk-creates monitoring Tasks |
