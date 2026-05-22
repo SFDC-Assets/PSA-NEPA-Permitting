@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sector__c</fullName>
+    <label>Sector</label>
+    <type>Text</type>
+    <length>100</length>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <description>Industry/resource sector this template covers. Examples: Energy - Oil/Gas, Transportation - Land, Water Resources. Used for catalog filtering.</description>
+</CustomField>

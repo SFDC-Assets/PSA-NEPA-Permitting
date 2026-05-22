@@ -250,6 +250,137 @@ For the OFD Variance Alert scheduled flow to fire, at least one IndividualApplic
 
 ---
 
+### Step 12 — Slack Integration Hub Setup (F-12)
+
+Slack notifications are deployed as **Draft** flows and will not run until the Salesforce for Slack managed package is installed and the workspace is connected.
+
+#### Step 12a — Install Salesforce for Slack package
+
+```bash
+# Find the latest package ID on AppExchange: search "Salesforce for Slack"
+# Then install (replace 04t... with the actual package version ID):
+sf package install \
+  --package 04tXXXXXXXXXXXXXXX \
+  --target-org <alias> \
+  --wait 10
+```
+
+After install, the `slack__SendMessage` Flow action will appear in Flow Builder.
+
+#### Step 12b — Connect Salesforce org to Slack workspace
+
+1. In the org: Setup → search "Slack" → **Slack Setup**
+2. Click **Connect to Slack** and authorize with your Slack workspace admin credentials
+3. Confirm the connection shows "Connected" with your workspace name
+
+#### Step 12c — Get channel IDs from Slack
+
+For each channel you want to use:
+1. In Slack: right-click the channel name → **View channel details**
+2. Scroll to the bottom of the modal — the channel ID (format: `Cxxxxxxxxxx`) is displayed
+3. Copy the ID — you need it for the next step
+
+#### Step 12d — Update CMT config with real channel IDs
+
+```bash
+sf org open --target-org <alias> --path /lightning/setup/CustomMetadata/home
+# → Click "NEPA Slack Config" → "Manage Records" → "Default"
+# Update: Default Channel ID (general NEPA channel)
+#         Tribal Notification Channel ID (tribal consultation alerts)
+#         Risk Alert Threshold (default: 70, range 0–100)
+```
+
+Or update via Metadata API deploy after editing the seed record:
+```
+force-app/main/default/customMetadata/NEPA_Slack_Config.Default.md-meta.xml
+```
+
+#### Step 12e — Activate the Slack flows
+
+Once the package is installed and channels are configured:
+
+```bash
+# Activate stage notifier
+sf data update record \
+  --sobject FlowDefinition \
+  --where "DeveloperName='NEPA_Slack_Stage_Notifier'" \
+  --values "ActiveVersion=1" \
+  --use-tooling-api \
+  --target-org <alias>
+
+# Activate risk alert
+sf data update record \
+  --sobject FlowDefinition \
+  --where "DeveloperName='NEPA_Slack_Risk_Alert'" \
+  --values "ActiveVersion=1" \
+  --use-tooling-api \
+  --target-org <alias>
+```
+
+Or activate in Setup → Flows → find each flow → click **Activate**.
+
+**Note:** `NEPA_EJTribal_Router` already has the tribal Slack action embedded. It will silently skip the Slack call if the config CMT has placeholder channel IDs — no errors, no broken routing. Tribal routing still functions correctly without Slack.
+
+#### Verification
+
+```bash
+# Advance an IA to a new stage in the UI, then check Slack configured channel
+# OR use anonymous Apex:
+sf apex run --file scripts/apex/test_slack_stage.apex --target-org <alias>
+```
+
+---
+
+### Step 13 — Agency Template Exchange Setup (F-11)
+
+The Template Catalog tab and LWC are deployed automatically. No package installation required.
+
+#### Step 13a — Verify the catalog tab appears in the app
+
+1. Open the NEPA Permitting app
+2. Confirm "Agency Template Exchange" tab appears in the navigation bar (between RegulatoryCode and Reports)
+3. If not visible: Setup → App Manager → NEPA Permitting → Edit → Navigation Items → confirm `nepaTemplateCatalog` is in the Selected Items list
+
+#### Step 13b — Verify the 46 CMT seed records deployed
+
+```bash
+sf data query \
+  --query "SELECT COUNT() FROM NEPA_Template_Catalog__mdt WHERE Is_Active__c = true" \
+  --target-org <alias>
+# Expected: 46
+```
+
+If count is 0, the CMT records did not deploy with the metadata push. Re-deploy just the CMT records:
+
+```bash
+sf project deploy start \
+  --metadata "CustomMetadata:NEPA_Template_Catalog.*" \
+  --target-org <alias> \
+  --wait 30
+```
+
+#### Step 13c — Verify ActionPlanTemplates are active
+
+The `installTemplate` method looks up active APTs by DeveloperName. If a template was deployed inactive, installing it will fail with a clear error message.
+
+```bash
+sf data query \
+  --query "SELECT DeveloperName, IsActive FROM ActionPlanTemplate WHERE DeveloperName LIKE 'NEPA_%' AND IsActive = false" \
+  --target-org <alias>
+# Expected: 0 rows. If any inactive templates appear, activate via Setup → Action Plans → Templates.
+```
+
+#### Step 13d — Test install from the catalog
+
+1. Navigate to any IndividualApplication record
+2. Open the Template Exchange tab (or add `nepaTemplateCatalog` to the IA record page via App Builder)
+3. Filter by review type and sector
+4. Click **Install on Record** for any template
+5. Confirm success message appears with an Action Plan ID
+6. Navigate to the IA record → Related tab → confirm the Action Plan was created
+
+---
+
 ### Quick Verification Commands
 
 After completing all steps, run these to confirm end-to-end health:
@@ -271,6 +402,14 @@ sf data query --query "SELECT COUNT() FROM nepa_ce_library__c WHERE nepa_active_
 
 # FAST-41 OFD monitoring live
 sf data query --query "SELECT COUNT() FROM IndividualApplication WHERE nepa_fast41_covered__c = true" --target-org <alias>
+
+# Slack config seeded
+sf data query --query "SELECT DeveloperName, Default_Channel_Id__c, Risk_Alert_Threshold__c FROM NEPA_Slack_Config__mdt" --target-org <alias>
+# Expected: 1 row; channel IDs should not be PLACEHOLDER values in a live org
+
+# Template catalog seeded
+sf data query --query "SELECT COUNT() FROM NEPA_Template_Catalog__mdt WHERE Is_Active__c = true" --target-org <alias>
+# Expected: 46
 ```
 
 ---

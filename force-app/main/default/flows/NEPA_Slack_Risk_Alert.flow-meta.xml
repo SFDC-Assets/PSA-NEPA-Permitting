@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>F-12 Slack Integration — Litigation risk score alert. Fires after-save on IndividualApplication when nepa_risk_score__c changes. Reads NEPA_Slack_Config.Default CMT and sends a Slack alert if score is at or above the configured threshold. Requires Salesforce for Slack managed package. Deploy as Draft until Slack package is installed.</description>
+    <label>NEPA Slack Risk Alert</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Draft</status>
+
+    <!-- ============================================================
+         ELEMENT 1: GET SLACK CONFIG CMT
+    ============================================================ -->
+    <recordLookups>
+        <name>Get_Slack_Config</name>
+        <label>Get Slack Config</label>
+        <locationX>176</locationX>
+        <locationY>107</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_Threshold_Breached</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value><stringValue>Default</stringValue></value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>NEPA_Slack_Config__mdt</object>
+        <queriedFields>Default_Channel_Id__c</queriedFields>
+        <queriedFields>Risk_Alert_Threshold__c</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+
+    <!-- ============================================================
+         ELEMENT 2: DECISION — THRESHOLD BREACHED?
+         Fires only if score >= configured threshold and channel is configured.
+    ============================================================ -->
+    <decisions>
+        <name>Decision_Threshold_Breached</name>
+        <label>Score At or Above Threshold?</label>
+        <locationX>176</locationX>
+        <locationY>215</locationY>
+        <defaultConnectorLabel>Below threshold or no config — skip</defaultConnectorLabel>
+        <rules>
+            <name>Alert_Required</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Slack_Config</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Slack_Config.Default_Channel_Id__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue><stringValue>PLACEHOLDER_CHANNEL_ID</stringValue></rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.nepa_risk_score__c</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <elementReference>Get_Slack_Config.Risk_Alert_Threshold__c</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_Risk_Alert</targetReference>
+            </connector>
+            <label>Alert required</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         ELEMENT 3: SEND SLACK MESSAGE — RISK ALERT
+    ============================================================ -->
+    <actionCalls>
+        <name>Send_Risk_Alert</name>
+        <label>Send Risk Score Alert</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <actionName>slack__SendMessage</actionName>
+        <actionType>apex</actionType>
+        <faultConnector>
+            <targetReference>Handle_Slack_Error</targetReference>
+        </faultConnector>
+        <inputParameters>
+            <name>channelId</name>
+            <value>
+                <elementReference>Get_Slack_Config.Default_Channel_Id__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>message</name>
+            <value>
+                <elementReference>formula_RiskMessage</elementReference>
+            </value>
+        </inputParameters>
+    </actionCalls>
+
+    <!-- ============================================================
+         ERROR HANDLING
+    ============================================================ -->
+    <assignments>
+        <name>Handle_Slack_Error</name>
+        <label>Capture Slack Error</label>
+        <locationX>440</locationX>
+        <locationY>323</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
+    </assignments>
+
+    <subflows>
+        <name>Call_ErrorLogger</name>
+        <label>Log Slack Error</label>
+        <locationX>440</locationX>
+        <locationY>431</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value><stringValue>NEPA_Slack_Risk_Alert</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value><elementReference>var_ErrorMessage</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value><elementReference>$Record.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RunningUserId</name>
+            <value><elementReference>$User.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_FailedStep</name>
+            <value><stringValue>Send_Risk_Alert</stringValue></value>
+        </inputAssignments>
+    </subflows>
+
+    <!-- ============================================================
+         FORMULAS
+    ============================================================ -->
+    <formulas>
+        <name>formula_RiskMessage</name>
+        <dataType>String</dataType>
+        <expression>":warning: *Litigation Risk Alert* — " &amp; {!$Record.Name} &amp; " scored *" &amp; TEXT({!$Record.nepa_risk_score__c}) &amp; "/100*" &amp; IF(NOT(ISBLANK({!$Record.nepa_risk_tier__c})), " (" &amp; {!$Record.nepa_risk_tier__c} &amp; " tier)", "") &amp; IF(NOT(ISBLANK({!$Record.nepa_risk_factors_summary__c})), " | Factors: " &amp; LEFT({!$Record.nepa_risk_factors_summary__c}, 200), "") &amp; " | Record: " &amp; LEFT({!$Record.Id}, 15)</expression>
+    </formulas>
+
+    <!-- ============================================================
+         VARIABLES
+    ============================================================ -->
+    <variables>
+        <name>var_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Slack_Config</targetReference>
+        </connector>
+        <filterLogic>1</filterLogic>
+        <filters>
+            <field>nepa_risk_score__c</field>
+            <operator>IsChanged</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </filters>
+        <object>IndividualApplication</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+
+</Flow>

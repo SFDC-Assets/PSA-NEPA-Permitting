@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>F-12 Slack Integration — Stage change notifier. Fires after-save on IndividualApplication when nepa_process_stage__c changes. Reads NEPA_Slack_Config.Default CMT and sends a Slack message to the configured channel. Requires Salesforce for Slack managed package (slack__SendMessage action). Deploy as Draft until Slack package is installed and workspace is connected in Setup → Slack.</description>
+    <label>NEPA Slack Stage Notifier</label>
+    <processType>AutoLaunchedFlow</processType>
+    <status>Draft</status>
+    <triggerType>RecordAfterSave</triggerType>
+
+    <object>IndividualApplication</object>
+    <triggerType>RecordAfterSave</triggerType>
+    <recordTriggerType>CreateAndUpdate</recordTriggerType>
+    <filterLogic>1</filterLogic>
+    <filters>
+        <field>nepa_process_stage__c</field>
+        <operator>IsChanged</operator>
+        <value><booleanValue>true</booleanValue></value>
+    </filters>
+
+    <!-- ============================================================
+         ELEMENT 1: GET SLACK CONFIG CMT
+    ============================================================ -->
+    <recordLookups>
+        <name>Get_Slack_Config</name>
+        <label>Get Slack Config</label>
+        <locationX>176</locationX>
+        <locationY>107</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_Config_Found</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value><stringValue>Default</stringValue></value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>NEPA_Slack_Config__mdt</object>
+        <queriedFields>Default_Channel_Id__c</queriedFields>
+        <queriedFields>Risk_Alert_Threshold__c</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+
+    <!-- ============================================================
+         ELEMENT 2: DECISION — CONFIG FOUND AND CHANNEL SET?
+    ============================================================ -->
+    <decisions>
+        <name>Decision_Config_Found</name>
+        <label>Config Found and Channel Set?</label>
+        <locationX>176</locationX>
+        <locationY>215</locationY>
+        <defaultConnectorLabel>No config or placeholder — skip</defaultConnectorLabel>
+        <rules>
+            <name>Config_Ready</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Slack_Config</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Slack_Config.Default_Channel_Id__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue><stringValue>PLACEHOLDER_CHANNEL_ID</stringValue></rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Slack_Config.Default_Channel_Id__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_Stage_Notification</targetReference>
+            </connector>
+            <label>Config ready</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         ELEMENT 3: SEND SLACK MESSAGE — STAGE CHANGE
+         Requires Salesforce for Slack managed package.
+         slack__SendMessage inputs: channelId, message
+    ============================================================ -->
+    <actionCalls>
+        <name>Send_Stage_Notification</name>
+        <label>Send Stage Change Notification</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <actionName>slack__SendMessage</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Assign_Notification_Sent</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Slack_Error</targetReference>
+        </faultConnector>
+        <inputParameters>
+            <name>channelId</name>
+            <value>
+                <elementReference>Get_Slack_Config.Default_Channel_Id__c</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>message</name>
+            <value>
+                <elementReference>formula_StageMessage</elementReference>
+            </value>
+        </inputParameters>
+    </actionCalls>
+
+    <!-- ============================================================
+         ELEMENT 4: ASSIGN — MARK SENT (no-op output; allows future branching)
+    ============================================================ -->
+    <assignments>
+        <name>Assign_Notification_Sent</name>
+        <label>Mark Notification Sent</label>
+        <locationX>176</locationX>
+        <locationY>431</locationY>
+        <assignmentItems>
+            <assignToReference>var_NotificationSent</assignToReference>
+            <operator>Assign</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </assignmentItems>
+    </assignments>
+
+    <!-- ============================================================
+         ERROR HANDLING
+    ============================================================ -->
+    <assignments>
+        <name>Handle_Slack_Error</name>
+        <label>Capture Slack Error</label>
+        <locationX>440</locationX>
+        <locationY>323</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Call_ErrorLogger</targetReference>
+        </connector>
+    </assignments>
+
+    <subflows>
+        <name>Call_ErrorLogger</name>
+        <label>Log Slack Error</label>
+        <locationX>440</locationX>
+        <locationY>431</locationY>
+        <flowName>NEPA_Error_Logger</flowName>
+        <inputAssignments>
+            <name>inp_FlowName</name>
+            <value><stringValue>NEPA_Slack_Stage_Notifier</stringValue></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_ErrorMessage</name>
+            <value><elementReference>var_ErrorMessage</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RecordId</name>
+            <value><elementReference>$Record.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_RunningUserId</name>
+            <value><elementReference>$User.Id</elementReference></value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>inp_FailedStep</name>
+            <value><stringValue>Send_Stage_Notification</stringValue></value>
+        </inputAssignments>
+    </subflows>
+
+    <!-- ============================================================
+         FORMULAS
+    ============================================================ -->
+    <formulas>
+        <name>formula_StageMessage</name>
+        <dataType>String</dataType>
+        <expression>":clipboard: *NEPA Process Update* — " &amp; {!$Record.Name} &amp; " advanced to *" &amp; {!$Record.nepa_process_stage__c} &amp; "*" &amp; IF(NOT(ISBLANK({!$Record.nepa_lead_agency__c})), " | " &amp; {!$Record.nepa_lead_agency__c}, "") &amp; IF(NOT(ISBLANK({!$Record.nepa_review_type__c})), " | " &amp; {!$Record.nepa_review_type__c}, "") &amp; " | Record: " &amp; LEFT({!$Record.Id}, 15)</expression>
+    </formulas>
+
+    <!-- ============================================================
+         VARIABLES
+    ============================================================ -->
+    <variables>
+        <name>var_NotificationSent</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value><booleanValue>false</booleanValue></value>
+    </variables>
+    <variables>
+        <name>var_ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Slack_Config</targetReference>
+        </connector>
+        <filterLogic>1</filterLogic>
+        <filters>
+            <field>nepa_process_stage__c</field>
+            <operator>IsChanged</operator>
+            <value><booleanValue>true</booleanValue></value>
+        </filters>
+        <object>IndividualApplication</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+
+</Flow>

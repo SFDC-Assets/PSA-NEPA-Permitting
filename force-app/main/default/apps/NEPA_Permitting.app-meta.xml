@@ -24,6 +24,7 @@
     <tabs>nepa_detected_protection_layer__c</tabs>
     <tabs>standard-Visit</tabs>
     <tabs>standard-RegulatoryCode</tabs>
+    <tabs>nepaTemplateCatalog</tabs>
     <tabs>standard-report</tabs>
     <tabs>standard-dashboard</tabs>
     <uiType>Lightning</uiType>

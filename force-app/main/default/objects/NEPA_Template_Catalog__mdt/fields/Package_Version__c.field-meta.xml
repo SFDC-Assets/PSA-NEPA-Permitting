@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Package_Version__c</fullName>
+    <label>Package Version</label>
+    <type>Text</type>
+    <length>20</length>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <description>Semantic version of the template package (e.g. 1.0.0). Used for future package-based exchange; informational in this sprint.</description>
+</CustomField>

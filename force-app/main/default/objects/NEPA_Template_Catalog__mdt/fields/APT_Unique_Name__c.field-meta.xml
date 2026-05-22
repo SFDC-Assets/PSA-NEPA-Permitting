@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>APT_Unique_Name__c</fullName>
+    <label>APT Developer Name</label>
+    <type>Text</type>
+    <length>80</length>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <description>DeveloperName of the ActionPlanTemplate this catalog entry links to. Used by NepaTemplateCatalogController.installTemplate() to launch the correct APT.</description>
+</CustomField>

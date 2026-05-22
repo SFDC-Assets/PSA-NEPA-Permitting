@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Notify_Tribal_Channel__c</fullName>
+    <label>Tribal Notification Channel ID</label>
+    <type>Text</type>
+    <length>50</length>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <description>Slack channel ID for tribal consultation required alerts (routed by NEPA_EJTribal_Router). Falls back to Default_Channel_Id__c if blank. Must belong to the connected Slack workspace.</description>
+</CustomField>

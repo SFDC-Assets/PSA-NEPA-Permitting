@@ -1,0 +1,125 @@
+<template>
+    <lightning-card title="Agency Template Exchange" icon-name="standard:template">
+        <div class="slds-card__body slds-card__body_inner">
+
+            <!-- Filter Bar -->
+            <div class="slds-grid slds-gutters slds-wrap slds-m-bottom_medium">
+                <div class="slds-col slds-size_1-of-2 slds-small-size_1-of-3">
+                    <lightning-combobox
+                        name="reviewType"
+                        label="Review Type"
+                        value={selectedReviewType}
+                        options={reviewTypeOptions}
+                        onchange={handleReviewTypeChange}>
+                    </lightning-combobox>
+                </div>
+                <div class="slds-col slds-size_1-of-2 slds-small-size_1-of-3">
+                    <lightning-combobox
+                        name="sector"
+                        label="Sector"
+                        value={selectedSector}
+                        options={sectorOptions}
+                        onchange={handleSectorChange}>
+                    </lightning-combobox>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-small-size_1-of-3 slds-align-bottom">
+                    <lightning-button
+                        label="Clear Filters"
+                        onclick={handleClearFilters}
+                        class="slds-m-top_large">
+                    </lightning-button>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading templates..." size="medium"></lightning-spinner>
+            </template>
+
+            <!-- Error State -->
+            <template if:true={error}>
+                <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                    <span class="slds-assistive-text">Error</span>
+                    <p>{error}</p>
+                </div>
+            </template>
+
+            <!-- Empty State -->
+            <template if:true={isEmpty}>
+                <div class="slds-illustration slds-illustration_small slds-m-vertical_large">
+                    <div class="slds-illustration__figure">
+                        <lightning-icon icon-name="utility:search" size="large" alternative-text="No templates"></lightning-icon>
+                    </div>
+                    <div class="slds-illustration__body">
+                        <p class="slds-text-heading_medium">No templates found</p>
+                        <p class="slds-text-body_regular">Try clearing the filters or contact your administrator to add templates.</p>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Result Count -->
+            <template if:true={hasResults}>
+                <p class="slds-text-body_small slds-m-bottom_small">
+                    {templates.length} template(s) found
+                </p>
+            </template>
+
+            <!-- Template Card Grid -->
+            <template if:true={hasResults}>
+                <div class="slds-grid slds-gutters slds-wrap">
+                    <template for:each={templates} for:item="tmpl">
+                        <div key={tmpl.DeveloperName} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3 slds-m-bottom_small">
+                            <lightning-card>
+                                <div class="slds-p-around_medium">
+                                    <!-- Header Row -->
+                                    <div class="slds-grid slds-gutters slds-wrap slds-m-bottom_x-small">
+                                        <div class="slds-col slds-size_1-of-1">
+                                            <h3 class="slds-text-heading_small slds-truncate" title={tmpl.Template_Name__c}>
+                                                {tmpl.Template_Name__c}
+                                            </h3>
+                                        </div>
+                                    </div>
+
+                                    <!-- Badges -->
+                                    <div class="slds-m-bottom_x-small">
+                                        <lightning-badge label={tmpl.Review_Type__c} class="slds-m-right_xx-small"></lightning-badge>
+                                        <template if:true={tmpl.Agency__c}>
+                                            <lightning-badge label={tmpl.Agency__c}></lightning-badge>
+                                        </template>
+                                    </div>
+
+                                    <!-- Sector -->
+                                    <template if:true={tmpl.Sector__c}>
+                                        <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_x-small">{tmpl.Sector__c}</p>
+                                    </template>
+
+                                    <!-- Description -->
+                                    <template if:true={tmpl.Description__c}>
+                                        <p class="slds-text-body_regular slds-m-bottom_medium">{tmpl.Description__c}</p>
+                                    </template>
+
+                                    <!-- Install Button -->
+                                    <lightning-button
+                                        label="Install on Record"
+                                        variant="brand"
+                                        data-apt-name={tmpl.APT_Unique_Name__c}
+                                        onclick={handleInstall}
+                                        disabled={isInstalling}>
+                                    </lightning-button>
+                                </div>
+                            </lightning-card>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- Install Feedback -->
+            <template if:true={installMessage}>
+                <div class={installMessageClass} role="status">
+                    <p>{installMessage}</p>
+                </div>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>

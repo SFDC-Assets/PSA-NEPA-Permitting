@@ -164,18 +164,116 @@
             </value>
         </filters>
         <connector>
-            <targetReference>Assign_Outputs</targetReference>
+            <targetReference>Get_Slack_Config_Tribal</targetReference>
         </connector>
     </recordUpdates>
 
     <!-- ============================================================
-         ELEMENT 5: ASSIGN OUTPUTS
+         ELEMENT 5: GET SLACK CONFIG FOR TRIBAL CHANNEL
+         F-12 — reads NEPA_Slack_Config.Default to get the tribal
+         notification channel. Falls back to default channel if
+         Notify_Tribal_Channel__c is blank.
+         Non-blocking: if Slack package not installed, fault path
+         routes to error logger and flow completes normally.
+    ============================================================ -->
+    <recordLookups>
+        <name>Get_Slack_Config_Tribal</name>
+        <label>Get Tribal Slack Config</label>
+        <locationX>176</locationX>
+        <locationY>539</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_Tribal_Slack_Ready</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value><stringValue>Default</stringValue></value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>NEPA_Slack_Config__mdt</object>
+        <queriedFields>Default_Channel_Id__c</queriedFields>
+        <queriedFields>Notify_Tribal_Channel__c</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+
+    <!-- ============================================================
+         ELEMENT 6: DECISION — TRIBAL SLACK CHANNEL CONFIGURED?
+    ============================================================ -->
+    <decisions>
+        <name>Decision_Tribal_Slack_Ready</name>
+        <label>Tribal Slack Channel Configured?</label>
+        <locationX>176</locationX>
+        <locationY>647</locationY>
+        <defaultConnector>
+            <targetReference>Assign_Outputs</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Slack config — proceed to outputs</defaultConnectorLabel>
+        <rules>
+            <name>Tribal_Channel_Ready</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Slack_Config_Tribal</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>formula_TribalChannelId</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue><stringValue>PLACEHOLDER_TRIBAL_CHANNEL_ID</stringValue></rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>formula_TribalChannelId</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue><stringValue>PLACEHOLDER_CHANNEL_ID</stringValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_Tribal_Slack_Alert</targetReference>
+            </connector>
+            <label>Tribal channel ready</label>
+        </rules>
+    </decisions>
+
+    <!-- ============================================================
+         ELEMENT 7: SEND TRIBAL CONSULTATION SLACK ALERT
+         Requires Salesforce for Slack managed package.
+    ============================================================ -->
+    <actionCalls>
+        <name>Send_Tribal_Slack_Alert</name>
+        <label>Send Tribal Consultation Alert</label>
+        <locationX>176</locationX>
+        <locationY>755</locationY>
+        <actionName>slack__SendMessage</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Assign_Outputs</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <inputParameters>
+            <name>channelId</name>
+            <value>
+                <elementReference>formula_TribalChannelId</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>message</name>
+            <value>
+                <elementReference>formula_TribalSlackMessage</elementReference>
+            </value>
+        </inputParameters>
+    </actionCalls>
+
+    <!-- ============================================================
+         ELEMENT 9: ASSIGN OUTPUTS
     ============================================================ -->
     <assignments>
         <name>Assign_Outputs</name>
         <label>Set Output Variables</label>
         <locationX>176</locationX>
-        <locationY>539</locationY>
+        <locationY>863</locationY>
         <assignmentItems>
             <assignToReference>out_Routed</assignToReference>
             <operator>Assign</operator>
@@ -263,6 +361,19 @@
         <name>formula_EJRationale</name>
         <dataType>String</dataType>
         <expression>"EJ/Tribal gate triggered — AI classification bypassed. Triggers: " &amp; IF(ISBLANK({!inp_EJTriggers}), "(none specified)", {!inp_EJTriggers})</expression>
+    </formulas>
+
+    <!-- F-12 Slack formulas -->
+    <formulas>
+        <name>formula_TribalChannelId</name>
+        <dataType>String</dataType>
+        <expression>IF(NOT(ISBLANK({!Get_Slack_Config_Tribal.Notify_Tribal_Channel__c})), {!Get_Slack_Config_Tribal.Notify_Tribal_Channel__c}, IF(NOT(ISBLANK({!Get_Slack_Config_Tribal.Default_Channel_Id__c})), {!Get_Slack_Config_Tribal.Default_Channel_Id__c}, ""))</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_TribalSlackMessage</name>
+        <dataType>String</dataType>
+        <expression>":red_circle: *Tribal Consultation Required* — Comment " &amp; {!inp_CommentId} &amp; " flagged for tribal sovereignty review. AI classification bypassed per OMB M-24-10 / EO 12898." &amp; IF(ISBLANK({!inp_EJTriggers}), "", " Triggers: " &amp; {!inp_EJTriggers})</expression>
     </formulas>
 
     <!-- ============================================================
