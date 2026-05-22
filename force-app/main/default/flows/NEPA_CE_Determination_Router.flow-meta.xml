@@ -358,12 +358,9 @@
         <object>IndividualApplication</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
-        <scheduledPaths>
-            <connector>
-                <targetReference>Assign_ScreeningValues</targetReference>
-            </connector>
-            <pathType>AsyncAfterCommit</pathType>
-        </scheduledPaths>
+        <connector>
+            <targetReference>Assign_ScreeningValues</targetReference>
+        </connector>
         <filterLogic>or</filterLogic>
         <filters>
             <field>nepa_screening_confidence__c</field>

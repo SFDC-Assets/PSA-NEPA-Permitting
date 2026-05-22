@@ -733,15 +733,9 @@
                 <booleanValue>true</booleanValue>
             </value>
         </filters>
-        <!-- AsyncAfterCommit prevents 2 SOQL + 3 DML per record from exhausting
-             the 150 DML limit when 51+ ApplicationTimeline records complete in
-             one bulk transaction. Each async run gets its own governor context. -->
-        <scheduledPaths>
-            <connector>
-                <targetReference>Decision_HasParentProcess</targetReference>
-            </connector>
-            <pathType>AsyncAfterCommit</pathType>
-        </scheduledPaths>
+        <connector>
+            <targetReference>Decision_HasParentProcess</targetReference>
+        </connector>
     </start>
 
     <!-- ============================================================

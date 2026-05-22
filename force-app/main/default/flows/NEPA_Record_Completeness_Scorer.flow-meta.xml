@@ -490,12 +490,9 @@
         <object>ContentVersion</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
-        <scheduledPaths>
-            <connector>
-                <targetReference>Decision_HasRelatedProcess</targetReference>
-            </connector>
-            <pathType>AsyncAfterCommit</pathType>
-        </scheduledPaths>
+        <connector>
+            <targetReference>Decision_HasRelatedProcess</targetReference>
+        </connector>
         <filterLogic>and</filterLogic>
         <filters>
             <field>RecordType.DeveloperName</field>

@@ -61,7 +61,7 @@ private class NepaRecordCompletenessScorerTest {
         ApplicationTimeline at = insertCaseEvent(ia.Id);
 
         Test.startTest();
-        insertPermitDocCV(ia.Id, at.Id, rtId, 'EA', 'Draft');
+        insertPermitDocCV(ia.Id, at.Id, rtId, 'Environmental Assessment', 'Draft');
         Test.stopTest();
 
         IndividualApplication result = [
@@ -91,7 +91,7 @@ private class NepaRecordCompletenessScorerTest {
         cv.VersionData            = Blob.valueOf('test content');
         cv.FirstPublishLocationId = ia.Id;
         cv.nepa_process__c        = ia.Id;
-        cv.nepa_document_type__c  = 'EA';
+        cv.nepa_document_type__c  = 'Environmental Assessment';
         cv.nepa_status__c         = 'Draft';
         cv.nepa_publish_date__c   = Date.today();
         cv.nepa_public_access__c  = true;

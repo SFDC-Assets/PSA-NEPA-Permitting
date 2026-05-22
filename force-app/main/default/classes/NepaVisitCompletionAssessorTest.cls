@@ -9,9 +9,9 @@ private class NepaVisitCompletionAssessorTest {
     @TestSetup
     static void makeData() {
         NepaTestFactory.insertProgram('VCA-PROG-001', 'Visit Completion Assessor Test Project', 'BLM');
-        Schema.Location loc = new Schema.Location();
-        loc.Name = 'VCA-Test-Location';
-        loc.IsInventoryLocation = false;
+        SObject loc = Schema.getGlobalDescribe().get('Location').newSObject();
+        loc.put('Name', 'VCA-Test-Location');
+        loc.put('IsInventoryLocation', false);
         insert loc;
     }
 
@@ -22,7 +22,10 @@ private class NepaVisitCompletionAssessorTest {
     }
 
     private static Id getLocationId() {
-        return [SELECT Id FROM Schema.Location WHERE Name = 'VCA-Test-Location' LIMIT 1].Id;
+        List<SObject> locs = Database.query(
+            'SELECT Id FROM Location WHERE Name = \'VCA-Test-Location\' LIMIT 1'
+        );
+        return locs[0].Id;
     }
 
     private static IndividualApplication insertIA() {
