@@ -1210,4 +1210,28 @@ else
     echo "       See: DEVELOPER_GUIDE.md § Step 13"
     echo ""
     echo "    Full post-deploy checklist with exact commands: DEVELOPER_GUIDE.md § Post-Deploy Checklist"
+    echo ""
+    # ── demo data prompt ──────────────────────────────────────────────────────
+    # Skip prompt when stdin is not a terminal (CI, piped input, etc.)
+    if [[ -t 0 ]]; then
+        echo "────────────────────────────────────────────────────────────────────────────"
+        echo "  DEMO DATA — Carrie Placer Mine (IDI-38709)"
+        echo "  Loads a realistic full-lifecycle NEPA EA record: BLM Idaho, Salmon Field Office,"
+        echo "  30+ case events, 7 specialist team, GIS proximity layers, litigation case,"
+        echo "  risk score, required permits, inspection visits, and administrative record."
+        echo "────────────────────────────────────────────────────────────────────────────"
+        read -r -p "==> Load Carrie Placer Mine demo data into $TARGET_ORG? [y/N] " LOAD_DEMO
+        echo ""
+        if [[ "$LOAD_DEMO" =~ ^[Yy]$ ]]; then
+            if [[ -f "scripts/load-demo-data.sh" ]]; then
+                bash scripts/load-demo-data.sh "$TARGET_ORG"
+            else
+                echo "    ERROR: scripts/load-demo-data.sh not found." >&2
+                echo "    Run manually: bash scripts/load-demo-data.sh $TARGET_ORG" >&2
+            fi
+        else
+            echo "    Skipping demo data. To load later:"
+            echo "      bash scripts/load-demo-data.sh $TARGET_ORG"
+        fi
+    fi
 fi

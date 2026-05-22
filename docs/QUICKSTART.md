@@ -165,6 +165,14 @@ The script deploys in dependency order:
 
 Expected automated deploy time: 10–15 minutes. Add ~10 minutes for manual post-deploy steps (flow activation, field type conversion, record type setup) documented in DEVELOPER_GUIDE.md Post-Deploy Checklist. BRE row loading and activation are handled automatically during deploy. **Total end-to-end: ~25 minutes.**
 
+After the deploy completes, the script prompts you to load the Carrie Placer Mine demo data:
+
+```
+==> Load Carrie Placer Mine demo data into NEPADEV? [y/N]
+```
+
+Answer **y** to load a full-lifecycle NEPA EA demonstration record automatically, or **N** to skip (you can run `bash scripts/load-demo-data.sh NEPADEV` at any time). See [Step 5b — Load Carrie Placer Mine Demo Data](#step-5b--load-carrie-placer-mine-demo-data) for details.
+
 ### Option B — Single-shot manifest deploy (re-deploy to existing org)
 
 If the target org already has the base schema deployed and you need to push updates:
@@ -693,6 +701,55 @@ System.debug('EIS Process: ' + eisProcess.Id);
 System.debug('EA Process:  ' + eaProcess.Id);
 System.debug('CE Process:  ' + ceProcess.Id);
 ```
+
+---
+
+## Step 5b — Load Carrie Placer Mine Demo Data
+
+> **Optional — recommended for demos and evaluation.** The deploy script prompts for this automatically. Run manually at any time.
+
+```bash
+bash scripts/load-demo-data.sh NEPADEV
+```
+
+This loads a realistic full-lifecycle NEPA EA record based on a real BLM Idaho permit process:
+
+| What gets loaded | Detail |
+|---|---|
+| Program (Project) | Carrie Placer Mine — `DOI-BLM-ID-B030-2019-0014-EA`, BLM Salmon Field Office, 9th Circuit |
+| IndividualApplication (Process) | EA record `IDI-38709` with litigation risk score, required permits, stage history |
+| 7 specialist ServiceResources | Hydrologist, Wildlife Biologist, Botanist, Geologist, Cultural Resources, GIS Analyst, Project Manager |
+| 30+ ApplicationTimeline events | Case events, milestones, OFD coordination tracks |
+| ContentVersions | EA document, biological assessment, cultural survey — linked to the IA |
+| PublicComments | Comment set including EJ/tribal concerns (tests `NEPA_EJTribal_Router`) |
+| nepa_litigation__c | 9th Circuit challenge record linked to the process |
+| nepa_decision_payload__c | Draft ROD payload |
+| nepa_ar_export__c | Administrative record export |
+| GIS proximity layers | `nepa_detected_protection_layer__c` records for NHD, PAD, and species habitat |
+| Required permits | Triggered automatically by `NEPA_Permit_Record_Creator` flow during Apex load |
+
+**Load time:** ~3–5 minutes.
+
+**Verify after load:**
+
+```bash
+sf data query --query "SELECT Id, Name, nepa_risk_score__c, nepa_risk_tier__c FROM IndividualApplication WHERE nepa_federal_unique_id__c = 'IDI-38709'" --target-org NEPADEV
+sf data query --query "SELECT COUNT() FROM nepa_required_permit__c WHERE nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org NEPADEV
+```
+
+Expected: 1 IA record with `nepa_risk_score__c > 0`, and 6+ required permits.
+
+**Clean up demo data:**
+
+```bash
+# Run in reverse-dependency order
+sf data delete bulk --sobject Task --where "External_ID__c LIKE 'DEMO_TASK_%'" --target-org NEPADEV --async
+sf data delete bulk --sobject IndividualApplication --where "nepa_federal_unique_id__c = 'IDI-38709'" --target-org NEPADEV --async
+sf data delete bulk --sobject Program --where "nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'" --target-org NEPADEV --async
+sf data delete bulk --sobject Account --where "External_ID__c LIKE 'DEMO_ACCT_%'" --target-org NEPADEV --async
+```
+
+See `scripts/load-demo-data.sh` for the full cleanup command set.
 
 ---
 

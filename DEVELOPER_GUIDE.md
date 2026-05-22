@@ -9,7 +9,9 @@ This guide covers build tasks and the demo validation sprint, in priority order.
 
 ## Post-Deploy Checklist (Required After Every Deployment to a New Org)
 
-Run `deploy.sh` first. It handles metadata, BRE row loading, OmniStudio deployment, agent publishing, LWC, and FlexiPages automatically. The steps below are what `deploy.sh` **cannot** automate — they require UI clicks, org-side configuration, or credentials that are not stored in source control.
+Run `deploy.sh` first. It handles metadata, BRE row loading, OmniStudio deployment, agent publishing, LWC, and FlexiPages automatically. At completion it prompts whether to load the Carrie Placer Mine demo data — answer **y** to load it automatically, or run `bash scripts/load-demo-data.sh <alias>` at any time.
+
+The steps below are what `deploy.sh` **cannot** automate — they require UI clicks, org-side configuration, or credentials that are not stored in source control.
 
 **Total time: ~15 minutes automated + ~20 minutes manual = ~35 minutes end-to-end for a full fresh-org deploy.**
 
@@ -599,6 +601,30 @@ sf apex run test \
 ```
 
 A passing test suite with ≥ 75% coverage is the single best signal that the full stack — fields, flows, Apex, permission set, and data — is wired together correctly in the org.
+
+#### 14. Demo Data (Optional — Recommended for Evaluation)
+
+`deploy.sh` prompts at completion. To load manually:
+
+```bash
+bash scripts/load-demo-data.sh <alias>
+```
+
+Verify anchor record exists and risk scoring fired:
+
+```bash
+sf data query \
+  --query "SELECT Id, Name, nepa_risk_score__c, nepa_risk_tier__c FROM IndividualApplication WHERE nepa_federal_unique_id__c = 'IDI-38709'" \
+  --target-org <alias>
+# Expected: 1 row, nepa_risk_score__c > 0
+
+sf data query \
+  --query "SELECT COUNT() FROM nepa_required_permit__c WHERE nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" \
+  --target-org <alias>
+# Expected: ≥ 6 permit records
+```
+
+If `nepa_required_permit__c` count is 0: `NEPA_Permit_Record_Creator` flow did not fire or the `RegulatoryAuthorizationType` seed is missing. Re-run seed: `sf data import tree --files data/seed/regulatory_authorization_type_seed.json --target-org <alias>` then re-run the Apex post-load step manually (`sf apex run --file demo/import_data/18_postload_polymorphic.apex --target-org <alias>`).
 
 ---
 
