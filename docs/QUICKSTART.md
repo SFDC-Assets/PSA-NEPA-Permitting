@@ -28,7 +28,7 @@ The deploy script automates nearly everything. The following steps still require
 |---|---|---|
 | **Scheduled flow configuration** | Open `NEPA_SLA_Escalation_Monitor` in Flow Builder, set schedule to Daily 7 AM, activate | After Step 4c (Flow activation) |
 | **CE Library data load** | Run `python3 scripts/load_ce_library.py --org NEPADEV` to populate 314 CE reference records | After Step 3 (deploy), see Step 4e |
-| **Lightning Record Page assignment** | In Setup → Lightning App Builder, assign **9** custom pages as Org Default (IndividualApplication, Program, PublicComplaint, Engagement, Litigation, CE Library, Decision Payload, Decision Log, Visit) | After Step 3 (deploy), see Step 4d |
+| **Lightning Record Page assignment** | In Setup → Lightning App Builder, assign **9** pages as Org Default (IndividualApplication, Program, PublicComplaint, Engagement, Litigation, CE Library, Decision Payload, Decision Log, Visit). The remaining 10 pages (GIS Data, Detected Protection Layer, Required Permit, AR Export, Process Team Member, Decision Log, Visit, RegulatoryCode, Litigation, Permitting Home) auto-apply via object assignment. | After Step 3 (deploy), see Step 4d |
 | **Agency Named Credential URLs** | In Setup → Security → Named Credentials, update the 3 agency credentials (`NEPA_Agency_USACE`, `NEPA_Agency_USFWS`, `NEPA_Agency_BLM`) from placeholder hostnames to real agency NEPA API URLs | After Step 3 (deploy), see DEVELOPER_GUIDE.md Task 6 |
 | **ArcGIS API key + CSP** | Set `NEPA_Map_Config__mdt.ApiKey` to your ESRI key; add 2 CSP Trusted Sites for `js.arcgis.com` | After Step 3 (deploy), see Step 4h |
 | **NAICS code data load** | 2,129 `NEPA_NAICS_Code__mdt` records loaded via Apex anonymous — verify with count query | After Step 3 (deploy), see Step 4i |
@@ -140,22 +140,25 @@ The script deploys in dependency order:
 
 | Phase | Contents |
 |---|---|
-| 1 | Custom object schemas and custom metadata type schemas (`nepa_ce_library__c`, `nepa_decision_payload__c`, `nepa_decision_log__c`, `nepa_decision_element__c`, `NEPA_Process_Model__mdt`, `NEPA_Map_Config__mdt`, `NEPA_NAICS_Code__mdt` included) |
-| 2 | Custom fields on Program, IndividualApplication, ContentVersion, PublicComplaint, ApplicationTimeline |
+| 1 | All 49 custom object and CMT type schemas — every `__c`, `__mdt`, and `__e` object in source, including `nepa_required_permit__c`, `nepa_gis_data_element__c`, `NEPA_Permit_Matrix__mdt`, `NEPA_SLA_Config__mdt`, `NEPA_Template_Catalog__mdt`, `NEPA_Slack_Config__mdt`, and all others. Must be complete before Phase 2 adds fields and Phase 5 loads CMT records. |
+| 2 | Custom fields on all objects (Program, IndividualApplication, ContentVersion, PublicComplaint, ApplicationTimeline, and all custom objects) |
 | 3 | Custom labels |
-| 4 | NEPA_Permitting permission set |
-| 5 | Custom metadata seed records (CE rules, risk weights, SLA configs, permit matrix, required docs, `NEPA_Process_Model__mdt` process type definitions, `NEPA_Map_Config__mdt` map defaults) |
+| 3b | Custom tabs (deployed before Phase 4b because the permission set references tab names at deploy time) |
+| 5 | Custom metadata seed records (CE rules, risk weights, SLA configs, permit matrix, required docs, `NEPA_Process_Model__mdt` process type definitions, `NEPA_Map_Config__mdt` map defaults, `NEPA_Template_Catalog__mdt` 46 APT entries) |
 | 5b | BRE Decision Matrix definitions (schema deploy) |
 | 5b-data | BRE Decision Matrix rows loaded + versions activated via Tooling API (automated) |
 | 5c | BRE Expression Set definitions |
 | 5c-activate | BRE Expression Set versions activated via Tooling API (automated) |
+| 5d | Regulatory seed data: 49 `RegulatoryAuthorizationType` records + 24 `RegulatoryCode` records |
 | 6 | Remote site settings and named credentials |
-| 7 | Apex classes (with RunLocalTests) |
+| 7 | Apex classes (no tests yet — tests run in Phase 8d after flows are live) |
 | 7b | Visualforce pages (`NEPA_Site_Location_Page` — ArcGIS map iframe for site location picker) |
-| 8 | Flows (deployed individually with retry) |
+| 4b | `NEPA_Permitting` permission set (after Apex so Apex class references resolve) |
+| 8 | 48 flows deployed individually with retry; ordered by subflow dependency tier |
 | 8b | Action Plan Templates |
-| 8c | OmniStudio DataRaptors and Integration Procedures |
-| 9–16 | Tabs, report types, reports, dashboards, layouts, LWC (incl. `nepaIndustryCodePickerOmni`, `nepaSiteLocationPickerOmni`), FlexiPages, Lightning app |
+| 8c | OmniStudio DataRaptors, Integration Procedures, OmniScripts |
+| 8d | `RunLocalTests` (all Apex tests, after flows and permission set are live) |
+| 10–16 | Report types, reports, dashboards, layouts, LWC, FlexiPages (19 record and home pages), Lightning app |
 
 Expected automated deploy time: 10–15 minutes. Add ~10 minutes for manual post-deploy steps (flow activation, field type conversion, record type setup) documented in DEVELOPER_GUIDE.md Post-Deploy Checklist. BRE row loading and activation are handled automatically during deploy. **Total end-to-end: ~25 minutes.**
 
@@ -299,11 +302,11 @@ Go to **Setup → Flows** in your org and activate in this order:
 - `NEPA_EIS_Section_Assembler` — requires **Einstein Generative AI** to be provisioned in the org (uses `generateText` action). Skipped by `deploy.sh` if Einstein AI is not available. Deploy manually once enabled: `sf project deploy start --metadata "Flow:NEPA_EIS_Section_Assembler" --target-org NEPADEV --test-level NoTestRun --wait 30`. Once deployed, `NEPA_EIS_Section_Draft_Trigger` can also be activated.
 - `NEPA_Work_Order_Generator` — stub; flow file not yet implemented.
 
-**Verify activation:** In Setup → Flows, filter by Status = Active. You should see 35 active flows. If a flow fails to activate, the error appears inline in the Flows list — the most common cause is activating an after-save flow before its subflow dependencies (items 1–4 in the activation list) are already active.
+**Verify activation:** In Setup → Flows, filter by Status = Active. You should see 48 active flows (45 core + `NEPA_BiOp_Reinitiation_Checker`, `NEPA_Permit_Issued_Schedule_Creator`, `NEPA_PostDecision_Monitor_Scheduler`). Excludes the 2 EIS flows (require Einstein AI) and 2 Slack flows (require managed package). If a flow fails to activate, the error appears inline in the Flows list — the most common cause is activating an after-save flow before its subflow dependencies (items 1–4 in the activation list) are already active.
 
 ### 4d. Assign Lightning Record Pages
 
-The deployment includes custom Lightning Record Pages for all 6 CEQ entities. Assign them as org defaults:
+Phase 15 deploys **19 custom Lightning Record Pages**. Nine of these serve the 6 CEQ entities and must be manually assigned as org defaults — the rest auto-apply to their object by the platform after deploy.
 
 1. Go to **Setup → Lightning App Builder**.
 2. Open each of the following pages and click **Activation → Assign as Org Default**:
@@ -316,6 +319,8 @@ The deployment includes custom Lightning Record Pages for all 6 CEQ entities. As
    - `NEPA Decision Payload Record Page`
    - `NEPA Decision Log Record Page`
    - `NEPA Visit Record Page`
+
+The remaining 10 pages (`NEPA_GIS_Data_Record_Page`, `NEPA_GIS_Data_Element_Record_Page`, `NEPA_Detected_Protection_Layer_Record_Page`, `NEPA_Required_Permit_Record_Page`, `NEPA_AR_Export_Record_Page`, `NEPA_Process_Team_Member_Record_Page`, `nepa_litigation__c_Record_Page`, `RegulatoryCode_Record_Page`, `ApplicationTimeline_Record_Page`, `NEPA_Permitting_Home`) are assigned automatically to their object at deploy time and do not require manual activation.
 
 ### 4e. Load CE Library Reference Data
 

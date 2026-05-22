@@ -247,12 +247,7 @@ Expected chain:
 
 ### Step 11 — FPISC / FAST-41 Export Setup (~1 min)
 
-The `nepaFpiscExportButton` LWC must be added to the Program and/or IndividualApplication record pages manually via Lightning App Builder:
-
-```bash
-sf org open --target-org <alias> --path /lightning/setup/AppBuilder/home
-# → Edit Program_Record_Page → add nepaFpiscExportButton component to a column
-```
+`nepaFpiscExportButton` is deployed automatically to the `IndividualApplication_Record_Page` flexipage in Phase 15 — no Lightning App Builder step required. After deploy, open any IndividualApplication record and look for the FPISC Export button in the page body.
 
 For the OFD Variance Alert scheduled flow to fire, at least one IndividualApplication must have:
 - `nepa_fast41_covered__c = true`
