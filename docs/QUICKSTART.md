@@ -732,7 +732,7 @@ sf apex run test \
 ```
 
 **Expected results:**
-- All 527+ tests pass across 38 test classes
+- All 615+ tests pass across 63 test classes
 - Overall Apex code coverage ≥ 75%
 - Zero failures
 
