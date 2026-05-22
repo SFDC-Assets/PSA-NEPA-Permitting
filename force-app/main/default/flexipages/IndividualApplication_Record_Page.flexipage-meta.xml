@@ -329,6 +329,56 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
+                <fieldItem>Record.nepa_air_nonattainment_flag__c</fieldItem>
+                <identifier>ia_ce_air_nonattainment_flag</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_blm_acec_flag__c</fieldItem>
+                <identifier>ia_ce_blm_acec_flag</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_fema_flood_flag__c</fieldItem>
+                <identifier>ia_ce_fema_flood_flag</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_fuds_flag__c</fieldItem>
+                <identifier>ia_ce_fuds_flag</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_wild_scenic_river_flag__c</fieldItem>
+                <identifier>ia_ce_wild_scenic_river_flag</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
                 <fieldItem>Record.nepa_screener_last_run__c</fieldItem>
                 <identifier>ia_ce_screener_last_run</identifier>
             </fieldInstance>
@@ -417,6 +467,36 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_ce_rationale_supplemental__c</fieldItem>
                 <identifier>ia_ce_rationale_supplemental</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_fast41_covered__c</fieldItem>
+                <identifier>ia_ce_fast41_covered</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_surveys_complete__c</fieldItem>
+                <identifier>ia_ce_surveys_complete</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_ofd_target_days__c</fieldItem>
+                <identifier>ia_ce_ofd_target_days</identifier>
             </fieldInstance>
         </itemInstances>
         <name>ia-ce-c2</name>
