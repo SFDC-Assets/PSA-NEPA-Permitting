@@ -30,6 +30,10 @@
                 <behavior>Edit</behavior>
                 <field>nepa_hard_gate__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>nepa_gate_status_visual__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>

@@ -9,4 +9,16 @@
     </nameField>
     <deploymentStatus>Deployed</deploymentStatus>
     <sharingModel>ControlledByParent</sharingModel>
+    <compactLayoutAssignment>NEPA_Permit_Compact</compactLayoutAssignment>
+    <enableHistory>true</enableHistory>
+    <enableActivities>true</enableActivities>
+    <searchLayouts>
+        <lookupDialogsAdditionalFields>nepa_permit_type__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>nepa_permit_status__c</lookupDialogsAdditionalFields>
+        <lookupDialogsAdditionalFields>nepa_lead_agency__c</lookupDialogsAdditionalFields>
+        <searchResultsAdditionalFields>nepa_permit_type__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>nepa_permit_status__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>nepa_lead_agency__c</searchResultsAdditionalFields>
+        <searchResultsAdditionalFields>nepa_sla_due_date__c</searchResultsAdditionalFields>
+    </searchLayouts>
 </CustomObject>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All_NEPA_Processes</fullName>
+    <filterScope>Everything</filterScope>
+    <label>All NEPA Processes</label>
+    <columns>Name</columns>
+    <columns>nepa_review_type__c</columns>
+    <columns>nepa_process_status__c</columns>
+    <columns>nepa_risk_tier_visual__c</columns>
+    <columns>nepa_scoping_overrun_visual__c</columns>
+    <columns>nepa_process_stage__c</columns>
+    <columns>nepa_agency_id__c</columns>
+    <columns>nepa_start_date__c</columns>
+</ListView>

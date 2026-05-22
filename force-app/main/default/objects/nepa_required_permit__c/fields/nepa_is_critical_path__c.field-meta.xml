@@ -6,6 +6,6 @@
     <defaultValue>false</defaultValue>
     <label>Critical Path Permit</label>
     <required>false</required>
-    <trackHistory>false</trackHistory>
+    <trackHistory>true</trackHistory>
     <type>Checkbox</type>
 </CustomField>

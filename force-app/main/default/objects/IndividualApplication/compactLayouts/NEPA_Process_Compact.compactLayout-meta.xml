@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>NEPA_Process_Compact</fullName>
+    <label>NEPA Process Compact</label>
+    <fields>nepa_review_type__c</fields>
+    <fields>nepa_process_status__c</fields>
+    <fields>nepa_risk_tier__c</fields>
+    <fields>nepa_process_stage__c</fields>
+    <fields>nepa_agency_id__c</fields>
+    <fields>nepa_start_date__c</fields>
+</CompactLayout>

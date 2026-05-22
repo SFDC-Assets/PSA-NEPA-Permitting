@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_scoping_overrun_visual__c</fullName>
+    <description>Formula image field. When nepa_scoping_overrun_flag__c is TRUE, renders a red warning flag alongside the overrun duration in months. Green flag when on track. Surfaces the scoping bottleneck alert visually in the Timeline Risk section before the coordinator reads the numeric field. Driven by NEPA_Timeline_Risk_Assessor logic against NEPA_Agency_Scoping_Baseline__mdt.</description>
+    <externalId>false</externalId>
+    <formula>IF(nepa_scoping_overrun_flag__c,
+  IMAGE("/img/samples/flag_red.gif", "Scoping Overrun — " &amp; TEXT(ROUND(nepa_projected_scoping_overrun_months__c, 1)) &amp; " mo over agency cap", 16, 16) &amp;
+  " +" &amp; TEXT(ROUND(nepa_projected_scoping_overrun_months__c, 1)) &amp; " mo over cap",
+  IMAGE("/img/samples/flag_green.gif", "Scoping On Track", 16, 16) &amp; " On Track"
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Red flag = scoping has exceeded the agency-specific baseline cap. Green flag = on track. Overrun duration in months shown inline.</inlineHelpText>
+    <label>Scoping Overrun Alert</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+</CustomField>

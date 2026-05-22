@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>NEPA_Permit_Compact</fullName>
+    <label>Required Permit Compact</label>
+    <fields>nepa_permit_type__c</fields>
+    <fields>nepa_permit_status__c</fields>
+    <fields>nepa_is_critical_path__c</fields>
+    <fields>nepa_lead_agency__c</fields>
+    <fields>nepa_sla_due_date__c</fields>
+</CompactLayout>

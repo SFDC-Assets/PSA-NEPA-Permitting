@@ -198,6 +198,23 @@ private class NepaStageGateOrchestratorTest {
         completeTimelineEvent(ia.Id, 'Scoping Complete');
         Test.stopTest();
 
+        IndividualApplication iaAfter = [SELECT nepa_process_stage__c, nepa_stage_gate_processed__c FROM IndividualApplication WHERE Id = :ia.Id];
+        System.assert(iaAfter.nepa_process_stage__c == 'Analysis', 'Stage should be Analysis but was: ' + iaAfter.nepa_process_stage__c + ' processed=' + iaAfter.nepa_stage_gate_processed__c);
+
+        // Verify basic Task creation works in this test context
+        Task directTask = new Task();
+        directTask.Subject = 'Direct Test Task';
+        directTask.WhatId = ia.Id;
+        directTask.Status = 'Not Started';
+        directTask.Priority = 'Normal';
+        insert directTask;
+        List<Task> directTasks = [SELECT Subject FROM Task WHERE WhatId = :ia.Id AND Subject = 'Direct Test Task'];
+        System.assert(directTasks.size() == 1, 'Direct Task insert works: ' + directTasks.size());
+
+        List<Task> allTasks = [SELECT Subject, WhatId FROM Task WHERE WhatId = :ia.Id];
+        System.debug('All tasks on IA: ' + allTasks.size());
+        for (Task t : allTasks) System.debug('Task subject: [' + t.Subject + ']');
+
         List<Task> tasks = [
             SELECT Subject, WhatId
             FROM Task
@@ -205,7 +222,7 @@ private class NepaStageGateOrchestratorTest {
             AND Subject = 'Begin Analysis stage'
         ];
         System.assertEquals(1, tasks.size(),
-            'Exactly one "Begin Analysis stage" task must be created after Scoping completes');
+            'Exactly one "Begin Analysis stage" task must be created after Scoping completes; allTasks=' + allTasks.size() + ' subjects=' + allTasks);
         System.assertEquals(ia.Id, tasks[0].WhatId,
             'Task WhatId must reference the parent IndividualApplication');
     }

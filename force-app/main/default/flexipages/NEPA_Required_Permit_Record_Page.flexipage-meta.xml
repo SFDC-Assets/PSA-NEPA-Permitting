@@ -215,6 +215,42 @@
         <type>Facet</type>
     </flexiPageRegions>
 
+    <!-- SECTION: Agency Sync — Column 1 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_sync_status_visual__c</fieldItem>
+                <identifier>rp_sync_status_visual</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_last_synced__c</fieldItem>
+                <identifier>rp_last_synced</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_agency_endpoint_key__c</fieldItem>
+                <identifier>rp_agency_endpoint_key</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>rp-sync-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
     <!-- SECTION: Post-Issuance Inspection Schedule — Column 1 (visible when status = Issued) -->
     <flexiPageRegions>
         <itemInstances>
@@ -362,6 +398,21 @@
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
+                    <name>body</name>
+                    <value>rp-sync-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>rp_sync_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>rp-sync-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
                     <name>columns</name>
                     <value>rp-info-cols</value>
                 </componentInstanceProperties>
@@ -411,6 +462,24 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>rp_section_notes</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>rp-sync-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Agency Sync</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>rp_section_sync</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>

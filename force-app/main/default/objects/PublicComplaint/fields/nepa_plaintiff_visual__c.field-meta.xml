@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_plaintiff_visual__c</fullName>
+    <description>Formula image field. One red flag = prior plaintiff organization (nepa_plaintiff_risk_flag__c). Two red flags = Tribal Nation plaintiff (nepa_tribal_plaintiff_flag__c) — the category with the 87.5% NEPA litigation win rate in PermitTEC v0.1. Blank = no plaintiff signal. Renders in Public Comments list view so the evaluator sees the dual-flag story before the presenter narrates it.</description>
+    <formula>IF(nepa_tribal_plaintiff_flag__c,
+  IMAGE("/img/samples/flag_red.gif", "Tribal Plaintiff — 87.5% Win Rate", 16, 16) &amp;
+  IMAGE("/img/samples/flag_red.gif", "Tribal", 16, 16),
+  IF(nepa_plaintiff_risk_flag__c,
+    IMAGE("/img/samples/flag_red.gif", "Prior Plaintiff Organization", 16, 16),
+    IMAGE("/s.gif", " ", 1, 1)
+  )
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Red flag = prior plaintiff org. Two red flags = Tribal Nation plaintiff (87.5% NEPA win rate, PermitTEC corpus). Blank = no signal.</inlineHelpText>
+    <label>Plaintiff Flag</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+</CustomField>

@@ -16,6 +16,8 @@ Architecture and data-flow reference for the PSA-NEPA permitting accelerator. Co
 8. [Public Comment and Tribal Intelligence Flow](#8-public-comment-and-tribal-intelligence-flow)
 9. [BRE / Decision Engine Layer](#9-bre--decision-engine-layer)
 10. [Deployment Package Map](#10-deployment-package-map)
+11. [Sector × Circuit Litigation Risk Heatmap](#11-sector--circuit-litigation-risk-heatmap)
+12. [Federal Friction Multiplier by Sector](#12-federal-friction-multiplier-by-sector)
 
 ---
 
@@ -530,6 +532,58 @@ flowchart TD
     style Phase4 fill:#f8e8f8,stroke:#9c27b0
     style Phase5 fill:#f8f8e8,stroke:#9e9e9e
 ```
+
+---
+
+## 11. Sector × Circuit Litigation Risk Heatmap
+
+Agency win rates by sector and federal circuit, derived from 761 NEPA litigation cases (PermitTEC v0.1, PNNL). Each cell shows agency win rate % and case count. **Lower agency win rate = higher litigation risk for the project.**
+
+| Sector | 4th Circuit | 5th Circuit | 9th Circuit | 10th Circuit | DC Circuit |
+|---|:---:|:---:|:---:|:---:|:---:|
+| **Agriculture** | — | — | 38% 🔴 n=50 | 42% 🔴 n=12 | — |
+| **Energy** | 29% 🔴 n=7† | — | 35% 🔴 n=40 | 40% 🔴 n=15 | 64% 🟡 n=11 |
+| **Military** | — | — | 60% 🟡 n=10 | — | 72% 🟡 n=25 |
+| **Other** | — | — | 63% 🟡 n=82 | 48% 🟡 n=21 | — |
+| **Public Lands** | 86% 🟢 n=7† | — | 40% 🔴 n=50 | 45% 🟡 n=20 | — |
+| **Transportation** | 75% 🟢 n=8 | 50% 🟡 n=4† | 58% 🟡 n=24 | 63% 🟡 n=16 | 91% 🟢 n=11 |
+| **Water/Coastal** | — | — | 50% 🟡 n=14 | — | — |
+| **Wildlife** | — | — | 64% 🟡 n=14 | — | — |
+
+**Legend:** 🟢 LOW risk (agency win rate ≥ 65%) · 🟡 MODERATE (45–64%) · 🔴 HIGH (< 45%)  
+† Low-n cell (n < 10): directional signal only, not statistically definitive.
+
+**Extreme cells:** Energy/4th Circuit (29%, n=7†) is the highest-risk cell in the corpus. Transportation/DC Circuit (91%, n=11) is the safest.
+
+> **How the accelerator uses this:** At NEPA process intake, `NEPA_Sector_Circuit_Risk__mdt` is queried using `IndividualApplication.nepa_primary_sector__c` × `Program.nepa_circuit__c`. The matched cell contributes to `nepa_risk_score__c` and surfaces the `Risk_Cell_Label__c` on the coordinator's risk dashboard before the first survey is scheduled.
+
+---
+
+## 12. Federal Friction Multiplier by Sector
+
+Federal EIS median review durations (CEQ 1,903 EIS records, 2010–2024) compared against California CEQA EIR medians (Holland & Knight CEQA Time Study 2022, n=312). The gap is driven by multi-agency coordination overhead specific to federal review — not analytical rigor.
+
+```mermaid
+xychart-beta
+    title "Federal EIS vs. California EIR: Median Duration by Sector (months)"
+    x-axis ["Military", "Water/Coastal", "Transportation", "Wildlife", "Energy"]
+    y-axis "Median months" 0 --> 6
+    bar [3.14, 4.11, 4.49, 3.97, 2.61]
+    line [1.90, 2.80, 3.10, 3.40, 2.40]
+```
+
+_Bar = Federal EIS median · Line = CEQA EIR median (reference baseline)_
+
+| Sector | Federal EIS | CEQA EIR | **Friction** | Primary Driver |
+|---|:---:|:---:|:---:|---|
+| Military | 3.14 mo | 1.90 mo | **1.65×** | NHPA §106 multi-installation + DoD coordination |
+| Water/Coastal | 4.11 mo | 2.80 mo | **1.47×** | CZMA consistency + EFH Magnuson-Stevens dual-track |
+| Transportation | 4.49 mo | 3.10 mo | **1.45×** | FHWA/FTA multi-modal + §106 cultural resources |
+| Wildlife | 3.97 mo | 3.40 mo | **1.17×** | ESA §7; CESA closely mirrors federal procedure |
+| Energy | 2.61 mo | 2.40 mo | **1.09×** | Mature FERC/BLM templates offset NEPA overhead |
+| **Sector-weighted avg.** | — | — | **1.45×** | |
+
+> **How the accelerator uses this:** CE intake captures the primary friction drivers as extraordinary circumstances flags: `nepa_ec_multi_dod__c` (Military multi-installation DoD coordination) and `nepa_ec_usace_czma__c` (Water/Coastal CZMA + EFH dual-track). Coordinators see the applicable multiplier before the first field survey is scheduled. Source: `RESEARCH_PAPER.md` §4.3 (Stage 16).
 
 ---
 

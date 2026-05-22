@@ -48,6 +48,9 @@ Load files strictly in number order. Each file's parent records must exist befor
 | 25 | `25_ar_export.csv` | nepa_ar_export__c | 1 | upsert via `nepa_process__r.nepa_federal_unique_id__c` | IndividualApplication (09) — load after step 24 |
 | 26 | `26_backfill_external_ids.apex` | **Apex script** | — | — | Run once against an org that has existing demo data without External_ID__c values. Deduplicates ApplicationTimeline (keeps oldest 25), deletes stale nepa_engagement__c records, backfills External_ID__c on PublicComplaint (2) and nepa_litigation__c (2). Safe to re-run (all DML is conditional on null). After running, re-upsert steps 11–12, 16–17 normally. |
 | 27 | `27_ofd_milestones.apex` | **Apex script** | — | — | Inserts 4 ApplicationTimeline OFD coordination milestone records for IDI-38709: Scoping Notice (NEPA_Lead/Completed), ESA §7 Initiation (Agency_Consultation/In Progress/USFWS), USACE Section 404 Pre-Application Meeting (Permit_Milestone/Scheduled/USACE), Record of Decision (Joint_ROD/Pending). Requires IndividualApplication and USFWS/USACE Account records to exist. Run after step 18. |
+| 28 | `28_required_permits.apex` | **Apex script** | — | — | Inserts 2 `nepa_required_permit__c` records: DEMO_RP_001 (NPDES IDG370000, status=Issued) and DEMO_RP_002 (CWA Section 404, status=Pending). DEMO_RP_001 insert triggers `NEPA_Permit_Issued_Schedule_Creator` async — 4 inspection Visits created with Idaho state risk context in `nepa_trigger_layer__c`. Run after step 18. |
+| 29 | `29_scene7_inspection_visits.apex` | **Apex script** | — | — | Pre-seeds 4 NPDES inspection Visit records as fallback if step-28 async flow did not fire. Detects existing Visits by Subject before inserting — safe to run after flow has executed. Each Visit includes Idaho state risk context in `nepa_state_risk_context__c` (Scene 7-B banner). Run after step 28. |
+| 30 | `30_scene7_biop_reinit.apex` | **Apex script** | — | — | Sets `nepa_reinit_new_species_listing__c = TRUE` on the Critical Habitat auto-generated Visit from step 22 — fires `NEPA_BiOp_Reinitiation_Checker` async. Pre-seeds ESA Coordinator Task and sets `nepa_challenge_risk_delta__c = 12` as fallback. Run after step 29. |
 
 ---
 
@@ -131,6 +134,18 @@ Program (08)  [also]
   └── nepa_gis_data__c.nepa_parent_project__c (20) — 1 GIS container (CEQ Entity 7)
         [also nepa_gis_data__c.nepa_parent_process__c → IndividualApplication (09)]
 
+IndividualApplication (09)  [also — permits and Scene 7 from steps 28–30]
+  ├── nepa_required_permit__c.nepa_process__c (28) — 2 records
+  │     ├── DEMO_RP_001: CWA Section 402 NPDES / Issued  → triggers NEPA_Permit_Issued_Schedule_Creator
+  │     └── DEMO_RP_002: CWA Section 404 / Pending
+  └── Visit (nepa_auto_generated__c = true, nepa_discipline__c = 'Environmental Compliance') × 4 (28/29)
+        ├── NPDES Quarterly Discharge Monitoring Report Review  (High, +90 days)
+        ├── NPDES Stormwater Compliance Inspection              (High, +180 days)
+        ├── Reclamation Progress Inspection                     (Medium, +365 days)
+        └── Wetland Buffer Compliance Inspection                (High, +120 days)
+            Each Visit.nepa_trigger_layer__c = Idaho Field_Inspector_Warning__c
+            Each Visit.nepa_state_risk_context__c = full Idaho risk briefing text
+
 IndividualApplication (09)  [also — GIS auto-assembly from step 22]
   ├── nepa_process_team_member__c (nepa_assembly_source__c = 'GIS_Auto_Assembly') × 3
   │     ├── Hydrologist            ← triggered by NWI_Wetlands layer
@@ -172,6 +187,10 @@ IndividualApplication (09)  [also — GIS auto-assembly from step 22]
 | Decision payload shows FONSI, Alt B, 3 alternatives, 5 mitigations | `nepa_decision_payload__c` (step 24) |
 | Administrative record package auto-generated at decision — 6 docs, 3 comments, status Completed | `nepa_ar_export__c` (step 25) |
 | OFD Coordination Tracker shows 4 milestones across NEPA_Lead / Agency_Consultation / Permit_Milestone / Joint_ROD tracks | `ApplicationTimeline` OFD records (step 27) |
+| NPDES permit issued → 4 inspection Visit tasks auto-scheduled | `DEMO_RP_001` (step 28); Visit × 4 auto-created by `NEPA_Permit_Issued_Schedule_Creator`; fallback pre-seeded by step 29 |
+| Inspector opens Visit — state risk briefing shows Idaho litigation context | `nepa_state_risk_context__c` and `nepa_trigger_layer__c` on Visit (step 29); banner visible when field is non-blank |
+| Biologist checks BiOp reinitiation trigger → ESA Task + risk delta +12 | `nepa_reinit_new_species_listing__c = TRUE` on Critical Habitat Visit (step 30); Task subject "ESA §7 Reinitiation Required — Review BiOp Compliance"; `nepa_challenge_risk_delta__c = 12` |
+| AR lock at ROD → post-decision monitoring Tasks bulk-created | `nepa_ar_locked__c = TRUE` in CSV (step 09); `NEPA_PostDecision_Monitor_Scheduler` fired by flow-refresh toggle in step 23 |
 
 ---
 
@@ -215,9 +234,39 @@ sf data query --target-org $TARGET \
 
 sf data query --target-org $TARGET \
   --query "SELECT nepa_ofd_track__c, nepa_event_type__c, nepa_status__c, nepa_coordinating_agency__r.Name FROM ApplicationTimeline WHERE nepa_ofd_track__c != null AND nepa_related_process__r.nepa_federal_unique_id__c = 'IDI-38709' ORDER BY nepa_target_date__c"
+
+# Step 28 — required permits
+sf data query --target-org $TARGET \
+  --query "SELECT External_ID__c, nepa_permit_type__c, nepa_permit_status__c, nepa_lead_agency__c FROM nepa_required_permit__c WHERE nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709' ORDER BY External_ID__c"
+
+# Step 29 — inspection Visits with state risk context
+sf data query --target-org $TARGET \
+  --query "SELECT Subject, Status, VisitPriority, nepa_trigger_layer__c, PlannedVisitStartTime FROM Visit WHERE nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709' AND nepa_auto_generated__c = true ORDER BY PlannedVisitStartTime"
+
+# Step 30 — BiOp reinitiation trigger and ESA Task
+sf data query --target-org $TARGET \
+  --query "SELECT nepa_reinit_new_species_listing__c, nepa_discipline__c FROM Visit WHERE nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709' AND nepa_reinit_new_species_listing__c = true"
+
+sf data query --target-org $TARGET \
+  --query "SELECT Subject, Priority, ActivityDate, Status FROM Task WHERE What.nepa_federal_unique_id__c = 'IDI-38709' AND Subject LIKE 'ESA%'"
+
+sf data query --target-org $TARGET \
+  --query "SELECT nepa_challenge_risk_delta__c, nepa_ar_locked__c, nepa_has_active_biop__c, nepa_state_code__c FROM IndividualApplication WHERE nepa_federal_unique_id__c = 'IDI-38709'"
+
+# Step 23 (post-decision Tasks fired by flow refresh)
+sf data query --target-org $TARGET \
+  --query "SELECT Subject, ActivityDate FROM Task WHERE What.nepa_federal_unique_id__c = 'IDI-38709' AND (Subject LIKE '%SWPPP%' OR Subject LIKE '%NPDES DMR%' OR Subject LIKE '%Reclamation%' OR Subject LIKE '%Adaptive Management%' OR Subject LIKE '%BiOp ITS%' OR Subject LIKE '%BiOp RPA%') ORDER BY ActivityDate"
 ```
 
 Expected for step 27 (OFD milestones): 4 rows — NEPA_Lead / Agency_Consultation / Permit_Milestone / Joint_ROD.
+
+Expected for step 28: 2 rows — DEMO_RP_001 (NPDES/Issued) and DEMO_RP_002 (CWA Section 404/Pending).
+
+Expected for step 29: 4+ Visit rows with `nepa_trigger_layer__c` populated with Idaho warning text.
+
+Expected for step 30: 1 Visit with `nepa_reinit_new_species_listing__c = true`; 1 Task with Subject "ESA §7 Reinitiation Required — Review BiOp Compliance"; IA with `nepa_challenge_risk_delta__c = 12`.
+
+Expected for step 23 (post-decision Tasks): 6–10 Task rows from `NEPA_PostDecision_Monitor_Scheduler` covering SWPPP, NPDES DMR, Reclamation, Adaptive Management, BiOp ITS, BiOp RPA (depends on EA review type filter in flow).
 
 ---
 
@@ -271,6 +320,11 @@ sf data delete bulk --sobject ServiceTerritory        --where "External_ID__c LI
 sf data delete bulk --sobject Contact                 --where "External_ID__c LIKE 'DEMO_CON_%'"   --target-org $TARGET --async
 sf data delete bulk --sobject Account                 --where "External_ID__c LIKE 'DEMO_ACCT_%'"  --target-org $TARGET --async
 sf data delete bulk --sobject OperatingHours          --where "External_ID__c LIKE 'DEMO_OH_%'"    --target-org $TARGET --async
+
+# Steps 28–30 cleanup (run before IndividualApplication deletes above)
+sf data delete bulk --sobject nepa_required_permit__c --where "External_ID__c LIKE 'DEMO_RP_%'" --target-org $TARGET --async
+sf data delete bulk --sobject Task --where "Subject = 'ESA §7 Reinitiation Required — Review BiOp Compliance'" --target-org $TARGET --async
+sf data delete bulk --sobject Task --where "Subject LIKE '%Post-Decision%' OR Subject LIKE '%SWPPP%' OR Subject LIKE '%NPDES DMR%' OR Subject LIKE '%Reclamation Progress%' OR Subject LIKE '%Adaptive Management%' OR Subject LIKE '%BiOp%'" --target-org $TARGET --async
 
 # Step 22 cleanup (run before IndividualApplication deletes above)
 sf data delete bulk --sobject Visit --where "nepa_auto_generated__c = true AND nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async

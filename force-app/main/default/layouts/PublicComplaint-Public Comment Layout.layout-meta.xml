@@ -18,6 +18,10 @@
                 <behavior>Edit</behavior>
                 <field>nepa_is_substantive__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>nepa_plaintiff_visual__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
@@ -27,6 +31,14 @@
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>nepa_litigation_threat_flag__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>nepa_plaintiff_risk_flag__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>nepa_tribal_plaintiff_flag__c</field>
             </layoutItems>
         </layoutColumns>
         <style>TwoColumnsTopToBottom</style>

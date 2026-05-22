@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_gate_status_visual__c</fullName>
+    <description>Formula image field. Red flag = nepa_hard_gate__c is TRUE (this Visit is blocking EA/decision advancement). Green flag = not a hard gate (advisory or standard inspection). Renders in the Visit record page and in inspection Visit list views — the inspector and coordinator see the gate constraint as a visual signal before reading any text. Designed for Scene 7-B in the CEQ Permitting Innovators demo (post-permit inspection field survey view).</description>
+    <formula>IF(nepa_hard_gate__c,
+  IMAGE("/img/samples/flag_red.gif",   "Hard Gate — Blocks EA Advancement", 16, 16),
+  IMAGE("/img/samples/flag_green.gif", "No Gate — Standard Inspection", 16, 16)
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Red = Hard gate — this Visit must be completed before the process can advance. Green = Standard inspection, no gate constraint.</inlineHelpText>
+    <label>Gate Status</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+</CustomField>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_risk_tier_visual__c</fullName>
+    <description>Formula image field. Translates nepa_risk_tier__c into a colored flag: red = Very High, orange (using yellow as Salesforce default) = High, green = Low or Moderate, gray = blank/unknown. Renders in IndividualApplication list views so the ambient risk signal reads before the coordinator opens the record. Designed for Scenes 1-D, 3-C, and 4-B list context in the CEQ Permitting Innovators demo.</description>
+    <formula>CASE(nepa_risk_tier__c,
+  "Very High", IMAGE("/img/samples/flag_red.gif",   "Very High — Likely Litigation", 16, 16),
+  "High",      IMAGE("/img/samples/flag_yellow.gif","High Risk", 16, 16),
+  "Moderate",  IMAGE("/img/samples/flag_green.gif", "Moderate Risk", 16, 16),
+  "Low",       IMAGE("/img/samples/flag_green.gif", "Low Risk", 16, 16),
+               IMAGE("/s.gif", "Unknown", 1, 1)
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Red = Very High litigation risk. Yellow = High. Green = Moderate/Low. Blank = unscored. Visible in list views before opening the record.</inlineHelpText>
+    <label>Risk Tier Flag</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+</CustomField>

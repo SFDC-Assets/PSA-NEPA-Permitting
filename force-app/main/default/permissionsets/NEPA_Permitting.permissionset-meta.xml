@@ -515,6 +515,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>IndividualApplication.nepa_defensibility_bar__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>IndividualApplication.nepa_defensibility_score__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -684,6 +689,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_scoping_overrun_visual__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>IndividualApplication.nepa_agency_scoping_baseline_months__c</field>
         <readable>true</readable>
@@ -825,6 +835,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>IndividualApplication.nepa_risk_score_bar__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>IndividualApplication.nepa_risk_score_factors__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -841,6 +856,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>IndividualApplication.nepa_risk_tier__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>IndividualApplication.nepa_risk_tier_visual__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -1315,6 +1335,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>PublicComplaint.nepa_plaintiff_visual__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>PublicComplaint.nepa_tribal_plaintiff_flag__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -1381,6 +1406,11 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>Visit.nepa_trigger_layer__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Visit.nepa_gate_status_visual__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -2534,8 +2564,18 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
+        <editable>false</editable>
+        <field>nepa_required_permit__c.nepa_sync_status_visual__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
         <editable>true</editable>
         <field>nepa_required_permit__c.nepa_permit_status__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>nepa_required_permit__c.nepa_permit_status_visual__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

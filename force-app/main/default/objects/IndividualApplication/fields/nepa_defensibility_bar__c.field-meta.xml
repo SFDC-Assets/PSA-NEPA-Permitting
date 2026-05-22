@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_defensibility_bar__c</fullName>
+    <description>Formula image field. Renders nepa_defensibility_score__c (0–100) as a green/gray progress bar 200px wide. Displayed directly beneath nepa_risk_score_bar__c in the Risk Intelligence panel — a red bar at 85% above a green bar at 91% makes the core v3 story visible in one glance: high-risk project, fully documented mitigation. Designed for Scene 4-B in the CEQ Permitting Innovators demo.</description>
+    <formula>IF(nepa_defensibility_score__c > 0,
+  IMAGE("/img/samples/color_green.gif", TEXT(ROUND(nepa_defensibility_score__c, 0)) &amp; "/100 Defensibility", 14, ROUND(nepa_defensibility_score__c * 2, 0)) &amp;
+  IMAGE("/s.gif", " ", 14, 200 - ROUND(nepa_defensibility_score__c * 2, 0)),
+  IMAGE("/s.gif", "No Score", 14, 200)
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Defensibility Score visualized as a green progress bar (200px wide). Width = score × 2. Score of 91 = 182px green bar.</inlineHelpText>
+    <label>Defensibility Bar</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+</CustomField>

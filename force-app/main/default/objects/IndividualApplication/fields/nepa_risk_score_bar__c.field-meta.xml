@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_risk_score_bar__c</fullName>
+    <description>Formula image field. Renders nepa_risk_score__c (0–100) as a red/gray progress bar 200px wide. Red bar width = score × 2px. Gray fill completes the 200px. A score of 85 (Very High) renders an 85% red bar — visceral proof of litigation exposure that reads in one glance without decoding a number. Designed for Scene 4-B in the CEQ Permitting Innovators demo.</description>
+    <formula>IF(nepa_risk_score__c > 0,
+  IMAGE("/img/samples/color_red.gif", TEXT(ROUND(nepa_risk_score__c, 0)) &amp; "/100 Litigation Risk", 14, ROUND(nepa_risk_score__c * 2, 0)) &amp;
+  IMAGE("/s.gif", " ", 14, 200 - ROUND(nepa_risk_score__c * 2, 0)),
+  IMAGE("/s.gif", "No Score", 14, 200)
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Litigation Probability Score visualized as a red progress bar (200px wide). Width = score × 2. Score of 85 = 170px red bar.</inlineHelpText>
+    <label>Risk Score Bar</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+</CustomField>

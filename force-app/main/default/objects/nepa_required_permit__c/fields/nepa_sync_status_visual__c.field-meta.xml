@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_sync_status_visual__c</fullName>
+    <description>Formula image field. Green flag when nepa_last_synced__c is populated (live agency API data current). Red flag when null (only locally-cached permit status is available). Surfaces the API degradation state visually — coordinator sees amber/stale state without needing to parse a timestamp field. Designed for the nepaPermitDependencies view in the demo.</description>
+    <externalId>false</externalId>
+    <formula>IF(ISBLANK(nepa_last_synced__c),
+  IMAGE("/img/samples/flag_red.gif", "Agency API Unavailable — Cached Status Only", 16, 16) &amp; " Cached Only",
+  IMAGE("/img/samples/flag_green.gif", "Live — Synced " &amp; TEXT(DATEVALUE(nepa_last_synced__c)), 16, 16) &amp; " Live"
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Green = permit status confirmed via live agency API. Red = no live sync; displaying last cached status. Check nepa_last_synced__c for timestamp.</inlineHelpText>
+    <label>Agency Sync Status</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+</CustomField>

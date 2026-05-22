@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Litigation_Risk_Comments</fullName>
+    <filterScope>Everything</filterScope>
+    <label>Litigation Risk Comments</label>
+    <columns>Name</columns>
+    <columns>nepa_category__c</columns>
+    <columns>nepa_plaintiff_visual__c</columns>
+    <columns>nepa_ai_triage_status__c</columns>
+    <columns>nepa_litigation_threat_flag__c</columns>
+    <columns>nepa_is_substantive__c</columns>
+    <columns>nepa_related_process__c</columns>
+    <filters>
+        <field>nepa_litigation_threat_flag__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <booleanFilter>1 OR 2</booleanFilter>
+    <filters>
+        <field>nepa_tribal_plaintiff_flag__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+</ListView>

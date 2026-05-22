@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ListView xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>All</fullName>
+    <fullName>Critical_Path_Overdue</fullName>
     <filterScope>Everything</filterScope>
-    <label>All</label>
+    <label>Critical Path — Overdue</label>
     <columns>Name</columns>
     <columns>nepa_permit_type__c</columns>
     <columns>nepa_permit_status__c</columns>
@@ -11,4 +11,14 @@
     <columns>nepa_lead_agency__c</columns>
     <columns>nepa_sla_due_date__c</columns>
     <columns>nepa_sla_overdue__c</columns>
+    <filters>
+        <field>nepa_is_critical_path__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <filters>
+        <field>nepa_sla_overdue__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
 </ListView>

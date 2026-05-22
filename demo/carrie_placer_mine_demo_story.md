@@ -474,7 +474,7 @@ Here's what the review actually required:
 ### Screen Reference
 
 **Screen 3-A — IndividualApplication: Public Comments Related List**
-*(Show step 1: 3 comments visible; risk tier column shows differentiated scoring)*
+*(Show step 1: 3 comments visible; plaintiff flag column shows visual differentiation before presenter narrates)*
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -483,16 +483,17 @@ Here's what the review actually required:
 ├─────────────────────────────────────────────────────────────────┤
 │  Public Comments (3)                              [New Comment] │
 │  ┌──────────────────────────────────────────────────────────┐   │
-│  │  Organization               │ Risk Tier  │ Date  │ Status │   │
+│  │  Organization               │ 🚩 Flag │ Risk Tier  │ Date │   │
 │  │  ────────────────────────────────────────────────────    │   │
-│  │  Idaho Conservation League  │ HIGH   ◄── │ Jul 22│ Open   │───── plaintiff flag
-│  │  Office of Species Cons.    │ —          │ Jul 25│ Open   │   │  (no flag — note contrast)
-│  │  Shoshone-Paiute Tribes ◄── │ VERY HIGH  │ Jul 28│ Open   │───── dual flag: plaintiff + tribal
+│  │  Idaho Conservation League  │ 🚩      │ HIGH   ◄── │ Jul 22│───── 1 red flag = prior plaintiff
+│  │  Office of Species Cons.    │         │ —          │ Jul 25│   │  (no flag — evaluator notices)
+│  │  Shoshone-Paiute Tribes ◄── │ 🚩🚩    │ VERY HIGH  │ Jul 28│───── 2 red flags = tribal + plaintiff
 │  └──────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
 ```
+*(Formula field `nepa_plaintiff_visual__c`: 1 red flag = prior plaintiff org; 2 red flags = Tribal Nation plaintiff — 87.5% win rate. Renders in the list view column before the presenter says a word.)*
 
-> **▲ Point to:** Risk Tier column. ICL = HIGH, OSC = blank, Shoshone-Paiute = VERY HIGH. Say: *"Three comments. Three different outcomes. The Plaintiff Intelligence module ran on each one."*
+> **▲ Point to:** Flag column first — let the visual land. Then say: *"Three comments. The flags fired before anyone opened a single record. One flag on ICL — prior plaintiff. Two flags on Shoshone-Paiute Tribes — that second flag is the 87.5% win-rate category."*
 
 ---
 
@@ -678,15 +679,21 @@ Here's what the review actually required:
 ---
 
 **Screen 4-B — IndividualApplication: Risk Intelligence Panel (v3 bifurcated score)**
-*(Show steps 2–3: probability score, cost exposure, defensibility score, ESA warning)*
+*(Show steps 2–3: probability score, cost exposure, defensibility score, ESA warning, visual bars)*
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │  IndividualApplication  IA-0000000432  — Risk Intelligence       │
 │  ─────────────────────────────────────────────────────────────  │
-│  Defensibility Score:  91               All gates cleared ◄─── │──── POINT: defensibility
+│  Risk Tier Flag:  🚩  Very High          (nepa_risk_tier_visual__c)│  ◄── FORMULA: red flag in header
 │  ─────────────────────────────────────────────────────────────  │
-│  ── Litigation Probability Score (85/100 · Very High) ───────── │
+│  Litigation Risk Score:   85 / 100                              │
+│  ██████████████████████████████████████░░░░░░░░  85%  ◄──────── │──── nepa_risk_score_bar__c: red bar
+│  ─────────────────────────────────────────────────────────────  │
+│  Defensibility Score:     91 / 100    All gates cleared         │
+│  ████████████████████████████████████████████░░  91%  ◄──────── │──── nepa_defensibility_bar__c: green bar
+│  ─────────────────────────────────────────────────────────────  │
+│  ── Litigation Probability Score Factors ──────────────────────  │
 │  ┌─── Risk Score Factors  (nepa_risk_score_factors__c) ────┐    │
 │  │  Review type (EIS):             28 pts   ◄───────────── │──── DISCLOSE each input
 │  │  BLM agency litigation rate:    21 pts   ◄───────────── │    │
@@ -710,12 +717,15 @@ Here's what the review actually required:
 │  Tribal Plaintiff Flag: ✓ TRUE  (Shoshone-Paiute)               │
 └─────────────────────────────────────────────────────────────────┘
 ```
+*(Formula fields: `nepa_risk_score_bar__c` = red bar at 85% of 200px width. `nepa_defensibility_bar__c` = green bar at 91% of 200px width. The visual contrast — a nearly-full red bar above a slightly-fuller green bar — tells the v3 story before the presenter says a word: high-risk project, fully documented mitigation.)*
 
-> **▲ Point to first:** Probability Score factor breakdown line by line. Say: *"Review type: 28 pts. BLM: 21 pts. 9th Circuit: 19 pts. FLPMA: 5 pts. Tribal plaintiff: 8 pts. Sector-Circuit premium: 4 pts. Challenge delta: 0 pts. That's 85. Every input is disclosed."*
+> **▲ Point to first:** The two bars together. Say: *"Look at these two bars. Red at 85 — that's the probability of a challenge. Green at 91 — that's how documented the mitigation is. High-risk project. Fully documented mitigation. The system can tell the difference."*
 >
-> **▲ Point to second:** Cost Exposure section. Say: *"v3 separates likelihood of losing from cost if challenged. BLM averages 17.5 months even when they win. Agencies making financing decisions based only on win-probability were missing this."*
+> **▲ Point to second:** Probability Score factor breakdown line by line. Say: *"Review type: 28 pts. BLM: 21 pts. 9th Circuit: 19 pts. FLPMA: 5 pts. Tribal plaintiff: 8 pts. Sector-Circuit premium: 4 pts. Challenge delta: 0 pts. That's 85. Every input is disclosed."*
 >
-> **▲ Point to third:** ESA warning banner. Say: *"The system discloses where the data confidence is lower. OMB M-24-10: AI and automated scoring outputs must disclose known limitations at point-of-use. This is that disclosure."*
+> **▲ Point to third:** Cost Exposure section. Say: *"v3 separates likelihood of losing from cost if challenged. BLM averages 17.5 months even when they win. Agencies making financing decisions based only on win-probability were missing this."*
+>
+> **▲ Point to fourth:** ESA warning banner. Say: *"The system discloses where the data confidence is lower. OMB M-24-10: AI and automated scoring outputs must disclose known limitations at point-of-use. This is that disclosure."*
 
 ---
 
@@ -978,6 +988,7 @@ Here's what the review actually required:
 | Defensibility gaps discovered during litigation, post-decision | Defensibility Score = 91 at decision; all stage gates cleared and documented before Field Manager signature |
 | E.O. 13807 master schedule in a spreadsheet, outside the permitting system | OFD Coordination Tracker: 4 milestones across NEPA_Lead / Agency_Consultation / Permit_Milestone / Joint_ROD tracks on ApplicationTimeline; 1.47× federal-to-CEQA friction multiplier for Water/Coastal operationalized as a critical-path milestone |
 | Parallel permit status: unknown until applicant asks | `nepaPermitDependencies` LWC: live status from USACE, USFWS, BLM REST APIs at record load; critical-path flags set automatically; graceful degradation on API unavailability |
+| Risk score is a number the coordinator has to decode | Formula image fields render risk score as a red progress bar (85% full), defensibility as a green bar (91% full), permit status as a red/green flag in the related list column — the evaluator reads the story before the presenter narrates it |
 | 25-month timeline; applicant called the field office 14 times | 8-month timeline; real-time status in self-service portal |
 
 ---

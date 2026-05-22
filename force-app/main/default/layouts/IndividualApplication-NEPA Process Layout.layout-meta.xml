@@ -22,6 +22,10 @@
                 <behavior>Edit</behavior>
                 <field>nepa_start_date__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>nepa_risk_tier_visual__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
@@ -139,6 +143,10 @@
         <label>Risk &amp; Extraordinary Circumstances</label>
         <layoutColumns>
             <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>nepa_scoping_overrun_visual__c</field>
+            </layoutItems>
+            <layoutItems>
                 <behavior>Edit</behavior>
                 <field>nepa_litigation_duration_cost__c</field>
             </layoutItems>
@@ -153,6 +161,14 @@
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>nepa_wetlands_flag__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>nepa_risk_score_bar__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>nepa_defensibility_bar__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns>
@@ -198,6 +214,7 @@
         <fields>Name</fields>
         <fields>nepa_permit_type__c</fields>
         <fields>nepa_permit_status__c</fields>
+        <fields>nepa_permit_status_visual__c</fields>
         <fields>nepa_lead_agency__c</fields>
         <fields>nepa_is_critical_path__c</fields>
         <fields>nepa_sla_due_date__c</fields>
@@ -205,8 +222,26 @@
         <fields>nepa_expected_completion__c</fields>
         <relatedList>nepa_required_permits__r</relatedList>
     </relatedLists>
+    <relatedLists>
+        <fields>Subject</fields>
+        <fields>nepa_discipline__c</fields>
+        <fields>nepa_gate_status_visual__c</fields>
+        <fields>nepa_hard_gate__c</fields>
+        <fields>PlannedVisitStartTime</fields>
+        <fields>Status</fields>
+        <relatedList>Field_Survey_Visits__r</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <fields>Name</fields>
+        <fields>nepa_category__c</fields>
+        <fields>nepa_plaintiff_visual__c</fields>
+        <fields>nepa_ai_triage_status__c</fields>
+        <fields>nepa_litigation_threat_flag__c</fields>
+        <fields>nepa_is_substantive__c</fields>
+        <relatedList>Public_Comments__r</relatedList>
+    </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
-    <showHighlightsPanel>false</showHighlightsPanel>
+    <showHighlightsPanel>true</showHighlightsPanel>
     <showInteractionLogPanel>false</showInteractionLogPanel>
     <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>
     <showSolutionSection>false</showSolutionSection>

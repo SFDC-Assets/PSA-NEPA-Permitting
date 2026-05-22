@@ -405,7 +405,7 @@
         <locationY>0</locationY>
         <defaultConnectorLabel>No Task Found — skip close</defaultConnectorLabel>
         <defaultConnector>
-            <targetReference>Decision_HasNextStage</targetReference>
+            <targetReference>Assign_CurrentStep_CreateTask</targetReference>
         </defaultConnector>
         <rules>
             <name>Task_Found</name>
@@ -472,6 +472,18 @@
         <expression>"Begin " &amp; {!var_CompletedStageLabel} &amp; " stage"</expression>
     </formulas>
 
+    <formulas>
+        <name>formula_NextStageTaskSubject</name>
+        <dataType>String</dataType>
+        <expression>"Begin " &amp; {!var_NextStage} &amp; " stage"</expression>
+    </formulas>
+
+    <formulas>
+        <name>formula_TaskDescription</name>
+        <dataType>String</dataType>
+        <expression>"Stage gate advanced to " &amp; {!var_NextStage} &amp; ". Review requirements and complete this stage&apos;s milestones."</expression>
+    </formulas>
+
     <recordCreates>
         <name>Create_NextStageTask</name>
         <label>Create Next Stage Opening Task</label>
@@ -483,7 +495,7 @@
         <inputAssignments>
             <field>Subject</field>
             <value>
-                <stringValue>Begin {!var_NextStage} stage</stringValue>
+                <elementReference>formula_NextStageTaskSubject</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -513,7 +525,7 @@
         <inputAssignments>
             <field>Description</field>
             <value>
-                <stringValue>Stage gate advanced from {!rec_ParentProcess.nepa_process_status__c} to {!var_NextStage} on {!var_TransitionTimestamp}. Review requirements and complete this stage's milestones.</stringValue>
+                <elementReference>formula_TaskDescription</elementReference>
             </value>
         </inputAssignments>
         <object>Task</object>
@@ -671,7 +683,7 @@
             </value>
         </filters>
         <connector>
-            <targetReference>Decision_HasNextStage</targetReference>
+            <targetReference>Assign_CurrentStep_CreateTask</targetReference>
         </connector>
     </recordUpdates>
 

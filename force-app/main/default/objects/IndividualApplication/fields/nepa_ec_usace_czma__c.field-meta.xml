@@ -4,6 +4,7 @@
     <description>Set to true by the CE Intake OmniScript when the project sector is Water/Coastal and the project crosses jurisdictional waters. Triggers USACE Section 404 and CZMA federal consistency pre-consultation flags in NEPA_CE_Screener. Stage 16 finding: Water/Coastal sector carries 1.47x federal friction multiplier driven by CZMA consistency, EFH Magnuson-Stevens, and dual-track 404 review.</description>
     <defaultValue>false</defaultValue>
     <externalId>false</externalId>
+    <inlineHelpText>Check when the project crosses jurisdictional waters or the coastal zone. Triggers USACE Section 404 and CZMA federal consistency pre-consultation flags. Water/Coastal projects with this flag carry a 1.47× federal review friction multiplier driven by CZMA consistency + EFH Magnuson-Stevens dual-track review.</inlineHelpText>
     <label>EC: USACE Section 404 / CZMA</label>
     <trackHistory>false</trackHistory>
     <type>Checkbox</type>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All_Comments</fullName>
+    <filterScope>Everything</filterScope>
+    <label>All Comments</label>
+    <columns>Name</columns>
+    <columns>nepa_category__c</columns>
+    <columns>nepa_plaintiff_visual__c</columns>
+    <columns>nepa_ai_triage_status__c</columns>
+    <columns>nepa_litigation_threat_flag__c</columns>
+    <columns>nepa_is_substantive__c</columns>
+    <columns>nepa_related_process__c</columns>
+</ListView>

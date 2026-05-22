@@ -4,7 +4,7 @@
         <inlineHelpText>AI screening recommendation. Not official until a NEPA Coordinator reviews and confirms by setting the Review Type field.</inlineHelpText>
         <label>CE Pathway Recommendation (AI)</label>
         <required>false</required>
-        <trackHistory>false</trackHistory>
+        <trackHistory>true</trackHistory>
         <type>Picklist</type>
         <valueSet>
             <restricted>true</restricted>
