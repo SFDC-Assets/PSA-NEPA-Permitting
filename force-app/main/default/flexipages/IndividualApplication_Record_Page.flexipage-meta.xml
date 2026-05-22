@@ -1155,6 +1155,16 @@
                 <identifier>ia_permit_co_permits</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_state_code__c</fieldItem>
+                <identifier>ia_permit_state_code</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>ia-permit-c1</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -1169,6 +1179,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_cooperating_agencies__c</fieldItem>
                 <identifier>ia_permit_cooperating_agencies</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_has_active_biop__c</fieldItem>
+                <identifier>ia_permit_has_active_biop</identifier>
             </fieldInstance>
         </itemInstances>
         <name>ia-permit-c2</name>
@@ -1609,6 +1629,104 @@
         <type>Facet</type>
     </flexiPageRegions>
 
+    <!-- SECTION: Post-Decision Monitoring — Column 1 (visible when nepa_ar_locked__c = true) -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_ar_locked__c</fieldItem>
+                <identifier>ia_postdec_ar_locked</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_review_type__c</fieldItem>
+                <identifier>ia_postdec_review_type</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_process_outcome__c</fieldItem>
+                <identifier>ia_postdec_outcome</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>ia-postdec-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Post-Decision Monitoring — Column 2 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_has_active_biop__c</fieldItem>
+                <identifier>ia_postdec_active_biop</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_esa_consultation_status__c</fieldItem>
+                <identifier>ia_postdec_esa_status</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_supplementation_review_complete__c</fieldItem>
+                <identifier>ia_postdec_supplementation</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>ia-postdec-c2</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Post-Decision Monitoring — Columns Wrapper -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>ia-postdec-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>ia_postdec_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>ia-postdec-c2</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>ia_postdec_col2</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>ia-postdec-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
     <!-- SECTION 6: Data Provenance — Column 1 -->
     <flexiPageRegions>
         <itemInstances>
@@ -1879,6 +1997,31 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>ia_section_permit</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>ia-postdec-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Post-Decision Monitoring</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>ia_section_postdec</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.nepa_ar_locked__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                </visibilityRule>
             </componentInstance>
         </itemInstances>
         <itemInstances>

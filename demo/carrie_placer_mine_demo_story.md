@@ -21,7 +21,7 @@ This demo runs four scenes, each following **Tell → Show → Tell** structure.
 
 **Audience:** BLM field office managers, state permitting directors, NEPA program leads, agency IT/digital transformation leads, CEQ evaluators.
 
-**Total demo time:** 30–35 minutes across six scenes.
+**Total demo time:** 30–40 minutes across seven scenes.
 
 ---
 
@@ -37,6 +37,7 @@ Memorize this table before opening the laptop. It maps each scene to the MFRs yo
 | **4: Decision** | #7 Emerging, #9 Emerging, #1 Leading-Edge, #2 Emerging | **42.7%** of challenged EIS/EAs cite inadequate connected actions analysis — the #1 Challenge Prediction Rule; top 3 failure patterns are all stage gate failures | All-5-green Document Registry; `nepa_ar_export__c` Completed status; Challenge Predictor cleared on both fired rules; **v3 bifurcated risk score**: Probability Score (85/100) + Cost Exposure (BLM 17.5 months) | "Eight months. 13 CEQ entities. 10 MFRs. Same regulations." |
 | **5: OFD Coordination** | #10 Interoperable, Std 4 (Timeline Minimization) | Federal-state friction accounts for 1.09×–1.65× of timeline overhead by sector (Stage 16) — USACE Section 404 dual-track review is the primary Water/Coastal driver | OFD Coordination Tracker — 4 live ApplicationTimeline milestones across NEPA_Lead / Agency_Consultation / Permit_Milestone / Joint_ROD tracks | "E.O. 13807 requires a master schedule. This is the master schedule — live, in the case record." |
 | **6: Permit Dependencies** | #10 Interoperable, #2 Data Sharing | FTA median litigation duration: 33.4 months — independent of win probability | `nepaPermitDependencies` LWC with live Section 404 (Pending ★), ESA §7 (In Review ★), ROW Grant (Approved) status | "Critical-path permits are flagged before anyone has to ask." |
+| **7: Post-Permit Intelligence** | #5 Post-Decision, F-05 Inspection, F-09 Monitoring | Utah has a 66.7% challenger win rate — every inspector opening a form gets the litigation context for their state before they walk the site | Permit status → Issued triggers 4 Visit inspection tasks; Visit form opens showing state risk briefing; BiOp reinitiation checkboxes create ESA Task + +12 risk delta; AR lock at ROD triggers 10 post-decision monitoring tasks | "The inspector walks into the field knowing which state they're in, and exactly which outcome is most likely to end up in court." |
 
 ---
 

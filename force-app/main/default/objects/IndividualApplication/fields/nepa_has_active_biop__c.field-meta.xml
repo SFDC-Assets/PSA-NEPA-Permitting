@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_has_active_biop__c</fullName>
+    <label>Active BiOp on File</label>
+    <type>Checkbox</type>
+    <defaultValue>false</defaultValue>
+    <description>True when an ESA §7 Biological Opinion is active on this NEPA process. Checked by NEPA_BiOp_Reinitiation_Checker to determine whether reinitiation triggers (50 CFR §402.16) require an ESA Coordinator Task and a +12 risk delta.</description>
+    <inlineHelpText>Set to true when a formal BiOp has been issued for this project. Drives automatic ESA §7 reinitiation evaluation on each field inspection visit.</inlineHelpText>
+    <trackHistory>false</trackHistory>
+</CustomField>

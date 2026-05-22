@@ -22,6 +22,125 @@
         <type>Region</type>
     </flexiPageRegions>
 
+    <!-- SECTION: State Litigation Risk Context — full-width (always visible; read-only; populated at permit issuance) -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_state_risk_context__c</fieldItem>
+                <identifier>visit_state_risk_context</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>visit-risk-context-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>visit-risk-context-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>visit_risk_context_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>visit-risk-context-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: ESA BiOp Reinitiation Triggers — Column 1 (50 CFR §402.16) -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_reinit_new_species_listing__c</fieldItem>
+                <identifier>visit_reinit_new_species</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_reinit_amount_or_extent_exceeded__c</fieldItem>
+                <identifier>visit_reinit_amount_exceeded</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_reinit_new_information__c</fieldItem>
+                <identifier>visit_reinit_new_information</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>visit-reinit-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: ESA BiOp Reinitiation Triggers — Column 2 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_reinit_action_modified__c</fieldItem>
+                <identifier>visit_reinit_action_modified</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_reinit_rpa_not_implemented__c</fieldItem>
+                <identifier>visit_reinit_rpa_not_implemented</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>visit-reinit-c2</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: ESA BiOp Reinitiation Triggers — Columns Wrapper -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>visit-reinit-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>visit_reinit_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>visit-reinit-c2</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>visit_reinit_col2</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>visit-reinit-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
     <!-- SECTION: Field Survey Details — Column 1 -->
     <flexiPageRegions>
         <itemInstances>
@@ -166,6 +285,31 @@
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
+                    <value>visit-risk-context-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>State Litigation Risk Context</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>visit_section_risk_context</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.nepa_state_risk_context__c}</leftValue>
+                        <operator>NotEqual</operator>
+                        <rightValue></rightValue>
+                    </criteria>
+                </visibilityRule>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
                     <value>visit-details-cols</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
@@ -178,6 +322,24 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>visit_section_details</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>visit-reinit-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>ESA §7 Reinitiation Triggers (50 CFR §402.16)</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>visit_section_reinit</identifier>
             </componentInstance>
         </itemInstances>
         <mode>Replace</mode>

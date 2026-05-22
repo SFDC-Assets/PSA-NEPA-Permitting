@@ -215,6 +215,58 @@
         <type>Facet</type>
     </flexiPageRegions>
 
+    <!-- SECTION: Post-Issuance Inspection Schedule — Column 1 (visible when status = Issued) -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_permit_type__c</fieldItem>
+                <identifier>rp_inspection_permit_type</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_permit_status__c</fieldItem>
+                <identifier>rp_inspection_permit_status</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>rp-inspection-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Post-Issuance Inspection Schedule — Column 2 -->
+    <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_regulatory_citation__c</fieldItem>
+                <identifier>rp_inspection_citation</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_lead_agency__c</fieldItem>
+                <identifier>rp_inspection_lead_agency</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>rp-inspection-c2</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
     <!-- DETAIL TAB CONTENT -->
     <flexiPageRegions>
         <itemInstances>
@@ -285,6 +337,31 @@
         <itemInstances>
             <componentInstance>
                 <componentInstanceProperties>
+                    <name>body</name>
+                    <value>rp-inspection-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>rp_inspection_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>rp-inspection-c2</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>rp_inspection_col2</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>rp-inspection-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
                     <name>columns</name>
                     <value>rp-info-cols</value>
                 </componentInstanceProperties>
@@ -334,6 +411,56 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>rp_section_notes</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>rp-inspection-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Post-Issuance Inspection Schedule</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>rp_section_inspection</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.nepa_permit_status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Issued</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>relatedListApiName</name>
+                    <value>Visits__r</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>rowsToDisplay</name>
+                    <value>10</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>showActionBar</name>
+                    <value>true</value>
+                </componentInstanceProperties>
+                <componentName>force:relatedListSingleContainer</componentName>
+                <identifier>rp_related_visits</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.nepa_permit_status__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>Issued</rightValue>
+                    </criteria>
+                </visibilityRule>
             </componentInstance>
         </itemInstances>
         <name>detailTabContent</name>

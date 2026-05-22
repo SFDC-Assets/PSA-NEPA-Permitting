@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_state_code__c</fullName>
+    <label>State Code</label>
+    <type>Text</type>
+    <length>2</length>
+    <description>Two-character USPS state abbreviation (e.g., "UT", "ID") for the primary state where this NEPA action occurs. Matched by NEPA_Permit_Issued_Schedule_Creator against NEPA_State_Risk_Profile__mdt.State_Code__c to retrieve the Field_Inspector_Warning__c for inspection visits.</description>
+    <inlineHelpText>Two-letter state code (e.g., ID for Idaho). Used to populate state litigation risk context on inspection records at permit issuance.</inlineHelpText>
+    <externalId>false</externalId>
+    <trackHistory>false</trackHistory>
+    <unique>false</unique>
+</CustomField>
