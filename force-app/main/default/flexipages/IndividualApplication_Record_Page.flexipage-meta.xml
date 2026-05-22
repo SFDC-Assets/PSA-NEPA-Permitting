@@ -1913,6 +1913,12 @@
         </itemInstances>
         <itemInstances>
             <componentInstance>
+                <componentName>c:nepaFpiscExportButton</componentName>
+                <identifier>ia_nepa_fpisc_export_button</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
                     <value>ia-risk-cols</value>

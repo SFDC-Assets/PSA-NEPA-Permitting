@@ -61,7 +61,7 @@ private class NepaFRAPageLimitSetterTest {
         cv.Title = 'Test CE Doc';
         cv.PathOnClient = 'TestCE.pdf';
         cv.VersionData = Blob.valueOf('test content');
-        cv.nepa_document_type__c = 'CE';
+        cv.nepa_document_type__c = 'CE Determination';
         insert cv;
 
         cv = [SELECT Id, nepa_fra_page_limit__c, nepa_is_appendix__c FROM ContentVersion WHERE Id = :cv.Id];

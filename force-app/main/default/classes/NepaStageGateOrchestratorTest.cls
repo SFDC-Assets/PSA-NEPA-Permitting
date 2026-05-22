@@ -101,6 +101,10 @@ private class NepaStageGateOrchestratorTest {
     static void decision_completedEvent_advancesToClosed() {
         Program proj = getProgram();
         IndividualApplication ia = makeIAAtStage(proj.Id, 'Decision', 'EIS');
+        // Clear climate flags so NEPA_Phase2_Climate_Gate validation rule doesn't block the update
+        ia.nepa_phase2_applicable__c = false;
+        ia.nepa_climate_assessment_required__c = false;
+        update ia;
 
         Test.startTest();
         completeTimelineEvent(ia.Id, 'Decision Issued');

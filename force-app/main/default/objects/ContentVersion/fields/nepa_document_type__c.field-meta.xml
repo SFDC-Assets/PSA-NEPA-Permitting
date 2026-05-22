@@ -41,6 +41,11 @@
                     <label>ROD</label>
                 </value>
                 <value>
+                    <fullName>EA</fullName>
+                    <default>false</default>
+                    <label>EA</label>
+                </value>
+                <value>
                     <fullName>Environmental Assessment</fullName>
                     <default>false</default>
                     <label>Environmental Assessment</label>
@@ -74,6 +79,11 @@
                     <fullName>Alternatives Analysis</fullName>
                     <default>false</default>
                     <label>Alternatives Analysis</label>
+                </value>
+                <value>
+                    <fullName>Appendix</fullName>
+                    <default>false</default>
+                    <label>Appendix</label>
                 </value>
                 <value>
                     <fullName>Other</fullName>

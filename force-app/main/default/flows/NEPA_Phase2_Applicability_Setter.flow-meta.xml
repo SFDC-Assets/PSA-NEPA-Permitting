@@ -16,7 +16,7 @@
         <object>IndividualApplication</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordBeforeSave</triggerType>
-        <filterLogic>and</filterLogic>
+        <filterLogic>1 OR 2</filterLogic>
         <filters>
             <field>nepa_review_type__c</field>
             <operator>IsNull</operator>

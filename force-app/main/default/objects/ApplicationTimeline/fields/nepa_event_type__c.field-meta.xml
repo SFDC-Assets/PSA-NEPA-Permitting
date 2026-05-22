@@ -16,6 +16,36 @@
                     <label>NOI</label>
                 </value>
                 <value>
+                    <fullName>Intake Complete</fullName>
+                    <default>false</default>
+                    <label>Intake Complete</label>
+                </value>
+                <value>
+                    <fullName>Analysis Complete</fullName>
+                    <default>false</default>
+                    <label>Analysis Complete</label>
+                </value>
+                <value>
+                    <fullName>Review Complete</fullName>
+                    <default>false</default>
+                    <label>Review Complete</label>
+                </value>
+                <value>
+                    <fullName>Screening Complete</fullName>
+                    <default>false</default>
+                    <label>Screening Complete</label>
+                </value>
+                <value>
+                    <fullName>CE Determination Complete</fullName>
+                    <default>false</default>
+                    <label>CE Determination Complete</label>
+                </value>
+                <value>
+                    <fullName>Decision Issued</fullName>
+                    <default>false</default>
+                    <label>Decision Issued</label>
+                </value>
+                <value>
                     <fullName>Scoping Open</fullName>
                     <default>false</default>
                     <label>Scoping Open</label>
@@ -24,6 +54,11 @@
                     <fullName>Scoping Complete</fullName>
                     <default>false</default>
                     <label>Scoping Complete</label>
+                </value>
+                <value>
+                    <fullName>Draft EA Published</fullName>
+                    <default>false</default>
+                    <label>Draft EA Published</label>
                 </value>
                 <value>
                     <fullName>Draft EIS Published</fullName>

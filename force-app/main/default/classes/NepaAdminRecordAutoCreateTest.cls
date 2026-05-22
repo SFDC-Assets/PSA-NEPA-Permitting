@@ -20,6 +20,7 @@ private class NepaAdminRecordAutoCreateTest {
 
     private static ApplicationTimeline makePreExistingEvent(Id processId) {
         ApplicationTimeline evt = new ApplicationTimeline();
+        evt.Name                    = 'Pre-existing NOI Event';
         evt.nepa_related_process__c = processId;
         evt.nepa_event_type__c      = 'NOI';
         evt.nepa_status__c          = 'Completed';

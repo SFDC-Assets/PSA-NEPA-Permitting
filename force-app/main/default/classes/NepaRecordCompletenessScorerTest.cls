@@ -18,6 +18,7 @@ private class NepaRecordCompletenessScorerTest {
 
     private static ApplicationTimeline insertCaseEvent(Id processId) {
         ApplicationTimeline at = new ApplicationTimeline();
+        at.Name                    = 'Test Case Event';
         at.nepa_related_process__c = processId;
         at.nepa_event_type__c      = 'NOI';
         at.nepa_status__c          = 'Completed';
