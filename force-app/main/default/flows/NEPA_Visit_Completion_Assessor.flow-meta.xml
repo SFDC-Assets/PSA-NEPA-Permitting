@@ -19,12 +19,9 @@
         <object>Visit</object>
         <recordTriggerType>Update</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
-        <scheduledPaths>
-            <connector>
-                <targetReference>Get_AnyOpenHardGateVisit</targetReference>
-            </connector>
-            <pathType>AsyncAfterCommit</pathType>
-        </scheduledPaths>
+        <connector>
+            <targetReference>Get_AnyOpenHardGateVisit</targetReference>
+        </connector>
         <filterLogic>1 AND 2 AND 3 AND 4</filterLogic>
         <filters>
             <field>Status</field>

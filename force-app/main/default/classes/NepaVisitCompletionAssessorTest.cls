@@ -236,10 +236,18 @@ private class NepaVisitCompletionAssessorTest {
     @IsTest
     static void bulkPath_250Visits_allComplete() {
         IndividualApplication ia = insertIA();
+        Id locId = getLocationId();
 
         List<Visit> visits = new List<Visit>();
         for (Integer i = 0; i < 250; i++) {
-            visits.add(buildHardGateVisit(ia.Id, true));
+            Visit v = new Visit();
+            v.nepa_process__c        = ia.Id;
+            v.nepa_hard_gate__c      = true;
+            v.nepa_auto_generated__c = true;
+            v.Status                 = 'Planned';
+            v.PlaceId                = locId;
+            v.PlannedVisitStartTime  = DateTime.now().addDays(7);
+            visits.add(v);
         }
         insert visits;
 

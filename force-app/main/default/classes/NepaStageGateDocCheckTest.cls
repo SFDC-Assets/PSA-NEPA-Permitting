@@ -129,11 +129,11 @@ private class NepaStageGateDocCheckTest {
         NepaTestFactory.insertRequiredPermit(ia.Id, 'Not Started', true, null);
 
         Test.startTest();
-        Boolean saved = tryCompleteEvent(ia.Id, 'ROD');
+        Boolean saved = tryCompleteEvent(ia.Id, 'ROD Issued');
         Test.stopTest();
 
         System.assertEquals(false, saved,
-            'ROD with an uninitiated critical-path permit must block the save');
+            'ROD Issued with an uninitiated critical-path permit must block the save');
     }
 
     @IsTest
@@ -146,11 +146,11 @@ private class NepaStageGateDocCheckTest {
         insertApprovedDoc(ia.Id, 'ROD');
 
         Test.startTest();
-        Boolean saved = tryCompleteEvent(ia.Id, 'ROD');
+        Boolean saved = tryCompleteEvent(ia.Id, 'ROD Issued');
         Test.stopTest();
 
         System.assertEquals(true, saved,
-            'ROD with all critical permits initiated must allow the save');
+            'ROD Issued with all critical permits initiated must allow the save');
     }
 
     // ── Permit gate: FONSI ────────────────────────────────────────────────────
@@ -164,11 +164,11 @@ private class NepaStageGateDocCheckTest {
         NepaTestFactory.insertRequiredPermit(ia.Id, 'Not Started', true, null);
 
         Test.startTest();
-        Boolean saved = tryCompleteEvent(ia.Id, 'FONSI');
+        Boolean saved = tryCompleteEvent(ia.Id, 'FONSI Issued');
         Test.stopTest();
 
         System.assertEquals(false, saved,
-            'FONSI with an uninitiated critical-path permit must block the save');
+            'FONSI Issued with an uninitiated critical-path permit must block the save');
     }
 
     @IsTest
@@ -179,13 +179,14 @@ private class NepaStageGateDocCheckTest {
         update ia;
         NepaTestFactory.insertRequiredPermit(ia.Id, 'Not Started', false, null);
         insertApprovedDoc(ia.Id, 'FONSI');
+        insertApprovedDoc(ia.Id, 'Comment Response');
 
         Test.startTest();
-        Boolean saved = tryCompleteEvent(ia.Id, 'FONSI');
+        Boolean saved = tryCompleteEvent(ia.Id, 'FONSI Issued');
         Test.stopTest();
 
         System.assertEquals(true, saved,
-            'FONSI with only non-critical Not Started permits must allow the save');
+            'FONSI Issued with only non-critical Not Started permits must allow the save');
     }
 
     // ── No gate rules path ────────────────────────────────────────────────────

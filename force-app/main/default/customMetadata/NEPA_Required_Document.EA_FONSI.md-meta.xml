@@ -12,7 +12,7 @@
     </values>
     <values>
         <field>Gate_Event_Type__c</field>
-        <value xsi:type="xsd:string">FONSI Signed</value>
+        <value xsi:type="xsd:string">FONSI Issued</value>
     </values>
     <values>
         <field>Is_Required__c</field>

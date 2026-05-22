@@ -125,6 +125,28 @@
         </connector>
     </assignments>
     <decisions>
+        <name>Decision_IsPermitDoc</name>
+        <label>Is nepa_permit_document Record Type?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Not a Permit Doc — exit</defaultConnectorLabel>
+        <rules>
+            <name>Is_Permit_Doc</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RecordTypeId</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>var_PermitDocRecordType.Id</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Decision_HasRelatedProcess</targetReference>
+            </connector>
+            <label>Is Permit Document</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Decision_HasRelatedProcess</name>
         <label>Has Related Process?</label>
         <locationX>0</locationX>
@@ -294,6 +316,31 @@
         </noMoreValuesConnector>
     </loops>
     <recordLookups>
+        <name>Get_PermitDocRecordType</name>
+        <label>Get nepa_permit_document RecordType</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_IsPermitDoc</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>SobjectType</field>
+            <operator>EqualTo</operator>
+            <value><stringValue>ContentVersion</stringValue></value>
+        </filters>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value><stringValue>nepa_permit_document</stringValue></value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>RecordType</object>
+        <outputReference>var_PermitDocRecordType</outputReference>
+        <queriedFields>Id</queriedFields>
+    </recordLookups>
+    <recordLookups>
         <name>Get_RelatedCaseEvent</name>
         <label>Get Related Case Event</label>
         <locationX>0</locationX>
@@ -399,10 +446,10 @@
             </value>
         </filters>
         <filters>
-            <field>RecordType.DeveloperName</field>
+            <field>IsLatest</field>
             <operator>EqualTo</operator>
             <value>
-                <stringValue>nepa_permit_document</stringValue>
+                <booleanValue>true</booleanValue>
             </value>
         </filters>
         <getFirstRecordOnly>false</getFirstRecordOnly>
@@ -491,16 +538,8 @@
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
         <connector>
-            <targetReference>Decision_HasRelatedProcess</targetReference>
+            <targetReference>Get_PermitDocRecordType</targetReference>
         </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>RecordType.DeveloperName</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>nepa_permit_document</stringValue>
-            </value>
-        </filters>
     </start>
     <variables>
         <name>rec_CaseEvent</name>
@@ -599,5 +638,13 @@
         <value>
             <stringValue>Start</stringValue>
         </value>
+    </variables>
+    <variables>
+        <name>var_PermitDocRecordType</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>RecordType</objectType>
     </variables>
 </Flow>

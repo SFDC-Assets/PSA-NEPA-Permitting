@@ -305,13 +305,13 @@ Design notes:
                 <leftValueReference>$Record.nepa_event_type__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>ROD</stringValue>
+                    <stringValue>ROD Issued</stringValue>
                 </rightValue>
             </conditions>
             <connector>
                 <targetReference>Get_UninitatedCriticalPermits</targetReference>
             </connector>
-            <label>ROD</label>
+            <label>ROD Issued</label>
         </rules>
         <rules>
             <name>IsFONSI</name>
@@ -320,13 +320,13 @@ Design notes:
                 <leftValueReference>$Record.nepa_event_type__c</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <stringValue>FONSI</stringValue>
+                    <stringValue>FONSI Issued</stringValue>
                 </rightValue>
             </conditions>
             <connector>
                 <targetReference>Get_UninitatedCriticalPermits</targetReference>
             </connector>
-            <label>FONSI</label>
+            <label>FONSI Issued</label>
         </rules>
     </decisions>
 
