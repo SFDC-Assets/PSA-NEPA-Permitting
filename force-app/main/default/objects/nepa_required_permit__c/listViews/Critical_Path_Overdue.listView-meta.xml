@@ -3,7 +3,6 @@
     <fullName>Critical_Path_Overdue</fullName>
     <filterScope>Everything</filterScope>
     <label>Critical Path — Overdue</label>
-    <columns>Name</columns>
     <columns>nepa_permit_type__c</columns>
     <columns>nepa_permit_status__c</columns>
     <columns>nepa_permit_status_visual__c</columns>

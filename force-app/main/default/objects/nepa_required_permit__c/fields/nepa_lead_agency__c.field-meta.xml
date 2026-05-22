@@ -1,12 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>nepa_lead_agency__c</fullName>
-    <description>Federal agency responsible for issuing this permit or authorization (e.g., USACE, EPA, USFWS, FERC). Populated from RegulatoryAuthorizationType.IssuingDepartmentId at record creation. Used by the nepaPermitDependencies LWC for agency badge display.</description>
-    <inlineHelpText>Federal agency responsible for issuing this permit (e.g., USACE, EPA, USFWS).</inlineHelpText>
+    <description>Federal agency responsible for issuing this permit. Must have a corresponding active NEPA_Agency_Endpoint__mdt record if live status lookup is desired.</description>
+    <inlineHelpText>The federal agency issuing this permit.</inlineHelpText>
     <label>Lead Agency</label>
-    <length>80</length>
-    <required>false</required>
-    <trackHistory>false</trackHistory>
-    <type>Text</type>
-    <unique>false</unique>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>BLM</fullName>
+                <default>false</default>
+                <label>BLM</label>
+            </value>
+            <value>
+                <fullName>EPA</fullName>
+                <default>false</default>
+                <label>EPA</label>
+            </value>
+            <value>
+                <fullName>FERC</fullName>
+                <default>false</default>
+                <label>FERC</label>
+            </value>
+            <value>
+                <fullName>Other</fullName>
+                <default>false</default>
+                <label>Other</label>
+            </value>
+            <value>
+                <fullName>SHPO</fullName>
+                <default>false</default>
+                <label>SHPO</label>
+            </value>
+            <value>
+                <fullName>USACE</fullName>
+                <default>false</default>
+                <label>USACE</label>
+            </value>
+            <value>
+                <fullName>USFWS</fullName>
+                <default>false</default>
+                <label>USFWS</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
 </CustomField>

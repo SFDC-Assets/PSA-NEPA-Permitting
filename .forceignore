@@ -1,2 +1,3 @@
 # Exclude LWC Jest test directories from Salesforce deployments
 **/__tests__/**
+force-app/main/default/objects/IndividualApplication/IndividualApplication.object-meta.xml

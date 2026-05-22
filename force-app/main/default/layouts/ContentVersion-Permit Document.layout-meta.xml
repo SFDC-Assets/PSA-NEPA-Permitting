@@ -190,7 +190,7 @@
                 <field>nepa_page_count__c</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Edit</behavior>
+                <behavior>Readonly</behavior>
                 <field>nepa_fra_overlimit__c</field>
             </layoutItems>
             <layoutItems>

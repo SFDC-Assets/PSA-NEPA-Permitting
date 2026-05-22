@@ -9,6 +9,7 @@
         <members>IndividualApplication.nepa_predicted_challenge_grounds__c</members>
         <members>IndividualApplication.nepa_challenge_prediction_notes__c</members>
         <members>IndividualApplication.nepa_comment_period_days__c</members>
+        <members>IndividualApplication.nepa_defensibility_bar__c</members>
         <members>IndividualApplication.nepa_defensibility_score__c</members>
         <members>IndividualApplication.nepa_defensibility_gaps__c</members>
         <members>IndividualApplication.nepa_defensibility_updated__c</members>
@@ -228,7 +229,8 @@
         <members>IndividualApplication.nepa_expedited_risk_penalty_applied__c</members>
         
         <members>IndividualApplication.nepa_portal_comment_intake_open__c</members>
-        
+        <members>IndividualApplication.nepa_scoping_overrun_visual__c</members>
+
         <members>ContentVersion.nepa_section_type__c</members>
         <members>ContentVersion.nepa_draft_source__c</members>
         
