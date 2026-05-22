@@ -42,11 +42,23 @@ These are first-org-deploy-only steps. Skip if you've deployed before.
 
 All `NEPA_*` flows deploy with `status=Active`. Verify in Setup → Flows.
 
-**Exceptions — do NOT deploy these until Einstein generative AI is provisioned in the org:**
+**Exceptions — these flows do NOT deploy Active on a fresh org:**
+
+| Flow | Reason | How to enable |
+|---|---|---|
+| `NEPA_EIS_Section_Assembler` | Requires Einstein generative AI | Deploy manually when AI is provisioned |
+| `NEPA_EIS_Section_Draft_Trigger` | Depends on assembler above | Deploy after assembler |
+| `NEPA_Slack_Stage_Notifier` | Requires Salesforce for Slack managed package | See Step 12 |
+| `NEPA_Slack_Risk_Alert` | Same | See Step 12 |
+
 ```bash
-# Deploy only when Einstein AI is available:
+# Deploy Einstein flows only when generative AI is available:
 sf project deploy start --metadata "Flow:NEPA_EIS_Section_Assembler" --target-org <alias> --test-level NoTestRun --wait 30
 sf project deploy start --metadata "Flow:NEPA_EIS_Section_Draft_Trigger" --target-org <alias> --test-level NoTestRun --wait 30
+
+# Deploy Slack flows only after completing Step 12a–12b (package + workspace):
+sf project deploy start --metadata "Flow:NEPA_Slack_Stage_Notifier" --target-org <alias> --wait 30
+sf project deploy start --metadata "Flow:NEPA_Slack_Risk_Alert" --target-org <alias> --wait 30
 ```
 
 **Verify the OFD Variance Alert scheduled flow ran:**
@@ -295,9 +307,16 @@ Or update via Metadata API deploy after editing the seed record:
 force-app/main/default/customMetadata/NEPA_Slack_Config.Default.md-meta.xml
 ```
 
-#### Step 12e — Activate the Slack flows
+#### Step 12e — Re-deploy and activate the Slack flows
 
-Once the package is installed and channels are configured:
+The Slack flows cannot deploy on an org without the managed package. Once the package is installed and the workspace is connected, re-deploy them:
+
+```bash
+sf project deploy start --metadata "Flow:NEPA_Slack_Stage_Notifier" --target-org <alias> --wait 30
+sf project deploy start --metadata "Flow:NEPA_Slack_Risk_Alert" --target-org <alias> --wait 30
+```
+
+Then activate in Setup → Flows → find each flow → click **Activate**, or via Tooling API:
 
 ```bash
 # Activate stage notifier
@@ -317,9 +336,7 @@ sf data update record \
   --target-org <alias>
 ```
 
-Or activate in Setup → Flows → find each flow → click **Activate**.
-
-**Note:** `NEPA_EJTribal_Router` already has the tribal Slack action embedded. It will silently skip the Slack call if the config CMT has placeholder channel IDs — no errors, no broken routing. Tribal routing still functions correctly without Slack.
+**Note on tribal notifications:** `NEPA_EJTribal_Router` does **not** include a Slack call. Tribal EJ routing (queue assignment, task creation, flag updates) runs correctly with no Slack dependency. Stage-change notifications via `NEPA_Slack_Stage_Notifier` will cover EJ-routed comments once that flow is active — no separate tribal-specific Slack flow is needed.
 
 #### Verification
 

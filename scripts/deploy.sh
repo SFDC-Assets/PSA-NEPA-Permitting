@@ -437,6 +437,8 @@ deploy "tabs" \
     --metadata "CustomTab:nepa_litigation__c" \
     --metadata "CustomTab:nepa_process_team_member__c" \
     --metadata "CustomTab:nepa_ce_library__c" \
+    --metadata "CustomTab:nepa_required_permit__c" \
+    --metadata "CustomTab:nepaTemplateCatalog" \
     --target-org "$TARGET_ORG"
 
 # ── phase 4: permission set ──────────────────────────────────────────────────
@@ -712,6 +714,16 @@ FLOWS=(
     # Flows that depend on NEPA_EJTribal_Router (must come after it)
     NEPA_Comment_AI_Router
     NEPA_Comment_ResponseTask_Creator
+    # F-03 — pre-application screening sector qualifier
+    NEPA_PreApp_Qualify_Sector
+    # F-15 — FAST-41 OFD variance alert (scheduled, daily 07:00 UTC)
+    NEPA_OFD_Variance_Alert
+    # F-12 — Slack notifications (deployed as Draft; see post-deploy Step 9)
+    # These require the Salesforce for Slack managed package + workspace connection.
+    # They will fail on orgs without the package — wrap in deploy_flow which retries
+    # but will ultimately warn and continue (non-blocking).
+    NEPA_Slack_Stage_Notifier
+    NEPA_Slack_Risk_Alert
 )
 
 # NEPA_EIS_Section_Assembler uses generateText (Einstein AI) — skipped unless
@@ -957,11 +969,15 @@ else
     echo "    2. All flows deploy with status=Active — no manual activation needed."
     echo "       Verify in Setup > Flows that all NEPA_* flows show Active status."
     echo "       If any show Draft or Inactive, activate them manually or re-run Phase 8."
-    echo "       Exception: NEPA_EIS_Section_Assembler + NEPA_EIS_Section_Draft_Trigger"
-    echo "       require Einstein generative AI and are NOT deployed by this script."
-    echo "       Deploy them manually when Einstein AI is provisioned:"
-    echo "         sf project deploy start --metadata \"Flow:NEPA_EIS_Section_Assembler\" --target-org $TARGET_ORG --test-level NoTestRun --wait 30"
-    echo "         sf project deploy start --metadata \"Flow:NEPA_EIS_Section_Draft_Trigger\" --target-org $TARGET_ORG --test-level NoTestRun --wait 30"
+    echo "       Exceptions:"
+    echo "       a) NEPA_EIS_Section_Assembler + NEPA_EIS_Section_Draft_Trigger require Einstein"
+    echo "          generative AI and are NOT deployed by this script."
+    echo "          Deploy manually when Einstein AI is provisioned:"
+    echo "          sf project deploy start --metadata \"Flow:NEPA_EIS_Section_Assembler\" --target-org $TARGET_ORG --test-level NoTestRun --wait 30"
+    echo "          sf project deploy start --metadata \"Flow:NEPA_EIS_Section_Draft_Trigger\" --target-org $TARGET_ORG --test-level NoTestRun --wait 30"
+    echo "       b) NEPA_Slack_Stage_Notifier + NEPA_Slack_Risk_Alert require the Salesforce for"
+    echo "          Slack managed package. They deploy as Draft and will fail on orgs without it."
+    echo "          See post-deploy Step 9 for Slack setup instructions."
     echo ""
     echo "    3. BRE Decision Matrices and Expression Sets — automated by Phase 5b-data above."
     echo "       If Phase 5b-data reported errors, re-run manually:"
@@ -1054,9 +1070,12 @@ else
     echo "       b) Setup → Slack → connect org to workspace"
     echo "       c) Update NEPA_Slack_Config.Default CMT with real Slack channel IDs"
     echo "          (Setup → Custom Metadata Types → NEPA Slack Config → Manage Records → Default)"
-    echo "       d) Activate NEPA_Slack_Stage_Notifier and NEPA_Slack_Risk_Alert flows"
-    echo "       NEPA_EJTribal_Router tribal Slack alert: auto-enabled once CMT has real channel IDs."
-    echo "       Flows are deployed as Draft — they will NOT send Slack messages until activated."
+    echo "       d) Re-deploy and activate NEPA_Slack_Stage_Notifier and NEPA_Slack_Risk_Alert:"
+    echo "          sf project deploy start --metadata \"Flow:NEPA_Slack_Stage_Notifier\" --target-org $TARGET_ORG --wait 30"
+    echo "          sf project deploy start --metadata \"Flow:NEPA_Slack_Risk_Alert\" --target-org $TARGET_ORG --wait 30"
+    echo "       Note: NEPA_EJTribal_Router does NOT include the Slack call — tribal notifications"
+    echo "       are handled by NEPA_Slack_Stage_Notifier once that flow is active. The EJTribal"
+    echo "       Router focuses solely on queue assignment, task creation, and flag updates."
     echo "       See: DEVELOPER_GUIDE.md § Step 12"
     echo ""
     echo "   10. Agency Template Exchange (F-11):"
