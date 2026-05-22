@@ -92,7 +92,7 @@ global with sharing class NepaCeqExportService {
                            nepa_actual_completion__c,
                            nepa_external_federal_id__c,
                            nepa_last_synced__c
-                    FROM nepa_required_permits__r
+                    FROM Required_Permits__r
                     ORDER BY nepa_is_critical_path__c DESC, Name ASC)
             FROM IndividualApplication
             WHERE Id = :idOrFuid
@@ -192,7 +192,7 @@ global with sharing class NepaCeqExportService {
             + '         nepa_actual_completion__c,'
             + '         nepa_external_federal_id__c,'
             + '         nepa_last_synced__c'
-            + '  FROM nepa_required_permits__r'
+            + '  FROM Required_Permits__r'
             + '  ORDER BY nepa_is_critical_path__c DESC, Name ASC)'
             + ' FROM IndividualApplication'
             + whereClause
@@ -238,7 +238,7 @@ global with sharing class NepaCeqExportService {
             'recordCompleteness'   => r.nepa_record_completeness__c,
             'lastStageTransition'  => r.nepa_last_stage_transition__c,
             'lastModified'         => r.LastModifiedDate,
-            'permits'              => toPermitDtos(r.nepa_required_permits__r)
+            'permits'              => toPermitDtos(r.Required_Permits__r)
         };
     }
 

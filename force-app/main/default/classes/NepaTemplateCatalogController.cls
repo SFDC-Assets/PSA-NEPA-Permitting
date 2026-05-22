@@ -80,20 +80,20 @@ public with sharing class NepaTemplateCatalogController {
         }
 
         List<ActionPlanTemplate> templates = [
-            SELECT Id, Name
+            SELECT Id, Name, UniqueName,
+                   (SELECT Id FROM ActionPlanTemplateVersions WHERE Status = 'Active' ORDER BY Version DESC LIMIT 1)
             FROM ActionPlanTemplate
-            WHERE DeveloperName = :aptUniqueName
-              AND IsActive = true
+            WHERE UniqueName = :aptUniqueName
             LIMIT 1
         ];
 
-        if (templates.isEmpty()) {
-            throw new AuraHandledException('ActionPlanTemplate not found or inactive: ' + aptUniqueName +
+        if (templates.isEmpty() || templates[0].ActionPlanTemplateVersions.isEmpty()) {
+            throw new AuraHandledException('ActionPlanTemplate not found or has no active version: ' + aptUniqueName +
                 '. Verify the template is active in Setup → Action Plans → Templates.');
         }
 
         ActionPlan ap = new ActionPlan();
-        ap.ActionPlanTemplateId = templates[0].Id;
+        ap.ActionPlanTemplateVersionId = templates[0].ActionPlanTemplateVersions[0].Id;
         ap.Name = templates[0].Name;
         ap.StartDate = Date.today();
 

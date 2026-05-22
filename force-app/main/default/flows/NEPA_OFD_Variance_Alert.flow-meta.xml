@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>Daily scheduled flow (07:00 UTC). Queries IndividualApplication where nepa_fast41_covered__c=true, status is not closed/withdrawn/completed, and nepa_days_elapsed__c exceeds nepa_ofd_target_days__c. Bulk-creates one Task per overriding IA (assigned to IA owner) with subject "OFD Timeline Variance: X days over target". Pattern mirrors NEPA_Permit_SLA_Monitor. Fault connector routes to NEPA_Error_Logger subflow.</description>
+    <description>Daily scheduled flow (07:00 UTC). Queries IndividualApplication where nepa_fast41_covered__c=true, status is not closed/withdrawn/completed, and nepa_days_elapsed__c exceeds nepa_ofd_target_days__c. Bulk-creates one Task per overriding IA (assigned to IA owner) with subject "OFD Timeline Variance: [name] — over FAST-41 target". Pattern mirrors NEPA_Permit_SLA_Monitor. Fault connector routes to NEPA_Error_Logger subflow.</description>
     <label>NEPA OFD Variance Alert</label>
     <processType>AutoLaunchedFlow</processType>
     <status>Active</status>
 
-    <!-- ── Formulas ───────────────────────────────────────────────────────────── -->
+    <!-- formulas — all grouped -->
     <formulas>
         <name>formula_Today</name>
         <dataType>Date</dataType>
         <expression>TODAY()</expression>
     </formulas>
+    <formulas>
+        <name>formula_TaskSubject</name>
+        <dataType>String</dataType>
+        <expression>"OFD Timeline Variance: " &amp; {!var_LoopIA.Name} &amp; " — over FAST-41 target"</expression>
+    </formulas>
 
-    <!-- ── Variables ──────────────────────────────────────────────────────────── -->
+    <!-- variables — all grouped -->
     <variables>
         <name>var_OverdueTasks</name>
         <dataType>SObject</dataType>
@@ -31,29 +36,22 @@
         <objectType>IndividualApplication</objectType>
     </variables>
     <variables>
-        <name>var_TaskSubject</name>
+        <name>var_LoopTask</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Task</objectType>
+    </variables>
+    <variables>
+        <name>var_ErrorMessage</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
     </variables>
 
-    <!-- ── Start (scheduled: daily 07:00 UTC) ─────────────────────────────────── -->
-    <start>
-        <locationX>176</locationX>
-        <locationY>50</locationY>
-        <connector>
-            <targetReference>Get_OverdueOFDProcesses</targetReference>
-        </connector>
-        <schedule>
-            <frequency>Daily</frequency>
-            <startDate>2026-01-01</startDate>
-            <startTime>07:00:00.000Z</startTime>
-        </schedule>
-        <triggerType>Scheduled</triggerType>
-    </start>
-
-    <!-- ── Get: FAST-41 active processes over OFD target ──────────────────────── -->
+    <!-- recordLookups — all grouped -->
     <recordLookups>
         <name>Get_OverdueOFDProcesses</name>
         <label>Get OFD-Overdue Processes</label>
@@ -70,37 +68,27 @@
         <filters>
             <field>nepa_fast41_covered__c</field>
             <operator>EqualTo</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
+            <value><booleanValue>true</booleanValue></value>
         </filters>
         <filters>
             <field>nepa_process_status__c</field>
             <operator>NotEqualTo</operator>
-            <value>
-                <stringValue>Closed</stringValue>
-            </value>
+            <value><stringValue>Closed</stringValue></value>
         </filters>
         <filters>
             <field>nepa_process_status__c</field>
             <operator>NotEqualTo</operator>
-            <value>
-                <stringValue>Withdrawn</stringValue>
-            </value>
+            <value><stringValue>Withdrawn</stringValue></value>
         </filters>
         <filters>
             <field>nepa_process_status__c</field>
             <operator>NotEqualTo</operator>
-            <value>
-                <stringValue>completed</stringValue>
-            </value>
+            <value><stringValue>completed</stringValue></value>
         </filters>
         <filters>
             <field>nepa_ofd_target_days__c</field>
             <operator>IsNull</operator>
-            <value>
-                <booleanValue>false</booleanValue>
-            </value>
+            <value><booleanValue>false</booleanValue></value>
         </filters>
         <getFirstRecordOnly>false</getFirstRecordOnly>
         <object>IndividualApplication</object>
@@ -113,7 +101,7 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
 
-    <!-- ── Decision: any processes found? ─────────────────────────────────────── -->
+    <!-- decisions — all grouped -->
     <decisions>
         <name>Decision_ProcessesFound</name>
         <label>Any OFD Processes Found</label>
@@ -129,9 +117,7 @@
             <conditions>
                 <leftValueReference>Get_OverdueOFDProcesses</leftValueReference>
                 <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
             </conditions>
             <connector>
                 <targetReference>Loop_OFDProcesses</targetReference>
@@ -139,42 +125,6 @@
             <label>Records Found</label>
         </rules>
     </decisions>
-
-    <!-- ── Loop: iterate over OFD processes ───────────────────────────────────── -->
-    <loops>
-        <name>Loop_OFDProcesses</name>
-        <label>Loop OFD Processes</label>
-        <locationX>176</locationX>
-        <locationY>374</locationY>
-        <collectionReference>Get_OverdueOFDProcesses</collectionReference>
-        <iterationOrder>Asc</iterationOrder>
-        <nextValueConnector>
-            <targetReference>Assign_LoopIA</targetReference>
-        </nextValueConnector>
-        <noMoreValuesConnector>
-            <targetReference>Decision_TasksToCreate</targetReference>
-        </noMoreValuesConnector>
-    </loops>
-
-    <!-- ── Assign: capture loop variable ──────────────────────────────────────── -->
-    <assignments>
-        <name>Assign_LoopIA</name>
-        <label>Capture Loop IA</label>
-        <locationX>396</locationX>
-        <locationY>374</locationY>
-        <assignmentItems>
-            <assignToReference>var_LoopIA</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Loop_OFDProcesses</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Decision_IsOverdue</targetReference>
-        </connector>
-    </assignments>
-
-    <!-- ── Decision: is this IA actually over its OFD target? ─────────────────── -->
     <decisions>
         <name>Decision_IsOverdue</name>
         <label>Is OFD Target Exceeded</label>
@@ -195,95 +145,11 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Assign_TaskSubject</targetReference>
+                <targetReference>Assign_BuildTask</targetReference>
             </connector>
             <label>Overdue</label>
         </rules>
     </decisions>
-
-    <!-- ── Assign: build task subject ─────────────────────────────────────────── -->
-    <assignments>
-        <name>Assign_TaskSubject</name>
-        <label>Build Task Subject</label>
-        <locationX>616</locationX>
-        <locationY>482</locationY>
-        <assignmentItems>
-            <assignToReference>var_TaskSubject</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>OFD Timeline Variance: {!var_LoopIA.Name} is over target</stringValue>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Assign_AddTask</targetReference>
-        </connector>
-    </assignments>
-
-    <!-- ── Assign: add task to collection ─────────────────────────────────────── -->
-    <assignments>
-        <name>Assign_AddTask</name>
-        <label>Add Task to Collection</label>
-        <locationX>616</locationX>
-        <locationY>590</locationY>
-        <assignmentItems>
-            <assignToReference>var_OverdueTasks</assignToReference>
-            <operator>Add</operator>
-            <value>
-                <elementReference>Build_Task</elementReference>
-            </value>
-        </assignmentItems>
-        <connector>
-            <targetReference>Loop_OFDProcesses</targetReference>
-        </connector>
-    </assignments>
-
-    <!-- ── Record Create (via formula): build task sObject ────────────────────── -->
-    <recordCreates>
-        <name>Build_Task</name>
-        <label>Build OFD Variance Task</label>
-        <locationX>616</locationX>
-        <locationY>590</locationY>
-        <inputAssignments>
-            <field>Subject</field>
-            <value>
-                <elementReference>var_TaskSubject</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>WhatId</field>
-            <value>
-                <elementReference>var_LoopIA.Id</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>OwnerId</field>
-            <value>
-                <elementReference>var_LoopIA.OwnerId</elementReference>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>Priority</field>
-            <value>
-                <stringValue>High</stringValue>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>Status</field>
-            <value>
-                <stringValue>Not Started</stringValue>
-            </value>
-        </inputAssignments>
-        <inputAssignments>
-            <field>ActivityDate</field>
-            <value>
-                <elementReference>formula_Today</elementReference>
-            </value>
-        </inputAssignments>
-        <object>Task</object>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
-    </recordCreates>
-
-    <!-- ── Decision: anything to bulk-insert? ────────────────────────────────── -->
     <decisions>
         <name>Decision_TasksToCreate</name>
         <label>Tasks To Create</label>
@@ -296,9 +162,7 @@
             <conditions>
                 <leftValueReference>var_OverdueTasks</leftValueReference>
                 <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
             </conditions>
             <connector>
                 <targetReference>Create_AllTasks</targetReference>
@@ -307,7 +171,120 @@
         </rules>
     </decisions>
 
-    <!-- ── Record Create: bulk-insert all tasks in one DML ────────────────────── -->
+    <!-- loops — all grouped -->
+    <loops>
+        <name>Loop_OFDProcesses</name>
+        <label>Loop OFD Processes</label>
+        <locationX>176</locationX>
+        <locationY>374</locationY>
+        <collectionReference>Get_OverdueOFDProcesses</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_LoopIA</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Decision_TasksToCreate</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+
+    <!-- assignments — all grouped -->
+    <assignments>
+        <name>Assign_LoopIA</name>
+        <label>Capture Loop IA</label>
+        <locationX>396</locationX>
+        <locationY>374</locationY>
+        <assignmentItems>
+            <assignToReference>var_LoopIA</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_OFDProcesses</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Decision_IsOverdue</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_BuildTask</name>
+        <label>Build Loop Task SObject</label>
+        <locationX>616</locationX>
+        <locationY>482</locationY>
+        <assignmentItems>
+            <assignToReference>var_LoopTask.Subject</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula_TaskSubject</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_LoopTask.WhatId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_LoopIA.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_LoopTask.OwnerId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_LoopIA.OwnerId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_LoopTask.Priority</assignToReference>
+            <operator>Assign</operator>
+            <value><stringValue>High</stringValue></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_LoopTask.Status</assignToReference>
+            <operator>Assign</operator>
+            <value><stringValue>Not Started</stringValue></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_LoopTask.ActivityDate</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula_Today</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Assign_AddTask</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_AddTask</name>
+        <label>Add Task to Collection</label>
+        <locationX>616</locationX>
+        <locationY>590</locationY>
+        <assignmentItems>
+            <assignToReference>var_OverdueTasks</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>var_LoopTask</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_OFDProcesses</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Handle_Error</name>
+        <label>Capture Error</label>
+        <locationX>616</locationX>
+        <locationY>158</locationY>
+        <assignmentItems>
+            <assignToReference>var_ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.FaultMessage</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Subflow_FaultLogger</targetReference>
+        </connector>
+    </assignments>
+
+    <!-- recordCreates — all grouped -->
     <recordCreates>
         <name>Create_AllTasks</name>
         <label>Bulk Create OFD Variance Tasks</label>
@@ -319,7 +296,7 @@
         <inputReference>var_OverdueTasks</inputReference>
     </recordCreates>
 
-    <!-- ── Subflow: error logger (no-records path, informational only) ─────────── -->
+    <!-- subflows — all grouped -->
     <subflows>
         <name>Subflow_ErrorLogger_NoData</name>
         <label>Log No Records (Info)</label>
@@ -328,37 +305,41 @@
         <flowName>NEPA_Error_Logger</flowName>
         <inputAssignments>
             <name>inp_FlowName</name>
-            <value>
-                <stringValue>NEPA_OFD_Variance_Alert</stringValue>
-            </value>
+            <value><stringValue>NEPA_OFD_Variance_Alert</stringValue></value>
         </inputAssignments>
         <inputAssignments>
             <name>inp_ErrorMessage</name>
-            <value>
-                <stringValue>No FAST-41 covered active processes found — no OFD variance tasks created.</stringValue>
-            </value>
+            <value><stringValue>No FAST-41 covered active processes found — no OFD variance tasks created.</stringValue></value>
         </inputAssignments>
     </subflows>
-
-    <!-- ── Subflow: fault error logger ───────────────────────────────────────── -->
     <subflows>
-        <name>Handle_Error</name>
+        <name>Subflow_FaultLogger</name>
         <label>Log Flow Error</label>
         <locationX>616</locationX>
-        <locationY>158</locationY>
+        <locationY>266</locationY>
         <flowName>NEPA_Error_Logger</flowName>
         <inputAssignments>
             <name>inp_FlowName</name>
-            <value>
-                <stringValue>NEPA_OFD_Variance_Alert</stringValue>
-            </value>
+            <value><stringValue>NEPA_OFD_Variance_Alert</stringValue></value>
         </inputAssignments>
         <inputAssignments>
             <name>inp_ErrorMessage</name>
-            <value>
-                <elementReference>$Flow.FaultMessage</elementReference>
-            </value>
+            <value><elementReference>var_ErrorMessage</elementReference></value>
         </inputAssignments>
     </subflows>
+
+    <start>
+        <locationX>50</locationX>
+        <locationY>50</locationY>
+        <connector>
+            <targetReference>Get_OverdueOFDProcesses</targetReference>
+        </connector>
+        <schedule>
+            <frequency>Daily</frequency>
+            <startDate>2026-01-01</startDate>
+            <startTime>07:00:00.000Z</startTime>
+        </schedule>
+        <triggerType>Scheduled</triggerType>
+    </start>
 
 </Flow>

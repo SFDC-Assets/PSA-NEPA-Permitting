@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>Autolaunched Flow used by the NEPA_PreApp_Screener Agentforce agent (sector_qualification topic). Accepts free-text project description, NAICS code, sector string, and state. Looks up the best-matching NEPA_Permit_Matrix__mdt row by sector keyword matching and NAICS prefix. Returns normalized SectorKey, NAICSCode, LeadAgencyKey, ValidationPassed, and ValidationMessage for use by NepaPreAppScreeningController.</description>
+    <description>Autolaunched Flow used by the NEPA_PreApp_Screener Agentforce agent (sector_qualification topic). Accepts free-text project description, NAICS code, sector string, and state. Looks up the best-matching NEPA_Permit_Matrix__mdt row by sector keyword matching. Returns normalized SectorKey, NAICSCode, LeadAgencyKey, ValidationPassed, and ValidationMessage for use by NepaPreAppScreeningController.</description>
     <label>NEPA PreApp Qualify Sector</label>
     <processType>AutoLaunchedFlow</processType>
     <status>Active</status>
 
-    <!-- ── Input Variables ─────────────────────────────────────────────────── -->
+    <!-- variables — all grouped -->
     <variables>
         <name>inp_ProjectDescription</name>
         <dataType>String</dataType>
@@ -35,17 +35,13 @@
         <isInput>true</isInput>
         <isOutput>false</isOutput>
     </variables>
-
-    <!-- ── Output Variables ────────────────────────────────────────────────── -->
     <variables>
         <name>out_SectorKey</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>true</isOutput>
-        <value>
-            <stringValue></stringValue>
-        </value>
+        <value><stringValue></stringValue></value>
     </variables>
     <variables>
         <name>out_NAICSCode</name>
@@ -53,9 +49,7 @@
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>true</isOutput>
-        <value>
-            <stringValue></stringValue>
-        </value>
+        <value><stringValue></stringValue></value>
     </variables>
     <variables>
         <name>out_LeadAgencyKey</name>
@@ -63,9 +57,7 @@
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>true</isOutput>
-        <value>
-            <stringValue></stringValue>
-        </value>
+        <value><stringValue></stringValue></value>
     </variables>
     <variables>
         <name>out_ValidationPassed</name>
@@ -73,9 +65,7 @@
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>true</isOutput>
-        <value>
-            <booleanValue>false</booleanValue>
-        </value>
+        <value><booleanValue>false</booleanValue></value>
     </variables>
     <variables>
         <name>out_ValidationMessage</name>
@@ -83,12 +73,8 @@
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>true</isOutput>
-        <value>
-            <stringValue></stringValue>
-        </value>
+        <value><stringValue></stringValue></value>
     </variables>
-
-    <!-- ── Working Variable: matched CMT row ──────────────────────────────── -->
     <variables>
         <name>var_MatchedMatrix</name>
         <dataType>SObject</dataType>
@@ -98,72 +84,7 @@
         <objectType>NEPA_Permit_Matrix__mdt</objectType>
     </variables>
 
-    <!-- ── Start ───────────────────────────────────────────────────────────── -->
-    <start>
-        <locationX>176</locationX>
-        <locationY>50</locationY>
-        <connector>
-            <targetReference>Decision_HasSectorInput</targetReference>
-        </connector>
-    </start>
-
-    <!-- ── Decision: Is sector or NAICS provided? ─────────────────────────── -->
-    <decisions>
-        <name>Decision_HasSectorInput</name>
-        <label>Has Sector or NAICS Input</label>
-        <locationX>176</locationX>
-        <locationY>158</locationY>
-        <defaultConnector>
-            <targetReference>Assign_NoInputError</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>No Inputs</defaultConnectorLabel>
-        <rules>
-            <name>HasSector</name>
-            <conditionLogic>or</conditionLogic>
-            <conditions>
-                <leftValueReference>inp_Sector</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <conditions>
-                <leftValueReference>inp_NAICSCode</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Lookup_PermitMatrix</targetReference>
-            </connector>
-            <label>Has Sector or NAICS</label>
-        </rules>
-    </decisions>
-
-    <!-- ── Assign: No input error ─────────────────────────────────────────── -->
-    <assignments>
-        <name>Assign_NoInputError</name>
-        <label>Set No Input Error</label>
-        <locationX>396</locationX>
-        <locationY>158</locationY>
-        <assignmentItems>
-            <assignToReference>out_ValidationPassed</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <booleanValue>false</booleanValue>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>out_ValidationMessage</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <stringValue>Please provide a project sector or NAICS code to run the screening. You can select a sector from the list or enter a 2–6 digit NAICS code for your industry.</stringValue>
-            </value>
-        </assignmentItems>
-    </assignments>
-
-    <!-- ── Get: Look up Permit Matrix by sector keyword match ─────────────── -->
+    <!-- recordLookups — all grouped -->
     <recordLookups>
         <name>Lookup_PermitMatrix</name>
         <label>Look Up Permit Matrix Row</label>
@@ -177,9 +98,7 @@
         <filters>
             <field>Active__c</field>
             <operator>EqualTo</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
+            <value><booleanValue>true</booleanValue></value>
         </filters>
         <filters>
             <field>Sector__c</field>
@@ -201,7 +120,35 @@
         <queriedFields>DeveloperName</queriedFields>
     </recordLookups>
 
-    <!-- ── Decision: Did lookup return a row? ─────────────────────────────── -->
+    <!-- decisions — all grouped -->
+    <decisions>
+        <name>Decision_HasSectorInput</name>
+        <label>Has Sector or NAICS Input</label>
+        <locationX>176</locationX>
+        <locationY>158</locationY>
+        <defaultConnector>
+            <targetReference>Assign_NoInputError</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Inputs</defaultConnectorLabel>
+        <rules>
+            <name>HasSector</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>inp_Sector</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>inp_NAICSCode</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Lookup_PermitMatrix</targetReference>
+            </connector>
+            <label>Has Sector or NAICS</label>
+        </rules>
+    </decisions>
     <decisions>
         <name>Decision_FoundMatch</name>
         <label>Found Permit Matrix Match</label>
@@ -217,9 +164,7 @@
             <conditions>
                 <leftValueReference>var_MatchedMatrix.Id</leftValueReference>
                 <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
             </conditions>
             <connector>
                 <targetReference>Assign_Outputs</targetReference>
@@ -228,7 +173,23 @@
         </rules>
     </decisions>
 
-    <!-- ── Assign: Populate outputs from matched CMT row ─────────────────── -->
+    <!-- assignments — all grouped -->
+    <assignments>
+        <name>Assign_NoInputError</name>
+        <label>Set No Input Error</label>
+        <locationX>396</locationX>
+        <locationY>158</locationY>
+        <assignmentItems>
+            <assignToReference>out_ValidationPassed</assignToReference>
+            <operator>Assign</operator>
+            <value><booleanValue>false</booleanValue></value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>out_ValidationMessage</assignToReference>
+            <operator>Assign</operator>
+            <value><stringValue>Please provide a project sector or NAICS code to run the screening. You can select a sector from the list or enter a 2–6 digit NAICS code for your industry.</stringValue></value>
+        </assignmentItems>
+    </assignments>
     <assignments>
         <name>Assign_Outputs</name>
         <label>Populate Outputs from Matrix Row</label>
@@ -258,20 +219,14 @@
         <assignmentItems>
             <assignToReference>out_ValidationPassed</assignToReference>
             <operator>Assign</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
+            <value><booleanValue>true</booleanValue></value>
         </assignmentItems>
         <assignmentItems>
             <assignToReference>out_ValidationMessage</assignToReference>
             <operator>Assign</operator>
-            <value>
-                <stringValue></stringValue>
-            </value>
+            <value><stringValue></stringValue></value>
         </assignmentItems>
     </assignments>
-
-    <!-- ── Assign: No match guidance message ─────────────────────────────── -->
     <assignments>
         <name>Assign_NoMatchMessage</name>
         <label>Set No Match Guidance</label>
@@ -280,24 +235,26 @@
         <assignmentItems>
             <assignToReference>out_ValidationPassed</assignToReference>
             <operator>Assign</operator>
-            <value>
-                <booleanValue>false</booleanValue>
-            </value>
+            <value><booleanValue>false</booleanValue></value>
         </assignmentItems>
         <assignmentItems>
             <assignToReference>out_ValidationMessage</assignToReference>
             <operator>Assign</operator>
-            <value>
-                <stringValue>I could not match your project to a standard NEPA sector. Please try one of these sector names: Agriculture/Public Lands, Energy - Offshore, Energy - Oil/Gas/Coal, Energy - Pipeline/LNG, Energy - Renewables/Solar/Geothermal, Energy - Hydropower/Transmission, Energy - Nuclear/Waste, Transportation - Land, Transportation - Water, Water Resources, Materials/Mining, or Military/Urban/Regulatory.</stringValue>
-            </value>
+            <value><stringValue>I could not match your project to a standard NEPA sector. Please try one of these sector names: Agriculture/Public Lands, Energy - Offshore, Energy - Oil/Gas/Coal, Energy - Pipeline/LNG, Energy - Renewables/Solar/Geothermal, Energy - Hydropower/Transmission, Energy - Nuclear/Waste, Transportation - Land, Transportation - Water, Water Resources, Materials/Mining, or Military/Urban/Regulatory.</stringValue></value>
         </assignmentItems>
         <assignmentItems>
             <assignToReference>out_SectorKey</assignToReference>
             <operator>Assign</operator>
-            <value>
-                <stringValue></stringValue>
-            </value>
+            <value><stringValue></stringValue></value>
         </assignmentItems>
     </assignments>
+
+    <start>
+        <locationX>50</locationX>
+        <locationY>50</locationY>
+        <connector>
+            <targetReference>Decision_HasSectorInput</targetReference>
+        </connector>
+    </start>
 
 </Flow>
