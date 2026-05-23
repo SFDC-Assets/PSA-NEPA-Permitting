@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_project__c</fullName>
+        <description>Reference to the NEPA project (Program) being linked to an analogous case.</description>
+        <inlineHelpText>The NEPA project this analogous case link applies to.</inlineHelpText>
+        <label>NEPA Project</label>
+        <referenceTo>Program</referenceTo>
+        <relationshipLabel>Analogous Cases</relationshipLabel>
+        <relationshipName>Analogous_Cases</relationshipName>
+        <trackHistory>false</trackHistory>
+        <type>MasterDetail</type>
+</CustomField>

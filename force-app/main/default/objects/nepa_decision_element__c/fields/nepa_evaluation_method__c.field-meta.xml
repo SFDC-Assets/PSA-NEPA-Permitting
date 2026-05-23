@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_evaluation_method__c</fullName>
+        <description>Description of how this criterion is evaluated, including DMN notation or plain-text decision logic. For complex logic, reference the associated Expression Set or Business Rule.</description>
+        <inlineHelpText>How this criterion is evaluated (DMN notation, rule description, or Expression Set reference).</inlineHelpText>
+        <label>Evaluation Method</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+</CustomField>

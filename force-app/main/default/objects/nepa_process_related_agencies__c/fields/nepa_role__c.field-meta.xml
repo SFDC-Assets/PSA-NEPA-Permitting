@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_role__c</fullName>
+        <description>What is the type of relationship this agency has to this permitting process?</description>
+        <inlineHelpText>What is the type of relationship this agency has to this permitting process?</inlineHelpText>
+        <label>Role</label>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Cooperating</fullName>
+                    <default>false</default>
+                    <label>Cooperating</label>
+                </value>
+                <value>
+                    <fullName>Participating</fullName>
+                    <default>false</default>
+                    <label>Participating</label>
+                </value>
+                <value>
+                    <fullName>Proponent</fullName>
+                    <default>false</default>
+                    <label>Proponent</label>
+                </value>
+                <value>
+                    <fullName>Project Sponsor</fullName>
+                    <default>false</default>
+                    <label>Project Sponsor</label>
+                    <!-- FRA: private entities or state agencies authorized to prepare EA/EIS under agency supervision per 42 U.S.C. 4336b -->
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+</CustomField>

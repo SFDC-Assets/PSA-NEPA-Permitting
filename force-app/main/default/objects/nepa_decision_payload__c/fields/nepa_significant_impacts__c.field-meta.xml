@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_significant_impacts__c</fullName>
+        <description>For FONSIs: documents why no significant impacts were found. For RODs: summarizes unavoidable adverse impacts disclosed per 40 CFR 1505.2(c). Empty for CE Determinations where extraordinary circumstances were not triggered.</description>
+        <inlineHelpText>Significant impact findings (or the basis for finding none). Required disclosure for FONSIs and RODs.</inlineHelpText>
+        <label>Significant Impact Findings</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+</CustomField>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_final_eis_section__c</fullName>
+        <description>The Final EIS section or response-to-comments chapter where this modification is documented. Enables auditors and reviewing courts to locate the agency's written credit attribution in the published document without manually parsing hundreds of pages.</description>
+        <inlineHelpText>Final EIS chapter/section where this modification and its attributed comments are discussed (e.g., "Chapter 4, Response to Comment C-47").</inlineHelpText>
+        <label>Final EIS Section Reference</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+</CustomField>

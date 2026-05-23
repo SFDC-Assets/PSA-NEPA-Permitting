@@ -5,7 +5,6 @@
  * Handles objects that cannot be loaded via CSV due to:
  *   - LicenseTypeId (IndividualApplication) — org-specific RegulatoryAuthorizationType ID
  *   - RelatedRecordId (ServiceResource) — requires User ID, not Contact
- *   - STM (ServiceTerritoryMember) — depends on ServiceResources created here
  *   - ContentVersion — requires VersionData Blob; cannot be loaded via Bulk API v2 CSV
  *   - Visit (field surveys) — created here with ContextId = IndividualApplication
  *
@@ -194,38 +193,7 @@ Map<String, Id> srIdByExt = new Map<String, Id>{
     'DEMO_SR_007' => demoSRId
 };
 
-// ── 3. ServiceTerritoryMember (one entry linking the demo SR to the territory) ─
-// All 7 specialist slots map to the same SR (demoSRId); one STM is sufficient.
-
-Id terrId;
-for (ServiceTerritory st : [
-    SELECT Id FROM ServiceTerritory WHERE External_ID__c = 'DEMO_TERR_001' LIMIT 1
-]) {
-    terrId = st.Id;
-}
-
-if (terrId != null) {
-    List<ServiceTerritoryMember> existingSTM = [
-        SELECT Id FROM ServiceTerritoryMember
-        WHERE External_ID__c = 'DEMO_STM_001'
-        LIMIT 1
-    ];
-    if (existingSTM.isEmpty()) {
-        ServiceTerritoryMember stm = new ServiceTerritoryMember(
-            External_ID__c     = 'DEMO_STM_001',
-            ServiceTerritoryId = terrId,
-            ServiceResourceId  = demoSRId,
-            TerritoryType      = 'P',
-            EffectiveStartDate = Date.newInstance(2019, 1, 1)
-        );
-        insert stm;
-        System.debug('ServiceTerritoryMember inserted: ' + stm.Id);
-    } else {
-        System.debug('ServiceTerritoryMember already exists: ' + existingSTM[0].Id);
-    }
-}
-
-// ── 4. Field Survey Visits (one per discipline/survey — replaces WorkOrder/SA/AR) ────
+// ── 3. Field Survey Visits (one per discipline/survey) ────
 // Each specialist discipline gets a completed Visit representing the field work
 // performed during the Carrie Placer Mine EA. Visits link to IndividualApplication
 // via ContextId (polymorphic) and nepa_process__c (direct lookup).

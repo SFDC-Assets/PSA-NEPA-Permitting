@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_creator__c</fullName>
+        <description>CEQ gis_data.creator — name of the person or organization that created this GIS data package.</description>
+        <inlineHelpText>Name of the person or organization that created this GIS dataset.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Creator</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+</CustomField>

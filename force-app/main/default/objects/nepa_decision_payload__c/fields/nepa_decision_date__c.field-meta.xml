@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_decision_date__c</fullName>
+        <description>The date the final determination was signed and issued by the responsible official.</description>
+        <inlineHelpText>Date this ROD, FONSI, or CE Determination was issued.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Decision Date</label>
+        <required>false</required>
+        <trackHistory>true</trackHistory>
+        <type>Date</type>
+</CustomField>

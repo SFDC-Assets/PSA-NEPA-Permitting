@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_in_nepatec__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Whether the contested NEPA project was found in the NEPATEC2.0 corpus.</description>
+        <inlineHelpText>Checked when the related NEPA project exists in NEPATEC2.0.</inlineHelpText>
+        <label>In NEPATEC</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+</CustomField>

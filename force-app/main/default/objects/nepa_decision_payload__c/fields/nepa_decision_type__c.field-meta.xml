@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_decision_type__c</fullName>
+        <description>The type of final determination this payload represents. ROD: Record of Decision (EIS culmination). FONSI: Finding of No Significant Impact (EA culmination). CE_Determination: Categorical Exclusion determination memo. Other: Programmatic or special-case determination.</description>
+        <inlineHelpText>ROD, FONSI, CE Determination, or Other.</inlineHelpText>
+        <label>Decision Type</label>
+        <required>true</required>
+        <trackHistory>true</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>ROD</fullName>
+                    <default>false</default>
+                    <label>Record of Decision (ROD)</label>
+                    <description>Final agency decision issued at conclusion of an EIS. Required content: selected alternative, mitigation commitments, monitoring requirements.</description>
+                </value>
+                <value>
+                    <fullName>FONSI</fullName>
+                    <default>false</default>
+                    <label>Finding of No Significant Impact (FONSI)</label>
+                    <description>Agency determination that an EA-analyzed action will not significantly affect the quality of the human environment, precluding need for EIS.</description>
+                </value>
+                <value>
+                    <fullName>CE_Determination</fullName>
+                    <default>false</default>
+                    <label>CE Determination</label>
+                    <description>Documented finding that an action qualifies for a categorical exclusion and no extraordinary circumstances apply.</description>
+                </value>
+                <value>
+                    <fullName>Mitigated_FONSI</fullName>
+                    <default>false</default>
+                    <label>Mitigated FONSI</label>
+                    <description>FONSI conditioned on specific mitigation measures that reduce impacts below significance thresholds.</description>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                    <description>Programmatic determination, supplemental ROD, or other non-standard decision type.</description>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+</CustomField>

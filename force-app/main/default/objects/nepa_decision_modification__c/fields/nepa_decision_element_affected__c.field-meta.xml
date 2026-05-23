@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_decision_element_affected__c</fullName>
+        <description>The specific aspect of the decision that was modified: preferred alternative selection, mitigation measure, project design, scope/boundary, schedule, monitoring requirement, or other.</description>
+        <inlineHelpText>Which part of the decision changed. Required for reportable attribution trail.</inlineHelpText>
+        <label>Decision Element Affected</label>
+        <required>true</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Preferred Alternative</fullName><default>false</default><label>Preferred Alternative</label></value>
+                <value><fullName>Mitigation Measure</fullName><default>false</default><label>Mitigation Measure</label></value>
+                <value><fullName>Project Design</fullName><default>false</default><label>Project Design</label></value>
+                <value><fullName>Project Scope/Boundary</fullName><default>false</default><label>Project Scope/Boundary</label></value>
+                <value><fullName>Construction Schedule</fullName><default>false</default><label>Construction Schedule</label></value>
+                <value><fullName>Monitoring Requirement</fullName><default>false</default><label>Monitoring Requirement</label></value>
+                <value><fullName>Other</fullName><default>false</default><label>Other</label></value>
+            </valueSetDefinition>
+        </valueSet>
+</CustomField>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_registered_count__c</fullName>
+        <description>Number of participants who pre-registered for this event. Compared against nepa_attendance_count__c to calculate attendance rate. Supports engagement quality reporting for future researchers and agency auditors who noted this data is absent from historic EIS documents.</description>
+        <inlineHelpText>Pre-registered attendees. Compare to actual attendance to calculate show-up rate.</inlineHelpText>
+        <label>Registered Count</label>
+        <precision>8</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+</CustomField>

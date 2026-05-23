@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Junction object linking a NEPA project (Program) to an analogous prior NEPA litigation case (nepa_litigation__c). Enables the Phase 2 AI-assisted case similarity feature and supports manual coordinator annotation of analogous precedents for defensibility review. One project may have multiple analogous cases; one case may be linked to multiple projects.</description>
+    <label>NEPA Project Analogous Case</label>
+    <pluralLabel>NEPA Project Analogous Cases</pluralLabel>
+    <nameField>
+        <label>Link Name</label>
+        <type>AutoNumber</type>
+        <displayFormat>PAC-{0000}</displayFormat>
+    </nameField>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <sharingModel>ControlledByParent</sharingModel>
+    <fields>
+        <fullName>nepa_project__c</fullName>
+        <description>Reference to the NEPA project (Program) being linked to an analogous case.</description>
+        <inlineHelpText>The NEPA project this analogous case link applies to.</inlineHelpText>
+        <label>NEPA Project</label>
+        <referenceTo>Program</referenceTo>
+        <relationshipLabel>Analogous Cases</relationshipLabel>
+        <relationshipName>Analogous_Cases</relationshipName>
+        <trackHistory>false</trackHistory>
+        <type>MasterDetail</type>
+    </fields>
+    <fields>
+        <fullName>nepa_litigation__c</fullName>
+        <description>Reference to the analogous NEPA litigation case (nepa_litigation__c) identified as a precedent for this project.</description>
+        <inlineHelpText>The litigation case identified as analogous to this project.</inlineHelpText>
+        <label>Litigation Case</label>
+        <referenceTo>nepa_litigation__c</referenceTo>
+        <relationshipLabel>Analogous Projects</relationshipLabel>
+        <relationshipName>Analogous_Projects</relationshipName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_similarity_score__c</fullName>
+        <description>Similarity score (0.00–1.00) computed by Phase 2 Einstein/AI feature comparing project attributes against case attributes. 1.00 = identical. Populated by AI; blank for manually-annotated links.</description>
+        <inlineHelpText>AI-computed similarity score (0–1). Blank for manually-annotated links.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Similarity Score</label>
+        <precision>4</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_match_basis__c</fullName>
+        <description>Comma-delimited list of attributes that drove the similarity match (e.g., Sector, Lead Agency, Action Type, Adjacent Statutes). Populated by AI or manually entered by coordinator.</description>
+        <inlineHelpText>Attributes that matched this case to the project (e.g., Sector; Lead Agency; ESA challenge).</inlineHelpText>
+        <label>Match Basis</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_annotated_by__c</fullName>
+        <description>Whether this link was added by AI (Automated) or manually by a coordinator (Manual). Manual links always take precedence and are never overwritten by AI re-scoring.</description>
+        <inlineHelpText>Source of this link: Automated (AI) or Manual (coordinator).</inlineHelpText>
+        <label>Annotated By</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Automated</fullName><default>false</default><label>Automated (AI)</label></value>
+                <value><fullName>Manual</fullName><default>false</default><label>Manual (Coordinator)</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_coordinator_notes__c</fullName>
+        <description>Free-text coordinator notes on why this case is analogous and what defensive measures it suggests.</description>
+        <inlineHelpText>Notes on why this case is analogous and what it implies for defensibility strategy.</inlineHelpText>
+        <label>Coordinator Notes</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+</CustomObject>

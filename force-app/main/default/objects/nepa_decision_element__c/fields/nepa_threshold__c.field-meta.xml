@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_threshold__c</fullName>
+        <description>Numeric threshold value for quantitative criteria (e.g., acreage limit, decibel level). Leave blank for qualitative criteria.</description>
+        <inlineHelpText>Numeric threshold for quantitative criteria (e.g., 5.0 for acreage limit).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Threshold</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>4</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+</CustomField>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_modification_type__c</fullName>
+        <description>Substantive modification category per the Farber-Carlarne academic rubric. Partial Modification: change to one aspect of the preferred alternative or mitigation plan. Addition/Removal: a project element added or removed in response to comments. New Alternative: an entirely new preferred alternative created in response to comments. Non-Substantive: text clarification or editorial change only — no decision impact.</description>
+        <inlineHelpText>Partial Modification, Addition/Removal, New Alternative, or Non-Substantive. Required for agency responsiveness reporting.</inlineHelpText>
+        <label>Modification Type</label>
+        <required>true</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Partial Modification</fullName>
+                    <default>false</default>
+                    <label>Partial Modification</label>
+                    <description>Change to one aspect of the preferred alternative or mitigation plan (e.g., reduced buffer zone, modified construction schedule, new mitigation measure).</description>
+                </value>
+                <value>
+                    <fullName>Addition/Removal</fullName>
+                    <default>false</default>
+                    <label>Addition/Removal</label>
+                    <description>A project element was added to or removed from the proposed action in direct response to public comment (e.g., removal of a pipeline segment, addition of a noise barrier).</description>
+                </value>
+                <value>
+                    <fullName>New Alternative</fullName>
+                    <default>false</default>
+                    <label>New Alternative</label>
+                    <description>An entirely new preferred alternative was created or selected in response to public comments. Highest tier of responsiveness.</description>
+                </value>
+                <value>
+                    <fullName>Non-Substantive</fullName>
+                    <default>false</default>
+                    <label>Non-Substantive</label>
+                    <description>Text edit, formatting correction, or clarification with no change to the underlying decision or mitigation plan.</description>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+</CustomField>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_process__c</fullName>
+        <description>The NEPA process (IndividualApplication) whose decision was modified.</description>
+        <inlineHelpText>The NEPA process this decision modification applies to.</inlineHelpText>
+        <label>NEPA Process</label>
+        <referenceTo>IndividualApplication</referenceTo>
+        <relationshipLabel>Decision Modifications</relationshipLabel>
+        <relationshipName>Decision_Modifications</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

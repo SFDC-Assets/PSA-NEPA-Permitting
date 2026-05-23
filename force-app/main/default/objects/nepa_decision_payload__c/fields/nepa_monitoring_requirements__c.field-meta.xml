@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_monitoring_requirements__c</fullName>
+        <description>Monitoring and enforcement provisions required by the decision. RODs must include a monitoring and enforcement program for mitigation per 40 CFR 1505.3.</description>
+        <inlineHelpText>Monitoring plan and enforcement requirements for mitigation commitments.</inlineHelpText>
+        <label>Monitoring Requirements</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+</CustomField>

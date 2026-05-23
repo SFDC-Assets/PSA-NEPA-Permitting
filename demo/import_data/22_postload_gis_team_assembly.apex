@@ -14,7 +14,7 @@
  *     EPA_Superfund_NPL   → MISS (0 features — rural Owyhee County, no NPL sites)
  *     EJScreen_EJ_Index   → HIT  (EJ Index = 18.3 — informational, no EC)
  *   nepa_process_team_member__c — 3 GIS_Auto_Assembly records (Hydrologist, Wildlife Biologist,
- *     NEPA Specialist); all map to DEMO_SR_001 (FSL 1-Technician-per-User constraint)
+ *     NEPA Specialist); all map to DEMO_SR_001 (1-Technician-per-User demo constraint)
  *   Visit — 3 auto-generated records (nepa_auto_generated__c = true)
  *   Program — nepa_gis_proximity_complete__c set true; protection areas text written
  *
@@ -66,13 +66,6 @@ for (ServiceResource sr : [
 }
 if (demoSRId == null) {
     System.debug('WARN: DEMO_SR_001 not found. Team member service resource links will be null. Run step 18 first.');
-}
-
-Id demoTerritoryId;
-for (ServiceTerritory st : [
-    SELECT Id FROM ServiceTerritory WHERE External_ID__c = 'DEMO_TERR_001' LIMIT 1
-]) {
-    demoTerritoryId = st.Id;
 }
 
 DateTime gisRunTs = DateTime.newInstance(2019, 3, 12, 14, 23, 0);
@@ -233,7 +226,7 @@ System.debug('Program GIS fields updated: protection areas, timestamp, EC flag, 
 //   FWS_Critical_Habitat → Wildlife Biologist (Sage-Grouse) (Colleen Trese → DEMO_SR_001 in demo)
 //   EJScreen_EJ_Index   → NEPA Specialist    (Kara Kirkpatrick-Kreitinger → DEMO_SR_001 in demo)
 //
-// All map to DEMO_SR_001 due to FSL 1-Technician-per-User demo constraint.
+// All map to DEMO_SR_001 due to 1-Technician-per-User demo constraint.
 // nepa_assembly_source__c = 'GIS_Auto_Assembly' distinguishes from the manually
 // added team members in step 20.
 

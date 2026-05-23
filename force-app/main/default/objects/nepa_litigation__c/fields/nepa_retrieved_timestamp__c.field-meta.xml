@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_retrieved_timestamp__c</fullName>
+        <description>The date and time this record was retrieved or ingested from the source system. CEQ Standard v1.2 provenance field 5 of 5.</description>
+        <inlineHelpText>Timestamp when this record was retrieved from the source system.</inlineHelpText>
+        <label>Retrieved Timestamp</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+</CustomField>

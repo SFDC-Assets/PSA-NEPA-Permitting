@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_circuit__c</fullName>
+        <description>Federal circuit (e.g., "9th", "District of Columbia", "10th").</description>
+        <inlineHelpText>Federal circuit in which the case was decided.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Circuit</label>
+        <length>100</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+</CustomField>

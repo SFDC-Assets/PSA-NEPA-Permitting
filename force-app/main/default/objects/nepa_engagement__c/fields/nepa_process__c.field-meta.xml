@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_process__c</fullName>
+    <description>The NEPA review process this engagement event is associated with.</description>
+    <inlineHelpText>The NEPA review process this engagement event is associated with.</inlineHelpText>
+    <label>Process</label>
+    <referenceTo>IndividualApplication</referenceTo>
+    <relationshipLabel>Public Engagement Events</relationshipLabel>
+    <relationshipName>Public_Engagement_Events</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_ada_accessible__c</fullName>
+        <description>Whether the venue or virtual platform met ADA accessibility standards. Required for EJ compliance reporting. An agency that holds a public meeting in an inaccessible venue may face civil rights challenges under Title VI.</description>
+        <inlineHelpText>Did this event meet ADA accessibility requirements?</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>ADA Accessible</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+</CustomField>

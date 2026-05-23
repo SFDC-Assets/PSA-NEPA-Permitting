@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_notification_channels__c</fullName>
+        <description>Channels used to notify the public of this engagement event. Multi-select enables aggregate reporting of outreach reach and channel diversity — a metric that academic researchers flagged as systematically absent from historic EIS documents, preventing quality evaluation of public engagement efforts.</description>
+        <inlineHelpText>Select all channels used to announce this event to the public.</inlineHelpText>
+        <label>Public Notification Channels</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>MultiselectPicklist</type>
+        <visibleLines>5</visibleLines>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Federal Register Notice</fullName><default>false</default><label>Federal Register Notice</label></value>
+                <value><fullName>Agency Website</fullName><default>false</default><label>Agency Website</label></value>
+                <value><fullName>Email List</fullName><default>false</default><label>Email List</label></value>
+                <value><fullName>Direct Mail</fullName><default>false</default><label>Direct Mail</label></value>
+                <value><fullName>Local Newspaper</fullName><default>false</default><label>Local Newspaper</label></value>
+                <value><fullName>Social Media</fullName><default>false</default><label>Social Media</label></value>
+                <value><fullName>Radio</fullName><default>false</default><label>Radio</label></value>
+                <value><fullName>Tribal Government Direct Notice</fullName><default>false</default><label>Tribal Government Direct Notice</label></value>
+                <value><fullName>Community Organization Outreach</fullName><default>false</default><label>Community Organization Outreach</label></value>
+                <value><fullName>Flyer/Poster Distribution</fullName><default>false</default><label>Flyer/Poster Distribution</label></value>
+            </valueSetDefinition>
+        </valueSet>
+</CustomField>

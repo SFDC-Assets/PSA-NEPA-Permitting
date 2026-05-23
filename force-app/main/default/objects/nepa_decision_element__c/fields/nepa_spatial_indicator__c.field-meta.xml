@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_spatial_indicator__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>True when this decision element involves a geographic or spatial component (e.g., proximity to a protected area, floodplain, or tribal land).</description>
+        <inlineHelpText>Check if this criterion involves a spatial or geographic component.</inlineHelpText>
+        <label>Spatial Indicator</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+</CustomField>

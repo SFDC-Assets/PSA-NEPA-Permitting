@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Lightweight flow error log. Captures fault messages from all NEPA record-triggered flows. When Nebula Logger is installed, replace NEPA_Error_Logger subflow body to route records there instead.</description>
+    <label>NEPA Flow Error</label>
+    <pluralLabel>NEPA Flow Errors</pluralLabel>
+    <nameField>
+        <label>Error Name</label>
+        <type>AutoNumber</type>
+        <displayFormat>FE-{0000}</displayFormat>
+        <startingNumber>1</startingNumber>
+    </nameField>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <sharingModel>ReadWrite</sharingModel>
+
+    <fields>
+        <fullName>nepa_flow_api_name__c</fullName>
+        <label>Flow API Name</label>
+        <type>Text</type>
+        <length>255</length>
+        <required>true</required>
+        <externalId>false</externalId>
+        <unique>false</unique>
+    </fields>
+
+    <fields>
+        <fullName>nepa_error_message__c</fullName>
+        <label>Error Message</label>
+        <type>LongTextArea</type>
+        <length>32768</length>
+        <visibleLines>5</visibleLines>
+        <required>false</required>
+    </fields>
+
+    <fields>
+        <fullName>nepa_record_id__c</fullName>
+        <label>Record Id</label>
+        <type>Text</type>
+        <length>18</length>
+        <required>false</required>
+        <externalId>false</externalId>
+        <unique>false</unique>
+    </fields>
+
+    <fields>
+        <fullName>nepa_occurred_at__c</fullName>
+        <label>Occurred At</label>
+        <type>DateTime</type>
+        <required>false</required>
+    </fields>
+
+    <fields>
+        <fullName>nepa_running_user__c</fullName>
+        <label>Running User</label>
+        <type>Lookup</type>
+        <referenceTo>User</referenceTo>
+        <relationshipLabel>NEPA Flow Errors</relationshipLabel>
+        <relationshipName>NEPA_Flow_Errors</relationshipName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <required>false</required>
+    </fields>
+
+    <fields>
+        <fullName>nepa_failed_step__c</fullName>
+        <label>Last Known Step</label>
+        <type>Text</type>
+        <length>255</length>
+        <required>false</required>
+        <externalId>false</externalId>
+        <unique>false</unique>
+    </fields>
+
+    <fields>
+        <fullName>nepa_error_context__c</fullName>
+        <description>Serialized snapshot of key variable values at the time of fault. Format is pipe-delimited name:value pairs (e.g. "ReviewType:CE|RiskScore:73|Tier:Moderate|Step:Update_RiskFields"). Populated by the calling flow before it invokes NEPA_Error_Logger as inp_ErrorContext. Enables post-mortem diagnosis without needing to reproduce the failure.</description>
+        <inlineHelpText>Variable state snapshot at the time of failure, populated automatically by the faulted flow.</inlineHelpText>
+        <label>Error Context</label>
+        <length>32768</length>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+        <required>false</required>
+    </fields>
+</CustomObject>

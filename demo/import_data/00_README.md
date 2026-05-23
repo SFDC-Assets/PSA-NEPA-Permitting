@@ -42,7 +42,7 @@ Load files strictly in number order. Each file's parent records must exist befor
 | 19 | `19_Task.csv` | Task | 8 | `External_ID__c` | Loaded before or after Apex; WhatId/WhoId wired by step 18 |
 | 20 | `20_entities789_demo_data.apex` | **Apex script** | — | — | Run after step 18; creates RegulatoryAuthority (4), RegulatoryCode (7 standalone Entity 9), nepa_process_team_member__c (7), nepa_gis_data__c (1 GIS container), Polygon (1), nepa_gis_data_element__c (5); wires Program lat/lon/polygon |
 | 21 | `21_postload_discipline.apex` | **Apex script** | — | — | Run after step 18; sets ServiceResource.nepa_discipline__c = 'NEPA Specialist' on DEMO_SR_001 (demo constraint: all 7 specialists share one SR) |
-| 22 | `22_postload_gis_team_assembly.apex` | **Apex script** | — | — | Run after steps 20–21; pre-seeds GIS proximity results (nepa_detected_protection_layer__c × 4), auto-assembled team members (× 3, GIS_Auto_Assembly), and auto-generated WorkOrders (× 3, nepa_auto_generated__c = true) for the Carrie Placer Mine; sets Program nepa_extraordinary_circumstances__c = true and nepa_gis_proximity_complete__c = true |
+| 22 | `22_postload_gis_team_assembly.apex` | **Apex script** | — | — | Run after steps 20–21; pre-seeds GIS proximity results (nepa_detected_protection_layer__c × 4), auto-assembled team members (× 3, GIS_Auto_Assembly), and auto-generated Visits (× 3, nepa_auto_generated__c = true) for the Carrie Placer Mine; sets Program nepa_extraordinary_circumstances__c = true and nepa_gis_proximity_complete__c = true |
 | 23 | `23_postload_flow_refresh.apex` | **Apex script** | — | — | Run last; re-fires all IsChanged-gated flows (Risk Scorer, CE Screener, SLA Setter, Timeline Risk, Defensibility Checker) by toggling then restoring nepa_review_type__c. Populates nepa_risk_score_factors__c, nepa_screening_confidence__c, nepa_sla_due_date__c, nepa_timeline_risk_tier__c, nepa_defensibility_gaps__c, nepa_missing_documents__c, and related computed fields. |
 | 24 | `24_decision_payload.csv` | nepa_decision_payload__c | 1 | upsert via `nepa_process__r.nepa_federal_unique_id__c` | IndividualApplication (09) — load after step 23 |
 | 25 | `25_ar_export.csv` | nepa_ar_export__c | 1 | upsert via `nepa_process__r.nepa_federal_unique_id__c` | IndividualApplication (09) — load after step 24 |
@@ -313,13 +313,10 @@ sf data delete bulk --sobject nepa_engagement__c      --where "External_ID__c LI
 sf data delete bulk --sobject ContentVersion          --where "nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
 sf data delete bulk --sobject IndividualApplication   --where "nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
 sf data delete bulk --sobject Program                 --where "nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'" --target-org $TARGET --async
-sf data delete bulk --sobject ServiceTerritoryMember  --where "External_ID__c LIKE 'DEMO_STM_%'"  --target-org $TARGET --async
 sf data delete bulk --sobject ServiceResource         --where "External_ID__c LIKE 'DEMO_SR_%'"    --target-org $TARGET --async
 sf data delete bulk --sobject WorkType                --where "External_ID__c LIKE 'DEMO_WT_%'"    --target-org $TARGET --async
-sf data delete bulk --sobject ServiceTerritory        --where "External_ID__c LIKE 'DEMO_TERR_%'"  --target-org $TARGET --async
 sf data delete bulk --sobject Contact                 --where "External_ID__c LIKE 'DEMO_CON_%'"   --target-org $TARGET --async
 sf data delete bulk --sobject Account                 --where "External_ID__c LIKE 'DEMO_ACCT_%'"  --target-org $TARGET --async
-sf data delete bulk --sobject OperatingHours          --where "External_ID__c LIKE 'DEMO_OH_%'"    --target-org $TARGET --async
 
 # Steps 28–30 cleanup (run before IndividualApplication deletes above)
 sf data delete bulk --sobject nepa_required_permit__c --where "External_ID__c LIKE 'DEMO_RP_%'" --target-org $TARGET --async

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_translation_services__c</fullName>
+        <description>Whether any translation or interpretation services were provided. Agencies serving communities with limited English proficiency must provide language access under Executive Order 13166 and Title VI. Historic EIS documents rarely reported this data.</description>
+        <inlineHelpText>Were translation or interpretation services provided at this event?</inlineHelpText>
+        <defaultValue>false</defaultValue>
+        <label>Translation Services Provided</label>
+        <trackTrending>false</trackTrending>
+        <type>Checkbox</type>
+</CustomField>

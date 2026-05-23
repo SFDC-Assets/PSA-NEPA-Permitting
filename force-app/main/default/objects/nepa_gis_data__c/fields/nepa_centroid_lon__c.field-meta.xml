@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_centroid_lon__c</fullName>
+        <description>CEQ gis_data.centroid_lon — longitude of the centroid for this GIS data package (decimal degrees, WGS84).</description>
+        <inlineHelpText>Centroid longitude in decimal degrees (WGS84).</inlineHelpText>
+        <label>Centroid Longitude</label>
+        <precision>11</precision>
+        <required>false</required>
+        <scale>6</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+</CustomField>

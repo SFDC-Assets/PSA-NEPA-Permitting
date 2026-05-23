@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_selected_alternative__c</fullName>
+        <description>The alternative selected in the final decision. Required in RODs per 40 CFR 1505.2(b). For FONSIs and CE Determinations, describes the proposed action as approved.</description>
+        <inlineHelpText>The alternative selected or the action as approved. Required for RODs.</inlineHelpText>
+        <label>Selected Alternative</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+</CustomField>

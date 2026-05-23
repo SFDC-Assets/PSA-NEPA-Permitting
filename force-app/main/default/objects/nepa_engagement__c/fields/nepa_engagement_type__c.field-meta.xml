@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_engagement_type__c</fullName>
+        <description>Type of public engagement event per CEQ standard Entity 5 Type property.</description>
+        <inlineHelpText>Type of engagement: Public Meeting, Notice, Solicitation, Tribal Consultation, Scoping, or Other.</inlineHelpText>
+        <label>Engagement Type</label>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Public Meeting</fullName>
+                    <default>false</default>
+                    <label>Public Meeting</label>
+                </value>
+                <value>
+                    <fullName>Public Hearing</fullName>
+                    <default>false</default>
+                    <label>Public Hearing</label>
+                </value>
+                <value>
+                    <fullName>Notice</fullName>
+                    <default>false</default>
+                    <label>Notice</label>
+                </value>
+                <value>
+                    <fullName>Comment Solicitation</fullName>
+                    <default>false</default>
+                    <label>Comment Solicitation</label>
+                </value>
+                <value>
+                    <fullName>Scoping Meeting</fullName>
+                    <default>false</default>
+                    <label>Scoping Meeting</label>
+                </value>
+                <value>
+                    <fullName>Tribal Consultation</fullName>
+                    <default>false</default>
+                    <label>Tribal Consultation</label>
+                </value>
+                <value>
+                    <fullName>Open House</fullName>
+                    <default>false</default>
+                    <label>Open House</label>
+                </value>
+                <value>
+                    <fullName>Virtual Webinar</fullName>
+                    <default>false</default>
+                    <label>Virtual Webinar</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+</CustomField>

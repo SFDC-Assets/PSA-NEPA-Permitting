@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_modification__c</fullName>
+        <description>The decision modification this comment is credited with influencing.</description>
+        <inlineHelpText>The decision modification this comment influenced.</inlineHelpText>
+        <label>Decision Modification</label>
+        <referenceTo>nepa_decision_modification__c</referenceTo>
+        <relationshipLabel>Attributed Comments</relationshipLabel>
+        <relationshipName>Attributed_Comments</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackTrending>false</trackTrending>
+        <type>MasterDetail</type>
+        <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_measure__c</fullName>
+        <description>The measurable quantity or attribute name for this criterion (e.g., "Disturbance Acres", "Noise Level dB"). Maps to the CEQ standard decision_element.measure property.</description>
+        <inlineHelpText>Name of the measurable quantity evaluated by this criterion (e.g., "Disturbance Acres").</inlineHelpText>
+        <label>Measure</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+</CustomField>

@@ -10,13 +10,10 @@
 #   - Run from repo root
 #
 # Load order (dependency-safe):
-#   01  OperatingHours          — no dependencies
 #   02  Account                 — no dependencies
 #   03  Contact                 — depends on Account
-#   04  ServiceTerritory        — depends on OperatingHours
 #   05  WorkType                — no dependencies
 #   06  ServiceResource         — no dependencies (RelatedRecordId wired via Apex)
-#   07  ServiceTerritoryMember  — depends on ServiceTerritory + ServiceResource
 #   08  Program                 — depends on Account
 #   09  IndividualApplication   — depends on Program + Contact
 #   10  ContentVersion          — created via Apex (VersionData requires Blob insert)
@@ -231,7 +228,7 @@ step_header "Step 17: nepa_litigation__c (Litigation Cases)"
 upsert_csv "nepa_litigation__c" "nepa_litigation__c" "17_nepa_litigation__c.csv" "External_ID__c"
 
 # ── step 18: post-load Apex (polymorphic wiring) ─────────────────────────────
-step_header "Step 18: Post-load Apex (IA, ContentVersion, SR, STM, SA, AR + wire all relationships)"
+step_header "Step 18: Post-load Apex (IA, ContentVersion, SR, Visits + wire all relationships)"
 run_apex "post-load polymorphic wiring" "demo/import_data/18_postload_polymorphic.apex"
 
 # ── step 19: Task ─────────────────────────────────────────────────────────────
@@ -250,8 +247,8 @@ run_apex "entity 9/8/7 demo data" "demo/import_data/20_entities789_demo_data.ape
 step_header "Step 21: ServiceResource nepa_discipline__c"
 run_apex "ServiceResource discipline" "demo/import_data/21_postload_discipline.apex"
 
-# ── step 22: GIS proximity results + auto-assembled team + auto-generated WOs ─
-step_header "Step 22: GIS proximity results, auto-assembled team, and auto-generated Work Orders"
+# ── step 22: GIS proximity results + auto-assembled team + auto-generated Visits ─
+step_header "Step 22: GIS proximity results, auto-assembled team, and auto-generated Visits"
 run_apex "GIS team assembly" "demo/import_data/22_postload_gis_team_assembly.apex"
 
 # ── step 23: Flow refresh (risk scorer + permit coordinator recalc) ───────────

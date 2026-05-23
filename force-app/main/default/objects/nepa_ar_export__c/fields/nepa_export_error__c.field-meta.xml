@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_export_error__c</fullName>
+        <description>Error message from NepaArExportBatch if the export failed. Includes the Apex exception type, message, and stack trace prefix to support triage. Populated when nepa_export_status__c = Failed.</description>
+        <inlineHelpText>Batch error details. Populated when Export Status = Failed.</inlineHelpText>
+        <label>Export Error</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+</CustomField>

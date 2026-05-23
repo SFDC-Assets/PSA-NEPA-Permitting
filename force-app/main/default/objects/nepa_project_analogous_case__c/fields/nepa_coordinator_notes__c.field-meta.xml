@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_coordinator_notes__c</fullName>
+        <description>Free-text coordinator notes on why this case is analogous and what defensive measures it suggests.</description>
+        <inlineHelpText>Notes on why this case is analogous and what it implies for defensibility strategy.</inlineHelpText>
+        <label>Coordinator Notes</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+</CustomField>

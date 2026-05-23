@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_export_status__c</fullName>
+        <description>Current status of the AR export job. Requested: created by agency staff, not yet processed. Queued: handed to the async batch job. In Progress: NepaArExportBatch is running. Complete: all metadata exported and download link available. Failed: batch error — see nepa_export_error__c. Superseded: a newer export for this process has been generated.</description>
+        <inlineHelpText>Current status of this AR export job.</inlineHelpText>
+        <label>Export Status</label>
+        <required>true</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Requested</fullName><default>true</default><label>Requested</label></value>
+                <value><fullName>Queued</fullName><default>false</default><label>Queued</label></value>
+                <value><fullName>In Progress</fullName><default>false</default><label>In Progress</label></value>
+                <value><fullName>Complete</fullName><default>false</default><label>Complete</label></value>
+                <value><fullName>Failed</fullName><default>false</default><label>Failed</label></value>
+                <value><fullName>Superseded</fullName><default>false</default><label>Superseded</label></value>
+            </valueSetDefinition>
+        </valueSet>
+</CustomField>

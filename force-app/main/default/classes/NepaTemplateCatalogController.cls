@@ -122,8 +122,7 @@ public with sharing class NepaTemplateCatalogController {
     private static String getActionPlanRelationshipField(String objectName) {
         Map<String, String> relFields = new Map<String, String>{
             'IndividualApplication' => 'IndividualApplicationId',
-            'Program'               => 'ProgramId',
-            'WorkOrder'             => 'WorkOrderId'
+            'Program'               => 'ProgramId'
         };
         return relFields.containsKey(objectName) ? relFields.get(objectName) : null;
     }

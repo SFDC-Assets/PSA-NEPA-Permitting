@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_related_project__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Lookup to Program (NEPA project) linked via nepatec_project_uuid = Program.nepa_project_id__c.</description>
+        <inlineHelpText>The NEPA project record this litigation is associated with.</inlineHelpText>
+        <label>Related Project</label>
+        <referenceTo>Program</referenceTo>
+        <relationshipLabel>Litigation Cases</relationshipLabel>
+        <relationshipName>Litigation_Cases</relationshipName>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+</CustomField>

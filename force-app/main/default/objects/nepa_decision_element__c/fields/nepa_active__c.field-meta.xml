@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_active__c</fullName>
+        <defaultValue>true</defaultValue>
+        <description>When false, this decision element is excluded from active screening evaluations.</description>
+        <inlineHelpText>Uncheck to retire this decision element from active use.</inlineHelpText>
+        <label>Active</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+</CustomField>

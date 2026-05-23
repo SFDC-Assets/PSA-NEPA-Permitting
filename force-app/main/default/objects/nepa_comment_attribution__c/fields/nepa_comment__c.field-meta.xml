@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_comment__c</fullName>
+        <description>The specific PublicComplaint record credited with influencing this decision modification. For large clusters of near-identical comments, use the cluster attribution fields on nepa_decision_modification__c instead.</description>
+        <inlineHelpText>The public comment that influenced this modification.</inlineHelpText>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <label>Comment</label>
+        <referenceTo>PublicComplaint</referenceTo>
+        <relationshipLabel>Decision Modifications Attributed</relationshipLabel>
+        <relationshipName>Decision_Modifications_Attributed</relationshipName>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+</CustomField>

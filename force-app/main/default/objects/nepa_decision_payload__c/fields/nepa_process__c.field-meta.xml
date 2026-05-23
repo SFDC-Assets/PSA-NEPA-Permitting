@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_process__c</fullName>
+        <description>The NEPA process (IndividualApplication) this decision payload documents.</description>
+        <inlineHelpText>The NEPA process whose final determination this payload records.</inlineHelpText>
+        <label>NEPA Process</label>
+        <referenceTo>IndividualApplication</referenceTo>
+        <relationshipLabel>Decision Payloads</relationshipLabel>
+        <relationshipName>Decision_Payloads</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackHistory>false</trackHistory>
+        <type>MasterDetail</type>
+</CustomField>

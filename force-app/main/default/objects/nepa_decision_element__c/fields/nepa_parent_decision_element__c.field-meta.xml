@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_parent_decision_element__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Parent decision element for hierarchical criteria structures (e.g., a sub-criterion of a broader screening category). Maps to the CEQ standard decision_element.parent_decision_element_id property.</description>
+        <inlineHelpText>Parent criterion when this element is a sub-criterion in a hierarchy.</inlineHelpText>
+        <label>Parent Decision Element</label>
+        <referenceTo>nepa_decision_element__c</referenceTo>
+        <relationshipLabel>Child Decision Elements</relationshipLabel>
+        <relationshipName>Child_Decision_Elements</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+</CustomField>

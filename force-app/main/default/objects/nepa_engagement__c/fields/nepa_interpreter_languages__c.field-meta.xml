@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_interpreter_languages__c</fullName>
+        <description>Languages for which live interpretation was provided (oral) or written materials were translated. Multi-select enables aggregate reporting of language access coverage across all engagement events in a process — data that was absent from historic EIS documents reviewed in academic research.</description>
+        <inlineHelpText>Select all languages for which interpretation or translated materials were available.</inlineHelpText>
+        <label>Interpreter Languages</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>MultiselectPicklist</type>
+        <visibleLines>4</visibleLines>
+        <valueSet>
+            <restricted>false</restricted>
+            <valueSetDefinition>
+                <sorted>true</sorted>
+                <value><fullName>Spanish</fullName><default>false</default><label>Spanish</label></value>
+                <value><fullName>Mandarin Chinese</fullName><default>false</default><label>Mandarin Chinese</label></value>
+                <value><fullName>Cantonese Chinese</fullName><default>false</default><label>Cantonese Chinese</label></value>
+                <value><fullName>Vietnamese</fullName><default>false</default><label>Vietnamese</label></value>
+                <value><fullName>Korean</fullName><default>false</default><label>Korean</label></value>
+                <value><fullName>Arabic</fullName><default>false</default><label>Arabic</label></value>
+                <value><fullName>Tagalog/Filipino</fullName><default>false</default><label>Tagalog/Filipino</label></value>
+                <value><fullName>Haitian Creole</fullName><default>false</default><label>Haitian Creole</label></value>
+                <value><fullName>Portuguese</fullName><default>false</default><label>Portuguese</label></value>
+                <value><fullName>Russian</fullName><default>false</default><label>Russian</label></value>
+                <value><fullName>French</fullName><default>false</default><label>French</label></value>
+                <value><fullName>Navajo/Diné</fullName><default>false</default><label>Navajo/Diné</label></value>
+                <value><fullName>Other (noted in Notes field)</fullName><default>false</default><label>Other (noted in Notes field)</label></value>
+            </valueSetDefinition>
+        </valueSet>
+</CustomField>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_comments_received_count__c</fullName>
+        <description>Number of written or oral comments received at or attributable to this engagement event. Enables per-event comment yield analysis — a metric that historic EIS documents failed to report and that researchers flagged as a critical engagement quality gap.</description>
+        <inlineHelpText>Comments received at or directly resulting from this event.</inlineHelpText>
+        <label>Comments Received Count</label>
+        <precision>8</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+</CustomField>

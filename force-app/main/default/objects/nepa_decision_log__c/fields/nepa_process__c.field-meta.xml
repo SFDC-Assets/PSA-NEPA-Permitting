@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_process__c</fullName>
+        <description>The NEPA process (IndividualApplication) this evaluation log belongs to. MasterDetail — deleting the process cascades deletion of all child logs. Maps to CEQ standard process_decision_payload.process.</description>
+        <inlineHelpText>The NEPA review process this evaluation log documents.</inlineHelpText>
+        <label>NEPA Process</label>
+        <referenceTo>IndividualApplication</referenceTo>
+        <relationshipLabel>Decision Logs</relationshipLabel>
+        <relationshipName>Decision_Logs</relationshipName>
+        <relationshipOrder>0</relationshipOrder>
+        <reparentableMasterDetail>false</reparentableMasterDetail>
+        <trackHistory>false</trackHistory>
+        <type>MasterDetail</type>
+</CustomField>

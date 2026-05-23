@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_project__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>The project (Program) associated with this evaluation. Denormalized from the process for direct project-level querying. Maps to CEQ standard process_decision_payload.project.</description>
+        <inlineHelpText>Project associated with this evaluation log.</inlineHelpText>
+        <label>Project</label>
+        <referenceTo>Program</referenceTo>
+        <relationshipLabel>Decision Logs</relationshipLabel>
+        <relationshipName>Decision_Logs_Project</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+</CustomField>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_determination_basis__c</fullName>
+        <description>For process-level records: the substantive legal, scientific, or factual basis for this determination. Required for administrative record defensibility. For CE findings: the CE code authority (e.g., 43 CFR 46.210(i)). For FONSI: the no-significance analysis summary.</description>
+        <inlineHelpText>Legal, scientific, or factual basis. Required for administrative record defensibility.</inlineHelpText>
+        <label>Determination Basis</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <length>32768</length>
+        <visibleLines>6</visibleLines>
+</CustomField>

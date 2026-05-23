@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_attributed_cluster_count__c</fullName>
+        <description>Number of comments in the attributed cluster. Reported as the credited comment count when attribution_type is Cluster or Both. Required when nepa_attributed_cluster_id__c is populated.</description>
+        <inlineHelpText>How many comments were in this cluster. Used in responsiveness rate reporting.</inlineHelpText>
+        <label>Attributed Cluster Comment Count</label>
+        <precision>8</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+</CustomField>

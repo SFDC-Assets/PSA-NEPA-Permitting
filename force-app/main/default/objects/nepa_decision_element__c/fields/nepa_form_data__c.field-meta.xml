@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_form_data__c</fullName>
+        <description>JSON definition of the structured screening form for this criterion, including field names, types, and validation rules. Maps to the CEQ standard decision_element.form_data property.</description>
+        <inlineHelpText>JSON schema for the screening form fields (e.g., {"acreage": {"type": "number", "required": true}}).</inlineHelpText>
+        <label>Screening Form Data (JSON)</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+</CustomField>

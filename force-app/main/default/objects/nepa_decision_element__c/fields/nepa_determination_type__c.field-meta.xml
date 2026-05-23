@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_determination_type__c</fullName>
+        <description>For process-level records: the category of determination. CE_Finding: documented CE basis. EA_Significance: significance finding. FONSI: finding of no significant impact. FONSI_Condition: mitigation condition on a FONSI. ROD_Commitment: ROD commitment or selected alternative element. ESA_Consultation: Section 7 outcome. Section_106: NHPA finding. EJ_Finding: environmental justice analysis outcome.</description>
+        <inlineHelpText>Type of determination (for process-level records).</inlineHelpText>
+        <label>Determination Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>CE_Finding</fullName><default>false</default><label>CE Finding</label></value>
+                <value><fullName>EA_Significance</fullName><default>false</default><label>EA Significance Finding</label></value>
+                <value><fullName>FONSI</fullName><default>false</default><label>FONSI</label></value>
+                <value><fullName>FONSI_Condition</fullName><default>false</default><label>FONSI Condition</label></value>
+                <value><fullName>ROD_Commitment</fullName><default>false</default><label>ROD Commitment</label></value>
+                <value><fullName>ESA_Consultation</fullName><default>false</default><label>ESA Section 7 Consultation</label></value>
+                <value><fullName>Section_106</fullName><default>false</default><label>NHPA Section 106 Finding</label></value>
+                <value><fullName>EJ_Finding</fullName><default>false</default><label>Environmental Justice Finding</label></value>
+            </valueSetDefinition>
+        </valueSet>
+</CustomField>

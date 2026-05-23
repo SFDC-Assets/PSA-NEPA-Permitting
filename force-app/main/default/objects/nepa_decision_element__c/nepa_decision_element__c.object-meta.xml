@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>CEQ Standard Entity 8b — Decision Elements. Dual-purpose: (1) Screening criteria catalog — stores structured criteria determining whether a CE, EA, or EIS applies, with legal references, thresholds, and spatial indicators (supports MFR #3 and MFR #4). (2) Process-level determinations — stores discrete, auditable findings made during a specific NEPA review: CE findings, EA significance findings, FONSI conditions, ROD commitments, ESA/Section 106 outcomes. When nepa_process__c is populated, the record represents a process-level determination. When nepa_legal_reference__c is populated without a process link, it is a criteria catalog entry. Decision elements back the NEPA_Defensibility_Gap_Checker flow: a complete administrative record requires at minimum one CE_Finding or FONSI per process.</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableLicensing>false</enableLicensing>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <externalSharingModel>Private</externalSharingModel>
+
+    <!-- ── Process-level determination fields ────────────────────────────── -->
+    <fields>
+        <fullName>nepa_process__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>The NEPA process (IndividualApplication) this determination element belongs to. Populate for process-level findings (CE finding, FONSI, ROD commitment, etc.). Leave blank for criteria catalog entries.</description>
+        <inlineHelpText>The NEPA review process this finding documents. Leave blank for criteria catalog entries.</inlineHelpText>
+        <label>NEPA Process</label>
+        <referenceTo>IndividualApplication</referenceTo>
+        <relationshipLabel>Decision Elements</relationshipLabel>
+        <relationshipName>Decision_Elements_Process</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+
+    <fields>
+        <fullName>nepa_determination_type__c</fullName>
+        <description>For process-level records: the category of determination. CE_Finding: documented CE basis. EA_Significance: significance finding. FONSI: finding of no significant impact. FONSI_Condition: mitigation condition on a FONSI. ROD_Commitment: ROD commitment or selected alternative element. ESA_Consultation: Section 7 outcome. Section_106: NHPA finding. EJ_Finding: environmental justice analysis outcome.</description>
+        <inlineHelpText>Type of determination (for process-level records).</inlineHelpText>
+        <label>Determination Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>CE_Finding</fullName><default>false</default><label>CE Finding</label></value>
+                <value><fullName>EA_Significance</fullName><default>false</default><label>EA Significance Finding</label></value>
+                <value><fullName>FONSI</fullName><default>false</default><label>FONSI</label></value>
+                <value><fullName>FONSI_Condition</fullName><default>false</default><label>FONSI Condition</label></value>
+                <value><fullName>ROD_Commitment</fullName><default>false</default><label>ROD Commitment</label></value>
+                <value><fullName>ESA_Consultation</fullName><default>false</default><label>ESA Section 7 Consultation</label></value>
+                <value><fullName>Section_106</fullName><default>false</default><label>NHPA Section 106 Finding</label></value>
+                <value><fullName>EJ_Finding</fullName><default>false</default><label>Environmental Justice Finding</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+
+    <fields>
+        <fullName>nepa_determination_outcome__c</fullName>
+        <description>For process-level records: the result of this determination.</description>
+        <inlineHelpText>Outcome of this determination (for process-level records).</inlineHelpText>
+        <label>Determination Outcome</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Pending</fullName><default>false</default><label>Pending</label></value>
+                <value><fullName>Approved</fullName><default>false</default><label>Approved</label></value>
+                <value><fullName>Conditionally_Approved</fullName><default>false</default><label>Conditionally Approved</label></value>
+                <value><fullName>Denied</fullName><default>false</default><label>Denied</label></value>
+                <value><fullName>Deferred</fullName><default>false</default><label>Deferred</label></value>
+                <value><fullName>Withdrawn</fullName><default>false</default><label>Withdrawn</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+
+    <fields>
+        <fullName>nepa_determination_date__c</fullName>
+        <description>For process-level records: the date this determination was formally made or documented.</description>
+        <inlineHelpText>Date this determination was formally made or documented.</inlineHelpText>
+        <label>Determination Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </fields>
+
+    <fields>
+        <fullName>nepa_determination_basis__c</fullName>
+        <description>For process-level records: the substantive legal, scientific, or factual basis for this determination. Required for administrative record defensibility. For CE findings: the CE code authority (e.g., 43 CFR 46.210(i)). For FONSI: the no-significance analysis summary.</description>
+        <inlineHelpText>Legal, scientific, or factual basis. Required for administrative record defensibility.</inlineHelpText>
+        <label>Determination Basis</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <length>32768</length>
+        <visibleLines>6</visibleLines>
+    </fields>
+
+    <fields>
+        <fullName>nepa_responsible_official__c</fullName>
+        <description>For process-level records: the agency official who made or signed this determination.</description>
+        <inlineHelpText>Agency official who signed this determination.</inlineHelpText>
+        <label>Responsible Official</label>
+        <referenceTo>User</referenceTo>
+        <relationshipLabel>Decision Elements (Official)</relationshipLabel>
+        <relationshipName>Decision_Elements_Official</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+
+    <fields>
+        <fullName>nepa_document_id__c</fullName>
+        <description>ContentDocumentId of the supporting document for this determination (e.g., CE memo, FONSI, ROD). Stored as Text(18) — Salesforce does not support Lookup fields on ContentDocument or ContentVersion.</description>
+        <inlineHelpText>ContentDocumentId of the supporting document.</inlineHelpText>
+        <label>Supporting Document ID</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <length>18</length>
+        <unique>false</unique>
+    </fields>
+
+    <fields>
+        <fullName>nepa_ec_review_complete__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>For CE_Finding records: confirms extraordinary circumstances were reviewed and none apply (or were mitigated). Required for every CE determination per 40 CFR 1501.4(b). When false on a CE_Finding, NEPA_Defensibility_Gap_Checker flags a defensibility gap.</description>
+        <inlineHelpText>EC review complete and no extraordinary circumstances apply (required for CE findings).</inlineHelpText>
+        <label>EC Review Complete</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+
+    <!-- ── PIC OpenAPI standard fields (decision_element entity) ─────────── -->
+    <fields>
+        <fullName>nepa_title__c</fullName>
+        <description>Short descriptive name for this decision criterion or determination. Maps to the CEQ standard decision_element.title property.</description>
+        <inlineHelpText>Short name for this decision element (e.g., "CE Acreage Limit — BLM Oil &amp; Gas").</inlineHelpText>
+        <label>Title</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_description__c</fullName>
+        <description>Full description of this decision criterion or determination. Maps to the CEQ standard decision_element.description property.</description>
+        <inlineHelpText>Full description of the criterion, including any regulatory context.</inlineHelpText>
+        <label>Description</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_measure__c</fullName>
+        <description>The measurable quantity or attribute name for this criterion (e.g., "Disturbance Acres", "Noise Level dB"). Maps to the CEQ standard decision_element.measure property.</description>
+        <inlineHelpText>Name of the measurable quantity evaluated by this criterion (e.g., "Disturbance Acres").</inlineHelpText>
+        <label>Measure</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_process_model_id__c</fullName>
+        <description>DeveloperName of the NEPA_Process_Model__mdt record this decision element belongs to. Stored as Text because Custom Metadata Types cannot be Lookup targets from custom objects. Maps to the CEQ standard decision_element.process_model foreign key.</description>
+        <inlineHelpText>DeveloperName of the associated process model (e.g., EIS_Standard, CE_BLM).</inlineHelpText>
+        <label>Process Model ID</label>
+        <length>80</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_parent_decision_element__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Parent decision element for hierarchical criteria structures (e.g., a sub-criterion of a broader screening category). Maps to the CEQ standard decision_element.parent_decision_element_id property.</description>
+        <inlineHelpText>Parent criterion when this element is a sub-criterion in a hierarchy.</inlineHelpText>
+        <label>Parent Decision Element</label>
+        <referenceTo>nepa_decision_element__c</referenceTo>
+        <relationshipLabel>Child Decision Elements</relationshipLabel>
+        <relationshipName>Child_Decision_Elements</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_form_text__c</fullName>
+        <description>The question or prompt text shown to users in a screening form for this criterion. Maps to the CEQ standard decision_element.form_text property.</description>
+        <inlineHelpText>Screening form question presented to applicants or reviewers for this criterion.</inlineHelpText>
+        <label>Screening Form Text</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_form_data__c</fullName>
+        <description>JSON definition of the structured screening form for this criterion, including field names, types, and validation rules. Maps to the CEQ standard decision_element.form_data property.</description>
+        <inlineHelpText>JSON schema for the screening form fields (e.g., {"acreage": {"type": "number", "required": true}}).</inlineHelpText>
+        <label>Screening Form Data (JSON)</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_intersect__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>True when evaluation of this criterion requires a spatial intersection check (e.g., project footprint must intersect a protected area layer). Maps to the CEQ standard decision_element.intersect property.</description>
+        <inlineHelpText>Check when this criterion requires a spatial intersect with a GIS layer to evaluate.</inlineHelpText>
+        <label>Spatial Intersect Required</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_response_data__c</fullName>
+        <description>JSON object storing the structured evaluation response data for this decision element when used in a process-level context. Maps to the CEQ standard decision_element.response_data property.</description>
+        <inlineHelpText>Structured evaluation response data (JSON) captured when this element was evaluated for a specific process.</inlineHelpText>
+        <label>Response Data (JSON)</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_other__c</fullName>
+        <description>Extension bag for agency-specific or non-standard properties. Stores arbitrary JSON for interoperability with systems that require fields beyond the CEQ standard schema. Maps to the CEQ standard decision_element.other (jsonb) property.</description>
+        <inlineHelpText>JSON extension bag for additional properties not covered by the standard schema.</inlineHelpText>
+        <label>Other (JSON)</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>2</visibleLines>
+    </fields>
+
+    <!-- ── Criteria catalog fields (existing) ────────────────────────────── -->
+    <fields>
+        <fullName>nepa_legal_reference__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>The legal authority that defines or authorizes this decision criterion. Links to the PSS RegulatoryCode object.</description>
+        <inlineHelpText>Legal authority that defines this criterion (e.g., 40 CFR 1501.4 for CE determination).</inlineHelpText>
+        <label>Legal Reference</label>
+        <referenceTo>RegulatoryCode</referenceTo>
+        <relationshipLabel>NEPA Decision Elements</relationshipLabel>
+        <relationshipName>NEPA_Decision_Elements</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_category__c</fullName>
+        <description>Classification of this decision element per CEQ standard: limitation, condition, core criterion, or extraordinary circumstance.</description>
+        <inlineHelpText>Type of decision criterion.</inlineHelpText>
+        <label>Category</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Core Criterion</fullName>
+                    <default>false</default>
+                    <label>Core Criterion</label>
+                </value>
+                <value>
+                    <fullName>Limitation</fullName>
+                    <default>false</default>
+                    <label>Limitation</label>
+                </value>
+                <value>
+                    <fullName>Condition</fullName>
+                    <default>false</default>
+                    <label>Condition</label>
+                </value>
+                <value>
+                    <fullName>Extraordinary Circumstance</fullName>
+                    <default>false</default>
+                    <label>Extraordinary Circumstance</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_review_type__c</fullName>
+        <description>The NEPA review type this decision element applies to (CE, EA, EIS, or all).</description>
+        <inlineHelpText>Review type this criterion applies to.</inlineHelpText>
+        <label>Applies To Review Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>CE</fullName>
+                    <default>false</default>
+                    <label>CE</label>
+                </value>
+                <value>
+                    <fullName>EA</fullName>
+                    <default>false</default>
+                    <label>EA</label>
+                </value>
+                <value>
+                    <fullName>EIS</fullName>
+                    <default>false</default>
+                    <label>EIS</label>
+                </value>
+                <value>
+                    <fullName>All</fullName>
+                    <default>false</default>
+                    <label>All</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_threshold__c</fullName>
+        <description>Numeric threshold value for quantitative criteria (e.g., acreage limit, decibel level). Leave blank for qualitative criteria.</description>
+        <inlineHelpText>Numeric threshold for quantitative criteria (e.g., 5.0 for acreage limit).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Threshold</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>4</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_threshold_unit__c</fullName>
+        <description>Unit of measure for the threshold value (e.g., acres, decibels, miles).</description>
+        <inlineHelpText>Unit of measure for the threshold (e.g., acres, decibels).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Threshold Unit</label>
+        <length>100</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_spatial_indicator__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>True when this decision element involves a geographic or spatial component (e.g., proximity to a protected area, floodplain, or tribal land).</description>
+        <inlineHelpText>Check if this criterion involves a spatial or geographic component.</inlineHelpText>
+        <label>Spatial Indicator</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_spatial_reference__c</fullName>
+        <description>Reference to the GIS layer, dataset, or geographic boundary relevant to this spatial criterion (e.g., USFWS critical habitat layer, FEMA floodplain).</description>
+        <inlineHelpText>GIS layer or dataset that defines the spatial boundary for this criterion.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Spatial Reference</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_evaluation_method__c</fullName>
+        <description>Description of how this criterion is evaluated, including DMN notation or plain-text decision logic. For complex logic, reference the associated Expression Set or Business Rule.</description>
+        <inlineHelpText>How this criterion is evaluated (DMN notation, rule description, or Expression Set reference).</inlineHelpText>
+        <label>Evaluation Method</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_expected_data__c</fullName>
+        <description>JSON specification of the input data fields required to evaluate this criterion (e.g., {"acreage": "Number", "action_type": "String"}).</description>
+        <inlineHelpText>JSON spec of input fields needed to evaluate this criterion.</inlineHelpText>
+        <label>Expected Evaluation Data (JSON)</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_active__c</fullName>
+        <defaultValue>true</defaultValue>
+        <description>When false, this decision element is excluded from active screening evaluations.</description>
+        <inlineHelpText>Uncheck to retire this decision element from active use.</inlineHelpText>
+        <label>Active</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_ai_assisted_draft__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Set to true when Element_Description__c was AI-generated or substantially AI-modified. When true and Selected__c = true, nepa_sme_validation_date__c is required before this element can be finalized in the administrative record. Satisfies OMB M-25-21 AI accountability for federal decision elements. Source: NAEP/PNNL 2025 AI Workshop.</description>
+        <inlineHelpText>This decision element content was AI-assisted. SME validation required before selection.</inlineHelpText>
+        <label>AI Assisted Draft</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>nepa_sme_validation_date__c</fullName>
+        <description>Date and time when a subject matter expert validated this AI-assisted decision element. Required when nepa_ai_assisted_draft__c = true and Selected__c = true. Provides the administrative record audit trail showing human review occurred before the AI-generated content was adopted into the NEPA decision. Citation: OMB M-25-21 Section 4(b).</description>
+        <inlineHelpText>Date/time SME validated this AI-assisted content. Required for selected AI-drafted elements.</inlineHelpText>
+        <label>SME Validation Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <label>NEPA Decision Element</label>
+    <nameField>
+        <label>Decision Element Name</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>NEPA Decision Elements</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>Private</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

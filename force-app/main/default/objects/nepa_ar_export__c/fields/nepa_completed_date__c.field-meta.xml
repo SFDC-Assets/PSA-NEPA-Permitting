@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_completed_date__c</fullName>
+        <description>Date and time the AR export completed successfully. Together with nepa_requested_date__c, measures total export time.</description>
+        <inlineHelpText>When the export completed. Compared to requested date to measure production time.</inlineHelpText>
+        <label>Completed Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+</CustomField>

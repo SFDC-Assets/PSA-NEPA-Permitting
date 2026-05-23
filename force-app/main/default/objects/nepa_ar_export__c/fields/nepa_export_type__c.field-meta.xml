@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_export_type__c</fullName>
+        <description>Type of AR export. Metadata Only: structured record fields and comment text in CSV/JSON — no binary files. Full Package: metadata plus ContentVersion binary files. Index Only: numbered document index without binary content, for initial court submission before full production. The async approach uses Metadata Only first to avoid heap limits; Full Package is executed as a separate batch run using ContentDocumentLink queries chunked by file size.</description>
+        <inlineHelpText>Metadata Only: fields and comment text. Full Package: metadata + files. Index Only: numbered index without binaries.</inlineHelpText>
+        <label>Export Type</label>
+        <required>true</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Metadata Only</fullName><default>true</default><label>Metadata Only</label></value>
+                <value><fullName>Full Package</fullName><default>false</default><label>Full Package</label></value>
+                <value><fullName>Index Only</fullName><default>false</default><label>Index Only</label></value>
+            </valueSetDefinition>
+        </valueSet>
+</CustomField>

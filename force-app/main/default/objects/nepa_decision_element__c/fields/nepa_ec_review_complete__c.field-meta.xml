@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_ec_review_complete__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>For CE_Finding records: confirms extraordinary circumstances were reviewed and none apply (or were mitigated). Required for every CE determination per 40 CFR 1501.4(b). When false on a CE_Finding, NEPA_Defensibility_Gap_Checker flags a defensibility gap.</description>
+        <inlineHelpText>EC review complete and no extraordinary circumstances apply (required for CE findings).</inlineHelpText>
+        <label>EC Review Complete</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+</CustomField>

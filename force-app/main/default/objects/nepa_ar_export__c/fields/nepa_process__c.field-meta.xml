@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_process__c</fullName>
+        <description>The NEPA process (IndividualApplication) whose Administrative Record is being exported.</description>
+        <inlineHelpText>The NEPA process this AR export covers.</inlineHelpText>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <label>NEPA Process</label>
+        <referenceTo>IndividualApplication</referenceTo>
+        <relationshipLabel>AR Exports</relationshipLabel>
+        <relationshipName>AR_Exports</relationshipName>
+        <required>true</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+</CustomField>

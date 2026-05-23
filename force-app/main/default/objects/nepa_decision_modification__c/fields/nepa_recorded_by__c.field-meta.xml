@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_recorded_by__c</fullName>
+        <description>The agency staff member who recorded this attribution. Part of the OMB M-24-10 audit trail — human attribution decisions are not AI-generated.</description>
+        <inlineHelpText>Agency staff member who documented this modification and its comment attribution.</inlineHelpText>
+        <label>Recorded By</label>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <referenceTo>User</referenceTo>
+        <relationshipLabel>Decision Modifications Recorded</relationshipLabel>
+        <relationshipName>Decision_Modifications_Recorded</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+</CustomField>

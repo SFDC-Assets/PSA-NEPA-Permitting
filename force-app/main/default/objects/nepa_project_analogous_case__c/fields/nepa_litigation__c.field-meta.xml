@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_litigation__c</fullName>
+        <description>Reference to the analogous NEPA litigation case (nepa_litigation__c) identified as a precedent for this project.</description>
+        <inlineHelpText>The litigation case identified as analogous to this project.</inlineHelpText>
+        <label>Litigation Case</label>
+        <referenceTo>nepa_litigation__c</referenceTo>
+        <relationshipLabel>Analogous Projects</relationshipLabel>
+        <relationshipName>Analogous_Projects</relationshipName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+</CustomField>

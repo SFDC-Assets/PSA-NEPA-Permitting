@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_prevailing_party__c</fullName>
+        <description>Which party prevailed: Agency, Challenger, or Cannot be determined.</description>
+        <inlineHelpText>The prevailing party in the case.</inlineHelpText>
+        <label>Prevailing Party</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Agency</fullName>
+                    <default>false</default>
+                    <label>Agency</label>
+                </value>
+                <value>
+                    <fullName>Challenger</fullName>
+                    <default>false</default>
+                    <label>Challenger</label>
+                </value>
+                <value>
+                    <fullName>Cannot be determined</fullName>
+                    <default>false</default>
+                    <label>Cannot be determined</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+</CustomField>

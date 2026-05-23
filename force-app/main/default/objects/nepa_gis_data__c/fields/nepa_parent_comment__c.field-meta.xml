@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_parent_comment__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>CEQ gis_data.parent_comment_id — the public comment (PublicComplaint) this GIS package is associated with.</description>
+        <inlineHelpText>The public comment this GIS data container belongs to.</inlineHelpText>
+        <label>Comment</label>
+        <referenceTo>PublicComplaint</referenceTo>
+        <relationshipLabel>GIS Data Containers</relationshipLabel>
+        <relationshipName>GIS_Data_Comment</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+</CustomField>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_ai_assisted_draft__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>Set to true when Element_Description__c was AI-generated or substantially AI-modified. When true and Selected__c = true, nepa_sme_validation_date__c is required before this element can be finalized in the administrative record. Satisfies OMB M-25-21 AI accountability for federal decision elements. Source: NAEP/PNNL 2025 AI Workshop.</description>
+        <inlineHelpText>This decision element content was AI-assisted. SME validation required before selection.</inlineHelpText>
+        <label>AI Assisted Draft</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+</CustomField>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_category__c</fullName>
+        <description>Classification of this decision element per CEQ standard: limitation, condition, core criterion, or extraordinary circumstance.</description>
+        <inlineHelpText>Type of decision criterion.</inlineHelpText>
+        <label>Category</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Core Criterion</fullName>
+                    <default>false</default>
+                    <label>Core Criterion</label>
+                </value>
+                <value>
+                    <fullName>Limitation</fullName>
+                    <default>false</default>
+                    <label>Limitation</label>
+                </value>
+                <value>
+                    <fullName>Condition</fullName>
+                    <default>false</default>
+                    <label>Condition</label>
+                </value>
+                <value>
+                    <fullName>Extraordinary Circumstance</fullName>
+                    <default>false</default>
+                    <label>Extraordinary Circumstance</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+</CustomField>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_advance_notice_days__c</fullName>
+        <description>Number of calendar days between the first public notice and the event date. Shorter advance notice disproportionately disadvantages low-income and rural communities with less scheduling flexibility. CEQ best practice is 15+ days; FRA compressed timelines often result in shorter windows.</description>
+        <inlineHelpText>Days of advance notice given before this event. CEQ best practice: 15 or more days.</inlineHelpText>
+        <label>Advance Notice Days</label>
+        <precision>4</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+</CustomField>

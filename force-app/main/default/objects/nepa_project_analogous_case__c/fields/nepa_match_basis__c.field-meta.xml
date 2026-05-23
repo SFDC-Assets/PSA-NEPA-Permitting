@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_match_basis__c</fullName>
+        <description>Comma-delimited list of attributes that drove the similarity match (e.g., Sector, Lead Agency, Action Type, Adjacent Statutes). Populated by AI or manually entered by coordinator.</description>
+        <inlineHelpText>Attributes that matched this case to the project (e.g., Sector; Lead Agency; ESA challenge).</inlineHelpText>
+        <label>Match Basis</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+</CustomField>

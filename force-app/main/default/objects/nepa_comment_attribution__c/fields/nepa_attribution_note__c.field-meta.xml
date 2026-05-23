@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_attribution_note__c</fullName>
+        <description>Optional note explaining how this specific comment influenced the modification — for example, citing the specific claim or data point in the comment that the agency acted on. Provides granular audit trail beyond the modification-level description.</description>
+        <inlineHelpText>Optional: what specific aspect of this comment drove the change?</inlineHelpText>
+        <label>Attribution Note</label>
+        <length>1000</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+</CustomField>

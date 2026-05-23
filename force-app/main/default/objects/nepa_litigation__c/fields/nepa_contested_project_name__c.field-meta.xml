@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_contested_project_name__c</fullName>
+        <description>Name of the NEPA project contested in this litigation, as identified by PermitTEC matching.</description>
+        <inlineHelpText>Name of the contested NEPA project (populated when linked to NEPATEC).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Contested Project Name</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+</CustomField>

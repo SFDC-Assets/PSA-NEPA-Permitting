@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_review_type__c</fullName>
+        <description>The NEPA review type this decision element applies to (CE, EA, EIS, or all).</description>
+        <inlineHelpText>Review type this criterion applies to.</inlineHelpText>
+        <label>Applies To Review Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>CE</fullName>
+                    <default>false</default>
+                    <label>CE</label>
+                </value>
+                <value>
+                    <fullName>EA</fullName>
+                    <default>false</default>
+                    <label>EA</label>
+                </value>
+                <value>
+                    <fullName>EIS</fullName>
+                    <default>false</default>
+                    <label>EIS</label>
+                </value>
+                <value>
+                    <fullName>All</fullName>
+                    <default>false</default>
+                    <label>All</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+</CustomField>

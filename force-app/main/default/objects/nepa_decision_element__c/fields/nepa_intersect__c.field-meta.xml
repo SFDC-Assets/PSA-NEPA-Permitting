@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_intersect__c</fullName>
+        <defaultValue>false</defaultValue>
+        <description>True when evaluation of this criterion requires a spatial intersection check (e.g., project footprint must intersect a protected area layer). Maps to the CEQ standard decision_element.intersect property.</description>
+        <inlineHelpText>Check when this criterion requires a spatial intersect with a GIS layer to evaluate.</inlineHelpText>
+        <label>Spatial Intersect Required</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+</CustomField>

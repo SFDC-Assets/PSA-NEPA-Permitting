@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_input_due_date__c</fullName>
+        <description>Deadline by which this agency must submit their formal input (e.g., biological opinion, Section 106 letter, Water Quality Certification). Used by Priority 7 Interagency Coordination Hub.</description>
+        <inlineHelpText>Deadline for this agency's formal input submission.</inlineHelpText>
+        <label>Input Due Date</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Date</type>
+</CustomField>

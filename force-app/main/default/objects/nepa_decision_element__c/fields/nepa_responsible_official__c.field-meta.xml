@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_responsible_official__c</fullName>
+        <description>For process-level records: the agency official who made or signed this determination.</description>
+        <inlineHelpText>Agency official who signed this determination.</inlineHelpText>
+        <label>Responsible Official</label>
+        <referenceTo>User</referenceTo>
+        <relationshipLabel>Decision Elements (Official)</relationshipLabel>
+        <relationshipName>Decision_Elements_Official</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+</CustomField>

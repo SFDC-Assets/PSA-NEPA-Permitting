@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_requested_date__c</fullName>
+        <description>Date and time the AR export was requested. Used to track the 60-day clock from lawsuit filing to AR production (pending SPEED Act).</description>
+        <inlineHelpText>When the export was requested. Start of the 60-day production clock.</inlineHelpText>
+        <label>Requested Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+</CustomField>

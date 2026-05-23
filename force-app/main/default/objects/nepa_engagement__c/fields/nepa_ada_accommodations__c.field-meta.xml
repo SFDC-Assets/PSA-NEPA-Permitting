@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_ada_accommodations__c</fullName>
+        <description>Specific ADA accommodations provided at this event. Multi-select to enable reportable breakdown of accommodation types across all engagement events in a process.</description>
+        <inlineHelpText>Select all ADA accommodations provided at this event.</inlineHelpText>
+        <label>ADA Accommodations Provided</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>MultiselectPicklist</type>
+        <visibleLines>4</visibleLines>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>ASL Interpretation</fullName><default>false</default><label>ASL Interpretation</label></value>
+                <value><fullName>Captioning/CART</fullName><default>false</default><label>Captioning/CART</label></value>
+                <value><fullName>Wheelchair Accessible Venue</fullName><default>false</default><label>Wheelchair Accessible Venue</label></value>
+                <value><fullName>Accessible Parking</fullName><default>false</default><label>Accessible Parking</label></value>
+                <value><fullName>Hearing Loop/Assistive Listening</fullName><default>false</default><label>Hearing Loop/Assistive Listening</label></value>
+                <value><fullName>Large Print Materials</fullName><default>false</default><label>Large Print Materials</label></value>
+                <value><fullName>Screen Reader Compatible (Virtual)</fullName><default>false</default><label>Screen Reader Compatible (Virtual)</label></value>
+            </valueSetDefinition>
+        </valueSet>
+</CustomField>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_defendant__c</fullName>
+        <description>Defendant(s) — may be a semicolon-delimited list of agencies and intervenors.</description>
+        <inlineHelpText>Defendant(s) in the case. Multiple defendants are semicolon-delimited.</inlineHelpText>
+        <label>Defendant</label>
+        <length>32768</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+</CustomField>

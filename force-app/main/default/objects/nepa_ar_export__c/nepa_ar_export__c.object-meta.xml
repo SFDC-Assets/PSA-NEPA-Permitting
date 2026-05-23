@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>CancelEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>SaveEdit</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Large</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <formFactor>Small</formFactor>
+        <type>Default</type>
+    </actionOverrides>
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Tracks an Administrative Record (AR) export job. An AR export packages all IndividualApplication metadata, PublicComplaint records, and ContentVersion files into a court-ready indexed format. Pending SPEED Act legislation may require agencies to produce the AR within 60 days of a lawsuit filing. Each record represents one export request with its status, scope, document count, and download location. The export itself is executed by a Batch Apex class (NepaArExportBatch) invoked from an Agentforce action or a manual button on the IndividualApplication record page.</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableLicensing>false</enableLicensing>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <externalSharingModel>Private</externalSharingModel>
+
+    <!-- ── Core relationship and identity ──────────────────────────────── -->
+
+    <fields>
+        <fullName>nepa_process__c</fullName>
+        <description>The NEPA process (IndividualApplication) whose Administrative Record is being exported.</description>
+        <inlineHelpText>The NEPA process this AR export covers.</inlineHelpText>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <label>NEPA Process</label>
+        <referenceTo>IndividualApplication</referenceTo>
+        <relationshipLabel>AR Exports</relationshipLabel>
+        <relationshipName>AR_Exports</relationshipName>
+        <required>true</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+
+    <!-- ── Export lifecycle ─────────────────────────────────────────────── -->
+
+    <fields>
+        <fullName>nepa_export_status__c</fullName>
+        <description>Current status of the AR export job. Requested: created by agency staff, not yet processed. Queued: handed to the async batch job. In Progress: NepaArExportBatch is running. Complete: all metadata exported and download link available. Failed: batch error — see nepa_export_error__c. Superseded: a newer export for this process has been generated.</description>
+        <inlineHelpText>Current status of this AR export job.</inlineHelpText>
+        <label>Export Status</label>
+        <required>true</required>
+        <trackHistory>true</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Requested</fullName><default>true</default><label>Requested</label></value>
+                <value><fullName>Queued</fullName><default>false</default><label>Queued</label></value>
+                <value><fullName>In Progress</fullName><default>false</default><label>In Progress</label></value>
+                <value><fullName>Complete</fullName><default>false</default><label>Complete</label></value>
+                <value><fullName>Failed</fullName><default>false</default><label>Failed</label></value>
+                <value><fullName>Superseded</fullName><default>false</default><label>Superseded</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+
+    <fields>
+        <fullName>nepa_export_type__c</fullName>
+        <description>Type of AR export. Metadata Only: structured record fields and comment text in CSV/JSON — no binary files. Full Package: metadata plus ContentVersion binary files. Index Only: numbered document index without binary content, for initial court submission before full production. The async approach uses Metadata Only first to avoid heap limits; Full Package is executed as a separate batch run using ContentDocumentLink queries chunked by file size.</description>
+        <inlineHelpText>Metadata Only: fields and comment text. Full Package: metadata + files. Index Only: numbered index without binaries.</inlineHelpText>
+        <label>Export Type</label>
+        <required>true</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Metadata Only</fullName><default>true</default><label>Metadata Only</label></value>
+                <value><fullName>Full Package</fullName><default>false</default><label>Full Package</label></value>
+                <value><fullName>Index Only</fullName><default>false</default><label>Index Only</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+
+    <!-- ── Scope and progress counters ──────────────────────────────────── -->
+
+    <fields>
+        <fullName>nepa_requested_date__c</fullName>
+        <description>Date and time the AR export was requested. Used to track the 60-day clock from lawsuit filing to AR production (pending SPEED Act).</description>
+        <inlineHelpText>When the export was requested. Start of the 60-day production clock.</inlineHelpText>
+        <label>Requested Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+
+    <fields>
+        <fullName>nepa_completed_date__c</fullName>
+        <description>Date and time the AR export completed successfully. Together with nepa_requested_date__c, measures total export time.</description>
+        <inlineHelpText>When the export completed. Compared to requested date to measure production time.</inlineHelpText>
+        <label>Completed Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+
+    <fields>
+        <fullName>nepa_comment_count__c</fullName>
+        <description>Number of PublicComplaint records included in this AR export. Populated by NepaArExportBatch when the export completes.</description>
+        <inlineHelpText>Number of public comment records exported.</inlineHelpText>
+        <label>Comment Records Exported</label>
+        <precision>10</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+
+    <fields>
+        <fullName>nepa_document_count__c</fullName>
+        <description>Number of ContentVersion records included in this AR export. Populated by NepaArExportBatch when the export completes.</description>
+        <inlineHelpText>Number of documents exported.</inlineHelpText>
+        <label>Documents Exported</label>
+        <precision>10</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackTrending>false</trackTrending>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+
+    <!-- ── Output and error ──────────────────────────────────────────────── -->
+
+    <fields>
+        <fullName>nepa_export_download_url__c</fullName>
+        <description>URL or Salesforce Files path where the completed AR export package can be downloaded. For Metadata Only exports, points to a CSV/JSON ContentVersion created by the batch. For Full Package exports, points to a ZIP archive or a Content Delivery URL. Null until export status is Complete.</description>
+        <inlineHelpText>Download location for the completed AR package. Available when Export Status = Complete.</inlineHelpText>
+        <label>Export Download URL</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+
+    <fields>
+        <fullName>nepa_export_error__c</fullName>
+        <description>Error message from NepaArExportBatch if the export failed. Includes the Apex exception type, message, and stack trace prefix to support triage. Populated when nepa_export_status__c = Failed.</description>
+        <inlineHelpText>Batch error details. Populated when Export Status = Failed.</inlineHelpText>
+        <label>Export Error</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+
+    <fields>
+        <fullName>nepa_requested_by__c</fullName>
+        <description>The agency user who requested this AR export. Part of the audit trail — AR production requests should be traceable to an authorized agency official.</description>
+        <inlineHelpText>Agency staff member who requested this export.</inlineHelpText>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <label>Requested By</label>
+        <referenceTo>User</referenceTo>
+        <relationshipLabel>AR Exports Requested</relationshipLabel>
+        <relationshipName>AR_Exports_Requested</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+
+    <label>NEPA AR Export</label>
+    <nameField>
+        <displayFormat>AR-{YYYY}-{0000}</displayFormat>
+        <label>AR Export Name</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>NEPA AR Exports</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>Private</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

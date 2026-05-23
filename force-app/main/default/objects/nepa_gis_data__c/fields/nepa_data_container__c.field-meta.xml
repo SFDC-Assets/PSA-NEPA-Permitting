@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_data_container__c</fullName>
+        <description>CEQ gis_data.data_container — JSON blob for the primary GIS data payload (GeoJSON, bounding geometry, or structured spatial index).</description>
+        <inlineHelpText>Primary GIS data payload as JSON (GeoJSON, spatial index, or structured geometry).</inlineHelpText>
+        <label>Data Container</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>6</visibleLines>
+</CustomField>

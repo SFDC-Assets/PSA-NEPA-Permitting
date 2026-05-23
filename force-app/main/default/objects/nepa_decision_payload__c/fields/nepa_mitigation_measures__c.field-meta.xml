@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_mitigation_measures__c</fullName>
+        <description>Specific mitigation measures committed to in the decision. Required in RODs per 40 CFR 1505.2(c). For Mitigated FONSIs, describes the mitigation that eliminates significant impacts.</description>
+        <inlineHelpText>Mitigation commitments made in this decision. Include monitoring and enforcement provisions.</inlineHelpText>
+        <label>Mitigation Measures</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+</CustomField>

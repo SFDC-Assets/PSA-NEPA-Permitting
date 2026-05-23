@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_similarity_score__c</fullName>
+        <description>Similarity score (0.00–1.00) computed by Phase 2 Einstein/AI feature comparing project attributes against case attributes. 1.00 = identical. Populated by AI; blank for manually-annotated links.</description>
+        <inlineHelpText>AI-computed similarity score (0–1). Blank for manually-annotated links.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Similarity Score</label>
+        <precision>4</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+</CustomField>

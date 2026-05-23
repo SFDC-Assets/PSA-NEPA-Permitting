@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_data_source_agency__c</fullName>
+        <description>The agency or organization that published or owns the source data. CEQ Standard v1.2 provenance field 3 of 5.</description>
+        <inlineHelpText>Agency that owns the source data (e.g., PNNL for PermitTEC corpus).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Source Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+</CustomField>

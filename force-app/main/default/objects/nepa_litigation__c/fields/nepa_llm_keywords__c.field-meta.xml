@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+<fullName>nepa_llm_keywords__c</fullName>
+        <description>Keywords extracted by the PermitTEC LLM pipeline to identify the contested project. Semicolon-delimited.</description>
+        <inlineHelpText>LLM-extracted keywords used to identify the contested NEPA project.</inlineHelpText>
+        <label>LLM Keywords</label>
+        <length>32768</length>
+        <trackTrending>false</trackTrending>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+</CustomField>
