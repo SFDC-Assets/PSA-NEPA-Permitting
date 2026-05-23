@@ -164,7 +164,7 @@ IndividualApplication (09)  [also — GIS auto-assembly from step 22]
 
 | External_ID__c | Name | Role in Demo |
 |---|---|---|
-| DEMO_ACCT_001 | BLM Owyhee Field Office | Lead agency — parent for Program, WorkOrders, staff contacts |
+| DEMO_ACCT_001 | BLM Owyhee Field Office | Lead agency — parent for Program, Visits, staff contacts |
 | DEMO_ACCT_002 | Sam Uhler and David Smith | Permit applicant — applicant contact on IndividualApplication |
 | DEMO_ACCT_003 | Idaho Conservation League | High-risk prior commenter — PublicComplaint DEMO_PC_001, litigation reference |
 | DEMO_ACCT_004 | Office of Species Conservation | Agency commenter — PublicComplaint DEMO_PC_002 |
@@ -221,7 +221,7 @@ sf data query --target-org $TARGET \
   --query "SELECT nepa_discipline__c, nepa_assembly_source__c, nepa_active__c FROM nepa_process_team_member__c WHERE nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709' AND nepa_assembly_source__c = 'GIS_Auto_Assembly'"
 
 sf data query --target-org $TARGET \
-  --query "SELECT Subject, nepa_discipline__c, Priority, Status FROM WorkOrder WHERE nepa_auto_generated__c = true AND nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'"
+  --query "SELECT InstructionDescription, nepa_discipline__c, VisitPriority, Status FROM Visit WHERE nepa_auto_generated__c = true AND nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'"
 
 sf data query --target-org $TARGET \
   --query "SELECT Name, nepa_centroid_lat__c, nepa_centroid_lon__c, nepa_extent__c, nepa_data_source_system__c FROM nepa_gis_data__c WHERE nepa_parent_process__r.nepa_federal_unique_id__c = 'IDI-38709'"

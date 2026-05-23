@@ -1,5 +1,5 @@
 /**
- * PSS-only demo data load for NEPA_INNOVATOR (no FSL).
+ * PSS-only demo data load for NEPA_INNOVATOR.
  *
  * Loads: Accounts (5), Program (1), IndividualApplication (1),
  *        ApplicationTimeline (25), nepa_engagement__c (5),
