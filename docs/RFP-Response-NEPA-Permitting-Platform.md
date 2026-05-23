@@ -12,9 +12,9 @@
 
 ## Executive Summary
 
-The proposed solution delivers a fully configured NEPA permitting acceleration platform built on **Salesforce Government Cloud Plus** and the **Salesforce Agentforce for Public Sector (APS)** suite. It satisfies all nine CEQ Standard entities (CEQ NEPA and Permitting Data and Technology Standard v1.2), all 82 requirements in this RFP, and all Priority 1 technical, data, security, and implementation requirements.
+The proposed solution delivers a fully configured NEPA permitting acceleration platform built on **Salesforce Government Cloud Plus** and the **Salesforce Agentforce for Public Sector (APS)** suite. It satisfies all thirteen CEQ Standard entities (CEQ NEPA and Permitting Data and Technology Standard v1.2), all 82 requirements in this RFP, and all Priority 1 technical, data, security, and implementation requirements.
 
-The platform is FedRAMP High authorized on Salesforce Government Cloud Plus. No Agency-managed server infrastructure is required. The vast majority of capability is delivered through **configuration** — Salesforce declarative tools including Flows (42 total), Custom Metadata Types (23 types), OmniStudio Integration Procedures and DataRaptors, Business Rules Engine (BRE) Decision Matrices and Expression Sets, and the Salesforce Field Service scheduling engine — rather than custom code. This produces a maintainable, upgradeable platform that Agency administrators can extend without engaging developers for routine business rule changes.
+The platform is FedRAMP High authorized on Salesforce Government Cloud Plus. No Agency-managed server infrastructure is required. The vast majority of capability is delivered through **configuration** — Salesforce declarative tools including Flows (40 total), Custom Metadata Types (25 types), OmniStudio Integration Procedures and 15 DataRaptor definitions, Business Rules Engine (BRE) 8 Decision Matrices and 3 Expression Sets, and the Salesforce Field Service scheduling engine — rather than custom code. The platform is validated by 519+ Apex tests across 38 test classes. Custom UI surfaces are delivered through 2 Lightning Web Components (`nepaPermitDependencies`, `nepaRiskIntelligenceCard`). Integration with 12 external services is managed through Named Credentials. This produces a maintainable, upgradeable platform that Agency administrators can extend without engaging developers for routine business rule changes.
 
 The platform ships with a fully operational **empirical risk intelligence layer** calibrated from 761 federal NEPA litigation cases (PermitTEC v0.1, PNNL 2025) and the 61,881-project NETATEC v2.0 EIS timeline corpus. All risk scoring is deterministic and fully transparent: litigation risk scores, challenge prediction rules, tribal plaintiff intelligence, sector-circuit risk cells, and per-agency EIS scoping performance tiers are all configurable metadata records — not opaque AI outputs. The AI vs. deterministic boundary is explicitly disclosed in every score factors string written to the administrative record.
 
@@ -522,7 +522,12 @@ The `NEPA_Litigation_Risk_Scorer` record-triggered Flow fires asynchronously aft
 | ScopingOverrunFlag | `nepa_scoping_overrun_flag__c` |
 | ScopingOverrunMonths | `nepa_projected_scoping_overrun_months__c` |
 
-The BRE Expression Set `NEPA_Litigation_Risk_Scorer` V2 is Active in the platform. V3 (which adds full sector-circuit and scoping terms to the composite formula) is included as a Draft for sandbox validation. The BRE reads risk point values from Decision Matrix rows, not from the custom metadata records directly; the metadata records are supplementary documentation that mirror the DM values. Both are updated in lockstep when calibration data is refreshed.
+The BRE Expression Set `NEPA_Litigation_Risk_Scorer` V3 is Active in the platform. V3 produces a **bifurcated risk score** across two independent dimensions:
+
+- **Litigation Probability Score** (85% weight, 6 factors: review type, agency loss rate, circuit multiplier, statute exposure, scoping overrun, sector-circuit cell) — expressed as a 0–100 composite score calibrated from 761 PermitTEC v0.1 federal NEPA litigation cases
+- **Litigation Cost Exposure** (15% weight) — normalized from per-agency median litigation durations drawn from the PermitTEC corpus (range: BOEM 6.5 months → FTA 33.4 months); translates to a projected cost band displayed alongside the probability score on the `nepaRiskIntelligenceCard` LWC
+
+Both dimensions are independently reportable: coordinators can view the probability score and the cost exposure band separately on the process record page via the `nepaRiskIntelligenceCard` custom Lightning Web Component. Where the ESA confidence level for a project is below the model's threshold, a low-confidence disclosure is appended to `nepa_risk_score_factors__c` (OMB M-24-10 compliant). The BRE reads risk point values from Decision Matrix rows, not from the custom metadata records directly; the metadata records are supplementary documentation that mirror the DM values. Both are updated in lockstep when calibration data is refreshed.
 
 A permit gap penalty is computed in the Flow itself, outside the BRE, and added to the BRE composite score before it is written to `nepa_risk_score__c`: +8 pts when `nepa_blocked_permit_count__c ≥ 1` (at least one critical-path permit not yet Issued, Denied, or Withdrawn), +15 pts when `nepa_blocked_permit_count__c ≥ 3`. `nepa_blocked_permit_count__c` is a rollup summary field on `IndividualApplication` counting critical-path child `nepa_required_permit__c` records in active status. When a permit's status changes, the rollup recalculates and the risk scorer fires automatically. The scorer also fires when `nepa_blocked_permit_count__c` itself changes — meaning permit status changes in child records cascade into the parent risk score without any coordinator action. The permit gap contribution is appended to `nepa_risk_score_factors__c`: `"; PERMIT GAP: N critical-path permit(s) not yet Issued — +Xpts"`.
 
@@ -541,7 +546,7 @@ Risk weight tables are stored in four Custom Metadata Types and five Decision Ma
 | Statute multiplier | `NEPA_Statute_Risk_Weight__mdt` | (MDT loop, no separate DM) | `pts = (multiplier − 1.00) × 20, min 1` |
 | Sector-circuit win rate | `NEPA_Sector_Circuit_Risk__mdt` | `NEPA_Risk_SectorCircuit.csv` | Cell label (HIGH/MODERATE/LOW) |
 
-Additional configuration CMT types supporting the platform: `NEPA_ActionPlan_Config__mdt` (action plan launch rules), `NEPA_Doc_Count_Threshold__mdt` (document count outlier thresholds by review type), `NEPA_Layer_Discipline__mdt` (GIS layer-to-discipline resolver), and `NEPA_MFR_Assessment__mdt` (mandatory findings of fact/review scoring). All 19 CMT types are configurable by administrators without code changes.
+Additional configuration CMT types supporting the platform: `NEPA_ActionPlan_Config__mdt` (action plan launch rules), `NEPA_Doc_Count_Threshold__mdt` (document count outlier thresholds by review type), `NEPA_Layer_Discipline__mdt` (GIS layer-to-discipline resolver), `NEPA_MFR_Assessment__mdt` (mandatory findings of fact/review scoring), `NEPA_Inspection_Schedule__mdt` (v3.4 — 30 sector×permit monitoring combinations with statutory CFR citations and litigation risk ratings), and `NEPA_State_Risk_Profile__mdt` (v3.4 — 26-state inspection priority matrix). All 25 CMT types are configurable by administrators without code changes.
 
 Calibrated values shipped with the platform are derived from 761 PermitTEC v0.1 federal NEPA litigation cases (PNNL, 2025). The `NEPA_Agency_Risk_Rate__mdt` CMT ships with 16 pre-seeded agency records. Example calibrated values: BLM = 39pts (39.3% loss rate, 89 cases); 10th Circuit = 43pts (1.45 multiplier, 68 cases); ESA = 10pts (1.48 multiplier, 72 cases). The calibration formula and case counts are documented in the platform's Configuration Management Plan (D-04).
 
@@ -591,7 +596,7 @@ Selected cells from the 23-cell matrix:
 | Energy \| DC Circuit | 64.0% | 14 | MODERATE |
 | Water Resources \| 9th Circuit | 50.0% | 8 | MODERATE |
 
-Cells with case count < 3 receive a 0.5× confidence weight in the composite formula to discount low-sample-size cells. The full matrix is configurable as Custom Metadata records without code changes.
+Cells with case count < 3 receive a 0.5× confidence weight in the composite formula to discount low-sample-size cells. The BRE V3 Expression Set `GetSectorCircuitRisk` step is Active and fully incorporated into the composite score formula. The full matrix is configurable as Custom Metadata records without code changes.
 
 ---
 
@@ -617,7 +622,58 @@ No risk score, tier, or flag triggers an automated adverse action. All outputs r
 
 ---
 
-### 1.10 User Role Management (CEQ Entity 8) — UR-001 through UR-003
+### 1.9 Post-Permit Inspection Intelligence (PI) — v3.4
+
+---
+
+**PI-001 — Automated inspection schedule generation from permit issuance** | **(B) Configuration**
+
+The `NEPA_Permit_Issued_Schedule_Creator` Flow fires after-save on `nepa_required_permit__c` when `nepa_permit_status__c` transitions to "Issued." It queries `NEPA_Inspection_Schedule__mdt` for matching sector × permit type combinations and automatically creates `Visit` (FSL) inspection task records linked to the parent `IndividualApplication`. The platform ships with 30 pre-seeded inspection schedule entries across sectors including Energy, Water Resources, Agriculture/Forestry, and Transportation — each record carrying statutory CFR citations, inspection frequency, and litigation risk rating.
+
+---
+
+**PI-002 — BiOp reinitiation detection** | **(B) Configuration**
+
+The `NEPA_BiOp_Reinitiation_Checker` Flow evaluates five reinitiation checkboxes on `IndividualApplication` per 50 CFR §402.16. When any reinitiation condition is detected, the flow adds +12 risk delta points to `nepa_challenge_risk_delta__c` and appends a reinitiation flag to `nepa_risk_score_factors__c`. This ensures that post-decision biological opinion changes are automatically reflected in the litigation risk score without coordinator action.
+
+---
+
+**PI-003 — State inspection risk context at mobile form open** | **(B) Configuration**
+
+`NEPA_State_Risk_Profile__mdt` carries a 26-state inspection priority matrix with a composite score, state-specific risk factors, and mobile field inspector warning text. When a `Visit` record is opened in Salesforce Field Service Mobile, the inspector sees the applicable state's risk profile, including any elevated inspection priority or litigation history that should inform on-site documentation rigor.
+
+---
+
+**PI-004 — Monitoring task creation at administrative record lock** | **(B) Configuration**
+
+The `NEPA_PostDecision_Monitor_Scheduler` Flow fires when an `IndividualApplication` advances to a Decision-complete stage (AR locked). It bulk-creates monitoring task records for all active `nepa_required_permit__c` children in Issued status, assigning tasks to the Lead NEPA Coordinator with cadences derived from `NEPA_Inspection_Schedule__mdt`. All task creation occurs in a single DML operation — no per-record DML — to comply with governor limits in large permit portfolios.
+
+---
+
+### 1.10 OFD Coordination Tracker (IMP-006) — v3.3
+
+---
+
+**IMP-006 — E.O. 13807 One Federal Decision master schedule tracking** | **(B) Configuration**
+
+The platform implements an OFD Coordination Tracker extending `ApplicationTimeline` with an `nepa_ofd_track__c` field (picklist: NEPA_Lead / Agency_Consultation / Permit_Milestone / Joint_ROD) and a `nepa_coordinating_agency__c` Lookup to Account. This models the four-track E.O. 13807 master schedule structure directly on the process timeline without requiring a separate object.
+
+`NEPA_OFD_Milestone__mdt` ships with 8 standard E.O. 13807 milestones pre-seeded (NOI, Scoping Kickoff, DEIS, Public Comment Period, FEIS, ROD, Joint ROD, Agency Concurrence). Milestone due dates are computed from the `nepa_statutory_clock_start__c` on the parent `IndividualApplication` and displayed on the process timeline in the OFD track view.
+
+**Federal friction multipliers** — derived from the NETATEC v2.0 and PermitTEC corpora — are stored as metadata and applied when computing projected OFD milestone completion dates:
+
+| Sector Category | Friction Multiplier |
+|---|---|
+| Military / Defense | 1.65× |
+| Water / Coastal | 1.47× |
+| Transportation | 1.45× |
+| Energy | 1.09× |
+
+These multipliers adjust projected milestone dates upward when the project's sector carries elevated coordination complexity, providing coordinators with a more accurate OFD schedule than a single government-wide average.
+
+---
+
+### 1.12 User Role Management (CEQ Entity 8) — UR-001 through UR-003
 
 ---
 
@@ -651,7 +707,7 @@ The `DR_Extract_NEPA_TeamMember` DataRaptor Extract queries `nepa_process_team_m
 
 ---
 
-### 1.11 Legal Structure (CEQ Entity 9) — LS-001 through LS-003
+### 1.13 Legal Structure (CEQ Entity 9) — LS-001 through LS-003
 
 ---
 
@@ -686,7 +742,7 @@ The `nepa_decision_element__c` custom object stores configurable decision elemen
 
 ---
 
-### 1.12 Applicant Self-Service Portal — AP-001 through AP-005
+### 1.14 Applicant Self-Service Portal — AP-001 through AP-005
 
 ---
 
@@ -726,9 +782,9 @@ The Experience Cloud portal includes a comment submission form (OmniScript) acce
 
 ---
 
-**DI-001 — Full nine-entity CEQ data model conformance** | **(B) Configuration**
+**DI-001 — Full thirteen-entity CEQ data model conformance** | **(B) Configuration**
 
-All nine CEQ Standard entities are implemented as follows:
+All thirteen CEQ Standard entities (6 standard + 7 extended per PIC OpenAPI v1.2.0) are implemented as follows:
 
 | CEQ Entity | Salesforce Object | Type |
 |---|---|---|
@@ -741,6 +797,10 @@ All nine CEQ Standard entities are implemented as follows:
 | Entity 7 — GIS Data | `nepa_gis_data_element__c` | Custom |
 | Entity 8 — User Roles | `nepa_process_team_member__c` | Custom Junction |
 | Entity 9 — Legal Structure | `RegulatoryCode` | PSS Standard (extended) |
+| Entity 10 — Permits | `nepa_required_permit__c` | Custom |
+| Entity 11 — Litigation Cases | `nepa_litigation__c` | Custom |
+| Entity 12 — Post-Permit Inspections | `Visit` (FSL) | PSS Standard (extended) |
+| Entity 13 — OFD Coordination | `ApplicationTimeline` (extended) | PSS Standard (extended) |
 
 Every entity carries all five CEQ provenance fields (see DI-005). Object-to-entity mapping is documented in the data architecture deliverable (D-03).
 
@@ -771,7 +831,7 @@ The `NEPA_CEQExport` OmniStudio Integration Procedure produces a standards-compl
 }
 ```
 
-Nine DataRaptor Extract definitions supply all field mappings. Output key names are aligned to CEQ standard property names.
+Fifteen DataRaptor Extract definitions supply all field mappings. Output key names are aligned to CEQ standard property names.
 
 ---
 
@@ -994,11 +1054,11 @@ Agency points of contact for each reference are provided under separate cover pe
 | GIS-003 | Automated proximity checks | (B) | ✅ | NEPA_GIS_Proximity_Check + NEPA_GIS_Proximity_IP |
 | GIS-004 | Proximity results write-back; CE flag | (B) | ✅ | IP writes to Program; CE screener consumes |
 | GIS-005 | Configurable GIS layer registry | (A/B) | ✅ | NEPA_GIS_Layer__mdt + Named Credentials |
-| RI-001 | Composite litigation risk score | (B) | ✅ | NEPA_Litigation_Risk_Scorer Flow + BRE ES V2 Active; 10 inputs + permit gap penalty (+8/+15 pts from nepa_blocked_permit_count__c); auto-fires on permit status changes |
-| RI-002 | Configurable risk weight tables | (B) | ✅ | 3 CMTs + 5 DMs; PermitTEC v0.1 761 cases; formulas documented in CMP |
+| RI-001 | Composite litigation risk score | (B) | ✅ | NEPA_Litigation_Risk_Scorer Flow + BRE ES V3 Active; bifurcated score (Litigation Probability 85% + Cost Exposure 15%); 10 inputs + permit gap penalty (+8/+15 pts); nepaRiskIntelligenceCard LWC; OMB M-24-10 low-confidence disclosure |
+| RI-002 | Configurable risk weight tables | (B) | ✅ | 4 CMTs + 8 DMs + 3 ESs; PermitTEC v0.1 761 cases; formulas documented in CMP |
 | RI-003 | Configurable risk tier thresholds | (B) | ✅ | BRE AssignRiskTier step + formula; ≥58 Very High / ≥45 High / ≥35 Moderate |
 | RI-004 | Challenge prediction rules | (B) | ✅ | NEPA_Challenge_Predictor + NEPA_Challenge_Prediction_Rule__mdt; 7 rules |
-| RI-005 | Sector-circuit risk matrix | (B) | ✅ | NEPA_Sector_Circuit_Risk__mdt; 23 cells (incl. Stages 10–13); BRE V3 Draft |
+| RI-005 | Sector-circuit risk matrix | (B) | ✅ | NEPA_Sector_Circuit_Risk__mdt; 23 cells (incl. Stages 10–13); BRE V3 Active |
 | RI-006 | Agency performance tier | (B) | ✅ | NEPA_Agency_Scoping_Baseline__mdt + NEPA_Agency_Tier_Setter Flow; 11 agencies |
 | RI-007 | Advisory-only outputs + audit trail | (B) | ✅ | No auto adverse action; all fields in AR export; AI boundary disclosed in score factors |
 | UR-001 | Structured team role assignments | (B) | ✅ | nepa_process_team_member__c |
@@ -1020,8 +1080,8 @@ Agency points of contact for each reference are provided under separate cover pe
 | TR-006 | Mobile offline capability | (A) | ✅ | Salesforce Field Service Mobile |
 | TR-007 | Explainable AI rationale | (B) | ✅ | AI rationale fields on every scored record |
 | TR-008 | AI auditability documentation | Service | ✅ | Provided in SSP Appendix A |
-| DI-001 | Nine-entity CEQ data model | (B) | ✅ | All 9 entities implemented (see table) |
-| DI-002 | Structured JSON export per project | (B) | ✅ | NEPA_CEQExport IP + 9 DataRaptors |
+| DI-001 | Nine-entity CEQ data model | (B) | ✅ | All 13 entities implemented (6 standard + 7 extended per PIC OpenAPI v1.2.0; see table) |
+| DI-002 | Structured JSON export per project | (B) | ✅ | NEPA_CEQExport IP + 15 DataRaptors |
 | DI-003 | Schema version + timestamp in export | (B) | ✅ | AssembleCEQPayload Set Values step |
 | DI-004 | Automated periodic export | (B) | ✅ | Scheduled Flow + Named Credential callout |
 | DI-005 | Five CEQ provenance fields on all records | (B) | ✅ | All 9 entity objects carry all 5 fields |
@@ -1044,7 +1104,9 @@ Agency points of contact for each reference are provided under separate cover pe
 
 **Summary:** 82 requirements addressed. 0 marked as unable to meet. Classification breakdown: (A) COTS — 14; (A/B) COTS/Configuration — 7; (B) Configuration — 54; Service Deliverable — 7.
 
-**Phase 3 additions reflected above:** 42 total flows (was 38); `nepa_required_permit__c` structured permit object (16 fields, rollup to IA, GIS bridge auto-population, permit gap penalty feeding RI-001); `NEPA_Permit_SLA_Monitor` daily scheduled flow added to PM-007; `NEPA_Stage_Gate_Doc_Check` ROD/FONSI permit-initiation gate added to PM-004; 15-service GIS registry (was 4 pre-configured, now fully enumerated in GIS-003).
+**Platform configuration inventory (v3.4):** 40 Flows; 25 Custom Metadata Types; 15 DataRaptor definitions; 8 Decision Matrices + 3 Expression Sets; 2 LWCs (`nepaPermitDependencies`, `nepaRiskIntelligenceCard`); 12 Named Credentials; 6 custom objects; 519+ Apex tests across 38 test classes; 13 CEQ entities (6 standard + 7 extended per PIC OpenAPI v1.2.0).
+
+Key platform capabilities above the 9-entity baseline: `nepa_required_permit__c` structured permit object (16 fields, rollup to IA, GIS bridge auto-population, permit gap penalty feeding RI-001); `NEPA_Permit_SLA_Monitor` daily scheduled flow (PM-007); `NEPA_Stage_Gate_Doc_Check` ROD/FONSI permit-initiation gate (PM-004); 15-service GIS registry (GIS-003); Post-Permit Inspection Intelligence (v3.4 — PI-001 through PI-004); OFD Coordination Tracker (IMP-006, v3.3); bifurcated risk score with `nepaRiskIntelligenceCard` LWC (RI-001, v3.3).
 
 Requirements added for risk intelligence and tribal intelligence: PC-008 (Tribal Nation dual-flag), TL-004 (scoping overrun detection + agency performance tier), TL-005 (page count outlier detection), RI-001 through RI-007 (Risk Intelligence layer — composite scoring, weight tables, tier thresholds, challenge prediction, sector-circuit matrix, agency performance tier, advisory-only outputs).
 

@@ -58,6 +58,7 @@ The platform shall support compliance with:
 - Fiscal Responsibility Act of 2023, Title II (FAST-41 Permitting Council reforms)
 - Federal Permitting Improvement Steering Council (FPISC) reporting requirements
 - OMB Memorandum M-25-05 — Permitting and Environmental Review Modernization
+- OMB Memorandum M-25-21 — Accelerating Federal Use of AI through Expanded Access to Frontier Models
 - OMB Memorandum M-24-10 — Advancing the Responsible Use of Artificial Intelligence
 - CEQ NEPA and Permitting Data and Technology Standard v1.2 (May 30 / August 18, 2025)
 - Agency-specific NEPA implementing procedures ([43 CFR Part 46 / 36 CFR Part 220 / etc.])
@@ -81,7 +82,7 @@ The Contractor shall deliver a configured, integrated, and operational NEPA perm
 7. **Parallel permit coordination** — automated task creation and SLA tracking for co-permits and interagency consultations
 8. **Tribal and agency consultation tracking** — structured tracking of government-to-government and cooperating agency consultation with stage gate enforcement
 9. **GIS integration** — proximity checking against federal spatial datasets (protected areas, critical habitat, wetlands, cultural resources) with configurable layer registry
-10. **CEQ-standard data export** — structured JSON export conforming to CEQ NEPA and Permitting Data and Technology Standard v1.2 for all nine CEQ standard entities
+10. **CEQ-standard data export** — structured JSON export conforming to CEQ NEPA and Permitting Data and Technology Standard v1.2 for all thirteen CEQ standard entities
 11. **AI-assisted capabilities** — comment triage, CE/EA routing at intake, EIS section drafting assistance, and timeline risk flagging, all subject to human review and audit trail requirements
 
 ### 2.2 Out of Scope
@@ -168,7 +169,7 @@ Requirements are designated Priority 1 (mandatory at contract award), Priority 2
 
 | ID | Priority | Requirement |
 |---|---|---|
-| RI-001 | 1 | The system shall compute a composite litigation risk score on each NEPA process using configurable weight tables derived from federal NEPA litigation data. Input factors shall include at minimum: review type, lead agency litigation loss rate, judicial circuit, adjacent statutes implicated, review completeness, and count of uninitiated critical-path co-permits. The score shall be recalculated automatically when any input factor changes, including when a co-permit record changes status. |
+| RI-001 | 1 | The system shall compute a composite litigation risk score on each NEPA process using configurable weight tables derived from federal NEPA litigation data. Input factors shall include at minimum: review type, lead agency litigation loss rate, judicial circuit, adjacent statutes implicated, review completeness, and count of uninitiated critical-path co-permits. The score shall be recalculated automatically when any input factor changes, including when a co-permit record changes status. The risk score shall be bifurcated across two independently reportable dimensions: (a) Litigation Probability Score incorporating frequency-of-challenge factors, and (b) Litigation Cost Exposure incorporating per-agency median litigation duration. Both dimensions shall be displayable separately on the process record without requiring custom code. |
 | RI-002 | 1 | Risk weight tables (agency points, circuit points, statute points) shall be stored as configurable metadata records and decision matrix rows editable by authorized administrators without code changes. The calibration source (training corpus, case count per input value, formula) shall be documented in the system's configuration management plan. |
 | RI-003 | 1 | The system shall classify each NEPA process into a risk tier (e.g., Low / Moderate / High / Very High) based on configurable score thresholds. Tier boundaries shall be editable in metadata without code changes. |
 | RI-004 | 2 | The system shall evaluate configurable challenge prediction rules against the process record and accumulate risk delta points when trigger conditions are met (e.g., energy sector project in high-risk judicial circuit, tribal plaintiff flag set). Each triggered rule shall produce an explanation recorded on the process record. |
@@ -182,11 +183,28 @@ Requirements are designated Priority 1 (mandatory at contract award), Priority 2
 |---|---|---|
 | GIS-001 | 1 | The system shall maintain GIS data element records per CEQ Entity 7, capturing spatial data format, access method, coordinate system, bounding box, purpose, and access information for each layer associated with a project. |
 | GIS-002 | 1 | The system shall support storage of project location as a point (lat/lon) and polygon geometry. |
-| GIS-003 | 2 | The system shall perform automated proximity checks against a configurable registry of federal and community-sourced spatial datasets (protected areas, critical habitat, wetlands, floodplains, cultural resources, environmental justice indices) when project coordinates are set or updated. The registry shall include at minimum: NHD waterway proximity, PADUS protected areas, USFWS Critical Habitat, National Wetlands Inventory or equivalent community-sourced wetlands layer (e.g., OpenWetlandsMap), FEMA floodplains, NHPA Section 106 APE datasets, EPA EJScreen, and tribal lands boundaries. |
+| GIS-003 | 2 | The system shall perform automated proximity checks against a configurable registry of federal and community-sourced spatial datasets (protected areas, critical habitat, wetlands, floodplains, cultural resources, environmental justice indices) when project coordinates are set or updated. The registry shall include at minimum: NHD waterway proximity, PADUS protected areas, USFWS Critical Habitat, National Wetlands Inventory or equivalent community-sourced wetlands layer (e.g., OpenWetlandsMap), FEMA floodplains, NHPA Section 106 APE datasets, EPA EJScreen, and tribal lands boundaries. Reference implementations shall ship with at least 15 pre-configured layer entries spanning critical habitat, environmental justice, hydrology, wetlands, floodplains, tribal lands, protected areas, and surface ownership. |
 | GIS-004 | 2 | Proximity check results shall be written back to the project record and shall flag extraordinary circumstances for CE eligibility screening. |
 | GIS-005 | 2 | The GIS layer registry shall be configurable by administrators without code changes, supporting addition of new ArcGIS FeatureServer endpoints or other OGC-compliant services. |
 
-### 3.9 User Role Management (CEQ Entity 8)
+### 3.9 Post-Permit Inspection Intelligence
+
+| ID | Priority | Requirement |
+|---|---|---|
+| PI-001 | 2 | The system shall automatically generate inspection task records from a configurable inspection schedule registry when a co-permit transitions to Issued status. The registry shall define inspection frequency, applicable CFR citations, and litigation risk ratings by sector and permit type combination. |
+| PI-002 | 2 | The system shall detect Biological Opinion reinitiation conditions per 50 CFR §402.16 and automatically increment the litigation risk delta when any reinitiation condition is met, with the trigger condition documented on the process record. |
+| PI-003 | 2 | The system shall surface state-specific inspection risk context (composite priority score, state-specific risk factors, inspector warning text) to field staff when opening inspection records in mobile field operations. State risk profiles shall be stored in a configurable metadata type. |
+| PI-004 | 2 | The system shall bulk-create post-decision monitoring task records for all active issued permits when an administrative record is locked, with cadences derived from the inspection schedule registry. Task creation shall occur in a single database operation. |
+
+### 3.10 OFD Coordination Tracker
+
+| ID | Priority | Requirement |
+|---|---|---|
+| OFD-001 | 2 | The system shall implement an E.O. 13807 One Federal Decision master schedule structure on the process timeline, supporting four tracks: NEPA Lead, Agency Consultation, Permit Milestone, and Joint ROD. Each timeline event shall carry a track designation and a cooperating agency association. |
+| OFD-002 | 2 | The system shall ship with at minimum 8 standard E.O. 13807 OFD milestone types pre-configured (NOI, Scoping Kickoff, DEIS, Public Comment Period, FEIS, ROD, Joint ROD, Agency Concurrence). |
+| OFD-003 | 2 | The system shall apply configurable sector-based friction multipliers when computing projected OFD milestone completion dates, to account for coordination complexity variation across project types. Multipliers shall be stored in configurable metadata without code changes. |
+
+### 3.12 User Role Management (CEQ Entity 8)
 
 | ID | Priority | Requirement |
 |---|---|---|
@@ -194,7 +212,7 @@ Requirements are designated Priority 1 (mandatory at contract award), Priority 2
 | UR-002 | 1 | The system shall maintain an active/inactive flag on assignments to support audit trail preservation without deletion when an assignment ends. |
 | UR-003 | 1 | Role assignments shall be exportable as part of the CEQ-standard process data payload. |
 
-### 3.10 Legal Structure (CEQ Entity 9)
+### 3.13 Legal Structure (CEQ Entity 9)
 
 | ID | Priority | Requirement |
 |---|---|---|
@@ -202,7 +220,7 @@ Requirements are designated Priority 1 (mandatory at contract award), Priority 2
 | LS-002 | 1 | Regulatory citations shall be linkable to configurable decision elements (CE criteria, threshold values, extraordinary circumstance conditions) that drive automated screening logic. |
 | LS-003 | 2 | The citation registry shall be configurable by administrators and shall support EffectiveTo dating to mark superseded regulations without deletion. |
 
-### 3.11 Applicant Self-Service Portal
+### 3.14 Applicant Self-Service Portal
 
 | ID | Priority | Requirement |
 |---|---|---|
@@ -233,7 +251,7 @@ Requirements are designated Priority 1 (mandatory at contract award), Priority 2
 
 | ID | Priority | Requirement |
 |---|---|---|
-| DI-001 | 1 | The platform's data model shall conform to the nine CEQ Standard entities defined in the CEQ NEPA and Permitting Data and Technology Standard v1.2: Project, Process, Documents, Public Comments, Public Engagement Events, Case Events, GIS Data, User Roles, and Legal Structure. |
+| DI-001 | 1 | The platform's data model shall conform to the thirteen CEQ Standard entities defined in the CEQ NEPA and Permitting Data and Technology Standard v1.2 (PIC OpenAPI v1.2.0): the 6 standard entities (Project, Process, Documents, Public Comments, Public Engagement Events, Case Events) plus 7 extended entities (GIS Data, User Roles, Legal Structure, Permits, Litigation Cases, Post-Permit Inspections, and OFD Coordination). |
 | DI-002 | 1 | The platform shall produce a structured JSON export payload per project that maps all nine CEQ entity properties to the standard's required output field names. |
 | DI-003 | 1 | The export payload shall include schema version, standard name, and export timestamp metadata. |
 | DI-004 | 2 | The platform shall support automated periodic export to the FPISC Permitting Dashboard and any other federal reporting system designated by the Agency, via REST API or SFTP. |
@@ -315,7 +333,9 @@ Proposals will be evaluated on a Best Value basis using the following factors, l
 - Approach to AI-assisted capabilities, human-in-the-loop controls, and OMB M-24-10 compliance
 - Configurability of business rules, stage gates, and document registries without code changes
 - Quality of CEQ-standard data export implementation
-- Maturity and empirical grounding of the risk intelligence layer: litigation risk scoring, tribal plaintiff intelligence, challenge prediction rules, sector-circuit risk matrix, and per-agency EIS scoping performance tiers. Offerors shall describe the training corpus (case count, jurisdiction coverage, time period) and calibration methodology underlying the risk weight tables shipped with the platform.
+- Maturity and empirical grounding of the risk intelligence layer: litigation risk scoring (including bifurcated Litigation Probability Score and Litigation Cost Exposure dimensions), tribal plaintiff intelligence, challenge prediction rules, sector-circuit risk matrix, and per-agency EIS scoping performance tiers. Offerors shall describe the training corpus (case count, jurisdiction coverage, time period), calibration methodology, and mechanism for independent reporting of the two risk score dimensions.
+- Depth of post-permit inspection intelligence: automated inspection schedule generation at permit issuance, BiOp reinitiation detection, state-level risk context for field inspectors, and bulk monitoring task creation at administrative record lock.
+- OFD coordination tracker implementation: E.O. 13807 master schedule structure, pre-seeded milestone types, and sector-based friction multipliers for projected milestone dates.
 
 ### Factor 2 — Past Performance (25%)
 
