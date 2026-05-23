@@ -6,7 +6,7 @@ private class NepaDRActivationGuardTest {
     // rather than explicit errors. Each test follows the same pattern:
     //   1. Query OmniDataTransform by UniqueName.
     //   2. If not yet deployed, skip (return early) rather than false-fail.
-    //   3. If present, assert IsActive__c = true with a precise failure message
+    //   3. If present, assert IsActive = true with a precise failure message
     //      that explains the downstream consequence.
 
     // ── DRExtractCELibraryByAgency ────────────────────────────────────────────
@@ -17,13 +17,13 @@ private class NepaDRActivationGuardTest {
     @IsTest
     static void drExtractCELibraryByAgency_isActive() {
         List<OmniDataTransform> drs = [
-            SELECT Id, Name, IsActive__c
+            SELECT Id, Name, IsActive
             FROM OmniDataTransform
             WHERE UniqueName = 'DRExtractCELibraryByAgency_1'
             LIMIT 1
         ];
         if (drs.isEmpty()) { return; }
-        System.assertEquals(true, drs[0].IsActive__c,
+        System.assertEquals(true, drs[0].IsActive,
             'DRExtractCELibraryByAgency must be active — if inactive, NEPA_CEScreeningIP ' +
             'GetCELibraryEntries returns nothing and the applicant sees no CE suggestions ' +
             'in OmniScript Step 4 without any error');
@@ -37,13 +37,13 @@ private class NepaDRActivationGuardTest {
     @IsTest
     static void drLoadNEPAProcess_isActive() {
         List<OmniDataTransform> drs = [
-            SELECT Id, Name, IsActive__c
+            SELECT Id, Name, IsActive
             FROM OmniDataTransform
             WHERE UniqueName = 'DRLoadNEPAProcess_1'
             LIMIT 1
         ];
         if (drs.isEmpty()) { return; }
-        System.assertEquals(true, drs[0].IsActive__c,
+        System.assertEquals(true, drs[0].IsActive,
             'DRLoadNEPAProcess must be active — if inactive, NEPA_CESaveIP Step 1 ' +
             '(SaveProcess) fails with failOnStepError=true and every CE intake ' +
             'submission will error out on the Review and Submit screen');
@@ -57,13 +57,13 @@ private class NepaDRActivationGuardTest {
     @IsTest
     static void drExtractGISLayers_isActive() {
         List<OmniDataTransform> drs = [
-            SELECT Id, Name, IsActive__c
+            SELECT Id, Name, IsActive
             FROM OmniDataTransform
             WHERE UniqueName = 'DRExtractGISLayers_1'
             LIMIT 1
         ];
         if (drs.isEmpty()) { return; }
-        System.assertEquals(true, drs[0].IsActive__c,
+        System.assertEquals(true, drs[0].IsActive,
             'DRExtractGISLayers must be active — if inactive, NEPA_GISProximityIP ' +
             'GetActiveGISLayers returns no layers, the loop body never executes, and ' +
             'every project incorrectly shows "No protected areas identified"');
@@ -79,13 +79,13 @@ private class NepaDRActivationGuardTest {
     @IsTest
     static void drExtractNEPAProject_isActive() {
         List<OmniDataTransform> drs = [
-            SELECT Id, Name, IsActive__c
+            SELECT Id, Name, IsActive
             FROM OmniDataTransform
             WHERE UniqueName = 'DRExtractNEPAProject_1'
             LIMIT 1
         ];
         if (drs.isEmpty()) { return; }
-        System.assertEquals(true, drs[0].IsActive__c,
+        System.assertEquals(true, drs[0].IsActive,
             'DRExtractNEPAProject must be active — if inactive the GIS proximity check ' +
             'silently skips every project due to null coordinates');
     }
@@ -99,13 +99,13 @@ private class NepaDRActivationGuardTest {
     @IsTest
     static void drExtractPreAppPermitMatrix_isActive() {
         List<OmniDataTransform> drs = [
-            SELECT Id, Name, IsActive__c
+            SELECT Id, Name, IsActive
             FROM OmniDataTransform
             WHERE UniqueName = 'DR_Extract_PreApp_PermitMatrix_1'
             LIMIT 1
         ];
         if (drs.isEmpty()) { return; }
-        System.assertEquals(true, drs[0].IsActive__c,
+        System.assertEquals(true, drs[0].IsActive,
             'DR_Extract_PreApp_PermitMatrix must be active — if inactive, ' +
             'NEPA_PreAppScreeningIP GetPermitMatrixRow returns no permit or timeline ' +
             'data and the Pre-App Screener agent gives incomplete answers silently');
@@ -119,13 +119,13 @@ private class NepaDRActivationGuardTest {
     @IsTest
     static void drUpsertDetectedLayer_isActive() {
         List<OmniDataTransform> drs = [
-            SELECT Id, Name, IsActive__c
+            SELECT Id, Name, IsActive
             FROM OmniDataTransform
             WHERE UniqueName = 'DRUpsertDetectedLayer_1'
             LIMIT 1
         ];
         if (drs.isEmpty()) { return; }
-        System.assertEquals(true, drs[0].IsActive__c,
+        System.assertEquals(true, drs[0].IsActive,
             'DRUpsertDetectedLayer must be active — if inactive, SaveDetectedLayers in ' +
             'NEPA_GISProximityIP fails with failOnStepError=true and no layer records ' +
             'are persisted after a GIS proximity check');

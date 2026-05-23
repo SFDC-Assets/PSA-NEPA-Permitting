@@ -5,6 +5,6 @@
     <inlineHelpText>Projected permit decision or issuance date.</inlineHelpText>
     <label>Expected Completion</label>
     <required>false</required>
-    <trackHistory>true</trackHistory>
+    <trackHistory>false</trackHistory>
     <type>Date</type>
 </CustomField>

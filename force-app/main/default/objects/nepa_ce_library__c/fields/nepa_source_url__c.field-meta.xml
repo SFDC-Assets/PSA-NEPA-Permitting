@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_source_url__c</fullName>
+    <label>Source URL</label>
+    <type>Url</type>
+</CustomField>

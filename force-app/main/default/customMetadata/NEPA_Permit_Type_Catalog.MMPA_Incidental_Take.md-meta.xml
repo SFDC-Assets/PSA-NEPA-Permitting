@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>Marine Mammal Protection Act Incidental Take Authorization</label>
+    <label>Marine Mammal Protection Act Incidental…</label>
     <protected>false</protected>
     <values><field>Canonical_Name__c</field><value xsi:type="xsd:string">Marine Mammal Protection Act Incidental Take Authorization</value></values>
     <values><field>RA_Type_Name__c</field><value xsi:type="xsd:string">Marine Mammal Protection Act Incidental Take Authorization</value></values>

@@ -136,6 +136,7 @@ def main():
         "--file", str(CSV_OUT),
         "--external-id", "nepa_ce_explorer_id__c",
         "--target-org", args.org,
+        "--line-ending", "CRLF",
         "--wait", "10",
         "--json",
     ]

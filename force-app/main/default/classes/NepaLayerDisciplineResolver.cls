@@ -128,7 +128,7 @@ public with sharing class NepaLayerDisciplineResolver {
             Map<String, Id> workTypeExtIdToId = new Map<String, Id>();
             if (!workTypeDeveloperNames.isEmpty()) {
                 for (WorkType wt : [
-                    SELECT Id, External_ID__c, Survey_Window_Start__c, Survey_Window_End__c
+                    SELECT Id, External_ID__c
                     FROM WorkType
                     WHERE External_ID__c IN :workTypeDeveloperNames
                     WITH SECURITY_ENFORCED
@@ -146,7 +146,7 @@ public with sharing class NepaLayerDisciplineResolver {
             Map<String, String> disciplineToWTPriority = new Map<String, String>();
             if (!workTypeDeveloperNames.isEmpty()) {
                 for (WorkType wt : [
-                    SELECT Id, External_ID__c, Survey_Window_Start__c, Survey_Window_End__c
+                    SELECT Id, External_ID__c
                     FROM WorkType
                     WHERE External_ID__c IN :workTypeDeveloperNames
                     WITH SECURITY_ENFORCED
@@ -188,7 +188,7 @@ public with sharing class NepaLayerDisciplineResolver {
                     PlaceId                = null,
                     Status                 = 'Planned',
                     VisitPriority          = mapPriority(cmt.WO_Priority__c),
-                    Description            = tokenReplace(cmt.WO_Description_Template__c, '', cmt.Discipline__c),
+                    InstructionDescription = tokenReplace(cmt.WO_Description_Template__c, '', cmt.Discipline__c),
                     nepa_process__c        = req.relatedAppId,
                     nepa_discipline__c     = cmt.Discipline__c,
                     nepa_trigger_layer__c  = layerId,

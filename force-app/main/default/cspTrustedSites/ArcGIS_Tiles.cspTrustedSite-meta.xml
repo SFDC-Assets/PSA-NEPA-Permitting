@@ -8,6 +8,4 @@
     <isApplicableToFrameSrc>false</isApplicableToFrameSrc>
     <isApplicableToImgSrc>false</isApplicableToImgSrc>
     <isApplicableToMediaSrc>false</isApplicableToMediaSrc>
-    <isApplicableToScriptSrc>false</isApplicableToScriptSrc>
-    <isApplicableToStyleSrc>false</isApplicableToStyleSrc>
 </CspTrustedSite>

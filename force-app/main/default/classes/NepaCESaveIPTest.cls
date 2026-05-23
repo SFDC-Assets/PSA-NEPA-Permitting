@@ -41,7 +41,7 @@ private class NepaCESaveIPTest {
         ia.nepa_process_stage__c                   = 'Scoping';
         ia.nepa_action_type__c                     = actionType != null ? actionType : 'Construct New';
         ia.nepa_disturbance_acres__c               = disturbanceAcres;
-        ia.nepa_extraordinary_circumstances__c     = extraordinaryCircumstances;
+        ia.nepa_extraordinary_circumstances__c     = extraordinaryCircumstances ? 'Yes' : null;
         ia.nepa_start_date__c                      = Date.today();
         ia.nepa_description__c                     = 'Test CE intake submission';
         if (String.isNotBlank(externalId)) {
@@ -266,13 +266,13 @@ private class NepaCESaveIPTest {
     @IsTest
     static void drLoadNEPAProcess_isActive() {
         List<OmniDataTransform> drs = [
-            SELECT Id, Name, IsActive__c
+            SELECT Id, Name, IsActive
             FROM OmniDataTransform
             WHERE UniqueName = 'DRLoadNEPAProcess_1'
             LIMIT 1
         ];
         if (drs.isEmpty()) { return; }
-        System.assertEquals(true, drs[0].IsActive__c,
+        System.assertEquals(true, drs[0].IsActive,
             'DRLoadNEPAProcess must be active — if inactive CESaveIP Step 1 fails with ' +
             'failOnStepError=true and the entire CE intake submission errors out');
     }

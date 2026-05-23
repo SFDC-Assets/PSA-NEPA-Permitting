@@ -456,7 +456,7 @@ private class NepaGISProximityCheckTest {
         // every ArcGIS query to fire with a null geometry payload.
         // This test catches a regression where the DR was inadvertently deactivated.
         List<OmniDataTransform> drs = [
-            SELECT Id, Name, IsActive__c
+            SELECT Id, Name, IsActive
             FROM OmniDataTransform
             WHERE UniqueName = 'DRExtractNEPAProject_1'
             LIMIT 1
@@ -465,7 +465,7 @@ private class NepaGISProximityCheckTest {
             // DR not yet deployed to this org — skip rather than false-fail
             return;
         }
-        System.assertEquals(true, drs[0].IsActive__c,
+        System.assertEquals(true, drs[0].IsActive,
             'DRExtractNEPAProject must be active — if inactive the GIS proximity check ' +
             'silently fires with null coordinates and returns no results');
     }

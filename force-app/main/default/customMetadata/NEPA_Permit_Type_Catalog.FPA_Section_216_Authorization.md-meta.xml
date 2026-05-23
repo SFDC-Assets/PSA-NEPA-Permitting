@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>FPA Section 216 Transmission Authorization</label>
+    <label>FPA Section 216 Transmission Authorizat…</label>
     <protected>false</protected>
     <values><field>Canonical_Name__c</field><value xsi:type="xsd:string">FPA Section 216 Transmission Authorization</value></values>
     <values><field>RA_Type_Name__c</field><value xsi:type="xsd:string">FPA Section 216 Transmission Authorization</value></values>

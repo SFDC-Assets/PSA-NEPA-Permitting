@@ -100,13 +100,13 @@ private class NepaCELibraryCmtTest {
     @IsTest
     static void drExtractCELibraryByAgency_isActive() {
         List<OmniDataTransform> drs = [
-            SELECT Id, Name, IsActive__c
+            SELECT Id, Name, IsActive
             FROM OmniDataTransform
             WHERE UniqueName = 'DRExtractCELibraryByAgency_1'
             LIMIT 1
         ];
         if (drs.isEmpty()) { return; }
-        System.assertEquals(true, drs[0].IsActive__c,
+        System.assertEquals(true, drs[0].IsActive,
             'DRExtractCELibraryByAgency must be active — if inactive CEScreeningIP Step 1 ' +
             'returns no library entries and Step 4 displays nothing to the applicant');
     }

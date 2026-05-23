@@ -3,7 +3,7 @@
     <fullName>Open_Field_Surveys</fullName>
     <filterScope>Everything</filterScope>
     <label>Open Field Surveys</label>
-    <columns>Subject</columns>
+    <columns>Name</columns>
     <columns>nepa_discipline__c</columns>
     <columns>nepa_gate_status_visual__c</columns>
     <columns>nepa_hard_gate__c</columns>

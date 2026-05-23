@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>Insp Schedule | CWA Section 402 NPDES Construc 24</label>
+    <label>Insp Sched NPDES402 Construc 4</label>
     <protected>false</protected>
     <values>
         <field>Permit_Type__c</field>
@@ -8,11 +8,11 @@
     </values>
     <values>
         <field>Sector__c</field>
-        <value xsi:type="xsd:string">Land Development and Urban Planning</value>
+        <value xsi:type="xsd:string">Energy Production and Management</value>
     </values>
     <values>
         <field>Lead_Agency__c</field>
-        <value xsi:type="xsd:string">GSA/Denali/HHS</value>
+        <value xsi:type="xsd:string">BOEM</value>
     </values>
     <values>
         <field>Inspection_Type__c</field>
