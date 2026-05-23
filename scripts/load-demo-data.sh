@@ -22,16 +22,13 @@
 #   10  ContentVersion          — created via Apex (VersionData requires Blob insert)
 #   11  nepa_engagement__c      — depends on IndividualApplication
 #   12  ApplicationTimeline     — depends on IndividualApplication
-#   13  WorkOrder               — depends on Account + ServiceTerritory + WorkType
-#   14  ServiceAppointment      — created via Apex (polymorphic ParentRecordId)
-#   15  AssignedResource        — created via Apex (depends on ServiceAppointments)
 #   16  PublicComplaint         — depends on Account
 #   17  nepa_litigation__c      — no dependencies
-#   18  Post-load Apex          — creates SA/AR/SR/CV/IA; wires all relationships
-#   19  Task                    — depends on nothing; WhatId/WhoId wired by step 18
+#   18  Post-load Apex          — creates Visit(field surveys)/SR/CV/IA; wires all relationships
+#   19  Task                    — depends on nothing (no WhatId wiring; Task has no External_ID)
 #   20  Entity 9/8/7 Apex       — RegulatoryCode, team members, GIS container + polygon
 #   21  ServiceResource disc.   — nepa_discipline__c on ServiceResources
-#   22  GIS team assembly       — proximity results, auto-assembled team, auto-generated WOs
+#   22  GIS team assembly       — proximity results, auto-assembled team, auto-generated Visits
 #   23  Flow refresh Apex       — risk scorer + permit coordinator recalc
 #   24  nepa_decision_payload__c — upsert via nepa_process__r.nepa_federal_unique_id__c
 #   25  nepa_ar_export__c       — upsert via nepa_process__r.nepa_federal_unique_id__c
@@ -239,7 +236,7 @@ run_apex "post-load polymorphic wiring" "demo/import_data/18_postload_polymorphi
 
 # ── step 19: Task ─────────────────────────────────────────────────────────────
 step_header "Step 19: Task"
-upsert_csv "Task" "Task" "19_Task.csv" "External_ID__c"
+insert_csv "Task" "Task" "19_Task.csv"
 
 # Wire Task WhatId/WhoId now that Tasks exist (step 18 Apex also handles this
 # if Tasks were loaded before, but running it again is safe — it queries by
@@ -297,7 +294,7 @@ echo "    If count is 0: NEPA_Permit_Record_Creator flow did not fire OR Regulat
 echo "    is missing. Re-run seed: sf data import tree --files data/seed/regulatory_authorization_type_seed.json --target-org $TARGET_ORG"
 echo ""
 echo "    To clean up all demo records:"
-echo "      sf data delete bulk --sobject Task --where \"External_ID__c LIKE 'DEMO_TASK_%'\" --target-org $TARGET_ORG --async"
+echo "      sf data delete bulk --sobject Task --where \"Subject LIKE 'Initiate IDWR%' OR Subject LIKE 'File EPA%' OR Subject LIKE 'Day-30%' OR Subject LIKE 'Add Dust%' OR Subject LIKE 'Generate ARMPA%' OR Subject LIKE 'Confirm Tribal%' OR Subject LIKE 'Verify Required%' OR Subject LIKE 'Applicant Portal Update%'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject Visit --where \"nepa_auto_generated__c = true AND nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject nepa_process_team_member__c --where \"nepa_assembly_source__c = 'GIS_Auto_Assembly' AND nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject nepa_detected_protection_layer__c --where \"nepa_program__r.nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'\" --target-org $TARGET_ORG --async"

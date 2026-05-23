@@ -15,14 +15,14 @@
  *     EJScreen_EJ_Index   → HIT  (EJ Index = 18.3 — informational, no EC)
  *   nepa_process_team_member__c — 3 GIS_Auto_Assembly records (Hydrologist, Wildlife Biologist,
  *     NEPA Specialist); all map to DEMO_SR_001 (FSL 1-Technician-per-User constraint)
- *   WorkOrder — 3 auto-generated records (nepa_auto_generated__c = true)
+ *   Visit — 3 auto-generated records (nepa_auto_generated__c = true)
  *   Program — nepa_gis_proximity_complete__c set true; protection areas text written
  *
  * Run AFTER step 21 (ServiceResource.nepa_discipline__c must be set).
  * Run via: sf apex run --file demo/import_data/22_postload_gis_team_assembly.apex --target-org <alias>
  *
  * Idempotent: upserts detected layers on nepa_upsert_key__c; checks for existing
- * GIS_Auto_Assembly team members; skips auto-generated WOs if they already exist.
+ * GIS_Auto_Assembly team members; skips auto-generated Visits if they already exist.
  */
 
 // ── Resolve parent records ────────────────────────────────────────────────────
@@ -76,6 +76,20 @@ for (ServiceTerritory st : [
 }
 
 DateTime gisRunTs = DateTime.newInstance(2019, 3, 12, 14, 23, 0);
+
+Id demoLocationId;
+for (Schema.Location loc : [SELECT Id FROM Location WHERE Name = 'BLM Owyhee Field Office' LIMIT 1]) {
+    demoLocationId = loc.Id;
+}
+if (demoLocationId == null) {
+    Schema.Location loc = new Schema.Location(
+        Name = 'BLM Owyhee Field Office',
+        LocationType = 'Business Site',
+        IsInventoryLocation = false
+    );
+    insert loc;
+    demoLocationId = loc.Id;
+}
 
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -286,104 +300,81 @@ if (!autoTMsToInsert.isEmpty()) {
 
 
 // ══════════════════════════════════════════════════════════════════════════════
-// 4 — WorkOrder (auto-generated, nepa_auto_generated__c = true)
+// 4 — Visit (auto-generated, nepa_auto_generated__c = true)
 // ══════════════════════════════════════════════════════════════════════════════
-// Three WOs corresponding to the three hit-layer disciplines.
-// These are distinct from the manually planned WOs in step 13: the GIS-triggered WOs
-// represent the scoping-phase field assessment work orders issued immediately after
-// GIS proximity detection, before the full ID team work order sequence is scheduled.
-//
-// WorkType mapping from NEPA_Layer_Discipline__mdt:
-//   NWI_Wetlands        → DEMO_WT_001 (Hydrology and Water Quality)
-//   FWS_Critical_Habitat → DEMO_WT_002 (Sage-Grouse / Wildlife)
-//   EJScreen_EJ_Index   → DEMO_WT_001 (NEPA Specialist / EJ analysis)
-//
-// Status: New (GIS assembly creates WOs in scoping state; demo reflects initial creation)
+// Three Visits corresponding to the three hit-layer disciplines.
+// GIS proximity detection triggers scoping-phase field survey Visits with
+// nepa_trigger_layer__c pointing to the detected protection layer record.
 
-Map<String, Id> workTypeIdByExt = new Map<String, Id>();
-for (WorkType wt : [
-    SELECT Id, External_ID__c FROM WorkType
-    WHERE External_ID__c IN ('DEMO_WT_001', 'DEMO_WT_002')
-]) {
-    workTypeIdByExt.put(wt.External_ID__c, wt.Id);
-}
-
-// Check which auto-generated WOs already exist
-Set<String> existingAutoWOSubjects = new Set<String>();
-for (WorkOrder wo : [
-    SELECT Subject FROM WorkOrder
+Set<String> existingAutoVisitInstructions = new Set<String>();
+for (Visit v : [
+    SELECT InstructionDescription FROM Visit
     WHERE nepa_auto_generated__c = true
     AND nepa_process__c = :appId
 ]) {
-    existingAutoWOSubjects.add(wo.Subject);
+    existingAutoVisitInstructions.add(v.InstructionDescription);
 }
 
 String projectName = 'Carrie Placer Mine';
 
-List<Map<String, Object>> autoWODefs = new List<Map<String, Object>>{
+List<Map<String, Object>> autoVisitDefs = new List<Map<String, Object>>{
     new Map<String, Object>{
-        'subject'      => 'Hydrology and Water Quality Assessment - ' + projectName,
-        'description'  => 'Field hydrology assessment triggered by NWI Wetlands GIS proximity detection (NWI Wetlands). Review water resources, wetland buffers, jurisdictional determination, and CWA Section 404 compliance for the project footprint. Assess NPDES permit requirements and document any wetland mitigation sequencing needs.',
-        'workTypeExt'  => 'DEMO_WT_001',
-        'duration'     => 480,
+        'instructions' => 'Hydrology and Water Quality Assessment - ' + projectName,
+        'remarks'      => 'Field hydrology assessment triggered by NWI Wetlands GIS proximity detection. Review water resources, wetland buffers, jurisdictional determination, and CWA Section 404 compliance for the project footprint. Assess NPDES permit requirements and document any wetland mitigation sequencing needs.',
         'priority'     => 'High',
         'discipline'   => 'Hydrologist',
         'triggerLayer' => nwiLayerId
     },
     new Map<String, Object>{
-        'subject'      => 'Critical Habitat and Species Survey - ' + projectName,
-        'description'  => 'Wildlife survey triggered by USFWS Critical Habitat GIS proximity detection (FWS Critical Habitat). Assess listed species presence, critical habitat unit boundaries, and ESA Section 7 formal consultation requirements. Evaluate ARMPA conformance for sage-grouse PHMA and RHMA designations. Document seasonal survey windows and any required lek disturbance buffers.',
-        'workTypeExt'  => 'DEMO_WT_002',
-        'duration'     => 480,
+        'instructions' => 'Critical Habitat and Species Survey - ' + projectName,
+        'remarks'      => 'Wildlife survey triggered by USFWS Critical Habitat GIS proximity detection. Assess listed species presence, critical habitat unit boundaries, and ESA Section 7 formal consultation requirements. Evaluate ARMPA conformance for sage-grouse PHMA and RHMA designations.',
         'priority'     => 'High',
         'discipline'   => 'Wildlife Biologist (Sage-Grouse)',
         'triggerLayer' => fwsLayerId
     },
     new Map<String, Object>{
-        'subject'      => 'Environmental Justice Analysis - ' + projectName,
-        'description'  => 'Environmental justice analysis triggered by EJScreen EJ Index GIS proximity detection (EJScreen EJ Index). Assess disproportionate and adverse impacts on overburdened EJ communities per Executive Order 12898 and CEQ Environmental Justice Guidance. Document cumulative impacts, mitigation measures, and meaningful public engagement opportunities. Review Title VI compliance and disparate impact analysis requirements. Findings must be incorporated into the alternatives analysis and mitigation sections of the NEPA document.',
-        'workTypeExt'  => 'DEMO_WT_001',
-        'duration'     => 240,
-        'priority'     => 'Normal',
+        'instructions' => 'Environmental Justice Analysis - ' + projectName,
+        'remarks'      => 'EJ analysis triggered by EJScreen EJ Index GIS proximity detection. Assess disproportionate impacts on overburdened EJ communities per E.O. 12898 and CEQ EJ Guidance. Incorporate findings into EA alternatives analysis and mitigation sections.',
+        'priority'     => 'High',
         'discipline'   => 'NEPA Specialist',
         'triggerLayer' => ejLayerId
     }
 };
 
-List<WorkOrder> autoWOsToInsert = new List<WorkOrder>();
-for (Map<String, Object> def : autoWODefs) {
-    String subject = (String) def.get('subject');
-    if (!existingAutoWOSubjects.contains(subject)) {
-        WorkOrder wo = new WorkOrder();
-        wo.Subject               = subject;
-        wo.Description           = (String) def.get('description');
-        wo.Status                = 'New';
-        wo.Priority              = (String) def.get('priority');
-        wo.Duration              = (Integer) def.get('duration');
-        wo.DurationType          = 'Minutes';
-        wo.AccountId             = blmAccountId;
-        wo.ServiceTerritoryId    = demoTerritoryId;
-        wo.WorkTypeId            = workTypeIdByExt.get((String) def.get('workTypeExt'));
-        wo.nepa_process__c       = appId;
-        wo.nepa_discipline__c    = (String) def.get('discipline');
-        wo.nepa_trigger_layer__c = (Id) def.get('triggerLayer');
-        wo.nepa_auto_generated__c = true;
-        autoWOsToInsert.add(wo);
+List<Visit> autoVisitsToInsert = new List<Visit>();
+for (Map<String, Object> def : autoVisitDefs) {
+    String instructions = (String) def.get('instructions');
+    if (!existingAutoVisitInstructions.contains(instructions)) {
+        Visit v = new Visit();
+        v.PlaceId                  = demoLocationId;
+        v.ContextId                = appId;
+        v.nepa_process__c          = appId;
+        v.Status                   = 'Planned';
+        v.VisitPriority            = (String) def.get('priority');
+        v.PlannedVisitStartTime    = DateTime.newInstance(2019, 3, 12, 15, 0, 0);
+        v.PlannedVisitEndTime      = DateTime.newInstance(2019, 3, 12, 15, 0, 0).addDays(1);
+        v.InstructionDescription   = instructions;
+        v.StatusRemarks            = (String) def.get('remarks');
+        v.nepa_discipline__c       = (String) def.get('discipline');
+        v.nepa_trigger_layer__c    = (Id) def.get('triggerLayer');
+        v.nepa_auto_generated__c   = true;
+        v.nepa_hard_gate__c        = false;
+        autoVisitsToInsert.add(v);
     }
 }
-if (!autoWOsToInsert.isEmpty()) {
-    insert autoWOsToInsert;
-    System.debug('Auto-generated WorkOrders inserted: ' + autoWOsToInsert.size());
+if (!autoVisitsToInsert.isEmpty()) {
+    insert autoVisitsToInsert;
+    System.debug('Auto-generated Visits inserted: ' + autoVisitsToInsert.size());
 } else {
-    System.debug('Auto-generated WorkOrders already exist — skipped.');
+    System.debug('Auto-generated Visits already exist — skipped.');
 }
 
 
 // ══════════════════════════════════════════════════════════════════════════════
 // Summary
 // ══════════════════════════════════════════════════════════════════════════════
-System.debug('Step 22 complete: GIS proximity results, auto-assembled team, and auto-generated work orders loaded for Carrie Placer Mine IDI-38709.');
+System.debug('Step 22 complete: GIS proximity results, auto-assembled team, and auto-generated visits loaded for Carrie Placer Mine IDI-38709.');
 System.debug('  Detected layers: ' + layerIdByDeveloperName.size());
 System.debug('  Auto team members inserted: ' + autoTMsToInsert.size());
-System.debug('  Auto work orders inserted: ' + autoWOsToInsert.size());
+System.debug('  Auto visits inserted: ' + autoVisitsToInsert.size());
 System.debug('  Program extraordinary circumstances: true (NWI Wetlands + FWS Critical Habitat)');

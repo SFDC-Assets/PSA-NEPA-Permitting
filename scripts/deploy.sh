@@ -799,6 +799,14 @@ _tmp_es="/tmp/nepa_deploy_es_$$.out"
     deploy "permission set" \
         --source-dir force-app/main/default/permissionsets \
         --target-org "$TARGET_ORG"
+    # Auto-assign permset to the deploying admin user so post-deploy data loads
+    # (demo data, Apex anonymous, verify queries) work without a separate manual step.
+    phase_header "Phase 4b-assign: Permission set auto-assign to deploying user"
+    sf org assign permset \
+        --name NEPA_Permitting \
+        --target-org "$TARGET_ORG" \
+        && echo "    [Succeeded] NEPA_Permitting assigned to deploying user" \
+        || echo "    WARNING: permset assign failed (may already be assigned) — continuing"
 ) >"$_tmp_apex" 2>&1 & _pid_apex=$!
 
 ( phase_5c_es_defs ) >"$_tmp_es" 2>&1 & _pid_es=$!

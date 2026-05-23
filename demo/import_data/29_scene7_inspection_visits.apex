@@ -22,6 +22,20 @@ IndividualApplication ia = [
     WHERE nepa_federal_unique_id__c = 'IDI-38709' LIMIT 1
 ];
 
+Id demoLocationId;
+for (Schema.Location loc : [SELECT Id FROM Location WHERE Name = 'BLM Owyhee Field Office' LIMIT 1]) {
+    demoLocationId = loc.Id;
+}
+if (demoLocationId == null) {
+    Schema.Location loc = new Schema.Location(
+        Name = 'BLM Owyhee Field Office',
+        LocationType = 'Business Site',
+        IsInventoryLocation = false
+    );
+    insert loc;
+    demoLocationId = loc.Id;
+}
+
 nepa_required_permit__c npdesPermit = [
     SELECT Id FROM nepa_required_permit__c
     WHERE External_ID__c = 'DEMO_RP_001' LIMIT 1
@@ -40,28 +54,28 @@ String idahoRiskContext =
 List<Map<String, Object>> visitDefs = new List<Map<String, Object>>{
     new Map<String, Object>{
         'External_ID__c'      => 'DEMO_INSP_001',
-        'Subject'             => 'NPDES Quarterly Discharge Monitoring Report Review',
+        'instructions'        => 'NPDES Quarterly Discharge Monitoring Report Review',
         'Priority'            => 'High',
         'DueDays'             => 90,
         'InspectionType'      => 'Discharge Monitoring Report (DMR)'
     },
     new Map<String, Object>{
         'External_ID__c'      => 'DEMO_INSP_002',
-        'Subject'             => 'NPDES Stormwater Compliance Inspection',
+        'instructions'        => 'NPDES Stormwater Compliance Inspection',
         'Priority'            => 'High',
         'DueDays'             => 180,
         'InspectionType'      => 'Stormwater Compliance'
     },
     new Map<String, Object>{
         'External_ID__c'      => 'DEMO_INSP_003',
-        'Subject'             => 'Reclamation Progress Inspection',
+        'instructions'        => 'Reclamation Progress Inspection',
         'Priority'            => 'Medium',
         'DueDays'             => 365,
         'InspectionType'      => 'Reclamation Compliance'
     },
     new Map<String, Object>{
         'External_ID__c'      => 'DEMO_INSP_004',
-        'Subject'             => 'Wetland Buffer Compliance Inspection — Jordan Creek 50-ft Buffer',
+        'instructions'        => 'Wetland Buffer Compliance Inspection — Jordan Creek 50-ft Buffer',
         'Priority'            => 'High',
         'DueDays'             => 120,
         'InspectionType'      => 'Wetland Buffer Compliance'
@@ -69,32 +83,34 @@ List<Map<String, Object>> visitDefs = new List<Map<String, Object>>{
 };
 
 // ─── Check which Visits the flow already created ─────────────────────────────
-Set<String> existingSubjects = new Set<String>();
+Set<String> existingInstructions = new Set<String>();
 for (Visit v : [
-    SELECT Subject FROM Visit
+    SELECT InstructionDescription FROM Visit
     WHERE nepa_process__c = :ia.Id
     AND nepa_auto_generated__c = true
-    AND Subject IN (
+    AND InstructionDescription IN (
         'NPDES Quarterly Discharge Monitoring Report Review',
         'NPDES Stormwater Compliance Inspection',
         'Reclamation Progress Inspection',
         'Wetland Buffer Compliance Inspection — Jordan Creek 50-ft Buffer'
     )
 ]) {
-    existingSubjects.add(v.Subject);
+    existingInstructions.add(v.InstructionDescription);
 }
 
 List<Visit> toInsert = new List<Visit>();
 for (Map<String, Object> def : visitDefs) {
-    String subj = (String) def.get('Subject');
-    if (existingSubjects.contains(subj)) {
-        System.debug('Visit already exists — skipping: ' + subj);
+    String instructions = (String) def.get('instructions');
+    if (existingInstructions.contains(instructions)) {
+        System.debug('Visit already exists — skipping: ' + instructions);
         continue;
     }
     Integer dueDays = (Integer) def.get('DueDays');
     Visit v = new Visit(
-        Subject                   = subj,
-        Status                    = 'Scheduled',
+        External_ID__c            = (String) def.get('External_ID__c'),
+        PlaceId                   = demoLocationId,
+        InstructionDescription    = instructions,
+        Status                    = 'Planned',
         VisitPriority             = (String) def.get('Priority'),
         PlannedVisitStartTime     = DateTime.now().addDays(dueDays),
         PlannedVisitEndTime       = DateTime.now().addDays(dueDays).addHours(4),
@@ -103,7 +119,6 @@ for (Map<String, Object> def : visitDefs) {
         nepa_discipline__c        = 'Environmental Compliance',
         nepa_auto_generated__c    = true,
         nepa_hard_gate__c         = false,
-        nepa_trigger_layer__c     = idahoWarning,
         nepa_state_risk_context__c = idahoRiskContext
     );
     toInsert.add(v);
@@ -113,11 +128,11 @@ if (!toInsert.isEmpty()) {
     insert toInsert;
     System.debug('Inspection Visits inserted: ' + toInsert.size());
     for (Visit v : toInsert) {
-        System.debug('  ' + v.Subject + ' — due +' + ((Integer)((DateTime.now().getTime() - v.PlannedVisitStartTime.getTime()) / -86400000)) + ' days');
+        System.debug('  ' + v.InstructionDescription + ' — due +' + ((Integer)((DateTime.now().getTime() - v.PlannedVisitStartTime.getTime()) / -86400000)) + ' days');
     }
 } else {
     System.debug('All 4 inspection Visits already exist (flow created them) — skipped.');
 }
 
 System.debug('Step 29 complete.');
-System.debug('Verify: SELECT Subject, nepa_discipline__c, nepa_trigger_layer__c, PlannedVisitStartTime FROM Visit WHERE nepa_process__r.nepa_federal_unique_id__c = \'IDI-38709\' AND nepa_auto_generated__c = true');
+System.debug('Verify: SELECT InstructionDescription, nepa_discipline__c, nepa_state_risk_context__c, PlannedVisitStartTime FROM Visit WHERE nepa_process__r.nepa_federal_unique_id__c = \'IDI-38709\' AND nepa_auto_generated__c = true');

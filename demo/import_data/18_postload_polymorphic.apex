@@ -6,10 +6,8 @@
  *   - LicenseTypeId (IndividualApplication) — org-specific RegulatoryAuthorizationType ID
  *   - RelatedRecordId (ServiceResource) — requires User ID, not Contact
  *   - STM (ServiceTerritoryMember) — depends on ServiceResources created here
- *   - Task.WhatId / WhoId — polymorphic, cannot resolve via CSV
  *   - ContentVersion — requires VersionData Blob; cannot be loaded via Bulk API v2 CSV
- *   - ServiceAppointment.ParentRecordId — polymorphic, Bulk API v2 cannot resolve via ext ID
- *   - AssignedResource — depends on ServiceAppointments created here
+ *   - Visit (field surveys) — created here with ContextId = IndividualApplication
  *
  * Run via: sf apex run --file demo/import_data/18_postload_polymorphic.apex --target-org <alias>
  */
@@ -102,6 +100,9 @@ app.nepa_waiver_invoked__c                  = false;
 app.nepa_connected_actions_identified__c    = true;
 app.nepa_supplementation_review_complete__c = false;
 app.nepa_record_completeness__c             = 100;
+app.nepa_phase2_applicable__c               = false;
+app.nepa_climate_assessment_required__c     = false;
+app.nepa_climate_assessment_complete__c     = true;
 app.nepa_process_outcome__c                 = 'FONSI issued. No significant impact found. CWA 404 and IDWR appropriation permits required prior to ground disturbance.';
 
 if (existingApps.isEmpty()) {
@@ -112,6 +113,28 @@ if (existingApps.isEmpty()) {
     System.debug('IndividualApplication updated: ' + app.Id);
 }
 appId = app.Id;
+
+// ── 1b. Location (required PlaceId for Visit records) ────────────────────────
+// Visit.PlaceId (polymorphic to Location/Address/ContactPointAddress) is required.
+// Create or reuse a Location record for the BLM Owyhee Field Office.
+Id demoLocationId;
+for (Schema.Location loc : [
+    SELECT Id FROM Location WHERE Name = 'BLM Owyhee Field Office' LIMIT 1
+]) {
+    demoLocationId = loc.Id;
+}
+if (demoLocationId == null) {
+    Schema.Location loc = new Schema.Location(
+        Name              = 'BLM Owyhee Field Office',
+        LocationType      = 'Business Site',
+        IsInventoryLocation = false
+    );
+    insert loc;
+    demoLocationId = loc.Id;
+    System.debug('Location created: ' + demoLocationId);
+} else {
+    System.debug('Location (existing): ' + demoLocationId);
+}
 
 // ── 2. ServiceResource (linked to running user for demo) ─────────────────────
 // Salesforce enforces exactly 1 Technician ServiceResource per User.
@@ -202,195 +225,110 @@ if (terrId != null) {
     }
 }
 
-// ── 4. ServiceAppointments and AssignedResources ─────────────────────────────
-// ServiceAppointment.ParentRecordId is polymorphic — Bulk API v2 cannot resolve
-// it via external ID, so we create SA/AR here after querying WorkOrder IDs.
+// ── 4. Field Survey Visits (one per discipline/survey — replaces WorkOrder/SA/AR) ────
+// Each specialist discipline gets a completed Visit representing the field work
+// performed during the Carrie Placer Mine EA. Visits link to IndividualApplication
+// via ContextId (polymorphic) and nepa_process__c (direct lookup).
 
-Map<String, Id> woIdByExt = new Map<String, Id>();
-for (WorkOrder wo : [
-    SELECT Id, External_ID__c
-    FROM WorkOrder
-    WHERE External_ID__c IN (
-        'DEMO_WO_001','DEMO_WO_002','DEMO_WO_003','DEMO_WO_004','DEMO_WO_005',
-        'DEMO_WO_006','DEMO_WO_007','DEMO_WO_008','DEMO_WO_009','DEMO_WO_010'
-    )
-]) {
-    woIdByExt.put(wo.External_ID__c, wo.Id);
-}
-
-Id terrId2;
-for (ServiceTerritory st : [
-    SELECT Id FROM ServiceTerritory WHERE External_ID__c = 'DEMO_TERR_001' LIMIT 1
-]) {
-    terrId2 = st.Id;
-}
-
-// SA definitions: extId -> {woExt, apptNum, start, end, actualStart, actualEnd, dur, durType, desc}
-List<Map<String,Object>> saDefs = new List<Map<String,Object>>{
-    new Map<String,Object>{'ext'=>'DEMO_SA_001','wo'=>'DEMO_WO_001','num'=>'SA-2019-0001',
-        'ss'=>DateTime.newInstance(2019,4,15,8,0,0),'se'=>DateTime.newInstance(2019,4,18,17,0,0),
-        'as'=>DateTime.newInstance(2019,4,15,8,0,0),'ae'=>DateTime.newInstance(2019,4,18,16,30,0),
-        'dur'=>480,'durType'=>'Minutes','desc'=>'Sage-grouse lek and PHMA survey T. 6 S. R. 5 W. Sec. 28.'},
-    new Map<String,Object>{'ext'=>'DEMO_SA_002','wo'=>'DEMO_WO_002','num'=>'SA-2019-0002',
-        'ss'=>DateTime.newInstance(2019,4,22,8,0,0),'se'=>DateTime.newInstance(2019,4,25,17,0,0),
-        'as'=>DateTime.newInstance(2019,4,22,8,0,0),'ae'=>DateTime.newInstance(2019,4,25,16,0,0),
-        'dur'=>480,'durType'=>'Minutes','desc'=>'Hydrology and water quality assessment.'},
-    new Map<String,Object>{'ext'=>'DEMO_SA_003','wo'=>'DEMO_WO_003','num'=>'SA-2019-0003',
-        'ss'=>DateTime.newInstance(2019,5,6,8,0,0),'se'=>DateTime.newInstance(2019,5,12,17,0,0),
-        'as'=>DateTime.newInstance(2019,5,6,8,0,0),'ae'=>DateTime.newInstance(2019,5,12,15,0,0),
-        'dur'=>480,'durType'=>'Minutes','desc'=>'Geology soils and access road assessment.'},
-    new Map<String,Object>{'ext'=>'DEMO_SA_004','wo'=>'DEMO_WO_004','num'=>'SA-2019-0004',
-        'ss'=>DateTime.newInstance(2019,4,10,6,0,0),'se'=>DateTime.newInstance(2019,4,12,12,0,0),
-        'as'=>DateTime.newInstance(2019,4,10,6,0,0),'ae'=>DateTime.newInstance(2019,4,12,11,30,0),
-        'dur'=>240,'durType'=>'Minutes','desc'=>'Migratory bird nesting survey spring window.'},
-    new Map<String,Object>{'ext'=>'DEMO_SA_005','wo'=>'DEMO_WO_005','num'=>'SA-2019-0005',
-        'ss'=>DateTime.newInstance(2019,5,20,8,0,0),'se'=>DateTime.newInstance(2019,5,28,17,0,0),
-        'as'=>DateTime.newInstance(2019,5,20,8,0,0),'ae'=>DateTime.newInstance(2019,5,28,16,0,0),
-        'dur'=>480,'durType'=>'Minutes','desc'=>'Columbia spotted frog and riparian survey.'},
-    new Map<String,Object>{'ext'=>'DEMO_SA_006','wo'=>'DEMO_WO_006','num'=>'SA-2019-0006',
-        'ss'=>DateTime.newInstance(2019,6,17,8,0,0),'se'=>DateTime.newInstance(2019,6,20,17,0,0),
-        'as'=>DateTime.newInstance(2019,6,17,8,0,0),'ae'=>DateTime.newInstance(2019,6,20,15,0,0),
-        'dur'=>360,'durType'=>'Minutes','desc'=>'Botanical survey site visit 1.'},
-    new Map<String,Object>{'ext'=>'DEMO_SA_007','wo'=>'DEMO_WO_007','num'=>'SA-2019-0007',
-        'ss'=>DateTime.newInstance(2019,8,25,8,0,0),'se'=>DateTime.newInstance(2019,8,28,17,0,0),
-        'as'=>DateTime.newInstance(2019,8,25,8,0,0),'ae'=>DateTime.newInstance(2019,8,28,15,30,0),
-        'dur'=>360,'durType'=>'Minutes','desc'=>'Botanical survey site visit 2.'},
-    new Map<String,Object>{'ext'=>'DEMO_SA_008','wo'=>'DEMO_WO_008','num'=>'SA-2019-0008',
-        'ss'=>DateTime.newInstance(2019,8,19,8,0,0),'se'=>DateTime.newInstance(2019,8,22,17,0,0),
-        'as'=>DateTime.newInstance(2019,8,19,8,0,0),'ae'=>DateTime.newInstance(2019,8,22,16,0,0),
-        'dur'=>360,'durType'=>'Minutes','desc'=>'Big game winter range assessment.'},
-    new Map<String,Object>{'ext'=>'DEMO_SA_009','wo'=>'DEMO_WO_009','num'=>'SA-2019-0009',
-        'ss'=>DateTime.newInstance(2019,7,29,8,0,0),'se'=>DateTime.newInstance(2019,8,15,17,0,0),
-        'as'=>DateTime.newInstance(2019,7,29,8,0,0),'ae'=>DateTime.newInstance(2019,8,15,16,0,0),
-        'dur'=>240,'durType'=>'Minutes','desc'=>'ICL comment response - office task.'},
-    new Map<String,Object>{'ext'=>'DEMO_SA_010','wo'=>'DEMO_WO_010','num'=>'SA-2019-0010',
-        'ss'=>DateTime.newInstance(2019,7,29,8,0,0),'se'=>DateTime.newInstance(2019,8,15,17,0,0),
-        'as'=>DateTime.newInstance(2019,7,29,8,0,0),'ae'=>DateTime.newInstance(2019,8,15,16,0,0),
-        'dur'=>240,'durType'=>'Minutes','desc'=>'OSC comment response - office task.'}
+List<Map<String,Object>> visitDefs = new List<Map<String,Object>>{
+    new Map<String,Object>{
+        'ext'=>'DEMO_FSV_001','discipline'=>'Wildlife Biologist (Sage-Grouse)',
+        'priority'=>'High','start'=>DateTime.newInstance(2019,4,15,8,0,0),
+        'end'=>DateTime.newInstance(2019,4,18,17,0,0),
+        'instructions'=>'Sage-Grouse Lek and PHMA Survey — Carrie Placer Mine',
+        'remarks'=>'Sage-grouse lek and PHMA survey T. 6 S. R. 5 W. Sec. 28. Completed Apr 15-18 2019.'},
+    new Map<String,Object>{
+        'ext'=>'DEMO_FSV_002','discipline'=>'Hydrologist',
+        'priority'=>'High','start'=>DateTime.newInstance(2019,4,22,8,0,0),
+        'end'=>DateTime.newInstance(2019,4,25,17,0,0),
+        'instructions'=>'Hydrology and Water Quality Assessment — Carrie Placer Mine',
+        'remarks'=>'Hydrology and water quality assessment. Jordan Creek riparian corridor and water withdrawal points. Completed Apr 22-25 2019.'},
+    new Map<String,Object>{
+        'ext'=>'DEMO_FSV_003','discipline'=>'Geologist',
+        'priority'=>'High','start'=>DateTime.newInstance(2019,5,6,8,0,0),
+        'end'=>DateTime.newInstance(2019,5,12,17,0,0),
+        'instructions'=>'Geology, Soils and Access Road Assessment — Carrie Placer Mine',
+        'remarks'=>'Geology soils and access road assessment. 1.7-mile access road erosion and reclamation bond review. Completed May 6-12 2019.'},
+    new Map<String,Object>{
+        'ext'=>'DEMO_FSV_004','discipline'=>'Wildlife Biologist (Avian/Big Game)',
+        'priority'=>'High','start'=>DateTime.newInstance(2019,4,10,6,0,0),
+        'end'=>DateTime.newInstance(2019,4,12,12,0,0),
+        'instructions'=>'Migratory Bird Nesting Survey — Carrie Placer Mine',
+        'remarks'=>'Migratory bird nesting survey spring window. Pre-nesting season survey Apr 10-12 2019.'},
+    new Map<String,Object>{
+        'ext'=>'DEMO_FSV_005','discipline'=>'Fisheries and Wildlife Biologist (Aquatic)',
+        'priority'=>'High','start'=>DateTime.newInstance(2019,5,20,8,0,0),
+        'end'=>DateTime.newInstance(2019,5,28,17,0,0),
+        'instructions'=>'Columbia Spotted Frog and Riparian Survey — Carrie Placer Mine',
+        'remarks'=>'Columbia spotted frog and riparian corridor survey. Active amphibian season May 20-28 2019.'},
+    new Map<String,Object>{
+        'ext'=>'DEMO_FSV_006','discipline'=>'Botanist',
+        'priority'=>'High','start'=>DateTime.newInstance(2019,6,17,8,0,0),
+        'end'=>DateTime.newInstance(2019,6,20,17,0,0),
+        'instructions'=>'Botanical Survey Site Visit 1 — Carrie Placer Mine',
+        'remarks'=>'Special status plant survey site visit 1 of 2. Peak identification season Jun 17-20 2019.'},
+    new Map<String,Object>{
+        'ext'=>'DEMO_FSV_007','discipline'=>'Botanist',
+        'priority'=>'High','start'=>DateTime.newInstance(2019,8,25,8,0,0),
+        'end'=>DateTime.newInstance(2019,8,28,17,0,0),
+        'instructions'=>'Botanical Survey Site Visit 2 — Carrie Placer Mine',
+        'remarks'=>'Special status plant survey site visit 2 of 2. Reclamation seed mix approval. Aug 25-28 2019.'},
+    new Map<String,Object>{
+        'ext'=>'DEMO_FSV_008','discipline'=>'Wildlife Biologist (Avian/Big Game)',
+        'priority'=>'High','start'=>DateTime.newInstance(2019,8,19,8,0,0),
+        'end'=>DateTime.newInstance(2019,8,22,17,0,0),
+        'instructions'=>'Big Game Winter Range Assessment — Carrie Placer Mine',
+        'remarks'=>'Mule deer crucial winter range mapping. Shoulder season assessment Aug 19-22 2019.'},
+    new Map<String,Object>{
+        'ext'=>'DEMO_FSV_009','discipline'=>'NEPA Specialist',
+        'priority'=>'High','start'=>DateTime.newInstance(2019,7,29,8,0,0),
+        'end'=>DateTime.newInstance(2019,8,15,17,0,0),
+        'instructions'=>'ICL Comment Response — Carrie Placer Mine',
+        'remarks'=>'Idaho Conservation League substantive comment response. Dust mitigation analysis added to EA. Jul 29 - Aug 15 2019.'},
+    new Map<String,Object>{
+        'ext'=>'DEMO_FSV_010','discipline'=>'NEPA Specialist',
+        'priority'=>'High','start'=>DateTime.newInstance(2019,7,29,8,0,0),
+        'end'=>DateTime.newInstance(2019,8,15,17,0,0),
+        'instructions'=>'OSC Comment Response — Carrie Placer Mine',
+        'remarks'=>'Office of Species Conservation ARMPA justifiable departure memo. Jul 29 - Aug 15 2019.'}
 };
 
-Set<String> existingSAExts = new Set<String>();
-for (ServiceAppointment sa : [
-    SELECT External_ID__c FROM ServiceAppointment
-    WHERE External_ID__c LIKE 'DEMO_SA_%'
+Set<String> existingVisitExts = new Set<String>();
+for (Visit v : [
+    SELECT External_ID__c FROM Visit
+    WHERE External_ID__c LIKE 'DEMO_FSV_%'
 ]) {
-    existingSAExts.add(sa.External_ID__c);
+    existingVisitExts.add(v.External_ID__c);
 }
 
-List<ServiceAppointment> saList = new List<ServiceAppointment>();
-for (Map<String,Object> def : saDefs) {
+List<Visit> fieldSurveyVisits = new List<Visit>();
+for (Map<String,Object> def : visitDefs) {
     String ext = (String) def.get('ext');
-    if (!existingSAExts.contains(ext)) {
-        ServiceAppointment sa = new ServiceAppointment();
-        sa.External_ID__c       = ext;
-        sa.ParentRecordId       = woIdByExt.get((String) def.get('wo'));
-        sa.Status               = 'Completed';
-        sa.SchedStartTime       = (DateTime) def.get('ss');
-        sa.SchedEndTime         = (DateTime) def.get('se');
-        sa.ActualStartTime      = (DateTime) def.get('as');
-        sa.ActualEndTime        = (DateTime) def.get('ae');
-        sa.Duration             = (Integer)  def.get('dur');
-        sa.DurationType         = (String)   def.get('durType');
-        sa.Description          = (String)   def.get('desc');
-        if (terrId2 != null) { sa.ServiceTerritoryId = terrId2; }
-        saList.add(sa);
+    if (!existingVisitExts.contains(ext)) {
+        Visit v = new Visit();
+        v.External_ID__c          = ext;
+        v.PlaceId                 = demoLocationId;
+        v.ContextId               = appId;
+        v.nepa_process__c         = appId;
+        v.Status                  = 'Completed';
+        v.VisitPriority           = (String) def.get('priority');
+        v.PlannedVisitStartTime   = (DateTime) def.get('start');
+        v.PlannedVisitEndTime     = (DateTime) def.get('end');
+        v.ActualVisitStartTime    = (DateTime) def.get('start');
+        v.ActualVisitEndTime      = (DateTime) def.get('end');
+        v.InstructionDescription  = (String) def.get('instructions');
+        v.StatusRemarks           = (String) def.get('remarks');
+        v.nepa_discipline__c      = (String) def.get('discipline');
+        v.nepa_auto_generated__c  = false;
+        v.nepa_hard_gate__c       = false;
+        fieldSurveyVisits.add(v);
     }
 }
-if (!saList.isEmpty()) {
-    insert saList;
-    System.debug('ServiceAppointments inserted: ' + saList.size());
-}
-
-// Re-query for IDs (both new and pre-existing)
-Map<String, Id> saIdByExt = new Map<String, Id>();
-for (ServiceAppointment sa : [
-    SELECT Id, External_ID__c FROM ServiceAppointment
-    WHERE External_ID__c LIKE 'DEMO_SA_%'
-]) {
-    saIdByExt.put(sa.External_ID__c, sa.Id);
-}
-
-// AssignedResources
-Map<String, Map<String, String>> arDefs = new Map<String, Map<String, String>>{
-    'DEMO_AR_001' => new Map<String,String>{'sa'=>'DEMO_SA_001','req'=>'true'},
-    'DEMO_AR_002' => new Map<String,String>{'sa'=>'DEMO_SA_002','req'=>'true'},
-    'DEMO_AR_004' => new Map<String,String>{'sa'=>'DEMO_SA_003','req'=>'true'},
-    'DEMO_AR_005' => new Map<String,String>{'sa'=>'DEMO_SA_004','req'=>'true'},
-    'DEMO_AR_006' => new Map<String,String>{'sa'=>'DEMO_SA_005','req'=>'true'},
-    'DEMO_AR_007' => new Map<String,String>{'sa'=>'DEMO_SA_006','req'=>'true'},
-    'DEMO_AR_008' => new Map<String,String>{'sa'=>'DEMO_SA_007','req'=>'true'},
-    'DEMO_AR_009' => new Map<String,String>{'sa'=>'DEMO_SA_008','req'=>'true'},
-    'DEMO_AR_010' => new Map<String,String>{'sa'=>'DEMO_SA_009','req'=>'true'},
-    'DEMO_AR_011' => new Map<String,String>{'sa'=>'DEMO_SA_010','req'=>'true'}
-};
-
-Set<String> existingARExts = new Set<String>();
-for (AssignedResource ar : [
-    SELECT External_ID__c FROM AssignedResource
-    WHERE External_ID__c LIKE 'DEMO_AR_%'
-]) {
-    existingARExts.add(ar.External_ID__c);
-}
-
-List<AssignedResource> arList = new List<AssignedResource>();
-for (String arExt : arDefs.keySet()) {
-    if (!existingARExts.contains(arExt)) {
-        Map<String,String> def = arDefs.get(arExt);
-        Id saId2 = saIdByExt.get(def.get('sa'));
-        if (saId2 != null) {
-            AssignedResource ar = new AssignedResource(
-                External_ID__c         = arExt,
-                ServiceAppointmentId   = saId2,
-                ServiceResourceId      = demoSRId,
-                IsRequiredResource     = def.get('req') == 'true'
-            );
-            arList.add(ar);
-        }
-    }
-}
-if (!arList.isEmpty()) {
-    insert arList;
-    System.debug('AssignedResources inserted: ' + arList.size());
-}
-
-// ── 5. Task.WhatId / WhoId ───────────────────────────────────────────────────
-
-Map<String, Id> contactByExt = new Map<String, Id>();
-for (Contact c : [
-    SELECT Id, External_ID__c
-    FROM Contact
-    WHERE External_ID__c IN ('DEMO_CON_001', 'DEMO_CON_008')
-]) {
-    contactByExt.put(c.External_ID__c, c.Id);
-}
-
-Id coordinatorId = contactByExt.get('DEMO_CON_001');
-Id applicantId   = contactByExt.get('DEMO_CON_008');
-
-Map<String, Map<String, Id>> taskWiring = new Map<String, Map<String, Id>>{
-    'DEMO_TASK_001' => new Map<String, Id>{ 'whatId' => appId, 'whoId' => coordinatorId },
-    'DEMO_TASK_002' => new Map<String, Id>{ 'whatId' => appId, 'whoId' => coordinatorId },
-    'DEMO_TASK_003' => new Map<String, Id>{ 'whatId' => appId, 'whoId' => coordinatorId },
-    'DEMO_TASK_004' => new Map<String, Id>{ 'whatId' => appId, 'whoId' => coordinatorId },
-    'DEMO_TASK_005' => new Map<String, Id>{ 'whatId' => appId, 'whoId' => coordinatorId },
-    'DEMO_TASK_006' => new Map<String, Id>{ 'whatId' => appId, 'whoId' => coordinatorId },
-    'DEMO_TASK_007' => new Map<String, Id>{ 'whatId' => appId, 'whoId' => coordinatorId },
-    'DEMO_TASK_008' => new Map<String, Id>{ 'whatId' => appId, 'whoId' => applicantId }
-};
-
-List<Task> tasks = [
-    SELECT Id, External_ID__c
-    FROM Task
-    WHERE External_ID__c IN :taskWiring.keySet()
-];
-for (Task t : tasks) {
-    Map<String, Id> refs = taskWiring.get(t.External_ID__c);
-    t.WhatId = refs.get('whatId');
-    t.WhoId  = refs.get('whoId');
-}
-if (!tasks.isEmpty()) {
-    update tasks;
-    System.debug('Task WhatId/WhoId updated: ' + tasks.size());
+if (!fieldSurveyVisits.isEmpty()) {
+    insert fieldSurveyVisits;
+    System.debug('Field survey Visits inserted: ' + fieldSurveyVisits.size());
+} else {
+    System.debug('Field survey Visits already exist — skipped.');
 }
 
 // ── 5. ContentVersion — create placeholders then wire nepa_process__c ─────────

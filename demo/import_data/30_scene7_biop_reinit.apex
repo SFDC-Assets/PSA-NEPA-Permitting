@@ -30,11 +30,11 @@ IndividualApplication ia = [
 // ─── 1. Set reinitiation trigger on the Critical Habitat / Species Survey Visit ──
 Visit speciesVisit = null;
 for (Visit v : [
-    SELECT Id, Subject, nepa_reinit_new_species_listing__c
+    SELECT Id, InstructionDescription, nepa_reinit_new_species_listing__c
     FROM Visit
     WHERE nepa_process__c = :ia.Id
     AND nepa_auto_generated__c = true
-    AND Subject LIKE '%Critical Habitat%'
+    AND InstructionDescription LIKE '%Critical Habitat%'
     ORDER BY CreatedDate ASC LIMIT 1
 ]) {
     speciesVisit = v;
@@ -43,7 +43,7 @@ for (Visit v : [
 if (speciesVisit == null) {
     // Fall back to any auto-generated Visit if the discipline-specific one isn't found
     speciesVisit = [
-        SELECT Id, Subject, nepa_reinit_new_species_listing__c
+        SELECT Id, InstructionDescription, nepa_reinit_new_species_listing__c
         FROM Visit
         WHERE nepa_process__c = :ia.Id
         AND nepa_auto_generated__c = true
@@ -54,10 +54,10 @@ if (speciesVisit == null) {
 if (!speciesVisit.nepa_reinit_new_species_listing__c) {
     // Updating this fires NEPA_BiOp_Reinitiation_Checker async (IA has nepa_has_active_biop__c = TRUE)
     update new Visit(Id = speciesVisit.Id, nepa_reinit_new_species_listing__c = true);
-    System.debug('nepa_reinit_new_species_listing__c set TRUE on Visit: ' + speciesVisit.Subject);
+    System.debug('nepa_reinit_new_species_listing__c set TRUE on Visit: ' + speciesVisit.InstructionDescription);
     System.debug('NEPA_BiOp_Reinitiation_Checker queued async — ESA Task and risk delta +12 will appear in ~10s');
 } else {
-    System.debug('nepa_reinit_new_species_listing__c already TRUE on Visit: ' + speciesVisit.Subject);
+    System.debug('nepa_reinit_new_species_listing__c already TRUE on Visit: ' + speciesVisit.InstructionDescription);
 }
 
 // ─── 2. Pre-seed ESA Coordinator Task (fallback if flow did not fire) ─────────
