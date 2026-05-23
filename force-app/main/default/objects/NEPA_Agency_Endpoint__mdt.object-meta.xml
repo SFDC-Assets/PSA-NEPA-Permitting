@@ -2,13 +2,13 @@
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
     <label>NEPA Agency Endpoint</label>
     <pluralLabel>NEPA Agency Endpoints</pluralLabel>
-    <description>Registry of federal agency NEPA REST API endpoints. Each record defines one agency — add a new record to add a new agency without modifying code. The DeveloperName must match nepa_agency_endpoint_key__c on nepa_required_permit__c records.</description>
+    <description>Registry of federal agency NEPA REST API endpoints. Each record defines one agency — add a new record to add a new agency without modifying code. The DeveloperName must match nepa_agency_endpoint_ref__c on nepa_required_permit__c records.</description>
     <fields>
         <fullName>Agency_Key__c</fullName>
         <label>Agency Key</label>
         <type>Text</type>
         <length>40</length>
-        <description>Short agency abbreviation matching nepa_agency_endpoint_key__c (e.g., USACE, USFWS, BLM). Must be unique across records.</description>
+        <description>Short agency abbreviation matching nepa_agency_endpoint_ref__c (e.g., USACE, USFWS, BLM). Must be unique across records.</description>
     </fields>
     <fields>
         <fullName>Named_Credential__c</fullName>

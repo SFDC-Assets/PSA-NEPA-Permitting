@@ -537,7 +537,7 @@
         <members>NEPA_Agency_Endpoint__mdt.Is_Active__c</members>
         <!-- nepa_required_permit__c (CEQ Permits entity — cross-agency permit dependencies) -->
         <members>nepa_required_permit__c.nepa_actual_completion__c</members>
-        <members>nepa_required_permit__c.nepa_agency_endpoint_key__c</members>
+        <members>nepa_required_permit__c.nepa_agency_endpoint_ref__c</members>
         <members>nepa_required_permit__c.nepa_agency_system_url__c</members>
         <members>nepa_required_permit__c.nepa_expected_completion__c</members>
         <members>nepa_required_permit__c.nepa_external_federal_id__c</members>

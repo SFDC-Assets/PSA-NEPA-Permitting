@@ -6,6 +6,7 @@
 public with sharing class NepaTemplateCatalogController {
 
     @AuraEnabled(cacheable=true)
+    @SuppressWarnings('PMD.ApexCRUDViolation')
     public static List<NEPA_Template_Catalog__mdt> getCatalog(String reviewType, String sector) {
         String query = 'SELECT Id, DeveloperName, MasterLabel, Template_Name__c, Template_Category__c, ' +
                        'Agency__c, Review_Type__c, Sector__c, APT_Unique_Name__c, ' +
@@ -83,6 +84,7 @@ public with sharing class NepaTemplateCatalogController {
             SELECT Id, Name, UniqueName,
                    (SELECT Id FROM ActionPlanTemplateVersions WHERE Status = 'Active' ORDER BY Version DESC LIMIT 1)
             FROM ActionPlanTemplate
+            WITH USER_MODE
             WHERE UniqueName = :aptUniqueName
             LIMIT 1
         ];
@@ -104,7 +106,7 @@ public with sharing class NepaTemplateCatalogController {
             ap.put(getActionPlanRelationshipField(sot.getDescribe().getName()), recordId);
         }
 
-        insert ap;
+        Database.insert(ap, AccessLevel.USER_MODE);
         return ap.Id;
     }
 

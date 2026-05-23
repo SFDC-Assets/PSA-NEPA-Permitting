@@ -4,10 +4,7 @@
         <apexClass>NepaLayerDisciplineResolver</apexClass>
         <enabled>true</enabled>
     </classAccesses>
-    <classAccesses>
-        <apexClass>NepaActionPlanLauncher</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
+
     <classAccesses>
         <apexClass>NepaStringSplitter</apexClass>
         <enabled>true</enabled>
@@ -2540,7 +2537,7 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>nepa_required_permit__c.nepa_agency_endpoint_key__c</field>
+        <field>nepa_required_permit__c.nepa_agency_endpoint_ref__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -2925,10 +2922,6 @@
     </tabSettings>
     <tabSettings>
         <tab>standard-Visit</tab>
-        <visibility>Available</visibility>
-    </tabSettings>
-    <tabSettings>
-        <tab>nepaTemplateCatalog</tab>
         <visibility>Available</visibility>
     </tabSettings>
     <tabSettings>

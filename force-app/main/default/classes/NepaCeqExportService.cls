@@ -382,6 +382,7 @@ global with sharing class NepaCeqExportService {
                    COUNT(Id) cnt,
                    AVG(nepa_days_elapsed__c) avgDays
             FROM IndividualApplication
+            WITH USER_MODE
             WHERE nepa_process_status__c IN ('completed', 'Closed')
               AND nepa_completion_date__c != null
               AND nepa_completion_date__c >= :cutoff

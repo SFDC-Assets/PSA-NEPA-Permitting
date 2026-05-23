@@ -4,10 +4,10 @@
     <endpointUrl>https://js.arcgis.com</endpointUrl>
     <isActive>true</isActive>
     <isApplicableToConnectSrc>false</isApplicableToConnectSrc>
-    <isApplicableToFontSrc>false</isApplicableToFontSrc>
+    <isApplicableToFontSrc>true</isApplicableToFontSrc>
     <isApplicableToFrameSrc>true</isApplicableToFrameSrc>
-    <isApplicableToImgSrc>false</isApplicableToImgSrc>
+    <isApplicableToImgSrc>true</isApplicableToImgSrc>
     <isApplicableToMediaSrc>false</isApplicableToMediaSrc>
     <isApplicableToScriptSrc>true</isApplicableToScriptSrc>
-    <isApplicableToStyleSrc>false</isApplicableToStyleSrc>
+    <isApplicableToStyleSrc>true</isApplicableToStyleSrc>
 </CspTrustedSite>

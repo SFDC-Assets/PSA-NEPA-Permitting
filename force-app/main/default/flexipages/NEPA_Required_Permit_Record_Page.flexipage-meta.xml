@@ -243,7 +243,7 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_agency_endpoint_key__c</fieldItem>
+                <fieldItem>Record.nepa_agency_endpoint_ref__c</fieldItem>
                 <identifier>rp_agency_endpoint_key</identifier>
             </fieldInstance>
         </itemInstances>
@@ -498,31 +498,6 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>rp_section_inspection</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!Record.nepa_permit_status__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>Issued</rightValue>
-                    </criteria>
-                </visibilityRule>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>relatedListApiName</name>
-                    <value>Visits__r</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>rowsToDisplay</name>
-                    <value>10</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>showActionBar</name>
-                    <value>true</value>
-                </componentInstanceProperties>
-                <componentName>force:relatedListSingleContainer</componentName>
-                <identifier>rp_related_visits</identifier>
                 <visibilityRule>
                     <criteria>
                         <leftValue>{!Record.nepa_permit_status__c}</leftValue>

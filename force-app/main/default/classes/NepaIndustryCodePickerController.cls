@@ -36,6 +36,7 @@ public with sharing class NepaIndustryCodePickerController {
         return result;
     }
 
+    @SuppressWarnings('PMD.ApexCRUDViolation')
     private static List<PickerOption> queryLevel(String level) {
         List<PickerOption> options = new List<PickerOption>();
         for (NEPA_NAICS_Code__mdt rec : [

@@ -18,3 +18,11 @@ suppressions:
   "force-app/main/default/objects/nepa_gis_data_element__c/fields/nepa_access_method__c.field-meta.xml":
     - rule_selector: "pmd:ProtectSensitiveData"
       max_suppressed_violations: 1
+  # ArcGIS JS SDK v4.29 is loaded from the official Esri CDN (https://js.arcgis.com).
+  # The SDK cannot be bundled as a static resource — it dynamically loads 200+ modules at runtime.
+  # Allowlisted via CSP Trusted Site ArcGIS_JS_CDN with script-src, style-src, img-src, and font-src enabled.
+  "force-app/main/default/pages/NEPA_Site_Location_Page.page":
+    - rule_selector: "pmd:LoadCSSApexStylesheet"
+      max_suppressed_violations: 1
+    - rule_selector: "pmd:LoadJavaScriptIncludeScript"
+      max_suppressed_violations: 1

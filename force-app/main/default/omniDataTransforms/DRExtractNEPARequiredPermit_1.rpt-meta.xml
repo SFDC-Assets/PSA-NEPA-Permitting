@@ -257,7 +257,7 @@
         <filterGroup>0.0</filterGroup>
         <filterOperator>=</filterOperator>
         <globalKey>DRExtractNEPARequiredPermitCustomPLACEHOLDER_NEPA_015Item15</globalKey>
-        <inputFieldName>nepa_agency_endpoint_key__c</inputFieldName>
+        <inputFieldName>nepa_agency_endpoint_ref__c</inputFieldName>
         <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
         <linkedObjectSequence>0.0</linkedObjectSequence>
         <migrationValue>FAKEMAPPING</migrationValue>

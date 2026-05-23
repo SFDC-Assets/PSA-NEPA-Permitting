@@ -54,7 +54,7 @@ private class NepaAgencyPermitServiceTest {
             nepa_permit_type__c          = 'CWA Section 404 Permit',
             nepa_lead_agency__c          = 'USACE',
             nepa_external_federal_id__c  = 'USACE-2026-001',
-            nepa_agency_endpoint_key__c  = 'USACE',
+            nepa_agency_endpoint_ref__c  = 'USACE',
             nepa_permit_status__c        = 'Under Review',
             nepa_is_critical_path__c     = true,
             nepa_regulatory_citation__c  = '33 USC 1344'

@@ -112,7 +112,7 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>nepa_agency_endpoint_key__c</field>
+                <field>nepa_agency_endpoint_ref__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Readonly</behavior>

@@ -281,10 +281,10 @@
         <type>Text</type>
     </fields>
     <fields>
-        <fullName>nepa_agency_endpoint_key__c</fullName>
-        <description>API name of the NEPA_Agency_Endpoint__mdt record that defines the base URL and Named Credential for this agency's NEPA REST API (e.g., USACE, USFWS, BLM). Must match the DeveloperName of an active endpoint record.</description>
-        <inlineHelpText>Agency endpoint key — must match a NEPA_Agency_Endpoint__mdt DeveloperName (e.g., USACE).</inlineHelpText>
-        <label>Agency Endpoint Key</label>
+        <fullName>nepa_agency_endpoint_ref__c</fullName>
+        <description>DeveloperName reference to the NEPA_Agency_Endpoint__mdt record that defines the base URL and Named Credential for this agency's NEPA REST API (e.g., USACE, USFWS, BLM). Must match the DeveloperName of an active endpoint record.</description>
+        <inlineHelpText>Agency endpoint reference — must match a NEPA_Agency_Endpoint__mdt DeveloperName (e.g., USACE).</inlineHelpText>
+        <label>Agency Endpoint Reference</label>
         <required>false</required>
         <length>40</length>
         <trackTrending>false</trackTrending>

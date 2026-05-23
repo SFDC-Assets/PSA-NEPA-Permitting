@@ -15,9 +15,11 @@
         }
     </style>
 
-    <!-- ArcGIS JavaScript SDK v4.29 -->
-    <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css"/>
-    <script src="https://js.arcgis.com/4.29/"></script>
+    <!-- ArcGIS JavaScript SDK v4.29.
+         External CDN load is intentional and allowlisted via CSP Trusted Site ArcGIS_JS_CDN (script-src, style-src, img-src, font-src).
+         The SDK cannot be bundled as a static resource due to size and dynamic module loading requirements. NOPMD -->
+    <apex:stylesheet value="https://js.arcgis.com/4.29/esri/themes/light/main.css"/> <!-- NOPMD LoadCSSApexStylesheet -->
+    <apex:includeScript value="https://js.arcgis.com/4.29/"/> <!-- NOPMD LoadJavaScriptIncludeScript -->
 
     <script>
     var geometry;

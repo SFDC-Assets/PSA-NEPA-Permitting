@@ -60,9 +60,10 @@ public with sharing class NepaAgencyPermitService {
                    nepa_actual_completion__c,
                    nepa_permit_status__c,
                    nepa_external_federal_id__c,
-                   nepa_agency_endpoint_key__c,
+                   nepa_agency_endpoint_ref__c,
                    nepa_last_synced__c
             FROM nepa_required_permit__c
+            WITH USER_MODE
             WHERE nepa_process__c = :processId
             ORDER BY nepa_is_critical_path__c DESC, nepa_permit_type__c ASC
         ];
@@ -97,7 +98,7 @@ public with sharing class NepaAgencyPermitService {
     ) {
         PermitStatusResult res = populateLocalFields(permit);
 
-        String endpointKey   = permit.nepa_agency_endpoint_key__c;
+        String endpointKey   = permit.nepa_agency_endpoint_ref__c;
         String externalFedId = permit.nepa_external_federal_id__c;
 
         if (String.isBlank(endpointKey) || String.isBlank(externalFedId)) {
