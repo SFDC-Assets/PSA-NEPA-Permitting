@@ -84,8 +84,8 @@ public with sharing class NepaTemplateCatalogController {
             SELECT Id, Name, UniqueName,
                    (SELECT Id FROM ActionPlanTemplateVersions WHERE Status = 'Active' ORDER BY Version DESC LIMIT 1)
             FROM ActionPlanTemplate
-            WITH USER_MODE
             WHERE UniqueName = :aptUniqueName
+            WITH USER_MODE
             LIMIT 1
         ];
 
