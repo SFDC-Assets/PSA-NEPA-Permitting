@@ -220,7 +220,7 @@
         <fields>nepa_sla_due_date__c</fields>
         <fields>nepa_sla_overdue__c</fields>
         <fields>nepa_expected_completion__c</fields>
-        <relatedList>nepa_required_permits__r</relatedList>
+        <relatedList>Required_Permits__r</relatedList>
     </relatedLists>
     <relatedLists>
         <fields>Subject</fields>

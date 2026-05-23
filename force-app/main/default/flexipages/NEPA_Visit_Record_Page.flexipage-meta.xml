@@ -297,13 +297,6 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>visit_section_risk_context</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!Record.nepa_state_risk_context__c}</leftValue>
-                        <operator>NotEqual</operator>
-                        <rightValue></rightValue>
-                    </criteria>
-                </visibilityRule>
             </componentInstance>
         </itemInstances>
         <itemInstances>
