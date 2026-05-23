@@ -11,7 +11,7 @@
     <isTestProcedure>false</isTestProcedure>
     <isWebCompEnabled>false</isWebCompEnabled>
     <language>Procedure</language>
-    <name>PreApp_Screening_IP</name>
+    <name>PreAppScreeningIP</name>
 
     <!-- Step 1: Build BRE inputs from normalized sector/NAICS/agency values -->
     <omniProcessElements>
@@ -32,9 +32,9 @@
         <level>0.0</level>
         <name>CallCEScreenerBRE</name>
         <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
-        <propertySetConfig>{&quot;expressionSetApiName&quot;:&quot;NEPA_CE_Screener&quot;,&quot;inputMap&quot;:[{&quot;name&quot;:&quot;AgencyAbbr&quot;,&quot;value&quot;:&quot;%AgencyAbbr%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;NAICSCode&quot;,&quot;value&quot;:&quot;%NAICSCode%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;SectorKey&quot;,&quot;value&quot;:&quot;%SectorKey%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;TypeKey&quot;,&quot;value&quot;:&quot;%TypeKey%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;ActionType&quot;,&quot;value&quot;:&quot;%ActionType%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;DisturbanceAcres&quot;,&quot;value&quot;:&quot;%DisturbanceAcres%&quot;,&quot;valueType&quot;:&quot;reference&quot;}],&quot;outputPath&quot;:&quot;BREResult&quot;,&quot;failOnStepError&quot;:false,&quot;useFormulas&quot;:true}</propertySetConfig>
+        <propertySetConfig>{&quot;inputData&quot;:&quot;&quot;,&quot;sendOnlyAdditionalInput&quot;:false,&quot;remoteOptions&quot;:{&quot;configurationName&quot;:&quot;NEPA CE Screener&quot;},&quot;returnOnlyAdditionalOutput&quot;:false,&quot;elementValueMap&quot;:{},&quot;failOnStepError&quot;:false,&quot;internalNotes&quot;:&quot;&quot;,&quot;isActive&quot;:true,&quot;chainOnStep&quot;:false,&quot;returnOnlyFailureResponse&quot;:false,&quot;responseJSONPath&quot;:&quot;BREResult&quot;,&quot;responseJSONNode&quot;:&quot;&quot;,&quot;executionConditionalFormula&quot;:&quot;&quot;,&quot;actionMessage&quot;:&quot;&quot;,&quot;sendJSONPath&quot;:&quot;&quot;,&quot;failureConditionalFormula&quot;:&quot;&quot;,&quot;id&quot;:&quot;&quot;,&quot;restOptions&quot;:{},&quot;sendJSONNode&quot;:&quot;&quot;}</propertySetConfig>
         <sequenceNumber>2.0</sequenceNumber>
-        <type>Expression Set</type>
+        <type>Calculation Action</type>
     </omniProcessElements>
 
     <!-- Step 3: Extract Permit Matrix CMT row for permits, timeline, EIS likelihood.
@@ -90,7 +90,7 @@
   &quot;ttlMinutes&quot; : 5,
   &quot;mockResponseMap&quot; : { }
 }</propertySetConfig>
-    <subType>PreApp_Screening_IP</subType>
+    <subType>PreAppScreeningIP</subType>
     <type>NEPA</type>
     <uniqueName>NEPA_PreAppScreeningIP_Procedure_1</uniqueName>
     <versionNumber>1.0</versionNumber>

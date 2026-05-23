@@ -57,7 +57,7 @@
         <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
         <propertySetConfig>{"assertionRules":[{"name":"T1_Recommendation","value":"%T1_Result:Recommendation%","operator":"=","expectedValue":"CE-Recommended","message":"T1 FAIL: 0 acres + no EC must return CE-Recommended; got %T1_Result:Recommendation%"},{"name":"T1_ClassificationBasis","value":"%T1_Result:ClassificationBasis%","operator":"!=","expectedValue":"","message":"T1 FAIL: ClassificationBasis must not be blank"}],"useFormulas":false}</propertySetConfig>
         <sequenceNumber>3.0</sequenceNumber>
-        <type>Assert</type>
+        <type>Assert Action</type>
     </omniProcessElements>
 
     <!-- ── TEST 2: exactly 5 acres, no EC → CE-Recommended (boundary, not over) -->
@@ -89,7 +89,7 @@
         <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
         <propertySetConfig>{"assertionRules":[{"name":"T2_Recommendation","value":"%T2_Result:Recommendation%","operator":"=","expectedValue":"CE-Recommended","message":"T2 FAIL: exactly 5 acres (not over threshold) + no EC must return CE-Recommended; got %T2_Result:Recommendation%"}],"useFormulas":false}</propertySetConfig>
         <sequenceNumber>6.0</sequenceNumber>
-        <type>Assert</type>
+        <type>Assert Action</type>
     </omniProcessElements>
 
     <!-- ── TEST 3: 6 acres, no EC → EA-Required (just over 5-acre threshold) ── -->
@@ -121,7 +121,7 @@
         <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
         <propertySetConfig>{"assertionRules":[{"name":"T3_Recommendation","value":"%T3_Result:Recommendation%","operator":"=","expectedValue":"EA-Required","message":"T3 FAIL: 6 acres (over 5-acre threshold) + no EC must return EA-Required (40 CFR 1501.4); got %T3_Result:Recommendation%"}],"useFormulas":false}</propertySetConfig>
         <sequenceNumber>9.0</sequenceNumber>
-        <type>Assert</type>
+        <type>Assert Action</type>
     </omniProcessElements>
 
     <!-- ── TEST 4: 640 acres, no EC → EA-Required (not yet over EIS threshold) -->
@@ -153,7 +153,7 @@
         <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
         <propertySetConfig>{"assertionRules":[{"name":"T4_Recommendation","value":"%T4_Result:Recommendation%","operator":"=","expectedValue":"EA-Required","message":"T4 FAIL: exactly 640 acres (not over EIS threshold) must return EA-Required; got %T4_Result:Recommendation%"}],"useFormulas":false}</propertySetConfig>
         <sequenceNumber>12.0</sequenceNumber>
-        <type>Assert</type>
+        <type>Assert Action</type>
     </omniProcessElements>
 
     <!-- ── TEST 5: 641 acres, no EC → EIS-Required (over 640-acre EIS threshold) -->
@@ -185,7 +185,7 @@
         <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
         <propertySetConfig>{"assertionRules":[{"name":"T5_Recommendation","value":"%T5_Result:Recommendation%","operator":"=","expectedValue":"EIS-Required","message":"T5 FAIL: 641 acres (over 640-acre EIS threshold) must return EIS-Required; got %T5_Result:Recommendation%"},{"name":"T5_Confidence","value":"%T5_Result:Confidence%","operator":"=","expectedValue":"High","message":"T5 FAIL: EIS acreage threshold produces High confidence; got %T5_Result:Confidence%"}],"useFormulas":false}</propertySetConfig>
         <sequenceNumber>15.0</sequenceNumber>
-        <type>Assert</type>
+        <type>Assert Action</type>
     </omniProcessElements>
 
     <!-- ── TEST 6: 0 acres, EC = true → EA-Required (EC overrides CE) ─────── -->
@@ -217,7 +217,7 @@
         <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
         <propertySetConfig>{"assertionRules":[{"name":"T6_Recommendation","value":"%T6_Result:Recommendation%","operator":"=","expectedValue":"EA-Required","message":"T6 FAIL: extraordinary circumstances present must return EA-Required even at 0 acres (40 CFR 1501.4(b)); got %T6_Result:Recommendation%"},{"name":"T6_BasisMentionsEC","value":"%T6_Result:ClassificationBasis%","operator":"contains","expectedValue":"xtraordinary","message":"T6 FAIL: ClassificationBasis must mention extraordinary circumstances; got %T6_Result:ClassificationBasis%"}],"useFormulas":false}</propertySetConfig>
         <sequenceNumber>18.0</sequenceNumber>
-        <type>Assert</type>
+        <type>Assert Action</type>
     </omniProcessElements>
 
     <!-- ── TEST 7: acreage confidence levels are correct ─────────────────────── -->
@@ -249,7 +249,7 @@
         <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
         <propertySetConfig>{"assertionRules":[{"name":"T7_Confidence","value":"%T7_Result:Confidence%","operator":"=","expectedValue":"High","message":"T7 FAIL: acreage over 5-acre threshold must produce High confidence; got %T7_Result:Confidence%"}],"useFormulas":false}</propertySetConfig>
         <sequenceNumber>21.0</sequenceNumber>
-        <type>Assert</type>
+        <type>Assert Action</type>
     </omniProcessElements>
 
     <!-- ── TEST 8: EC-only path produces Medium confidence ───────────────────── -->
@@ -281,7 +281,7 @@
         <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
         <propertySetConfig>{"assertionRules":[{"name":"T8_Confidence","value":"%T8_Result:Confidence%","operator":"=","expectedValue":"Medium","message":"T8 FAIL: EC-only escalation (no acreage threshold breach) must produce Medium confidence; got %T8_Result:Confidence%"}],"useFormulas":false}</propertySetConfig>
         <sequenceNumber>24.0</sequenceNumber>
-        <type>Assert</type>
+        <type>Assert Action</type>
     </omniProcessElements>
 
     <omniProcessKey>NEPACEScreeningIPTest</omniProcessKey>

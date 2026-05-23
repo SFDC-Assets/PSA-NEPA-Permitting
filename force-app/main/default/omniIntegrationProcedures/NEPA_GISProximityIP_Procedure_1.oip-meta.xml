@@ -60,7 +60,7 @@
         <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
         <propertySetConfig>{&quot;exitType&quot;:&quot;stop&quot;,&quot;useFormulas&quot;:true}</propertySetConfig>
         <sequenceNumber>2.7</sequenceNumber>
-        <type>Stop</type>
+        <type>Response Action</type>
     </omniProcessElements>
     <omniProcessElements>
         <isActive>true</isActive>
