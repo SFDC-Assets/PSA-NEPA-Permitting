@@ -63,8 +63,8 @@ public with sharing class NepaAgencyPermitService {
                    nepa_agency_endpoint_ref__c,
                    nepa_last_synced__c
             FROM nepa_required_permit__c
-            WITH USER_MODE
             WHERE nepa_process__c = :processId
+            WITH USER_MODE
             ORDER BY nepa_is_critical_path__c DESC, nepa_permit_type__c ASC
         ];
 
