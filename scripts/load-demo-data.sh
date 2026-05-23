@@ -30,9 +30,9 @@
 #   21  ServiceResource disc.   — nepa_discipline__c on ServiceResources
 #   22  GIS team assembly       — proximity results, auto-assembled team, auto-generated Visits
 #   23  Flow refresh Apex       — risk scorer + permit coordinator recalc
-#   24  nepa_decision_payload__c — upsert via nepa_process__r.nepa_federal_unique_id__c
-#   25  nepa_ar_export__c       — upsert via nepa_process__r.nepa_federal_unique_id__c
 #   27  Post-load Apex          — nepa_engagement__c, PublicComplaint PC_003, decision_payload, ar_export
+#                                 (decision_payload + ar_export inserted here; Bulk API v2 does not support
+#                                  relationship-path external ID keys as upsert key on these objects)
 
 set -euo pipefail
 
@@ -258,16 +258,11 @@ run_apex "GIS team assembly" "demo/import_data/22_postload_gis_team_assembly.ape
 step_header "Step 23: Flow refresh (risk scorer + permit coordinator recalc)"
 run_apex "flow refresh" "demo/import_data/23_postload_flow_refresh.apex"
 
-# ── step 24: nepa_decision_payload__c ─────────────────────────────────────────
-step_header "Step 24: nepa_decision_payload__c (Decision Payload)"
-upsert_csv "nepa_decision_payload__c" "nepa_decision_payload__c" "24_decision_payload.csv" "nepa_process__r.nepa_federal_unique_id__c"
-
-# ── step 25: nepa_ar_export__c ────────────────────────────────────────────────
-step_header "Step 25: nepa_ar_export__c (Administrative Record Export)"
-upsert_csv "nepa_ar_export__c" "nepa_ar_export__c" "25_ar_export.csv" "nepa_process__r.nepa_federal_unique_id__c"
-
 # ── step 27: records requiring Apex insert (nepa_engagement__c, PC_003, decision_payload, ar_export) ─
-step_header "Step 27: Apex insert for objects blocked from CSV upsert (engagement, PublicComplaint PC_003, decision_payload, ar_export)"
+# nepa_decision_payload__c and nepa_ar_export__c are inserted here via Apex rather than CSV upsert.
+# Bulk API v2 does not support relationship-path external ID keys (nepa_process__r.nepa_federal_unique_id__c)
+# as the upsert key on these objects, so CSV upsert always returns 0 records without error.
+step_header "Step 27: Apex insert (engagement, PublicComplaint PC_003, decision_payload, ar_export)"
 run_apex "missing records insert" "demo/import_data/27_postload_missing_records.apex"
 
 # ── step 28: OFD coordination milestones ──────────────────────────────────────
