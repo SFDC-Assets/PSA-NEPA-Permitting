@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>nepa_last_synced__c</fullName>
-    <description>Timestamp of the most recent successful live callout to the agency's permit status API via NepaAgencyPermitService. Displayed in the nepaPermitDependencies LWC to indicate data freshness. Null means only locally-cached status is available.</description>
+    <description>Timestamp of the most recent successful live callout to the agency&apos;s permit status API via NepaAgencyPermitService. Displayed in the nepaPermitDependencies LWC to indicate data freshness. Null means only locally-cached status is available.</description>
     <inlineHelpText>Last time permit status was confirmed via live agency API callout.</inlineHelpText>
     <label>Last Synced</label>
     <required>false</required>
     <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
     <type>DateTime</type>
 </CustomField>

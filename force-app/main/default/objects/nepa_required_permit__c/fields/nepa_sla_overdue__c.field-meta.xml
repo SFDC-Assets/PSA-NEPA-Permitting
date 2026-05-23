@@ -2,17 +2,17 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>nepa_sla_overdue__c</fullName>
     <description>Formula checkbox: true when the SLA due date has passed and the permit is still active (not Issued, Denied, or Withdrawn). Used by the nepaPermitDependencies LWC for red overdue badge display. NEPA_Permit_SLA_Monitor evaluates this daily to create coordinator Tasks.</description>
-    <inlineHelpText>Automatically checked when this permit is past its SLA due date and has not been resolved.</inlineHelpText>
     <formula>AND(
   NOT(ISBLANK(nepa_sla_due_date__c)),
   nepa_sla_due_date__c &lt; TODAY(),
-  NOT(ISPICKVAL(nepa_permit_status__c, "Issued")),
-  NOT(ISPICKVAL(nepa_permit_status__c, "Denied")),
-  NOT(ISPICKVAL(nepa_permit_status__c, "Withdrawn"))
+  NOT(ISPICKVAL(nepa_permit_status__c, &quot;Issued&quot;)),
+  NOT(ISPICKVAL(nepa_permit_status__c, &quot;Denied&quot;)),
+  NOT(ISPICKVAL(nepa_permit_status__c, &quot;Withdrawn&quot;))
 )</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Automatically checked when this permit is past its SLA due date and has not been resolved.</inlineHelpText>
     <label>SLA Overdue</label>
-    <required>false</required>
     <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
     <type>Checkbox</type>
 </CustomField>

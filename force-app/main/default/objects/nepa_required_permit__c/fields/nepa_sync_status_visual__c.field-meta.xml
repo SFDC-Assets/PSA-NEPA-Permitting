@@ -4,13 +4,15 @@
     <description>Formula image field. Green flag when nepa_last_synced__c is populated (live agency API data current). Red flag when null (only locally-cached permit status is available). Surfaces the API degradation state visually — coordinator sees amber/stale state without needing to parse a timestamp field. Designed for the nepaPermitDependencies view in the demo.</description>
     <externalId>false</externalId>
     <formula>IF(ISBLANK(nepa_last_synced__c),
-  IMAGE("/img/samples/flag_red.gif", "Agency API Unavailable — Cached Status Only", 16, 16) &amp; " Cached Only",
-  IMAGE("/img/samples/flag_green.gif", "Live — Synced " &amp; TEXT(DATEVALUE(nepa_last_synced__c)), 16, 16) &amp; " Live"
+  IMAGE(&quot;/img/samples/flag_red.gif&quot;, &quot;Agency API Unavailable — Cached Status Only&quot;, 16, 16) &amp; &quot; Cached Only&quot;,
+  IMAGE(&quot;/img/samples/flag_green.gif&quot;, &quot;Live — Synced &quot; &amp; TEXT(DATEVALUE(nepa_last_synced__c)), 16, 16) &amp; &quot; Live&quot;
 )</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
     <inlineHelpText>Green = permit status confirmed via live agency API. Red = no live sync; displaying last cached status. Check nepa_last_synced__c for timestamp.</inlineHelpText>
     <label>Agency Sync Status</label>
     <required>false</required>
     <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
     <type>Text</type>
+    <unique>false</unique>
 </CustomField>

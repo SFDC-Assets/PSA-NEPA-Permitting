@@ -6,5 +6,6 @@
     <label>Actual Completion</label>
     <required>false</required>
     <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
     <type>Date</type>
 </CustomField>

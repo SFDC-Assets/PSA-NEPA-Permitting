@@ -2,19 +2,22 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>nepa_permit_status_visual__c</fullName>
     <description>Formula image field. Green flag = Issued (permit cleared). Red flag = Pending or Under Review (blocking). Yellow flag = Denied or Suspended (requires action). Blank = unknown status. In the nepa_required_permit__c related list on Scene 7-A, Issued + red for Pending renders the critical-path story (NPDES Issued = green; CWA 404 Pending = red) visually before the presenter narrates it. Also used in Scene 6-A (nepaPermitDependencies LWC context).</description>
+    <externalId>false</externalId>
     <formula>CASE(nepa_permit_status__c,
-  "Issued",        IMAGE("/img/samples/flag_green.gif",  "Issued — Cleared", 16, 16),
-  "Approved",      IMAGE("/img/samples/flag_green.gif",  "Approved — Cleared", 16, 16),
-  "Pending",       IMAGE("/img/samples/flag_red.gif",    "Pending — Not Yet Issued", 16, 16),
-  "Under Review",  IMAGE("/img/samples/flag_red.gif",    "Under Review — Not Yet Issued", 16, 16),
-  "Denied",        IMAGE("/img/samples/flag_yellow.gif", "Denied — Requires Action", 16, 16),
-  "Suspended",     IMAGE("/img/samples/flag_yellow.gif", "Suspended — Requires Action", 16, 16),
-                   IMAGE("/s.gif", "Unknown", 1, 1)
+  &quot;Issued&quot;,        IMAGE(&quot;/img/samples/flag_green.gif&quot;,  &quot;Issued — Cleared&quot;, 16, 16),
+  &quot;Approved&quot;,      IMAGE(&quot;/img/samples/flag_green.gif&quot;,  &quot;Approved — Cleared&quot;, 16, 16),
+  &quot;Pending&quot;,       IMAGE(&quot;/img/samples/flag_red.gif&quot;,    &quot;Pending — Not Yet Issued&quot;, 16, 16),
+  &quot;Under Review&quot;,  IMAGE(&quot;/img/samples/flag_red.gif&quot;,    &quot;Under Review — Not Yet Issued&quot;, 16, 16),
+  &quot;Denied&quot;,        IMAGE(&quot;/img/samples/flag_yellow.gif&quot;, &quot;Denied — Requires Action&quot;, 16, 16),
+  &quot;Suspended&quot;,     IMAGE(&quot;/img/samples/flag_yellow.gif&quot;, &quot;Suspended — Requires Action&quot;, 16, 16),
+                   IMAGE(&quot;/s.gif&quot;, &quot;Unknown&quot;, 1, 1)
 )</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
     <inlineHelpText>Green = Issued/Approved. Red = Pending or Under Review. Yellow = Denied/Suspended. Visible in related list — reads the permit status story before opening the record.</inlineHelpText>
     <label>Status Flag</label>
     <required>false</required>
     <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
     <type>Text</type>
+    <unique>false</unique>
 </CustomField>

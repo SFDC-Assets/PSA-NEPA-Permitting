@@ -5,6 +5,7 @@
     <inlineHelpText>The federal agency issuing this permit.</inlineHelpText>
     <label>Lead Agency</label>
     <required>true</required>
+    <trackHistory>false</trackHistory>
     <trackTrending>false</trackTrending>
     <type>Picklist</type>
     <valueSet>

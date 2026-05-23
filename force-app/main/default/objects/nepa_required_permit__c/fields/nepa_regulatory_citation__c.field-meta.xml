@@ -2,11 +2,13 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>nepa_regulatory_citation__c</fullName>
     <description>Statutory or regulatory citation for this permit requirement (e.g., 33 USC 1344, 16 USC 1536, 36 CFR 800). Populated from RegulatoryAuthorizationType seed data at record creation. Displayed in permit dependency card.</description>
+    <externalId>false</externalId>
     <inlineHelpText>Statutory or CFR citation for this permit requirement (e.g., 33 USC 1344 for CWA Section 404).</inlineHelpText>
     <label>Regulatory Citation</label>
     <length>80</length>
     <required>false</required>
     <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
     <type>Text</type>
     <unique>false</unique>
 </CustomField>

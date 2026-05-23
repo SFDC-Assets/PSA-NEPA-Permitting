@@ -7,8 +7,8 @@
     <recordTypeName></recordTypeName>
 
     <pathAssistantSteps>
-        <info>&lt;p&gt;&lt;strong&gt;Intake and Screening&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Confirm applicant contact, project description, and action type are complete.&lt;/li&gt;&lt;li&gt;Run the CE Intake OmniScript if reviewing for Categorical Exclusion.&lt;/li&gt;&lt;li&gt;Verify GIS proximity results have run — check for any [endpoint unavailable] flags.&lt;/li&gt;&lt;li&gt;If EJ or tribal proximity triggered, confirm the EJ/Tribal queue task is open.&lt;/li&gt;&lt;li&gt;Set Review Type (CE / EA / EIS) before advancing — this stamps the target completion date.&lt;/li&gt;&lt;/ul&gt;</info>
         <fieldValue>Intake and Screening</fieldValue>
+        <info>&lt;p&gt;&lt;strong&gt;Intake and Screening&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Confirm applicant contact, project description, and action type are complete.&lt;/li&gt;&lt;li&gt;Run the CE Intake OmniScript if reviewing for Categorical Exclusion.&lt;/li&gt;&lt;li&gt;Verify GIS proximity results have run — check for any [endpoint unavailable] flags.&lt;/li&gt;&lt;li&gt;If EJ or tribal proximity triggered, confirm the EJ/Tribal queue task is open.&lt;/li&gt;&lt;li&gt;Set Review Type (CE / EA / EIS) before advancing — this stamps the target completion date.&lt;/li&gt;&lt;/ul&gt;</info>
         <pathAssistantStepFields>
             <fieldName>nepa_review_type__c</fieldName>
         </pathAssistantStepFields>
@@ -24,8 +24,8 @@
     </pathAssistantSteps>
 
     <pathAssistantSteps>
-        <info>&lt;p&gt;&lt;strong&gt;Scoping&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Issue the Notice of Intent (NOI) and open the public scoping period (minimum 30 days for EIS).&lt;/li&gt;&lt;li&gt;Identify cooperating agencies and confirm inter-agency coordination tasks are created.&lt;/li&gt;&lt;li&gt;Review the Litigation Risk Score — HIGH or VERY HIGH at Scoping warrants early legal coordination.&lt;/li&gt;&lt;li&gt;Check Challenge Prediction rules: any FIRED rules should drive proactive mitigation.&lt;/li&gt;&lt;li&gt;Set Project Sector and Circuit Court to enable sector-circuit risk scoring.&lt;/li&gt;&lt;/ul&gt;</info>
         <fieldValue>Scoping</fieldValue>
+        <info>&lt;p&gt;&lt;strong&gt;Scoping&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Issue the Notice of Intent (NOI) and open the public scoping period (minimum 30 days for EIS).&lt;/li&gt;&lt;li&gt;Identify cooperating agencies and confirm inter-agency coordination tasks are created.&lt;/li&gt;&lt;li&gt;Review the Litigation Risk Score — HIGH or VERY HIGH at Scoping warrants early legal coordination.&lt;/li&gt;&lt;li&gt;Check Challenge Prediction rules: any FIRED rules should drive proactive mitigation.&lt;/li&gt;&lt;li&gt;Set Project Sector and Circuit Court to enable sector-circuit risk scoring.&lt;/li&gt;&lt;/ul&gt;</info>
         <pathAssistantStepFields>
             <fieldName>nepa_risk_score__c</fieldName>
         </pathAssistantStepFields>
@@ -41,8 +41,8 @@
     </pathAssistantSteps>
 
     <pathAssistantSteps>
-        <info>&lt;p&gt;&lt;strong&gt;CE Determination&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Confirm no Extraordinary Circumstances apply — if any apply, upgrade to EA.&lt;/li&gt;&lt;li&gt;CE page count must be 17 pages or fewer (P95 threshold) — above this, Timeline Risk Assessor flags At Risk.&lt;/li&gt;&lt;li&gt;Document the regulatory citation (40 CFR or agency CE list).&lt;/li&gt;&lt;li&gt;Confirm EJ/Tribal consultation complete if either proximity flag was set.&lt;/li&gt;&lt;/ul&gt;</info>
         <fieldValue>CE Determination</fieldValue>
+        <info>&lt;p&gt;&lt;strong&gt;CE Determination&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Confirm no Extraordinary Circumstances apply — if any apply, upgrade to EA.&lt;/li&gt;&lt;li&gt;CE page count must be 17 pages or fewer (P95 threshold) — above this, Timeline Risk Assessor flags At Risk.&lt;/li&gt;&lt;li&gt;Document the regulatory citation (40 CFR or agency CE list).&lt;/li&gt;&lt;li&gt;Confirm EJ/Tribal consultation complete if either proximity flag was set.&lt;/li&gt;&lt;/ul&gt;</info>
         <pathAssistantStepFields>
             <fieldName>nepa_extraordinary_circumstances__c</fieldName>
         </pathAssistantStepFields>
@@ -58,8 +58,8 @@
     </pathAssistantSteps>
 
     <pathAssistantSteps>
-        <info>&lt;p&gt;&lt;strong&gt;Environmental Assessment&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Begin alternatives analysis and prepare the EA document.&lt;/li&gt;&lt;li&gt;EA page count threshold is 200 pages — above this, Timeline Risk Assessor flags At Risk automatically.&lt;/li&gt;&lt;li&gt;Verify Climate Assessment Required flag — if checked, complete climate analysis before advancing to Decision.&lt;/li&gt;&lt;li&gt;If EJ Analysis Required is set (NEPA Phase 2), document the analysis in the EA.&lt;/li&gt;&lt;/ul&gt;</info>
         <fieldValue>Environmental Assessment</fieldValue>
+        <info>&lt;p&gt;&lt;strong&gt;Environmental Assessment&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Begin alternatives analysis and prepare the EA document.&lt;/li&gt;&lt;li&gt;EA page count threshold is 200 pages — above this, Timeline Risk Assessor flags At Risk automatically.&lt;/li&gt;&lt;li&gt;Verify Climate Assessment Required flag — if checked, complete climate analysis before advancing to Decision.&lt;/li&gt;&lt;li&gt;If EJ Analysis Required is set (NEPA Phase 2), document the analysis in the EA.&lt;/li&gt;&lt;/ul&gt;</info>
         <pathAssistantStepFields>
             <fieldName>nepa_climate_assessment_required__c</fieldName>
         </pathAssistantStepFields>
@@ -75,8 +75,8 @@
     </pathAssistantSteps>
 
     <pathAssistantSteps>
-        <info>&lt;p&gt;&lt;strong&gt;Draft EA Preparation&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Finalize the draft EA document for public review.&lt;/li&gt;&lt;li&gt;Verify Defensibility Score — below 60 indicates documentation gaps that increase litigation risk.&lt;/li&gt;&lt;li&gt;Confirm all AI-drafted Decision Elements have SME Validation Date set before publication.&lt;/li&gt;&lt;li&gt;Ensure all public comments from any prior scoping are addressed in the draft.&lt;/li&gt;&lt;/ul&gt;</info>
         <fieldValue>Draft EA Preparation</fieldValue>
+        <info>&lt;p&gt;&lt;strong&gt;Draft EA Preparation&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Finalize the draft EA document for public review.&lt;/li&gt;&lt;li&gt;Verify Defensibility Score — below 60 indicates documentation gaps that increase litigation risk.&lt;/li&gt;&lt;li&gt;Confirm all AI-drafted Decision Elements have SME Validation Date set before publication.&lt;/li&gt;&lt;li&gt;Ensure all public comments from any prior scoping are addressed in the draft.&lt;/li&gt;&lt;/ul&gt;</info>
         <pathAssistantStepFields>
             <fieldName>nepa_defensibility_score__c</fieldName>
         </pathAssistantStepFields>
@@ -89,8 +89,8 @@
     </pathAssistantSteps>
 
     <pathAssistantSteps>
-        <info>&lt;p&gt;&lt;strong&gt;Comment Period&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Public comment period open — minimum 30 days for EA per CEQ rule.&lt;/li&gt;&lt;li&gt;All submitted comments are automatically classified by the AI Comment Classifier.&lt;/li&gt;&lt;li&gt;EJ/Tribal flagged comments route unconditionally to the specialist queue — check queue daily.&lt;/li&gt;&lt;li&gt;Comments with AI Confidence Score below 70 are escalated for human review automatically.&lt;/li&gt;&lt;li&gt;Monitor timeline risk tier — if it transitions to Stalled or Overdue, a coordinator task fires.&lt;/li&gt;&lt;/ul&gt;</info>
         <fieldValue>Comment Period</fieldValue>
+        <info>&lt;p&gt;&lt;strong&gt;Comment Period&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Public comment period open — minimum 30 days for EA per CEQ rule.&lt;/li&gt;&lt;li&gt;All submitted comments are automatically classified by the AI Comment Classifier.&lt;/li&gt;&lt;li&gt;EJ/Tribal flagged comments route unconditionally to the specialist queue — check queue daily.&lt;/li&gt;&lt;li&gt;Comments with AI Confidence Score below 70 are escalated for human review automatically.&lt;/li&gt;&lt;li&gt;Monitor timeline risk tier — if it transitions to Stalled or Overdue, a coordinator task fires.&lt;/li&gt;&lt;/ul&gt;</info>
         <pathAssistantStepFields>
             <fieldName>nepa_public_comment_period_start__c</fieldName>
         </pathAssistantStepFields>
@@ -103,8 +103,8 @@
     </pathAssistantSteps>
 
     <pathAssistantSteps>
-        <info>&lt;p&gt;&lt;strong&gt;FONSI and Decision&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Prepare Finding of No Significant Impact (FONSI) if no significant impacts identified.&lt;/li&gt;&lt;li&gt;Defensibility Score must be 70 or higher for a well-defended FONSI — below this, address documentation gaps first.&lt;/li&gt;&lt;li&gt;Climate Assessment Complete must be checked if Climate Assessment Required is set (Phase 2 gate).&lt;/li&gt;&lt;li&gt;If significant impacts found, upgrade pathway to EIS — update Review Type accordingly.&lt;/li&gt;&lt;/ul&gt;</info>
         <fieldValue>FONSI and Decision</fieldValue>
+        <info>&lt;p&gt;&lt;strong&gt;FONSI and Decision&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Prepare Finding of No Significant Impact (FONSI) if no significant impacts identified.&lt;/li&gt;&lt;li&gt;Defensibility Score must be 70 or higher for a well-defended FONSI — below this, address documentation gaps first.&lt;/li&gt;&lt;li&gt;Climate Assessment Complete must be checked if Climate Assessment Required is set (Phase 2 gate).&lt;/li&gt;&lt;li&gt;If significant impacts found, upgrade pathway to EIS — update Review Type accordingly.&lt;/li&gt;&lt;/ul&gt;</info>
         <pathAssistantStepFields>
             <fieldName>nepa_defensibility_score__c</fieldName>
         </pathAssistantStepFields>
@@ -117,8 +117,8 @@
     </pathAssistantSteps>
 
     <pathAssistantSteps>
-        <info>&lt;p&gt;&lt;strong&gt;Inter-Agency Coordination&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Confirm Lead Agency and Cooperating Agency designations are documented.&lt;/li&gt;&lt;li&gt;Issue scoping notice — EIS scoping period minimum 30 days.&lt;/li&gt;&lt;li&gt;Tribal Lands Flag set: tribal consultation must be documented before advancing.&lt;/li&gt;&lt;li&gt;Scoping Baseline Months shows the empirical median for your agency — plan against this, not the statutory maximum.&lt;/li&gt;&lt;/ul&gt;</info>
         <fieldValue>Inter-Agency Coordination</fieldValue>
+        <info>&lt;p&gt;&lt;strong&gt;Inter-Agency Coordination&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Confirm Lead Agency and Cooperating Agency designations are documented.&lt;/li&gt;&lt;li&gt;Issue scoping notice — EIS scoping period minimum 30 days.&lt;/li&gt;&lt;li&gt;Tribal Lands Flag set: tribal consultation must be documented before advancing.&lt;/li&gt;&lt;li&gt;Scoping Baseline Months shows the empirical median for your agency — plan against this, not the statutory maximum.&lt;/li&gt;&lt;/ul&gt;</info>
         <pathAssistantStepFields>
             <fieldName>nepa_tribal_lands_flag__c</fieldName>
         </pathAssistantStepFields>
@@ -131,8 +131,8 @@
     </pathAssistantSteps>
 
     <pathAssistantSteps>
-        <info>&lt;p&gt;&lt;strong&gt;Draft EIS Preparation&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Prepare the Draft EIS — CEQ rule sets a 150-page normal / 300-page maximum limit.&lt;/li&gt;&lt;li&gt;Climate Assessment Required must be completed before advancing to Decision stage (Phase 2 gate).&lt;/li&gt;&lt;li&gt;Verify EJ Analysis Required — document analysis in Chapter 4 (Environmental Consequences).&lt;/li&gt;&lt;li&gt;Monitor Challenge Prediction rules — FIRED rules at this stage should inform alternatives analysis.&lt;/li&gt;&lt;li&gt;Defensibility Score below 60 indicates high documentation risk — review gap list in Risk Intelligence tab.&lt;/li&gt;&lt;/ul&gt;</info>
         <fieldValue>Draft EIS Preparation</fieldValue>
+        <info>&lt;p&gt;&lt;strong&gt;Draft EIS Preparation&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Prepare the Draft EIS — CEQ rule sets a 150-page normal / 300-page maximum limit.&lt;/li&gt;&lt;li&gt;Climate Assessment Required must be completed before advancing to Decision stage (Phase 2 gate).&lt;/li&gt;&lt;li&gt;Verify EJ Analysis Required — document analysis in Chapter 4 (Environmental Consequences).&lt;/li&gt;&lt;li&gt;Monitor Challenge Prediction rules — FIRED rules at this stage should inform alternatives analysis.&lt;/li&gt;&lt;li&gt;Defensibility Score below 60 indicates high documentation risk — review gap list in Risk Intelligence tab.&lt;/li&gt;&lt;/ul&gt;</info>
         <pathAssistantStepFields>
             <fieldName>nepa_defensibility_score__c</fieldName>
         </pathAssistantStepFields>
@@ -148,8 +148,8 @@
     </pathAssistantSteps>
 
     <pathAssistantSteps>
-        <info>&lt;p&gt;&lt;strong&gt;Draft EIS Comment Period&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Minimum 45-day public comment period required for Draft EIS (CEQ rule).&lt;/li&gt;&lt;li&gt;All comments classified automatically — EJ/Tribal routed to specialist queue unconditionally.&lt;/li&gt;&lt;li&gt;Comments must be individually addressed in the Final EIS per 40 CFR 1503.4.&lt;/li&gt;&lt;li&gt;Monitor timeline risk — EIS Stalled status triggers escalation task automatically.&lt;/li&gt;&lt;/ul&gt;</info>
         <fieldValue>Draft EIS Comment Period</fieldValue>
+        <info>&lt;p&gt;&lt;strong&gt;Draft EIS Comment Period&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Minimum 45-day public comment period required for Draft EIS (CEQ rule).&lt;/li&gt;&lt;li&gt;All comments classified automatically — EJ/Tribal routed to specialist queue unconditionally.&lt;/li&gt;&lt;li&gt;Comments must be individually addressed in the Final EIS per 40 CFR 1503.4.&lt;/li&gt;&lt;li&gt;Monitor timeline risk — EIS Stalled status triggers escalation task automatically.&lt;/li&gt;&lt;/ul&gt;</info>
         <pathAssistantStepFields>
             <fieldName>nepa_public_comment_period_start__c</fieldName>
         </pathAssistantStepFields>
@@ -165,8 +165,8 @@
     </pathAssistantSteps>
 
     <pathAssistantSteps>
-        <info>&lt;p&gt;&lt;strong&gt;Final EIS Preparation&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Respond to all substantive public comments from the Draft EIS period.&lt;/li&gt;&lt;li&gt;Verify all AI-drafted Decision Elements have Human Validated By set (OMB M-25-21 compliance).&lt;/li&gt;&lt;li&gt;Defensibility Score target 75 or higher before publishing Final EIS.&lt;/li&gt;&lt;li&gt;Plaintiff Risk Flag and Tribal Plaintiff Flag — both create legal coordination tasks automatically.&lt;/li&gt;&lt;/ul&gt;</info>
         <fieldValue>Final EIS Preparation</fieldValue>
+        <info>&lt;p&gt;&lt;strong&gt;Final EIS Preparation&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Respond to all substantive public comments from the Draft EIS period.&lt;/li&gt;&lt;li&gt;Verify all AI-drafted Decision Elements have Human Validated By set (OMB M-25-21 compliance).&lt;/li&gt;&lt;li&gt;Defensibility Score target 75 or higher before publishing Final EIS.&lt;/li&gt;&lt;li&gt;Plaintiff Risk Flag and Tribal Plaintiff Flag — both create legal coordination tasks automatically.&lt;/li&gt;&lt;/ul&gt;</info>
         <pathAssistantStepFields>
             <fieldName>nepa_defensibility_score__c</fieldName>
         </pathAssistantStepFields>
@@ -182,8 +182,8 @@
     </pathAssistantSteps>
 
     <pathAssistantSteps>
-        <info>&lt;p&gt;&lt;strong&gt;Record of Decision&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;ROD must be published no sooner than 30 days after Final EIS availability in the Federal Register.&lt;/li&gt;&lt;li&gt;Climate Assessment Complete must be checked before advancing to Decision (Phase 2 gate).&lt;/li&gt;&lt;li&gt;Administrative Record closes automatically when ROD outcome is set.&lt;/li&gt;&lt;li&gt;Defensibility Score of 70 or higher recommended — below this, document the basis explicitly.&lt;/li&gt;&lt;/ul&gt;</info>
         <fieldValue>Record of Decision</fieldValue>
+        <info>&lt;p&gt;&lt;strong&gt;Record of Decision&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;ROD must be published no sooner than 30 days after Final EIS availability in the Federal Register.&lt;/li&gt;&lt;li&gt;Climate Assessment Complete must be checked before advancing to Decision (Phase 2 gate).&lt;/li&gt;&lt;li&gt;Administrative Record closes automatically when ROD outcome is set.&lt;/li&gt;&lt;li&gt;Defensibility Score of 70 or higher recommended — below this, document the basis explicitly.&lt;/li&gt;&lt;/ul&gt;</info>
         <pathAssistantStepFields>
             <fieldName>nepa_defensibility_score__c</fieldName>
         </pathAssistantStepFields>
@@ -199,8 +199,8 @@
     </pathAssistantSteps>
 
     <pathAssistantSteps>
-        <info>&lt;p&gt;&lt;strong&gt;Analysis&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Environmental analysis and alternatives development underway.&lt;/li&gt;&lt;li&gt;Review Litigation Risk Score and Challenge Prediction rules — address FIRED rules now to reduce appeal risk.&lt;/li&gt;&lt;li&gt;Confirm any seasonal Work Order constraints have been scheduled (habitat surveys, etc.).&lt;/li&gt;&lt;li&gt;If EJ Analysis Required, ensure analysis is incorporated in this phase.&lt;/li&gt;&lt;/ul&gt;</info>
         <fieldValue>Analysis</fieldValue>
+        <info>&lt;p&gt;&lt;strong&gt;Analysis&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Environmental analysis and alternatives development underway.&lt;/li&gt;&lt;li&gt;Review Litigation Risk Score and Challenge Prediction rules — address FIRED rules now to reduce appeal risk.&lt;/li&gt;&lt;li&gt;Confirm any seasonal Work Order constraints have been scheduled (habitat surveys, etc.).&lt;/li&gt;&lt;li&gt;If EJ Analysis Required, ensure analysis is incorporated in this phase.&lt;/li&gt;&lt;/ul&gt;</info>
         <pathAssistantStepFields>
             <fieldName>nepa_risk_score__c</fieldName>
         </pathAssistantStepFields>
@@ -210,8 +210,8 @@
     </pathAssistantSteps>
 
     <pathAssistantSteps>
-        <info>&lt;p&gt;&lt;strong&gt;Review&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Internal and cooperating agency review of draft documents.&lt;/li&gt;&lt;li&gt;Verify all AI-generated comment classifications have Human Validated By set before finalizing.&lt;/li&gt;&lt;li&gt;Defensibility Score should be monitored — drops indicate new documentation gaps.&lt;/li&gt;&lt;/ul&gt;</info>
         <fieldValue>Review</fieldValue>
+        <info>&lt;p&gt;&lt;strong&gt;Review&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Internal and cooperating agency review of draft documents.&lt;/li&gt;&lt;li&gt;Verify all AI-generated comment classifications have Human Validated By set before finalizing.&lt;/li&gt;&lt;li&gt;Defensibility Score should be monitored — drops indicate new documentation gaps.&lt;/li&gt;&lt;/ul&gt;</info>
         <pathAssistantStepFields>
             <fieldName>nepa_defensibility_score__c</fieldName>
         </pathAssistantStepFields>
@@ -221,8 +221,8 @@
     </pathAssistantSteps>
 
     <pathAssistantSteps>
-        <info>&lt;p&gt;&lt;strong&gt;Coordination&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Action Plan for EA/EIS Coordination launched automatically at this stage.&lt;/li&gt;&lt;li&gt;Confirm cooperating agencies have accepted their coordination tasks.&lt;/li&gt;&lt;li&gt;Section 7 (ESA) and Section 106 (NHPA) consultations should be initiated if applicable.&lt;/li&gt;&lt;li&gt;Tribal Lands Flag set: tribal consultation must be resolved before advancing.&lt;/li&gt;&lt;/ul&gt;</info>
         <fieldValue>Coordination</fieldValue>
+        <info>&lt;p&gt;&lt;strong&gt;Coordination&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Action Plan for EA/EIS Coordination launched automatically at this stage.&lt;/li&gt;&lt;li&gt;Confirm cooperating agencies have accepted their coordination tasks.&lt;/li&gt;&lt;li&gt;Section 7 (ESA) and Section 106 (NHPA) consultations should be initiated if applicable.&lt;/li&gt;&lt;li&gt;Tribal Lands Flag set: tribal consultation must be resolved before advancing.&lt;/li&gt;&lt;/ul&gt;</info>
         <pathAssistantStepFields>
             <fieldName>nepa_tribal_lands_flag__c</fieldName>
         </pathAssistantStepFields>
@@ -232,8 +232,8 @@
     </pathAssistantSteps>
 
     <pathAssistantSteps>
-        <info>&lt;p&gt;&lt;strong&gt;Determination&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;CE Action Plan launched automatically at this stage — confirm plan tasks are assigned.&lt;/li&gt;&lt;li&gt;If no Extraordinary Circumstances: document CE determination with regulatory citation.&lt;/li&gt;&lt;li&gt;If Extraordinary Circumstances found: upgrade pathway to EA before issuing any determination.&lt;/li&gt;&lt;li&gt;Confirm EJ/Tribal specialist consultation is complete before signing determination.&lt;/li&gt;&lt;/ul&gt;</info>
         <fieldValue>Determination</fieldValue>
+        <info>&lt;p&gt;&lt;strong&gt;Determination&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;CE Action Plan launched automatically at this stage — confirm plan tasks are assigned.&lt;/li&gt;&lt;li&gt;If no Extraordinary Circumstances: document CE determination with regulatory citation.&lt;/li&gt;&lt;li&gt;If Extraordinary Circumstances found: upgrade pathway to EA before issuing any determination.&lt;/li&gt;&lt;li&gt;Confirm EJ/Tribal specialist consultation is complete before signing determination.&lt;/li&gt;&lt;/ul&gt;</info>
         <pathAssistantStepFields>
             <fieldName>nepa_extraordinary_circumstances__c</fieldName>
         </pathAssistantStepFields>
@@ -246,8 +246,8 @@
     </pathAssistantSteps>
 
     <pathAssistantSteps>
-        <info>&lt;p&gt;&lt;strong&gt;Decision&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Final decision stage — FONSI, CE Determination, or ROD depending on review type.&lt;/li&gt;&lt;li&gt;Climate Assessment Complete is required at this stage if Climate Assessment Required is set (Phase 2 gate — system will block save if incomplete).&lt;/li&gt;&lt;li&gt;Defensibility Score — review the Risk Intelligence tab for all gap factors.&lt;/li&gt;&lt;li&gt;Administrative Record locks automatically when Decision outcome is recorded.&lt;/li&gt;&lt;/ul&gt;</info>
         <fieldValue>Decision</fieldValue>
+        <info>&lt;p&gt;&lt;strong&gt;Decision&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Final decision stage — FONSI, CE Determination, or ROD depending on review type.&lt;/li&gt;&lt;li&gt;Climate Assessment Complete is required at this stage if Climate Assessment Required is set (Phase 2 gate — system will block save if incomplete).&lt;/li&gt;&lt;li&gt;Defensibility Score — review the Risk Intelligence tab for all gap factors.&lt;/li&gt;&lt;li&gt;Administrative Record locks automatically when Decision outcome is recorded.&lt;/li&gt;&lt;/ul&gt;</info>
         <pathAssistantStepFields>
             <fieldName>nepa_defensibility_score__c</fieldName>
         </pathAssistantStepFields>
@@ -263,8 +263,8 @@
     </pathAssistantSteps>
 
     <pathAssistantSteps>
-        <info>&lt;p&gt;&lt;strong&gt;Decision Issued&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Decision has been issued and published — NEPA process complete.&lt;/li&gt;&lt;li&gt;Confirm Administrative Record is locked (AR Locked = true).&lt;/li&gt;&lt;li&gt;Completion Date is stamped automatically when process status = completed.&lt;/li&gt;&lt;li&gt;If litigation is filed, create a Litigation record linked to this process.&lt;/li&gt;&lt;/ul&gt;</info>
         <fieldValue>Decision Issued</fieldValue>
+        <info>&lt;p&gt;&lt;strong&gt;Decision Issued&lt;/strong&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Decision has been issued and published — NEPA process complete.&lt;/li&gt;&lt;li&gt;Confirm Administrative Record is locked (AR Locked = true).&lt;/li&gt;&lt;li&gt;Completion Date is stamped automatically when process status = completed.&lt;/li&gt;&lt;li&gt;If litigation is filed, create a Litigation record linked to this process.&lt;/li&gt;&lt;/ul&gt;</info>
         <pathAssistantStepFields>
             <fieldName>nepa_ar_locked__c</fieldName>
         </pathAssistantStepFields>

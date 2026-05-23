@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>nepa_agency_system_url__c</fullName>
-    <description>Public URL to the permit record in the agency's permitting system (e.g., USACE ORM2 permit page, EPA NPDES public notice, FERC eLibrary filing). Used by nepaPermitDependencies LWC for external link. Never store authenticated or credential-bearing URLs here.</description>
-    <inlineHelpText>Public link to this permit record in the issuing agency's system.</inlineHelpText>
+    <description>Public URL to the permit record in the agency&apos;s permitting system (e.g., USACE ORM2 permit page, EPA NPDES public notice, FERC eLibrary filing). Used by nepaPermitDependencies LWC for external link. Never store authenticated or credential-bearing URLs here.</description>
+    <inlineHelpText>Public link to this permit record in the issuing agency&apos;s system.</inlineHelpText>
     <label>Agency System URL</label>
     <required>false</required>
     <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
     <type>Url</type>
 </CustomField>
