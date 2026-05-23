@@ -2,7 +2,7 @@
 
 # PSA-NEPA Permitting Accelerator
 
-**Open-source NEPA permitting data model, workflow automation, GIS proximity screening, live cross-agency permit status, Agentforce comment triage, and litigation risk intelligence — built on Salesforce Agentforce for Public Sector. Aligned to CEQ NEPA and Permitting Data and Technology Standard v1.2. All 10 MFRs addressed. Deployable end-to-end in ~30 minutes (15 min automated CLI deployment + ~15 min manual post-deploy steps).**
+**Open-source NEPA permitting data model, workflow automation, GIS proximity screening, live cross-agency permit status, Agentforce comment triage, and litigation risk intelligence — built on Salesforce Agentforce for Public Sector. Aligned to CEQ NEPA and Permitting Data and Technology Standard v1.2. All 10 MFRs addressed. Deployable end-to-end in ~35 minutes (~25 min automated CLI deployment + ~10 min manual post-deploy steps).**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.txt)
 [![Platform: FedRAMP Authorized](https://img.shields.io/badge/Platform-FedRAMP%20Authorized-green.svg)](https://marketplace.fedramp.gov/)
@@ -51,7 +51,7 @@ Three categories of preventable delay drive most of the gap between the current 
 | PIV/CAC authentication | Native Salesforce support via SAML 2.0 (PIV/CAC = Personal Identity Verification / Common Access Card, the U.S. federal smartcard standard) — no separate IdP required |
 | Section 508 / WCAG 2.1 AA | Compliant — inherited from Salesforce Lightning Design System and OmniScript |
 | Software license cost | $0 (MIT open source) |
-| Deployment time | ~30 minutes end-to-end (15 min automated CLI + ~15 min manual post-deploy steps) |
+| Deployment time | ~35 minutes end-to-end (~25 min automated CLI + ~10 min manual post-deploy steps) |
 
 ---
 

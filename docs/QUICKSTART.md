@@ -163,7 +163,7 @@ The script deploys in dependency order:
 | 8d | `RunLocalTests` (all Apex tests, after flows and permission set are live) |
 | 10–16 | Report types, reports, dashboards, layouts, LWC, FlexiPages (19 record and home pages), Path Assistant (`IndividualApplication_NEPA_Process_Path`), Lightning app |
 
-Expected automated deploy time: 10–15 minutes. Add ~10 minutes for manual post-deploy steps (flow activation, field type conversion, record type setup) documented in DEVELOPER_GUIDE.md Post-Deploy Checklist. BRE row loading and activation are handled automatically during deploy. **Total end-to-end: ~25 minutes.**
+Expected automated deploy time: ~25 minutes. Add ~10 minutes for manual post-deploy steps (flow activation, field type conversion, record type setup) documented in DEVELOPER_GUIDE.md Post-Deploy Checklist. BRE row loading and activation are handled automatically during deploy. **Total end-to-end: ~35 minutes.**
 
 After the deploy completes, the script prompts you to load the Carrie Placer Mine demo data:
 

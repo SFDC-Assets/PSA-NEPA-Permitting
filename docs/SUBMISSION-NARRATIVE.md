@@ -14,7 +14,7 @@ PSA-NEPA Permitting Accelerator: Open-Source Federal NEPA Intelligence Platform
 
 ## Solution Abstract
 
-The PSA-NEPA Permitting Accelerator is an open-source, production-ready implementation of the CEQ NEPA and Permitting Data and Technology Standard v1.2, built on Salesforce Agentforce for Public Sector — a FedRAMP-authorized platform already deployed at federal agencies. It delivers automated project screening with GIS proximity checks at intake, deterministic CE screening across 2,105 CE authorities, empirically calibrated litigation risk scoring, Agentforce-powered comment classification, automated stage gate enforcement, tribal plaintiff intelligence, machine-readable administrative record packaging, live cross-agency permit status via the CEQ NEPA REST API, and a CEQ-compliant REST export API. All 13 CEQ entities are implemented plus a structured cross-agency Permits entity (`nepa_required_permit__c`). Risk weights are derived from 761 federal NEPA litigation cases (PermitTEC v0.1, PNNL). Deployment takes approximately 15 minutes from the command line. License: MIT.
+The PSA-NEPA Permitting Accelerator is an open-source, production-ready implementation of the CEQ NEPA and Permitting Data and Technology Standard v1.2, built on Salesforce Agentforce for Public Sector — a FedRAMP-authorized platform already deployed at federal agencies. It delivers automated project screening with GIS proximity checks at intake, deterministic CE screening across 2,105 CE authorities, empirically calibrated litigation risk scoring, Agentforce-powered comment classification, automated stage gate enforcement, tribal plaintiff intelligence, machine-readable administrative record packaging, live cross-agency permit status via the CEQ NEPA REST API, and a CEQ-compliant REST export API. All 13 CEQ entities are implemented plus a structured cross-agency Permits entity (`nepa_required_permit__c`). Risk weights are derived from 761 federal NEPA litigation cases (PermitTEC v0.1, PNNL). Deployment takes approximately 25 minutes from the command line. License: MIT.
 
 Mapped to EPIC's Nine Types of Permitting Reform: the accelerator directly advances **Faster Government** (stage gate automation, SLA monitoring, scoping overrun detection), **Technology** (Agentforce AI, BRE deterministic logic, 15-service GIS intake), **Unlocking Finance** (cross-permit critical-path identification reduces time-to-permit, removing a common financing barrier), and **Supporting Communities** (unconditional EJ/tribal routing, E.O. 13175 consultation gates, and tribal plaintiff intelligence built from the PermitTEC corpus).
 
@@ -175,7 +175,7 @@ Analysis of 1,903 Final EIS records (CEQ EIS Timeline Data 2010–2024) shows a 
 
 **Current state: production-ready.** The accelerator is fully deployed and verified against the CEQ PIC Standard v1.2.0. A 530+ test Apex regression suite covers all 13 entities, the REST export API (including permits[] node), BRE configuration integrity, CE screening, stage gate logic, SLA escalation, plaintiff intelligence, EJ detection, GIS proximity, comment agent routing, cross-agency permit callouts, permit SLA monitoring, FLS enforcement for the `nepa_required_permit__c` object, and error handling. All tests pass. Code coverage exceeds 75%.
 
-**Deployment in ~15 minutes:**
+**Deployment in ~25 minutes:**
 ```
 sf org login web --alias nepademo
 ./scripts/deploy.sh nepademo
@@ -233,7 +233,7 @@ USACE CWA Section 404 permit processing time baselines in `NEPA_Agency_Duration_
 | BRE Decision Matrices / Expression Sets | 8 DMs + 3 ESs (deterministic, not AI) |
 | DMN decision model exports | Published to GitHub `/docs/decision-models/` |
 | Apex regression tests | 519+ across 38 test classes |
-| Deployment time from CLI | ~15 minutes |
+| Deployment time from CLI | ~25 minutes |
 | Platform FedRAMP status | Authorized (Salesforce Gov Cloud) |
 | Shield Field Audit Trail | Available on Gov Cloud — 10-year field-level history for NARA/litigation hold |
 | PIV/CAC authentication | Native Salesforce support — no separate IdP required |
