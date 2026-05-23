@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_ce_explorer_id__c</fullName>
+    <caseSensitive>false</caseSensitive>
+    <description>Structured composite identifier from the CEQ CE Explorer dataset. Format: {UNIT}--{section}-{group}-{seq} (e.g., BLM---5-42, DOE-1--1-1). Unique within a dataset version. Used as the external ID for upsert during data refresh cycles.</description>
+    <externalId>true</externalId>
+    <inlineHelpText>CEQ CE Explorer structured identifier (e.g., BLM---5-42). External ID for upsert.</inlineHelpText>
+    <label>CE Explorer ID</label>
+    <length>50</length>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>true</unique>
+</CustomField>
