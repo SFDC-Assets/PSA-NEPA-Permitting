@@ -85,7 +85,7 @@ An agency can spin up a Salesforce sandbox, deploy this MIT-licensed accelerator
 > The Salesforce platform is FedRAMP Authorized (FedRAMP is the U.S. federal cloud-security authorization program) — authorization details at [marketplace.fedramp.gov](https://marketplace.fedramp.gov/).
 
 ```bash
-git clone https://github.com/SFDC-Assets-emu/PSA-NEPA-Permitting.git
+git clone https://github.com/SFDC-Assets/PSA-NEPA-Permitting.git
 cd PSA-NEPA-Permitting
 sf org login web --alias nepademo    # replace 'nepademo' with any alias you choose
 ./scripts/deploy.sh nepademo         # use the same alias you chose above

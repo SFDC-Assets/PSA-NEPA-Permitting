@@ -75,7 +75,7 @@ A free APS trial org is available at the [APS trial org setup guide](https://hel
 ## Step 1 — Clone the Repository and Authenticate
 
 ```bash
-git clone https://github.com/SFDC-Assets-emu/PSA-NEPA-Permitting.git
+git clone https://github.com/SFDC-Assets/PSA-NEPA-Permitting.git
 cd PSA-NEPA-Permitting
 ```
 
