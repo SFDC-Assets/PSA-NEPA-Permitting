@@ -23,7 +23,7 @@
         <migrationValue>FAKEMAPPING</migrationValue>
         <name>DRExtractNEPADocument</name>
         <outputCreationSequence>0.0</outputCreationSequence>
-        <outputFieldName>FirstPublishLocationId</outputFieldName>
+        <outputFieldName>nepa_process__c</outputFieldName>
         <outputObjectName>ContentVersion</outputObjectName>
         <requiredForUpsert>false</requiredForUpsert>
         <upsertKey>false</upsertKey>
@@ -33,13 +33,13 @@
         <filterGroup>1.0</filterGroup>
         <filterOperator>=</filterOperator>
         <globalKey>DRExtractNEPADocumentCustomPLACEHOLDER_NEPA_005Item1</globalKey>
-        <inputFieldName>nepa_permit_document</inputFieldName>
+        <inputFieldName>true</inputFieldName>
         <inputObjectQuerySequence>1.0</inputObjectQuerySequence>
         <linkedObjectSequence>0.0</linkedObjectSequence>
         <migrationValue>FAKEMAPPING</migrationValue>
         <name>DRExtractNEPADocument</name>
         <outputCreationSequence>0.0</outputCreationSequence>
-        <outputFieldName>RecordType.DeveloperName</outputFieldName>
+        <outputFieldName>IsLatest</outputFieldName>
         <outputObjectName>ContentVersion</outputObjectName>
         <requiredForUpsert>false</requiredForUpsert>
         <upsertKey>false</upsertKey>
@@ -369,7 +369,7 @@
         <filterGroup>0.0</filterGroup>
         <filterOperator>=</filterOperator>
         <globalKey>DRExtractNEPADocumentCustomPLACEHOLDER_NEPA_005Item22</globalKey>
-        <inputFieldName>FirstPublishLocationId</inputFieldName>
+        <inputFieldName>nepa_process__c</inputFieldName>
         <inputObjectQuerySequence>0.0</inputObjectQuerySequence>
         <linkedObjectSequence>0.0</linkedObjectSequence>
         <migrationValue>FAKEMAPPING</migrationValue>
