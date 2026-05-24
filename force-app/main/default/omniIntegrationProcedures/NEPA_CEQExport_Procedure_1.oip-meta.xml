@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OmniIntegrationProcedure xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customJavaScript>{}</customJavaScript>
+    <elementTypeComponentMapping>{&quot;ElementTypeToHTMLTemplateList&quot;:[]}</elementTypeComponentMapping>
+    <isActive>true</isActive>
+    <isIntegProcdSignatureAvl>false</isIntegProcdSignatureAvl>
+    <isIntegrationProcedure>true</isIntegrationProcedure>
+    <isManagedUsingStdDesigner>false</isManagedUsingStdDesigner>
+    <isMetadataCacheDisabled>false</isMetadataCacheDisabled>
+    <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+    <isTestProcedure>false</isTestProcedure>
+    <isWebCompEnabled>false</isWebCompEnabled>
+    <language>Procedure</language>
+    <name>CEQExport</name>
+
+    <!-- Step 1: Extract Project (Program) record mapped to CEQ Entity 1 property names -->
+    <omniProcessElements>
+        <isActive>true</isActive>
+        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+        <level>0.0</level>
+        <name>GetProject</name>
+        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+        <propertySetConfig>{&quot;bundleName&quot;:&quot;DRExtractNEPAProject&quot;,&quot;inputMap&quot;:[{&quot;name&quot;:&quot;projectId&quot;,&quot;value&quot;:&quot;%projectId%&quot;,&quot;valueType&quot;:&quot;reference&quot;}],&quot;outputPath&quot;:&quot;Project&quot;,&quot;chainOnStep&quot;:&quot;&quot;,&quot;failOnStepError&quot;:true,&quot;postTransformBundle&quot;:&quot;&quot;}</propertySetConfig>
+        <sequenceNumber>1.0</sequenceNumber>
+        <type>DataRaptor Extract Action</type>
+    </omniProcessElements>
+
+    <!-- Step 2: Extract project-level GIS Data (nepa_gis_data__c linked to Program) -->
+    <omniProcessElements>
+        <isActive>true</isActive>
+        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+        <level>0.0</level>
+        <name>GetGISData</name>
+        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+        <propertySetConfig>{&quot;bundleName&quot;:&quot;DRExtractNEPAGISData&quot;,&quot;inputMap&quot;:[{&quot;name&quot;:&quot;projectId&quot;,&quot;value&quot;:&quot;%projectId%&quot;,&quot;valueType&quot;:&quot;reference&quot;}],&quot;outputPath&quot;:&quot;Project:gis_data&quot;,&quot;chainOnStep&quot;:&quot;&quot;,&quot;failOnStepError&quot;:false,&quot;postTransformBundle&quot;:&quot;&quot;}</propertySetConfig>
+        <sequenceNumber>2.0</sequenceNumber>
+        <type>DataRaptor Extract Action</type>
+    </omniProcessElements>
+
+    <!-- Step 3: Extract all IndividualApplication (Process) records for this Project -->
+    <omniProcessElements>
+        <isActive>true</isActive>
+        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+        <level>0.0</level>
+        <name>GetProcesses</name>
+        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+        <propertySetConfig>{&quot;bundleName&quot;:&quot;DRExtractNEPAProcess&quot;,&quot;inputMap&quot;:[{&quot;name&quot;:&quot;projectId&quot;,&quot;value&quot;:&quot;%projectId%&quot;,&quot;valueType&quot;:&quot;reference&quot;}],&quot;outputPath&quot;:&quot;processes&quot;,&quot;chainOnStep&quot;:&quot;&quot;,&quot;failOnStepError&quot;:false,&quot;postTransformBundle&quot;:&quot;&quot;}</propertySetConfig>
+        <sequenceNumber>3.0</sequenceNumber>
+        <type>DataRaptor Extract Action</type>
+    </omniProcessElements>
+
+    <!-- Step 4 (Loop): Iterate over each Process; enrich with Documents, Engagement Events,
+         Case Events, Team Members, Legal Structure, process-level GIS Data, AR Manifest, Permits -->
+    <omniProcessElements>
+        <isActive>true</isActive>
+        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+        <level>0.0</level>
+        <name>LoopProcesses</name>
+        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+        <propertySetConfig>{&quot;loopInput&quot;:&quot;%processes%&quot;,&quot;currentItemOutput&quot;:&quot;currentProcess&quot;,&quot;indexOutput&quot;:&quot;processIndex&quot;}</propertySetConfig>
+        <sequenceNumber>4.0</sequenceNumber>
+        <type>Loop</type>
+
+        <!-- 4.1: Documents (ContentVersion via nepa_process__c, IsLatest=true) -->
+        <omniProcessElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>GetDocuments</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{&quot;bundleName&quot;:&quot;DRExtractNEPADocument&quot;,&quot;inputMap&quot;:[{&quot;name&quot;:&quot;processId&quot;,&quot;value&quot;:&quot;%currentProcess:id%&quot;,&quot;valueType&quot;:&quot;reference&quot;}],&quot;outputPath&quot;:&quot;documents&quot;,&quot;failOnStepError&quot;:false,&quot;postTransformBundle&quot;:&quot;&quot;}</propertySetConfig>
+            <sequenceNumber>1.0</sequenceNumber>
+            <type>DataRaptor Extract Action</type>
+        </omniProcessElements>
+
+        <!-- 4.2 (Loop): Iterate over Documents; fetch Comments per Document -->
+        <omniProcessElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>LoopDocuments</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{&quot;loopInput&quot;:&quot;%documents%&quot;,&quot;currentItemOutput&quot;:&quot;currentDocument&quot;,&quot;indexOutput&quot;:&quot;documentIndex&quot;}</propertySetConfig>
+            <sequenceNumber>2.0</sequenceNumber>
+            <type>Loop</type>
+
+            <!-- 4.2.1: Comments (PublicComplaint via nepa_parent_document__c) -->
+            <omniProcessElements>
+                <isActive>true</isActive>
+                <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+                <level>2.0</level>
+                <name>GetComments</name>
+                <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+                <propertySetConfig>{&quot;bundleName&quot;:&quot;DRExtractNEPAComment&quot;,&quot;inputMap&quot;:[{&quot;name&quot;:&quot;documentId&quot;,&quot;value&quot;:&quot;%currentDocument:id%&quot;,&quot;valueType&quot;:&quot;reference&quot;}],&quot;outputPath&quot;:&quot;currentDocument:comments&quot;,&quot;failOnStepError&quot;:false,&quot;postTransformBundle&quot;:&quot;&quot;}</propertySetConfig>
+                <sequenceNumber>1.0</sequenceNumber>
+                <type>DataRaptor Extract Action</type>
+            </omniProcessElements>
+        </omniProcessElements>
+
+        <!-- 4.3: Assign enriched documents collection back to currentProcess node -->
+        <omniProcessElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>AssignDocumentsToProcess</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{&quot;assignmentRules&quot;:[{&quot;name&quot;:&quot;currentProcess:documents&quot;,&quot;value&quot;:&quot;%documents%&quot;,&quot;valueType&quot;:&quot;reference&quot;}],&quot;useFormulas&quot;:false}</propertySetConfig>
+            <sequenceNumber>3.0</sequenceNumber>
+            <type>Set Values</type>
+        </omniProcessElements>
+
+        <!-- 4.4: Public Engagement Events (nepa_engagement__c via nepa_process__c) -->
+        <omniProcessElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>GetEngagementEvents</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{&quot;bundleName&quot;:&quot;DRExtractNEPAEngagementEvent&quot;,&quot;inputMap&quot;:[{&quot;name&quot;:&quot;processId&quot;,&quot;value&quot;:&quot;%currentProcess:id%&quot;,&quot;valueType&quot;:&quot;reference&quot;}],&quot;outputPath&quot;:&quot;currentProcess:public_engagement_events&quot;,&quot;failOnStepError&quot;:false,&quot;postTransformBundle&quot;:&quot;&quot;}</propertySetConfig>
+            <sequenceNumber>4.0</sequenceNumber>
+            <type>DataRaptor Extract Action</type>
+        </omniProcessElements>
+
+        <!-- 4.5: Case Events (ApplicationTimeline via nepa_related_process__c) -->
+        <omniProcessElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>GetCaseEvents</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{&quot;bundleName&quot;:&quot;DRExtractNEPACaseEvent&quot;,&quot;inputMap&quot;:[{&quot;name&quot;:&quot;processId&quot;,&quot;value&quot;:&quot;%currentProcess:id%&quot;,&quot;valueType&quot;:&quot;reference&quot;}],&quot;outputPath&quot;:&quot;currentProcess:case_events&quot;,&quot;failOnStepError&quot;:false,&quot;postTransformBundle&quot;:&quot;&quot;}</propertySetConfig>
+            <sequenceNumber>5.0</sequenceNumber>
+            <type>DataRaptor Extract Action</type>
+        </omniProcessElements>
+
+        <!-- 4.6: Team Members (nepa_process_team_member__c) -->
+        <omniProcessElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>GetTeamMembers</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{&quot;bundleName&quot;:&quot;DRExtractNEPATeamMember&quot;,&quot;inputMap&quot;:[{&quot;name&quot;:&quot;processId&quot;,&quot;value&quot;:&quot;%currentProcess:id%&quot;,&quot;valueType&quot;:&quot;reference&quot;}],&quot;outputPath&quot;:&quot;currentProcess:team_members&quot;,&quot;failOnStepError&quot;:false,&quot;postTransformBundle&quot;:&quot;&quot;}</propertySetConfig>
+            <sequenceNumber>6.0</sequenceNumber>
+            <type>DataRaptor Extract Action</type>
+        </omniProcessElements>
+
+        <!-- 4.7: Legal Structure (nepa_litigation__c via nepa_related_project__c) -->
+        <omniProcessElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>GetLegalStructure</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{&quot;bundleName&quot;:&quot;DRExtractNEPALegalStructure&quot;,&quot;inputMap&quot;:[{&quot;name&quot;:&quot;processId&quot;,&quot;value&quot;:&quot;%currentProcess:id%&quot;,&quot;valueType&quot;:&quot;reference&quot;}],&quot;outputPath&quot;:&quot;currentProcess:legal_structure&quot;,&quot;failOnStepError&quot;:false,&quot;postTransformBundle&quot;:&quot;&quot;}</propertySetConfig>
+            <sequenceNumber>7.0</sequenceNumber>
+            <type>DataRaptor Extract Action</type>
+        </omniProcessElements>
+
+        <!-- 4.8: Process-level GIS Data (nepa_gis_data__c via nepa_related_process__c) -->
+        <omniProcessElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>GetGISDataForProcess</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{&quot;bundleName&quot;:&quot;DRExtractNEPAGISDataByProcess&quot;,&quot;inputMap&quot;:[{&quot;name&quot;:&quot;processId&quot;,&quot;value&quot;:&quot;%currentProcess:id%&quot;,&quot;valueType&quot;:&quot;reference&quot;}],&quot;outputPath&quot;:&quot;currentProcess:gis_data&quot;,&quot;failOnStepError&quot;:false,&quot;postTransformBundle&quot;:&quot;&quot;}</propertySetConfig>
+            <sequenceNumber>8.0</sequenceNumber>
+            <type>DataRaptor Extract Action</type>
+        </omniProcessElements>
+
+        <!-- 4.9: Required Permits (nepa_required_permit__c via nepa_process__c) -->
+        <omniProcessElements>
+            <isActive>true</isActive>
+            <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+            <level>1.0</level>
+            <name>GetPermits</name>
+            <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+            <propertySetConfig>{&quot;bundleName&quot;:&quot;DRExtractNEPARequiredPermit&quot;,&quot;inputMap&quot;:[{&quot;name&quot;:&quot;processId&quot;,&quot;value&quot;:&quot;%currentProcess:id%&quot;,&quot;valueType&quot;:&quot;reference&quot;}],&quot;outputPath&quot;:&quot;currentProcess:permits&quot;,&quot;failOnStepError&quot;:false,&quot;postTransformBundle&quot;:&quot;&quot;}</propertySetConfig>
+            <sequenceNumber>9.0</sequenceNumber>
+            <type>DataRaptor Extract Action</type>
+        </omniProcessElements>
+    </omniProcessElements>
+
+    <!-- Step 5: Assemble final CEQPayload with schema metadata + project + processes -->
+    <omniProcessElements>
+        <isActive>true</isActive>
+        <isOmniScriptEmbeddable>false</isOmniScriptEmbeddable>
+        <level>0.0</level>
+        <name>AssembleCEQPayload</name>
+        <omniProcessVersionNumber>0.0</omniProcessVersionNumber>
+        <propertySetConfig>{&quot;assignmentRules&quot;:[{&quot;name&quot;:&quot;CEQPayload:schema_version&quot;,&quot;value&quot;:&quot;1.2&quot;,&quot;valueType&quot;:&quot;value&quot;},{&quot;name&quot;:&quot;CEQPayload:standard&quot;,&quot;value&quot;:&quot;CEQ NEPA and Permitting Data and Technology Standard&quot;,&quot;valueType&quot;:&quot;value&quot;},{&quot;name&quot;:&quot;CEQPayload:exported_at&quot;,&quot;value&quot;:&quot;%System.CurrentDateTime%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;CEQPayload:project&quot;,&quot;value&quot;:&quot;%Project%&quot;,&quot;valueType&quot;:&quot;reference&quot;},{&quot;name&quot;:&quot;CEQPayload:project:processes&quot;,&quot;value&quot;:&quot;%processes%&quot;,&quot;valueType&quot;:&quot;reference&quot;}],&quot;useFormulas&quot;:false}</propertySetConfig>
+        <sequenceNumber>5.0</sequenceNumber>
+        <type>Set Values</type>
+    </omniProcessElements>
+
+    <omniProcessKey>NEPACEQExport</omniProcessKey>
+    <omniProcessType>Integration Procedure</omniProcessType>
+    <propertySetConfig>{
+  &quot;linkToExternalObject&quot; : &quot;&quot;,
+  &quot;trackingCustomData&quot; : { },
+  &quot;includeAllActionsInResponse&quot; : false,
+  &quot;columnsPropertyMap&quot; : [ ],
+  &quot;relationshipFieldsMap&quot; : [ ],
+  &quot;labelSingular&quot; : &quot;&quot;,
+  &quot;labelPlural&quot; : &quot;&quot;,
+  &quot;description&quot; : &quot;Assembles a CEQ NEPA and Permitting Data and Technology Standard v1.2 compliant JSON payload for a given Project (Program.Id). Returns CEQPayload with schema_version, standard, exported_at, and a fully nested project graph: Project + GIS data, Processes with Documents (+ per-document Comments), Engagement Events, Case Events, Team Members, Legal Structure, process GIS data, and Required Permits.&quot;,
+  &quot;nameColumn&quot; : &quot;&quot;,
+  &quot;rollbackOnError&quot; : false,
+  &quot;chainableQueriesLimit&quot; : 50,
+  &quot;persistentComponent&quot; : true,
+  &quot;enableLWCRuntime&quot; : true
+}</propertySetConfig>
+    <subType>CEQExport</subType>
+    <type>NEPA</type>
+    <versionNumber>1</versionNumber>
+</OmniIntegrationProcedure>

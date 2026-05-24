@@ -17,7 +17,7 @@
       "Level": 0,
       "IsActive": true,
       "PropertySetConfig": {
-        "bundleName": "DR_Extract_NEPA_Project",
+        "bundleName": "DRExtractNEPAProject",
         "inputMap": [
           {
             "name": "projectId",
@@ -40,7 +40,7 @@
       "Level": 0,
       "IsActive": true,
       "PropertySetConfig": {
-        "bundleName": "DR_Extract_NEPA_GISData",
+        "bundleName": "DRExtractNEPAGISData",
         "inputMap": [
           {
             "name": "projectId",
@@ -63,7 +63,7 @@
       "Level": 0,
       "IsActive": true,
       "PropertySetConfig": {
-        "bundleName": "DR_Extract_NEPA_Process",
+        "bundleName": "DRExtractNEPAProcess",
         "inputMap": [
           {
             "name": "projectId",
@@ -98,7 +98,7 @@
           "Level": 1,
           "IsActive": true,
           "PropertySetConfig": {
-            "bundleName": "DR_Extract_NEPA_Document",
+            "bundleName": "DRExtractNEPADocument",
             "inputMap": [
               {
                 "name": "processId",
@@ -130,7 +130,7 @@
               "Level": 2,
               "IsActive": true,
               "PropertySetConfig": {
-                "bundleName": "DR_Extract_NEPA_Comment",
+                "bundleName": "DRExtractNEPAComment",
                 "inputMap": [
                   {
                     "name": "documentId",
@@ -164,7 +164,7 @@
           "Level": 1,
           "IsActive": true,
           "PropertySetConfig": {
-            "bundleName": "DR_Extract_NEPA_EngagementEvent",
+            "bundleName": "DRExtractNEPAEngagementEvent",
             "inputMap": [
               {
                 "name": "processId",
@@ -184,7 +184,7 @@
           "Level": 1,
           "IsActive": true,
           "PropertySetConfig": {
-            "bundleName": "DR_Extract_NEPA_CaseEvent",
+            "bundleName": "DRExtractNEPACaseEvent",
             "inputMap": [
               {
                 "name": "processId",
@@ -204,7 +204,7 @@
           "Level": 1,
           "IsActive": true,
           "PropertySetConfig": {
-            "bundleName": "DR_Extract_NEPA_TeamMember",
+            "bundleName": "DRExtractNEPATeamMember",
             "inputMap": [
               {
                 "name": "processId",
@@ -224,7 +224,7 @@
           "Level": 1,
           "IsActive": true,
           "PropertySetConfig": {
-            "bundleName": "DR_Extract_NEPA_LegalStructure",
+            "bundleName": "DRExtractNEPALegalStructure",
             "inputMap": [
               {
                 "name": "legalStructureId",
@@ -244,7 +244,7 @@
           "Level": 1,
           "IsActive": true,
           "PropertySetConfig": {
-            "bundleName": "DR_Extract_NEPA_GISData_ByProcess",
+            "bundleName": "DRExtractNEPAGISDataByProcess",
             "inputMap": [
               {
                 "name": "processId",
@@ -264,7 +264,7 @@
           "Level": 1,
           "IsActive": true,
           "PropertySetConfig": {
-            "bundleName": "DR_Extract_AR_Manifest",
+            "bundleName": "DRExtractNEPAARManifest",
             "inputMap": [
               {
                 "name": "processId",
@@ -284,7 +284,7 @@
           "Level": 1,
           "IsActive": true,
           "PropertySetConfig": {
-            "bundleName": "DR_Extract_NEPA_RequiredPermit",
+            "bundleName": "DRExtractNEPARequiredPermit",
             "inputMap": [
               {
                 "name": "processId",
