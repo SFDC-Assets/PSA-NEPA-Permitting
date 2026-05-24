@@ -1627,6 +1627,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>nepa_decision_modification__c.nepa_modification_description__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>nepa_ce_library__c.nepa_source_id__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -2148,6 +2153,21 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_litigation__c.nepa_ruling_date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_litigation__c.nepa_data_source_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_litigation__c.nepa_record_owner_agency__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_litigation__c.nepa_retrieved_timestamp__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

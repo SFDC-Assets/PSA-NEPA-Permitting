@@ -5,7 +5,7 @@
 //                 Triggers NEPA_Permit_Issued_Schedule_Creator on insert.
 //                 Flow queries NEPA_Inspection_Schedule__mdt for 'CWA Section 402 NPDES'
 //                 and creates Visit inspection tasks with nepa_trigger_layer__c = Idaho warning.
-//   DEMO_RP_002 — CWA Section 404 Permit (status = Pending)
+//   DEMO_RP_002 — CWA Section 404 Permit (status = In Progress)
 //                 Referenced in IA description and OFD milestone. Shows the permits
 //                 related list with a mix of issued vs. pending — the contrast
 //                 the demo presenter calls out in Scene 7-A.
@@ -50,7 +50,7 @@ if (!existing.containsKey('DEMO_RP_002')) {
         External_ID__c          = 'DEMO_RP_002',
         nepa_process__c         = ia.Id,
         nepa_permit_type__c     = 'CWA Section 404',
-        nepa_permit_status__c   = 'Pending',
+        nepa_permit_status__c   = 'In Progress',
         nepa_lead_agency__c     = 'USACE',
         nepa_regulatory_citation__c = '33 USC §1344; 33 CFR Part 323',
         nepa_is_critical_path__c = true,
