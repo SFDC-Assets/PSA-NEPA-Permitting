@@ -21,7 +21,7 @@ export default class NepaRiskIntelligenceCard extends LightningElement {
 
     _riskScore;
     _riskTier;
-    _factorsRaw;
+    _factorsRaw = '';
     _scoreUpdated;
     _durationCost;
 
