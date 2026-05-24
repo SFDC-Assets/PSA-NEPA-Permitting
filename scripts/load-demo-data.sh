@@ -262,9 +262,21 @@ run_apex "flow refresh" "demo/import_data/23_postload_flow_refresh.apex"
 step_header "Step 27: Apex insert (engagement, PublicComplaint PC_003, decision_payload, ar_export)"
 run_apex "missing records insert" "demo/import_data/27_postload_missing_records.apex"
 
-# ── step 28: OFD coordination milestones ──────────────────────────────────────
-step_header "Step 28: OFD Coordination Milestones (ApplicationTimeline OFD tracks for IDI-38709)"
+# ── step 28 (label): OFD coordination milestones ─────────────────────────────
+step_header "Step 28a: OFD Coordination Milestones (ApplicationTimeline OFD tracks for IDI-38709)"
 run_apex "OFD milestones" "demo/import_data/27_ofd_milestones.apex"
+
+# ── step 28: nepa_required_permit__c (NPDES + CWA 404 permits for Scene 7) ───
+step_header "Step 28: nepa_required_permit__c (DEMO_RP_001 NPDES + DEMO_RP_002 CWA 404)"
+run_apex "required permits" "demo/import_data/28_required_permits.apex"
+
+# ── step 29: Scene 7-B inspection Visits (safety net for async flow) ──────────
+step_header "Step 29: Scene 7-B Inspection Visits (NPDES compliance schedule)"
+run_apex "inspection visits" "demo/import_data/29_scene7_inspection_visits.apex"
+
+# ── step 30: Scene 7-C BiOp reinitiation trigger ──────────────────────────────
+step_header "Step 30: Scene 7-C BiOp reinitiation (nepa_reinit_new_species_listing__c + ESA Task)"
+run_apex "BiOp reinitiation" "demo/import_data/30_scene7_biop_reinit.apex"
 
 # ── post-load summary ─────────────────────────────────────────────────────────
 echo ""

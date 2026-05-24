@@ -682,6 +682,16 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>IndividualApplication.nepa_has_active_biop__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>IndividualApplication.nepa_state_code__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>IndividualApplication.nepa_scoping_overrun_flag__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -2528,6 +2538,16 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>IndividualApplication.nepa_surveys_complete__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_required_permit__c.External_ID__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_required_permit__c.nepa_is_critical_path__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
