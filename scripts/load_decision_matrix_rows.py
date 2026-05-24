@@ -132,6 +132,21 @@ def tooling_query(base_url, token, soql):
         conn.close()
 
 
+def tooling_get(base_url, token, sobject, record_id, fields="Metadata"):
+    """Fetch a single Tooling API record by ID. Returns the parsed JSON body."""
+    import http.client
+
+    parsed = urllib.parse.urlparse(base_url)
+    conn = http.client.HTTPSConnection(parsed.hostname)
+    path = f"/services/data/v62.0/tooling/sobjects/{sobject}/{record_id}?fields={fields}"
+    try:
+        conn.request("GET", path, headers={"Authorization": f"Bearer {token}"})
+        resp = conn.getresponse()
+        return json.loads(resp.read())
+    finally:
+        conn.close()
+
+
 def tooling_patch(base_url, token, sobject, record_id, payload):
     """PATCH a Tooling API record. Returns (success, error_message)."""
     import http.client
@@ -279,7 +294,7 @@ def process_dm(
     dmdv = recs[0]
     dmdv_id = dmdv["Id"]
     current_status = dmdv.get("Status", "")
-    current_metadata = dmdv.get("Metadata", {})
+    current_metadata = dmdv.get("Metadata") or {}
 
     # Query corresponding CMV
     cmv_recs = soql_query(
@@ -375,7 +390,13 @@ def process_expression_sets(base_url, token, es_names, dry_run):
         esdv = recs[0]
         esdv_id = esdv["Id"]
         current_status = esdv.get("Status", "")
-        current_metadata = esdv.get("Metadata", {})
+        current_metadata = esdv.get("Metadata") or {}
+
+        # SOQL on compound fields can return Metadata=null for Draft ESDVs.
+        # Fall back to a direct GET by ID which always returns the full compound.
+        if not current_metadata:
+            fetched = tooling_get(base_url, token, "ExpressionSetDefinitionVersion", esdv_id)
+            current_metadata = fetched.get("Metadata") or {}
 
         if current_status == "Active":
             print(f"  [OK] {dev_name} — already Active")

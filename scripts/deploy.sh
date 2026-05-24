@@ -537,7 +537,41 @@ phase_10_12_reports() {
 
 phase_13_layouts() {
     phase_header "Phase 13: Layouts"
-    deploy "layouts" allow-failure \
+    # First pass: most layouts deploy cleanly here.
+    local output result
+    output=$(sf project deploy start \
+        --source-dir force-app/main/default/layouts \
+        --target-org "$TARGET_ORG" \
+        --wait 30 --json 2>/dev/null) || true
+    result=$(echo "$output" | python3 -c "
+import sys, json
+try:
+    data = json.load(sys.stdin)
+    r = data.get('result', {})
+    failures = r.get('details', {}).get('componentFailures', [])
+    status = r.get('status', '?')
+    print('    [{}] {}/{} components'.format(
+        status,
+        r.get('numberComponentsDeployed', 0),
+        r.get('numberComponentsTotal', 0)
+    ))
+    for f in failures[:5]:
+        print('    FAIL: {} — {}'.format(f.get('fullName','?'), f.get('problem','')))
+    if status not in ('Succeeded', 'SucceededPartial'):
+        sys.exit(1)
+except Exception:
+    print('    (could not parse JSON output)')
+    sys.exit(1)
+" 2>&1) && { echo "$result"; return 0; } || true
+    echo "$result"
+    # The Required_Permits__r related-list field on IndividualApplication-NEPA Process Layout
+    # fails on first-pass because the Metadata API relationship-name cache has a short lag
+    # after the master-detail field (nepa_process__c) lands in Phase 2.  A single retry
+    # ~30 s later reliably resolves it.  The layout is allow-failure; warn and continue if
+    # the retry also fails.
+    echo "    INFO: layout deploy failed — retrying once after 30s (Required_Permits__r cache lag)"
+    sleep 30
+    deploy "layouts (retry)" allow-failure \
         --source-dir force-app/main/default/layouts \
         --target-org "$TARGET_ORG"
 }
