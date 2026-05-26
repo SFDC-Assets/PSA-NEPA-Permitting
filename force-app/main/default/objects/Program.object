@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <fullName>nepa_litigation_count__c</fullName>
+        <description>Count of litigation cases linked to this NEPA project via nepa_related_project__c on nepa_litigation__c. Updated by Flow when litigation records are created or related. Provides a quick litigation risk signal — EIS projects account for 98%+ of NEPA litigation.</description>
+        <inlineHelpText>Number of litigation cases linked to this project.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Litigation Case Count</label>
+        <precision>6</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_current_status__c</fullName>
+        <description>Current phase of the NEPA, permitting, or other authorization process (may be aggregated from related process status and related milestones or events).</description>
+        <inlineHelpText>Current phase: pre-application, in progress, paused, completed, or cancelled.</inlineHelpText>
+        <label>Current Status</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>planned</fullName>
+                    <default>false</default>
+                    <label>planned</label>
+                </value>
+                <value>
+                    <fullName>pre-application</fullName>
+                    <default>false</default>
+                    <label>pre-application</label>
+                </value>
+                <value>
+                    <fullName>in progress</fullName>
+                    <default>false</default>
+                    <label>in progress</label>
+                </value>
+                <value>
+                    <fullName>paused</fullName>
+                    <default>false</default>
+                    <label>paused</label>
+                </value>
+                <value>
+                    <fullName>completed</fullName>
+                    <default>false</default>
+                    <label>completed</label>
+                </value>
+                <value>
+                    <fullName>cancelled</fullName>
+                    <default>false</default>
+                    <label>cancelled</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_lead_agency__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Federal agency that is undertaking the activity or responsible for the decision.</description>
+        <inlineHelpText>Federal agency that is undertaking the activity or responsible for the decision.</inlineHelpText>
+        <label>Lead Agency</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Projects</relationshipLabel>
+        <relationshipName>Projects</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_location__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Geographic area, including relationship to GIS Object, optionally also stored as a simple property here.</description>
+        <inlineHelpText>Geographic area, including relationship to GIS Object.</inlineHelpText>
+        <label>Location</label>
+        <referenceTo>Location</referenceTo>
+        <relationshipLabel>Projects</relationshipLabel>
+        <relationshipName>Projects</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_parent_project__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Identification number of parent project, if applicable.</description>
+        <inlineHelpText>Parent project for nested or sub-component projects.</inlineHelpText>
+        <label>Parent Project</label>
+        <referenceTo>Program</referenceTo>
+        <relationshipLabel>Child Projects</relationshipLabel>
+        <relationshipName>Child_Projects</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_project_description__c</fullName>
+        <description>Summary of the project&apos;s goals and scope.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Summary of the project&apos;s goals and scope.</inlineHelpText>
+        <label>Project Description</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_project_id__c</fullName>
+        <caseSensitive>false</caseSensitive>
+        <description>Unique identification number for the project. Recommend UUID format for global uniqueness.</description>
+        <externalId>true</externalId>
+        <inlineHelpText>Unique project ID. Recommend UUID format.</inlineHelpText>
+        <label>Project Id</label>
+        <length>36</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>true</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_project_sector__c</fullName>
+        <description>High-level project sector(s). Multiple values may apply; separate with semicolons (e.g., Energy Production and Management; Transportation and Infrastructure).</description>
+        <inlineHelpText>High-level project sector(s). Separate multiple values with semicolons.</inlineHelpText>
+        <label>Project Sector</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_project_sponsor__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Name of responsible entity, organization, or person and contact card information.</description>
+        <inlineHelpText>Name of responsible entity, organization, or person. Blank if led by the lead agency.</inlineHelpText>
+        <label>Project Sponsor</label>
+        <referenceTo>Contact</referenceTo>
+        <relationshipLabel>Projects</relationshipLabel>
+        <relationshipName>Projects</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_project_title__c</fullName>
+        <externalId>false</externalId>
+        <label>Project Title</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_start_date__c</fullName>
+        <description>Initiation date for the related review or permit process.</description>
+        <inlineHelpText>Initiation date for the related review or permit process.</inlineHelpText>
+        <label>Start Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </fields>
+    <!-- CEQ Standard v1.2 additions -->
+    <fields>
+        <fullName>nepa_project_type__c</fullName>
+        <description>Type(s) of project — a sub-type of project sector (e.g., Renewable Energy Production - Solar; Electricity Transmission). Multiple values may apply; separate with semicolons.</description>
+        <inlineHelpText>Sub-type(s) of project sector. Separate multiple values with semicolons.</inlineHelpText>
+        <label>Project Type</label>
+        <length>32768</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_funding__c</fullName>
+        <description>Link to federal, state, local, or other funding source(s) by reference (e.g., grant program, loan guarantee, appropriated funds).</description>
+        <inlineHelpText>Funding source(s) or other project reference (e.g., grant program, loan guarantee).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Funding Source(s)</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_location_lat__c</fullName>
+        <description>Latitude coordinate of the centroid of the project footprint.</description>
+        <inlineHelpText>Latitude of project centroid (decimal degrees).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Location Latitude</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>8</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_location_lon__c</fullName>
+        <description>Longitude coordinate of the centroid of the project footprint.</description>
+        <inlineHelpText>Longitude of project centroid (decimal degrees).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Location Longitude</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>8</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_location_text__c</fullName>
+        <description>Text description of location. Where location is more complex than a point or is multi-state/regional, use a text response (WKT or address).</description>
+        <inlineHelpText>Text description of location (WKT, address, or region description).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Location Text</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <!-- Phase 1 Risk Intelligence fields -->
+    <fields>
+        <fullName>nepa_circuit__c</fullName>
+        <description>Federal circuit court jurisdiction for this project's geography. Drives geographic risk weight in litigation risk scoring (9th Circuit and D.C. Circuit carry highest rates in PermitTEC corpus).</description>
+        <inlineHelpText>Federal circuit (e.g., 9th, D.C., 4th) for litigation risk geography weighting.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Federal Circuit</label>
+        <length>50</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_adjacent_statutes__c</fullName>
+        <description>Adjacent statutes implicated by this project (e.g., ESA; CWA; NHPA; APA). Multiple values separated by semicolons. Each statute adds compound claim risk per PermitTEC analysis.</description>
+        <inlineHelpText>Adjacent statutes (ESA; CWA; NHPA; APA). Each one increases litigation compound claim risk.</inlineHelpText>
+        <label>Adjacent Statutes</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>2</visibleLines>
+    </fields>
+    <!-- CE Screening fields (Priority 2) -->
+    <fields>
+        <fullName>nepa_applicant_naics__c</fullName>
+        <description>Six-digit NAICS code of the project sponsor's primary business activity. Used by the CE Screener as a secondary signal to route to the correct agency CE namespace and apply confidence modifiers (NAICS 211/212 → Low confidence). Not a primary CE classifier.</description>
+        <inlineHelpText>Applicant NAICS code (6 digits). Used to route CE namespace and flag high-risk industries.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Applicant NAICS Code</label>
+        <length>6</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <!-- Provenance fields (CEQ Standard v1.2 - required on all entities) -->
+    <fields>
+        <fullName>nepa_data_record_version__c</fullName>
+        <description>The version of the record, for tracking updates or changes to the data.</description>
+        <inlineHelpText>Version of this record for data exchange tracking.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Record Version</label>
+        <length>50</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_agency__c</fullName>
+        <description>The name of the agency or organization that provided the data.</description>
+        <inlineHelpText>Agency or organization that provided this data.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Source Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_system__c</fullName>
+        <description>The system or database where the data originally came from.</description>
+        <inlineHelpText>Source system or database for this record.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Source System</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_record_owner_agency__c</fullName>
+        <description>The agency responsible for maintaining or owning this record.</description>
+        <inlineHelpText>Agency responsible for owning and maintaining this record.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Record Owner Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_retrieved_timestamp__c</fullName>
+        <description>The date and time when this record was retrieved from its source.</description>
+        <inlineHelpText>Date and time this record was retrieved from its source system.</inlineHelpText>
+        <label>Retrieved Timestamp</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+</CustomObject>

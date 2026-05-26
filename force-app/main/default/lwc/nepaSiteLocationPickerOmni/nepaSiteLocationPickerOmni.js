@@ -139,7 +139,11 @@ export default class NepaSiteLocationPickerOmni extends OmniscriptBaseMixin(Ligh
         if (this.lngFieldName) update[this.lngFieldName] = data.lng;
 
         if (Object.keys(update).length > 0) {
-            this.omniUpdateDataJson(update);
+            if (typeof this.omniUpdateDataJson === 'function') {
+                this.omniUpdateDataJson(update);
+            } else {
+                this.dispatchEvent(new CustomEvent('locationchange', { detail: update, bubbles: true, composed: true }));
+            }
         }
 
         this._showToast('Success', 'Site location captured.', 'success');

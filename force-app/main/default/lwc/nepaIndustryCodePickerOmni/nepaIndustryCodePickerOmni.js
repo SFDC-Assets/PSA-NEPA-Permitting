@@ -209,7 +209,9 @@ export default class NepaIndustryCodePickerOmni extends OmniscriptBaseMixin(
     if (this.industryFieldName) dataUpdate[this.industryFieldName] = this._industry || "";
     if (Object.keys(dataUpdate).length === 0) return;
     if (DEBUG) console.log(CLASS_NAME, "_updateOmniScriptData", dataUpdate);
-    this.omniUpdateDataJson(dataUpdate);
+    if (typeof this.omniUpdateDataJson === 'function') {
+      this.omniUpdateDataJson(dataUpdate);
+    }
   }
 
   handleSectorChange(event) {

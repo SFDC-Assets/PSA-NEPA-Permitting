@@ -1,0 +1,624 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <fullName>nepa_completion_date__c</fullName>
+        <description>Conclusion date (may be aggregated from a related case event for the process, as defined by the agency).</description>
+        <inlineHelpText>Conclusion date (may be aggregated from a related case event for the process, as defined by the agency).</inlineHelpText>
+        <label>Completion Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>nepa_federal_unique_id__c</fullName>
+        <caseSensitive>false</caseSensitive>
+        <description>Federal Unique ID for this process. Recommend UUID format for global uniqueness.</description>
+        <externalId>true</externalId>
+        <label>Federal Unique Id</label>
+        <length>36</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>true</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_joint_lead_agency__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Joint lead agency, if applicable.</description>
+        <inlineHelpText>Joint lead agency, if applicable.</inlineHelpText>
+        <label>Joint Lead Agency</label>
+        <referenceTo>Account</referenceTo>
+        <relationshipLabel>Individual Applications</relationshipLabel>
+        <relationshipName>NEPA_Applications</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_process_outcome__c</fullName>
+        <description>Result, if applicable (e.g., Record of Decision (ROD), permit issuance).</description>
+        <inlineHelpText>Result, if applicable (e.g., Record of Decision (ROD), permit issuance).</inlineHelpText>
+        <label>Process Outcome</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>TextArea</type>
+    </fields>
+    <fields>
+        <fullName>nepa_process_stage__c</fullName>
+        <description>Current stage of process narrative; may be derived from the last case event with this Process ID.</description>
+        <externalId>false</externalId>
+        <inlineHelpText>Current stage of process narrative; may be derived from the last case event with this Process ID.</inlineHelpText>
+        <label>Process Stage</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_public_comment_period_end_date__c</fullName>
+        <description>End date and time of public comment period.</description>
+        <inlineHelpText>End date and time of public comment period.</inlineHelpText>
+        <label>Public Comment Period End Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>nepa_public_comment_period_start__c</fullName>
+        <description>Start date and time of public comment period.</description>
+        <inlineHelpText>Start date and time of public comment period.</inlineHelpText>
+        <label>Public Comment Period Start</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>nepa_purpose_need__c</fullName>
+        <description>Optional purpose and need of the process.</description>
+        <inlineHelpText>Optional purpose and need of the process.</inlineHelpText>
+        <label>Purpose and Need</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_related_project__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Reference to Project ID of parent project.</description>
+        <inlineHelpText>Reference to Project ID of parent project.</inlineHelpText>
+        <label>Related Project</label>
+        <referenceTo>Program</referenceTo>
+        <relationshipLabel>Individual Applications</relationshipLabel>
+        <relationshipName>Individual_Applications</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_start_date__c</fullName>
+        <description>Initiation date (may be aggregated from a related case event for the process).</description>
+        <inlineHelpText>Initiation date (may be aggregated from a related case event for the process).</inlineHelpText>
+        <label>Start Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </fields>
+    <!-- CEQ Standard v1.2 additions -->
+    <fields>
+        <fullName>nepa_review_type__c</fullName>
+        <description>Level of NEPA review or other permit or authorization (Process Type per CEQ standard). For reference see Federal Environmental Review and Authorization Inventory.</description>
+        <inlineHelpText>Level of NEPA review: EIS, EA, CE, or Other Authorization.</inlineHelpText>
+        <label>NEPA Review Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>EIS</fullName>
+                    <default>false</default>
+                    <label>EIS</label>
+                </value>
+                <value>
+                    <fullName>EA</fullName>
+                    <default>false</default>
+                    <label>EA</label>
+                </value>
+                <value>
+                    <fullName>CE</fullName>
+                    <default>false</default>
+                    <label>CE</label>
+                </value>
+                <value>
+                    <fullName>Other Authorization</fullName>
+                    <default>false</default>
+                    <label>Other Authorization</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_process_status__c</fullName>
+        <description>Structured status of the NEPA review process per CEQ standard. Use Process Stage for narrative description.</description>
+        <inlineHelpText>Structured status: planned, pre-application, in progress, paused, completed, or cancelled.</inlineHelpText>
+        <label>Process Status</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>planned</fullName>
+                    <default>false</default>
+                    <label>planned</label>
+                </value>
+                <value>
+                    <fullName>pre-application</fullName>
+                    <default>false</default>
+                    <label>pre-application</label>
+                </value>
+                <value>
+                    <fullName>in progress</fullName>
+                    <default>false</default>
+                    <label>in progress</label>
+                </value>
+                <value>
+                    <fullName>paused</fullName>
+                    <default>false</default>
+                    <label>paused</label>
+                </value>
+                <value>
+                    <fullName>completed</fullName>
+                    <default>false</default>
+                    <label>completed</label>
+                </value>
+                <value>
+                    <fullName>cancelled</fullName>
+                    <default>false</default>
+                    <label>cancelled</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_agency_id__c</fullName>
+        <description>Process-specific ID assigned by the agency, distinct from the Federal Unique ID.</description>
+        <inlineHelpText>Agency-assigned process ID (distinct from the Federal Unique ID).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Agency Process ID</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_process_code__c</fullName>
+        <description>Code identifying the process instance (e.g., the categorical exclusion code pursuant to which the determination was made).</description>
+        <inlineHelpText>Short code identifying this process instance (e.g., CE code).</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Process Code</label>
+        <length>50</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_description__c</fullName>
+        <description>Optional description of the process, distinct from the project description.</description>
+        <inlineHelpText>Optional description of the process (distinct from project description).</inlineHelpText>
+        <label>Process Description</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>5</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_parent_process__c</fullName>
+        <deleteConstraint>SetNull</deleteConstraint>
+        <description>Reference to Process ID of parent process (e.g., an earlier NEPA process that resulted in a programmatic analysis the agency is tiering from).</description>
+        <inlineHelpText>Parent process for nested or tiered NEPA reviews.</inlineHelpText>
+        <label>Parent Process</label>
+        <referenceTo>IndividualApplication</referenceTo>
+        <relationshipLabel>Child Processes</relationshipLabel>
+        <relationshipName>Child_Processes</relationshipName>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Lookup</type>
+    </fields>
+    <!-- Phase 1 Risk Intelligence fields -->
+    <fields>
+        <fullName>nepa_risk_score__c</fullName>
+        <description>Composite litigation risk score (0-100) calculated from review type, lead agency litigation rate, circuit, and project sector. Recalculated by Flow on create/update.</description>
+        <inlineHelpText>Composite risk score 0–100. Higher = greater litigation exposure based on historical PermitTEC patterns.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Litigation Risk Score</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>1</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_risk_tier__c</fullName>
+        <description>Human-readable litigation risk tier derived from nepa_risk_score__c. Low (0-24), Moderate (25-49), High (50-74), Very High (75-100).</description>
+        <inlineHelpText>Risk tier: Low / Moderate / High / Very High.</inlineHelpText>
+        <label>Risk Tier</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>Low</fullName>
+                    <default>false</default>
+                    <label>Low</label>
+                </value>
+                <value>
+                    <fullName>Moderate</fullName>
+                    <default>false</default>
+                    <label>Moderate</label>
+                </value>
+                <value>
+                    <fullName>High</fullName>
+                    <default>false</default>
+                    <label>High</label>
+                </value>
+                <value>
+                    <fullName>Very High</fullName>
+                    <default>false</default>
+                    <label>Very High</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_risk_score_factors__c</fullName>
+        <description>Semicolon-delimited list of contributing risk factor labels and their point values, written by the risk scoring Flow.</description>
+        <inlineHelpText>Factors that contributed to the risk score (e.g., Review Type: EIS +40; Agency: Forest Service +15).</inlineHelpText>
+        <label>Risk Score Factors</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_risk_score_updated__c</fullName>
+        <description>Timestamp of the last risk score calculation. Use to identify stale scores when metadata weights are updated.</description>
+        <inlineHelpText>When the risk score was last calculated.</inlineHelpText>
+        <label>Risk Score Updated</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>nepa_predicted_challenge_grounds__c</fullName>
+        <description>Semicolon-delimited list of predicted NEPA challenge grounds ordered by likelihood, derived from project attributes and PermitTEC patterns.</description>
+        <inlineHelpText>Predicted challenge grounds (e.g., EIS/EA Inadequacy; Failure to Supplement).</inlineHelpText>
+        <label>Predicted Challenge Grounds</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_challenge_prediction_notes__c</fullName>
+        <description>Plain-language explanation of each predicted challenge ground and the attributes that triggered it.</description>
+        <inlineHelpText>Why each challenge ground was predicted based on this process's attributes.</inlineHelpText>
+        <label>Challenge Prediction Notes</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>4</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_defensibility_score__c</fullName>
+        <description>Percentage (0-100) of expected administrative record elements present for this process type. Recalculated when documents, engagements, or timeline events change.</description>
+        <inlineHelpText>Record completeness score: percentage of required documents and milestones present.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Defensibility Score</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>1</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_defensibility_gaps__c</fullName>
+        <description>Semicolon-delimited list of missing record elements detected by the Defensibility Gap Flow (e.g., ROD Missing; No Public Engagement Events).</description>
+        <inlineHelpText>Missing record elements that could create defensibility risk.</inlineHelpText>
+        <label>Defensibility Gaps</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_defensibility_updated__c</fullName>
+        <description>Timestamp of the last defensibility gap check.</description>
+        <inlineHelpText>When the defensibility gaps were last evaluated.</inlineHelpText>
+        <label>Defensibility Updated</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <!-- Priority 6: Workflow Orchestration fields -->
+    <fields>
+        <fullName>nepa_last_stage_transition__c</fullName>
+        <description>Timestamp of the most recent nepa_process_stage__c change. Set by the NEPA_Stage_Gate Flow on every stage transition. Used by the Timeline Risk Scorer (Priority 4) to compute days-in-stage.</description>
+        <inlineHelpText>When the process last advanced to a new stage. Updated automatically by Flow.</inlineHelpText>
+        <label>Last Stage Transition</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>nepa_target_completion_date__c</fullName>
+        <description>Target completion date set at Action Plan creation based on review type default durations (CE: 30 days, EA: 180 days, EIS: 730 days). May be updated by NEPA coordinator.</description>
+        <inlineHelpText>Target completion date (set at process initiation based on review type).</inlineHelpText>
+        <label>Target Completion Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </fields>
+    <!-- Priority 4: Timeline Risk fields -->
+    <fields>
+        <fullName>nepa_timeline_risk_tier__c</fullName>
+        <description>Current timeline risk tier derived from days in current stage vs. review-type baseline. On Track: within expected range; At Risk: 10-25% over baseline; Stalled: 25-50% over baseline; Overdue: 50%+ over baseline. Written by NEPA_Timeline_Risk_Assessor Flow.</description>
+        <inlineHelpText>Timeline risk classification for this process. Updated automatically by Flow when stage or status changes.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Timeline Risk Tier</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value>
+                    <fullName>On Track</fullName>
+                    <default>false</default>
+                    <label>On Track</label>
+                </value>
+                <value>
+                    <fullName>At Risk</fullName>
+                    <default>false</default>
+                    <label>At Risk</label>
+                </value>
+                <value>
+                    <fullName>Stalled</fullName>
+                    <default>false</default>
+                    <label>Stalled</label>
+                </value>
+                <value>
+                    <fullName>Overdue</fullName>
+                    <default>false</default>
+                    <label>Overdue</label>
+                </value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_estimated_completion_date__c</fullName>
+        <description>Projected completion date based on current process stage, days-in-stage, and review-type baseline. Calculated by NEPA_Timeline_Risk_Assessor Flow. Updated whenever stage or risk tier changes.</description>
+        <inlineHelpText>Projected completion date based on current pace and review type baseline. Updated automatically.</inlineHelpText>
+        <label>Estimated Completion Date</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Date</type>
+    </fields>
+    <fields>
+        <fullName>nepa_days_in_current_stage__c</fullName>
+        <description>Formula field: number of calendar days elapsed since nepa_last_stage_transition__c (or nepa_start_date__c if no transition recorded). Used by NEPA_Timeline_Risk_Assessor to determine risk tier.</description>
+        <inlineHelpText>Days elapsed in the current process stage. Recalculates daily.</inlineHelpText>
+        <externalId>false</externalId>
+        <formula>IF(
+  NOT(ISBLANK(nepa_last_stage_transition__c)),
+  TODAY() - DATEVALUE(nepa_last_stage_transition__c),
+  IF(
+    NOT(ISBLANK(nepa_start_date__c)),
+    TODAY() - nepa_start_date__c,
+    0
+  )
+)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Days in Current Stage</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <!-- Priority 9: Administrative Record Completeness fields -->
+    <fields>
+        <fullName>nepa_record_completeness__c</fullName>
+        <description>Percentage (0-100) of required documents present at Approved or Published status for this process's review type. Recalculated by NEPA_Administrative_Record_Checker Flow whenever a ContentVersion record is created or updated.</description>
+        <inlineHelpText>Administrative record completeness: percentage of required documents present. 100% required before final stage gates.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Record Completeness</label>
+        <precision>5</precision>
+        <required>false</required>
+        <scale>1</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_missing_documents__c</fullName>
+        <description>Semicolon-delimited list of required document types not yet present at Approved or Published status. Written by NEPA_Administrative_Record_Checker Flow. Used in stage-gate blocking logic and displayed on the record page.</description>
+        <inlineHelpText>Required documents not yet uploaded or approved. Blocks final stage gates when populated.</inlineHelpText>
+        <label>Missing Documents</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>nepa_record_completeness_updated__c</fullName>
+        <description>Timestamp of the last completeness score recalculation.</description>
+        <inlineHelpText>When the record completeness score was last recalculated.</inlineHelpText>
+        <label>Completeness Updated</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <!-- CE Screening fields (Priority 2: Automated CE Screening) -->
+    <fields>
+        <fullName>nepa_action_type__c</fullName>
+        <description>Primary action verb describing what the applicant proposes to do. Primary discriminator for Tier 2 CE code selection when sector+type is ambiguous.</description>
+        <inlineHelpText>What is the primary nature of the proposed action?</inlineHelpText>
+        <label>Action Type</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>Construct New</fullName><default>false</default><label>Construct New</label></value>
+                <value><fullName>Modify Existing</fullName><default>false</default><label>Modify Existing</label></value>
+                <value><fullName>Renew or Extend Existing</fullName><default>false</default><label>Renew or Extend Existing</label></value>
+                <value><fullName>Abandon or Decommission</fullName><default>false</default><label>Abandon or Decommission</label></value>
+                <value><fullName>Operate or Maintain Existing</fullName><default>false</default><label>Operate or Maintain Existing</label></value>
+                <value><fullName>Research or Study</fullName><default>false</default><label>Research or Study</label></value>
+                <value><fullName>Other</fullName><default>false</default><label>Other</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_disturbance_acres__c</fullName>
+        <description>Total estimated surface disturbance in acres. Used by the CE Screener to enforce per-code acreage thresholds (e.g., EPA Sec.390(b)(1) ≤5 acres). Exceedance downgrades CE to EA.</description>
+        <inlineHelpText>Estimated total surface disturbance (acres). Required for CE acreage threshold checks.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Disturbance Acres</label>
+        <precision>10</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_regulatory_citation__c</fullName>
+        <description>Regulatory citation the applicant believes applies (e.g., 10 CFR 1021 Appendix B, B1.3). Pre-filled by CE Screener; editable by permit manager.</description>
+        <inlineHelpText>Regulatory citation for the applicable CE or review type.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Regulatory Citation</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_screening_confidence__c</fullName>
+        <description>CE Screener confidence in the recommended review type classification. High = dominant pattern with ≥80% corpus support. Low = ambiguous or extraordinary circumstances present — requires SME review.</description>
+        <inlineHelpText>Screener confidence: High / Medium-High / Medium / Low. Low requires SME review before routing.</inlineHelpText>
+        <label>Screening Confidence</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+        <valueSet>
+            <restricted>true</restricted>
+            <valueSetDefinition>
+                <sorted>false</sorted>
+                <value><fullName>High</fullName><default>false</default><label>High</label></value>
+                <value><fullName>Medium-High</fullName><default>false</default><label>Medium-High</label></value>
+                <value><fullName>Medium</fullName><default>false</default><label>Medium</label></value>
+                <value><fullName>Low</fullName><default>false</default><label>Low</label></value>
+            </valueSetDefinition>
+        </valueSet>
+    </fields>
+    <fields>
+        <fullName>nepa_extraordinary_circumstances__c</fullName>
+        <description>Semicolon-delimited list of GIS-flagged extraordinary circumstances present at the project site (e.g., ESA Critical Habitat; Wetlands; Tribal Lands; Floodplain). Any value disqualifies CE and downgrades to EA per CEQ regulations.</description>
+        <inlineHelpText>GIS-flagged extraordinary circumstances (e.g., ESA Critical Habitat; Wetlands). Any flag disqualifies CE.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Extraordinary Circumstances</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_classification_basis__c</fullName>
+        <description>Audit trail of which CE Screener rule(s) fired, the matched tier, agency, and any override conditions applied. Written by the NEPA_CE_Screener Flow. Retained in the administrative record.</description>
+        <inlineHelpText>Screener audit trail: which rule matched and why. Retained for the administrative record.</inlineHelpText>
+        <label>Classification Basis</label>
+        <length>32768</length>
+        <trackHistory>false</trackHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <!-- Provenance fields (CEQ Standard v1.2 - required on all entities) -->
+    <fields>
+        <fullName>nepa_data_record_version__c</fullName>
+        <description>The version of the record, for tracking updates or changes to the data.</description>
+        <inlineHelpText>Version of this record for data exchange tracking.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Record Version</label>
+        <length>50</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_agency__c</fullName>
+        <description>The name of the agency or organization that provided the data.</description>
+        <inlineHelpText>Agency or organization that provided this data.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Source Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_system__c</fullName>
+        <description>The system or database where the data originally came from.</description>
+        <inlineHelpText>Source system or database for this record.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Data Source System</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_record_owner_agency__c</fullName>
+        <description>The agency responsible for maintaining or owning this record.</description>
+        <inlineHelpText>Agency responsible for owning and maintaining this record.</inlineHelpText>
+        <externalId>false</externalId>
+        <label>Record Owner Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_retrieved_timestamp__c</fullName>
+        <description>The date and time when this record was retrieved from its source.</description>
+        <inlineHelpText>Date and time this record was retrieved from its source system.</inlineHelpText>
+        <label>Retrieved Timestamp</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+</CustomObject>
