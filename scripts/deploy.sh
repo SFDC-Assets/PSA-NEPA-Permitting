@@ -817,7 +817,25 @@ wait_jobs \
     "$_tmp_app"     "$_pid_app"
 rm -f "$_tmp_labels" "$_tmp_queues" "$_tmp_cmt" "$_tmp_bredm" "$_tmp_remote" "$_tmp_app"
 
-# ── parallel group B (after group A): Apex + ES defs — both independent ───────
+# ── phase 5b-data: DM rows + activation — must run before ESD deploy ──────────
+# ESD validation (Phase 5c) resolves <decisionTableName> references to active DM
+# version records. If no active version exists the deploy fails with "resource not
+# found". Load and activate DM rows here, after DM schemas (group A) but before
+# the ESD deploy in group B.
+if [[ "$DRY_RUN" == "false" ]]; then
+    phase_header "Phase 5b-data: BRE Decision Matrix rows + activation"
+    python3 scripts/load_decision_matrix_rows.py \
+        --org "$TARGET_ORG" \
+        --skip-existing \
+        --csv-dir decision_matrix_rows \
+        || echo "    WARNING: DM row load encountered errors — check output above"
+else
+    phase_header "Phase 5b-data: BRE Decision Matrix rows + activation (SKIPPED in --check)"
+    echo "    (skipped — dry-run mode; run: python3 scripts/load_decision_matrix_rows.py --org $TARGET_ORG --dry-run)"
+fi
+
+# ── parallel group B (after 5b-data): Apex + ES defs — both independent ───────
+# ESD deploy can now succeed because DMs have active versions from 5b-data above.
 echo ""
 echo "==> Parallel group B: Apex classes+triggers+permset chain  |  BRE Expression Set defs"
 
@@ -849,20 +867,8 @@ wait_jobs \
     "$_tmp_es"    "$_pid_es"
 rm -f "$_tmp_apex" "$_tmp_es"
 
-# ── phase 5b-data / 5c-activate / 5d / 5e — sequential data loads ─────────────
-# These must run after BRE DM schemas (group A) and ES defs (group B) complete.
-if [[ "$DRY_RUN" == "false" ]]; then
-    phase_header "Phase 5b-data: BRE Decision Matrix rows + activation"
-    python3 scripts/load_decision_matrix_rows.py \
-        --org "$TARGET_ORG" \
-        --skip-existing \
-        --csv-dir decision_matrix_rows \
-        || echo "    WARNING: DM row load encountered errors — check output above"
-else
-    phase_header "Phase 5b-data: BRE Decision Matrix rows + activation (SKIPPED in --check)"
-    echo "    (skipped — dry-run mode; run: python3 scripts/load_decision_matrix_rows.py --org $TARGET_ORG --dry-run)"
-fi
-
+# ── phase 5c-activate / 5d / 5e — sequential post-group-B data loads ──────────
+# ES activation must run after ESD deploy (group B). DM activation already done.
 if [[ "$DRY_RUN" == "false" ]]; then
     phase_header "Phase 5c-activate: BRE Expression Set activation"
     python3 scripts/load_decision_matrix_rows.py \

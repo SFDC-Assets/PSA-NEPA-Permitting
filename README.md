@@ -78,6 +78,8 @@ An agency can spin up a Salesforce sandbox, deploy this MIT-licensed accelerator
 
 **Prerequisites:**
 - Salesforce org with **Agentforce for Public Sector** (Foundations or Advanced). A free APS developer org is available at the [APS trial org setup guide](https://help.salesforce.com/s/articleView?id=ind.psc_create_trial_org.htm&language=en_US&type=5).
+- **Salesforce Path enabled** — Setup → User Interface → Path Settings → Enable
+- **Agentforce enabled** — Setup → Einstein Generative AI → Agentforce Studio → Agentforce Agents → turn on Agentforce
 - **Salesforce CLI v2** (`sf`) — install from [developer.salesforce.com/tools/salesforcecli](https://developer.salesforce.com/tools/salesforcecli)
 - **Git**, **jq**, and **Python 3** — see [docs/QUICKSTART.md](docs/QUICKSTART.md) Prerequisites table for install commands
 - System Administrator profile in the target org
@@ -381,8 +383,6 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
 **`nepa_process_stage__c` field type and Salesforce Path:** This field was converted from Text to Picklist (18 canonical values spanning CE/EA/EIS pathways). A `PathAssistant` (`IndividualApplication_NEPA_Process_Path`) provides stage-specific Key Fields and guidance text for all 18 stages. **Deploy prerequisite:** Salesforce blocks a Text→Picklist field type change via API when records exist in the org. Before deploying the PathAssistant and updated FlexiPage, convert `nepa_process_stage__c` manually in Setup → Object Manager → IndividualApplication → Fields and Relationships. See QUICKSTART.md Step 4 for the full sequence.
 
 **BRE row loading and activation:** `deploy.sh` Phase 5b-data automatically loads `CalculationMatrixRow` records from the CSVs in `decision_matrix_rows/` and activates each `DecisionMatrixDefinitionVersion` and `ExpressionSetDefinitionVersion` via the Salesforce Tooling API. No manual UI steps are required. If the phase reports errors, re-run: `python3 scripts/load_decision_matrix_rows.py --org <alias> --activate-es`.
-
-**ROD/FONSI record type setup:** After deploying, go to Setup → Object Manager → IndividualApplication → Record Types → Individual Application → Edit → `nepa_review_type__c` and add ROD and FONSI to the available values. This is required for the `NEPA_Close_Administrative_Record` flow trigger to fire.
 
 ---
 

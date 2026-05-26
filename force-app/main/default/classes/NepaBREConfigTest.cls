@@ -871,7 +871,7 @@ private class NepaBREConfigTest {
             WHERE Active__c = true
         ];
         List<String> violations = new List<String>();
-        Set<String> validReviewTypes = new Set<String>{ 'CE', 'EA', 'EIS' };
+        Set<String> validReviewTypes = new Set<String>{ 'CE', 'EA', 'EIS', 'ALL' };
         for (NEPA_Required_Document__mdt r : records) {
             if (!validReviewTypes.contains(r.Review_Type__c)) {
                 violations.add(r.DeveloperName + ': invalid Review_Type__c "' + r.Review_Type__c + '"');

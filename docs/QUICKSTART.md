@@ -42,6 +42,8 @@ The deploy script automates nearly everything. The following steps still require
 | Requirement | Notes |
 |---|---|
 | Salesforce org with **Agentforce for Public Sector** | See Step 0 above. Use the [APS trial org setup guide](https://help.salesforce.com/s/articleView?id=ind.psc_create_trial_org.htm&language=en_US&type=5) if you don't have one. Foundations or Advanced license required. |
+| **Salesforce Path enabled** | Setup → User Interface → Path Settings → click **Enable**. Required for the `IndividualApplication_NEPA_Process_Path` PathAssistant that guides coordinators through CE/EA/EIS stages. |
+| **Agentforce enabled** | Setup → Einstein Generative AI → Agentforce Studio → Agentforce Agents → turn on **Agentforce**. Required for `NEPA_Comment_Triage` and `NEPA_PreApp_Screener` agent deployment and activation. |
 | **Salesforce CLI v2** (`sf`) | Install from [developer.salesforce.com/tools/salesforcecli](https://developer.salesforce.com/tools/salesforcecli). Verify with `sf --version`. |
 | **jq** | JSON formatter used by `deploy.sh` to parse deploy results. Install with `brew install jq` (Mac) or `apt install jq` (Linux). If missing, the script will exit with `jq: command not found`. |
 | **Python 3** | Required for CE Library data load (`scripts/load_ce_library.py`). Verify with `python3 --version`. |
@@ -163,7 +165,7 @@ The script deploys in dependency order:
 | 8d | `RunLocalTests` (all Apex tests, after flows and permission set are live) |
 | 10–16 | Report types, reports, dashboards, layouts, LWC, FlexiPages (19 record and home pages), Path Assistant (`IndividualApplication_NEPA_Process_Path`), Lightning app |
 
-Expected automated deploy time: ~25 minutes. Add ~10 minutes for manual post-deploy steps (flow activation, field type conversion, record type setup) documented in DEVELOPER_GUIDE.md Post-Deploy Checklist. BRE row loading and activation are handled automatically during deploy. **Total end-to-end: ~35 minutes.**
+Expected automated deploy time: ~25 minutes. Add ~10 minutes for manual post-deploy steps (flow activation, field type conversion) documented in DEVELOPER_GUIDE.md Post-Deploy Checklist. BRE row loading and activation are handled automatically during deploy. **Total end-to-end: ~35 minutes.**
 
 After the deploy completes, the script prompts you to load the Carrie Placer Mine demo data:
 

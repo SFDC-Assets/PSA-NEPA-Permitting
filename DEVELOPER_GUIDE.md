@@ -36,7 +36,8 @@ These are first-org-deploy-only steps. Skip if you've deployed before.
 | Step | Where | Why |
 |---|---|---|
 | Convert `nepa_process_stage__c` to Picklist | Setup → Object Manager → IndividualApplication → Fields → `nepa_process_stage__c` → Edit → change Type to Picklist → Save, then re-deploy the field | Salesforce does not allow the Metadata API to change a deployed Text field to Picklist on a live org. Must be done in UI first-time. |
-| Add `ROD` and `FONSI` record types | Setup → Object Manager → IndividualApplication → Record Types → New | Required by `NEPA_Close_Administrative_Record` flow entry condition. |
+| Enable Salesforce Path | Setup → User Interface → Path Settings → click **Enable** | Required for the `IndividualApplication_NEPA_Process_Path` PathAssistant. If Path is not enabled, the Path component on the IA record page renders blank. |
+| Enable Agentforce | Setup → Einstein Generative AI → Agentforce Studio → Agentforce Agents → turn on **Agentforce** | Required before deploying or activating `NEPA_Comment_Triage` and `NEPA_PreApp_Screener`. Agent publish will fail if the feature is off. |
 
 ---
 

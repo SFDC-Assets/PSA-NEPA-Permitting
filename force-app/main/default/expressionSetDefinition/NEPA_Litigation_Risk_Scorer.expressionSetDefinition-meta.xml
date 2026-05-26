@@ -93,7 +93,7 @@
             <actionType>AssignParameterValues</actionType>
             <assignment>
                 <assignedParameter>AIConfidence</assignedParameter>
-                <expression>40 + ( IF( VALUE(NEPA_Risk_Agency__MatchScore) &gt;= 1, 20, 0 ) ) + ( IF( VALUE(NEPA_Risk_Circuit__MatchScore) &gt;= 1, 20, 0 ) ) + ( IF( VALUE(NEPA_Risk_SectorCircuit__CaseCount) &gt;= 3, 20, 0 ) )</expression>
+                <expression>40 + ( IF( NEPA_Risk_Agency__MatchScore &gt;= 1, 20, 0 ) ) + ( IF( NEPA_Risk_Circuit__MatchScore &gt;= 1, 20, 0 ) ) + ( IF( NEPA_Risk_SectorCircuit__CaseCount &gt;= 3, 20, 0 ) )</expression>
             </assignment>
             <label>Compute AI Confidence</label>
             <name>ComputeAIConfidence</name>
@@ -108,7 +108,7 @@
             <actionType>AssignParameterValues</actionType>
             <assignment>
                 <assignedParameter>V2Terms</assignedParameter>
-                <expression>( 0.15 * IF(ScopingOverrunFlag, 1, 0) + 0.10 * MIN(ScopingOverrunMonths / 48, 1.0) ) * 100 + ( 0.20 * (1 - VALUE(NEPA_Risk_SectorCircuit__WinRatePct) / 100) * IF(VALUE(NEPA_Risk_SectorCircuit__CaseCount) &gt;= 3, 1.0, 0.5) ) * 100</expression>
+                <expression>( 0.15 * IF(ScopingOverrunFlag, 1, 0) + 0.10 * MIN(ScopingOverrunMonths / 48, 1.0) ) * 100 + ( 0.20 * (1 - NEPA_Risk_SectorCircuit__WinRatePct / 100) * IF(NEPA_Risk_SectorCircuit__CaseCount &gt;= 3, 1.0, 0.5) ) * 100</expression>
             </assignment>
             <label>Compute V2 Composite Terms</label>
             <name>ComputeV2Terms</name>
@@ -183,7 +183,7 @@
             <actionType>AssignParameterValues</actionType>
             <assignment>
                 <assignedParameter>RawScore</assignedParameter>
-                <expression>VALUE(NEPA_Risk_ReviewType__Points) + VALUE(NEPA_Risk_Agency__Points) + VALUE(NEPA_Risk_Circuit__Points) + StatutePoints + ChallengeDelta + V2Terms</expression>
+                <expression>NEPA_Risk_ReviewType__Points + NEPA_Risk_Agency__Points + NEPA_Risk_Circuit__Points + StatutePoints + ChallengeDelta + V2Terms</expression>
             </assignment>
             <label>Sum Risk Components</label>
             <name>SumRiskComponents</name>
