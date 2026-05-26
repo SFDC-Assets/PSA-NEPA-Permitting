@@ -564,13 +564,8 @@ except Exception:
     sys.exit(1)
 " 2>&1) && { echo "$result"; return 0; } || true
     echo "$result"
-    # The Required_Permits__r related-list field on IndividualApplication-NEPA Process Layout
-    # fails on first-pass because the Metadata API relationship-name cache has a short lag
-    # after the master-detail field (nepa_process__c) lands in Phase 2.  A single retry
-    # ~30 s later reliably resolves it.  The layout is allow-failure; warn and continue if
-    # the retry also fails.
-    echo "    INFO: layout deploy failed — retrying once after 30s (Required_Permits__r cache lag)"
-    sleep 30
+    echo "    INFO: layout deploy failed — retrying once after 10s"
+    sleep 10
     deploy "layouts (retry)" allow-failure \
         --source-dir force-app/main/default/layouts \
         --target-org "$TARGET_ORG"
@@ -605,17 +600,21 @@ phase_15a_path_assistants() {
 
 phase_15b_agents() {
     phase_header "Phase 15b: Agentforce Agent Script bundles"
+    # Agent configuration specs live in force-app/main/default/agents/ as .agent files.
+    # These are human-readable config specs, not Salesforce Agent Script (.agent) syntax —
+    # they cannot be compiled and published via "sf agent publish authoring-bundle".
+    # Agentforce agents (NEPA_Comment_Triage, NEPA_PreApp_Screener) must be created
+    # manually in Agentforce Studio or via Agent Builder using the specs as a guide.
+    # See docs/AGENT_SETUP.md for step-by-step setup instructions.
     if [[ -d force-app/main/default/agents ]] && \
        [[ -n "$(find force-app/main/default/agents -name '*.agent' 2>/dev/null)" ]]; then
         for agent_file in force-app/main/default/agents/*/*.agent; do
             local agent_dir agent_name
             agent_dir=$(dirname "$agent_file")
             agent_name=$(basename "$agent_dir")
-            echo "    Publishing agent bundle: $agent_name"
-            sf agent publish authoring-bundle \
-                --api-name "$agent_name" \
-                --target-org "$TARGET_ORG" \
-                --json || echo "    WARN: agent publish failed for $agent_name — check org agent user and action targets"
+            echo "    INFO: Agent spec found: $agent_name"
+            echo "          See force-app/main/default/agents/$agent_name/$agent_name.agent"
+            echo "          Create this agent manually in Agentforce Studio."
         done
     else
         echo "    (no Agent Script bundles to deploy)"
@@ -887,12 +886,13 @@ if [[ "$DRY_RUN" == "false" ]]; then
 import sys, json
 try:
     d = json.load(sys.stdin)
-    results = d.get('result', {}).get('results', [])
-    ok  = sum(1 for r in results if not r.get('errors'))
-    bad = sum(1 for r in results if r.get('errors'))
+    r = d.get('result', [])
+    results = r if isinstance(r, list) else r.get('results', [])
+    ok  = sum(1 for x in results if not x.get('errors'))
+    bad = sum(1 for x in results if x.get('errors'))
     print('    [Imported] RegulatoryAuthorizationType: {} succeeded, {} failed'.format(ok, bad))
-    for r in results:
-        for e in r.get('errors', []):
+    for x in results:
+        for e in x.get('errors', []):
             if 'duplicate' not in str(e).lower():
                 print('    WARN:', e)
 except Exception as ex:
@@ -904,25 +904,58 @@ except Exception as ex:
 
     if [[ -f data/seed/regulatory_code_seed.json ]]; then
         echo "    Importing RegulatoryCode records (24 statutory text entries)..."
-        sf data import tree \
-            --files data/seed/regulatory_code_seed.json \
-            --target-org "$TARGET_ORG" \
-            --json 2>/dev/null \
-            | python3 -c "
+        # RegulatoryCode requires RegulatoryAuthorityId (lookup to RegulatoryAuthority, not Account).
+        # Create or find a NEPA authority record first, then inject its ID into the seed JSON.
+        NEPA_AUTH_ID=$(sf data query \
+            --query "SELECT Id FROM RegulatoryAuthority WHERE Name = 'U.S. Federal Government (NEPA)' LIMIT 1" \
+            --target-org "$TARGET_ORG" --json 2>/dev/null \
+            | python3 -c "import sys,json; d=json.load(sys.stdin); recs=d.get('result',{}).get('records',[]); print(recs[0]['Id'] if recs else '')" 2>/dev/null)
+        if [[ -z "$NEPA_AUTH_ID" ]]; then
+            NEPA_AUTH_ID=$(sf data create record \
+                --sobject RegulatoryAuthority \
+                --values "Name='U.S. Federal Government (NEPA)'" \
+                --target-org "$TARGET_ORG" --json 2>/dev/null \
+                | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('result',{}).get('id',''))" 2>/dev/null)
+        fi
+        if [[ -n "$NEPA_AUTH_ID" ]]; then
+            python3 -c "
+import json, sys
+auth_id = sys.argv[1]
+with open('data/seed/regulatory_code_seed.json') as f:
+    d = json.load(f)
+for rec in d.get('records', []):
+    rec['RegulatoryAuthorityId'] = auth_id
+import tempfile, os
+tmp = 'data/seed/regulatory_code_seed_patched.json'
+with open(tmp, 'w') as f:
+    json.dump(d, f)
+print(tmp)
+" "$NEPA_AUTH_ID" > /tmp/nepa_rc_patched_path.txt 2>/dev/null
+            RC_PATCHED=$(cat /tmp/nepa_rc_patched_path.txt 2>/dev/null)
+            sf data import tree \
+                --files "${RC_PATCHED:-data/seed/regulatory_code_seed.json}" \
+                --target-org "$TARGET_ORG" \
+                --json 2>/dev/null \
+                | python3 -c "
 import sys, json
 try:
     d = json.load(sys.stdin)
-    results = d.get('result', {}).get('results', [])
-    ok  = sum(1 for r in results if not r.get('errors'))
-    bad = sum(1 for r in results if r.get('errors'))
+    r = d.get('result', [])
+    results = r if isinstance(r, list) else r.get('results', [])
+    ok  = sum(1 for x in results if not x.get('errors'))
+    bad = sum(1 for x in results if x.get('errors'))
     print('    [Imported] RegulatoryCode: {} succeeded, {} failed'.format(ok, bad))
-    for r in results:
-        for e in r.get('errors', []):
+    for x in results:
+        for e in x.get('errors', []):
             if 'duplicate' not in str(e).lower():
                 print('    WARN:', e)
 except Exception as ex:
     print('    (could not parse import result):', ex)
 " 2>&1 || echo "    WARNING: RegulatoryCode import failed — non-blocking, continuing"
+            rm -f data/seed/regulatory_code_seed_patched.json /tmp/nepa_rc_patched_path.txt
+        else
+            echo "    WARNING: could not create RegulatoryAuthority — skipping RegulatoryCode import"
+        fi
     else
         echo "    (data/seed/regulatory_code_seed.json not found — skipping)"
     fi
@@ -1216,15 +1249,12 @@ else
     echo "    5c. Seed ServiceResource discipline values (GIS team assembly):"
     echo "       sf apex run --file demo/import_data/21_postload_discipline.apex --target-org $TARGET_ORG"
     echo ""
-    echo "    6. Agentforce agents — published automatically in Phase 15b above."
-    echo "       Publishing deploys the agent but does NOT activate it."
-    echo "       ACTION REQUIRED after smoke-testing each agent:"
-    echo "         sf agent activate --api-name NEPA_Comment_Triage --target-org $TARGET_ORG"
-    echo "         sf agent activate --api-name NEPA_PreApp_Screener --target-org $TARGET_ORG"
-    echo "       NEPA_PreApp_Screener is a Service Agent — verify the agent user exists first:"
-    echo "         sf org create agent-user --agent-api-name NEPA_PreApp_Screener --target-org $TARGET_ORG"
-    echo "       Preview before activation:"
-    echo "         sf agent preview start --api-name NEPA_PreApp_Screener --target-org $TARGET_ORG --simulate-actions"
+    echo "    6. Agentforce agents — MANUAL SETUP REQUIRED."
+    echo "       Agent configuration specs are in force-app/main/default/agents/."
+    echo "       These are human-readable config specs that must be created in Agentforce Studio."
+    echo "       See docs/AGENT_SETUP.md for step-by-step setup instructions for:"
+    echo "         - NEPA_Comment_Triage (Employee Agent — comment classification)"
+    echo "         - NEPA_PreApp_Screener (Service Agent — pre-application screening)"
     echo ""
     echo "    6b. OmniStudio — deployed automatically in Phase 8c above."
     echo "       Phase 8c handles the DRUpsertDetectedLayer two-step (globalKey patching)"

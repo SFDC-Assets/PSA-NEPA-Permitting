@@ -1,0 +1,334 @@
+config:
+  developer_name: "NEPA_PreApp_Screener"
+  agent_label: "NEPA Pre-Application Screening Assistant"
+  description: >
+    Agentforce Service Agent providing unauthenticated pre-application NEPA screening.
+    Accepts project description, sector, and location from a prospective applicant;
+    calls the NEPA CE Screener BRE and Permit Matrix to return the likely review pathway
+    (CE/EA/EIS), required federal permits, and estimated timeline. No PII is stored.
+    Results are preliminary estimates and do not constitute a formal agency determination.
+    Embedded in the NEPA_PreApp_Screener OmniScript via the osStepChartAgent LWC.
+  agent_type: "AgentforceServiceAgent"
+  default_agent_user: "nepa_preapp_agent@nepa.gov"
+
+variables:
+  # ── Applicant-provided inputs ────────────────────────────────────────────────
+  naics_code: mutable string = ""
+    label: "NAICS Code"
+  sector_key: mutable string = ""
+    label: "Sector Key"
+  project_description: mutable string = ""
+    label: "Project Description"
+  project_state: mutable string = ""
+    label: "Project State"
+
+  # ── Screening outputs ────────────────────────────────────────────────────────
+  review_type: mutable string = ""
+    label: "Recommended Review Type (CE/EA/EIS)"
+  ce_code: mutable string = ""
+    label: "CE Code (if applicable)"
+  confidence: mutable string = ""
+    label: "Screening Confidence Level"
+  classification_basis: mutable string = ""
+    label: "Classification Basis"
+  required_permits: mutable string = ""
+    label: "Required Federal Permits"
+  adjacent_reviews: mutable string = ""
+    label: "Adjacent Federal Reviews"
+  typical_timeline_months: mutable number = 0
+    label: "Typical Timeline (Months)"
+  eis_likelihood_pct: mutable number = 0
+    label: "EIS Likelihood Percentage"
+  lead_agency_key: mutable string = ""
+    label: "Lead Agency"
+  screening_complete: mutable boolean = False
+    label: "Screening Complete"
+  screening_error: mutable string = ""
+    label: "Screening Error"
+
+system:
+  messages:
+    welcome: >
+      Welcome to the NEPA Pre-Application Screening Tool. I can help you understand
+      whether your federal project will likely need a Categorical Exclusion (CE),
+      Environmental Assessment (EA), or Environmental Impact Statement (EIS), along
+      with the permits typically required for your project type.
+    error: >
+      I encountered an issue running the screening. Please try again or contact the
+      lead agency directly for a formal pre-application consultation.
+  instructions: |
+    You are a NEPA pre-application screening assistant for federal environmental review.
+    Your role is to help prospective applicants understand the likely NEPA pathway,
+    required permits, and typical timeline for their proposed project.
+
+    CORE PRINCIPLES (non-negotiable):
+    1. Every result must include a clear disclaimer: "This is a preliminary estimate
+       only. It does not constitute a formal agency determination or legal advice."
+    2. Never request or store personally identifiable information (PII). Do not ask
+       for the applicant's name, address, Social Security number, or contact information.
+    3. If a project raises potential Environmental Justice concerns (low-income
+       communities, tribal lands, minority populations), always advise early consultation
+       with the lead agency and note EJ review requirements under Executive Order 12898.
+    4. You are an estimator, not a regulatory authority. Hedge appropriately.
+    5. Encourage applicants to contact the relevant lead agency for formal pre-application
+       consultation — especially for EA or EIS pathways.
+
+start_agent entry:
+  description: "Entry point: greet the applicant and begin intake"
+  reasoning:
+    instructions: ->
+      | Welcome! I'm the NEPA Pre-Application Screening Assistant.
+
+      | I can help you estimate whether your proposed federal project will require
+        a **Categorical Exclusion (CE)**, **Environmental Assessment (EA)**, or
+        **Environmental Impact Statement (EIS)** — and which federal permits are
+        typically involved.
+
+      | To get started, I'll need a brief description of your project, the project
+        location (state), and the project's industry sector.
+
+      | What type of project are you planning?
+    actions:
+      collect_description: @utils.setVariables
+        description: "Collect initial project description from the applicant"
+        with project_description = ...
+      go_intake: @utils.transition to @topic.sector_qualification
+        description: "Move to sector and NAICS qualification"
+
+topic sector_qualification:
+  description: "Collects sector, NAICS code, and state from the applicant. Normalizes inputs into the sector_key and naics_code variables required by the CE Screener BRE. Uses the nepaIndustryCodePicker results when available via the OmniScript; otherwise prompts the applicant."
+  system:
+    instructions: |
+      Your goal is to collect three pieces of information:
+      1. The project's industry sector (from the standard NEPA sector taxonomy:
+         Agriculture/Public Lands, Energy-Offshore, Energy-OilGas/Coal, Energy-Pipeline/LNG,
+         Energy-Renewables, Energy-Hydro/Transmission, Energy-Nuclear, Transportation-Land,
+         Transportation-Water, Water Resources, Materials/Mining, Military/Urban/Regulatory)
+      2. The NAICS code (6-digit preferred; 2-4 digit acceptable)
+      3. The project state
+
+      If the applicant is uncertain about sector, help them identify it from their
+      project description. Do not proceed to screening until sector_key is set.
+
+  actions:
+    qualify_sector:
+      description: "Validate and normalize the applicant-provided sector and NAICS code into the sector_key and naics_code required by the NEPA CE Screener BRE."
+      inputs:
+        inp_ProjectDescription: string
+          description: "Free-text project description from the applicant"
+        inp_NAICSCode: string
+          description: "NAICS code provided by applicant (may be partial)"
+        inp_Sector: string
+          description: "Industry sector provided or inferred from project description"
+        inp_ProjectState: string
+          description: "US state where the project is located"
+      outputs:
+        out_SectorKey: string
+          description: "Normalized sector key matching NEPA_Permit_Matrix__mdt.Sector__c values"
+          filter_from_agent: True
+        out_NAICSCode: string
+          description: "Validated NAICS code"
+          filter_from_agent: True
+        out_LeadAgencyKey: string
+          description: "Likely lead agency abbreviation based on sector/state"
+          filter_from_agent: True
+        out_ValidationPassed: boolean
+          description: "True when sector and NAICS are sufficient for screening"
+          filter_from_agent: True
+        out_ValidationMessage: string
+          description: "Guidance if inputs are insufficient"
+          filter_from_agent: True
+      target: "flow://NEPA_PreApp_Qualify_Sector"
+      include_in_progress_indicator: True
+      progress_indicator_message: "Validating project sector..."
+
+  reasoning:
+    instructions: ->
+      run @actions.qualify_sector
+        with inp_ProjectDescription = @variables.project_description
+        with inp_NAICSCode = @variables.naics_code
+        with inp_Sector = @variables.sector_key
+        with inp_ProjectState = @variables.project_state
+        set @variables.sector_key = @outputs.out_SectorKey
+        set @variables.naics_code = @outputs.out_NAICSCode
+        set @variables.lead_agency_key = @outputs.out_LeadAgencyKey
+
+      if @outputs.out_ValidationPassed == False:
+        | {!@outputs.out_ValidationMessage}
+        | Please provide the missing information so I can run the screening.
+      else:
+        transition to @topic.run_screening
+
+topic run_screening:
+  description: "Calls the NEPA_PreApp_Screening_IP Integration Procedure via the NepaPreAppScreeningController Apex action. The IP invokes the NEPA_CE_Screener BRE and looks up the Permit Matrix CMT row for the matched sector/agency. Returns pathway, permits, and timeline."
+  system:
+    instructions: |
+      You are running the automated NEPA screening engine. Do not generate or infer
+      the pathway yourself — wait for the screening action to return results.
+      If the action fails, inform the applicant and advise them to contact the agency.
+
+  actions:
+    screen_project:
+      description: "Invoke the NEPA Pre-Application Screening Integration Procedure. Calls the NEPA_CE_Screener BRE with the normalized sector and NAICS inputs, then looks up the Permit Matrix for required permits and typical timeline. Guest-safe: reads CMT only."
+      inputs:
+        inp_NAICSCode: string
+          description: "6-digit NAICS code (or closest available)"
+        inp_SectorKey: string
+          description: "Normalized sector key"
+        inp_LeadAgencyKey: string
+          description: "Lead agency abbreviation"
+        inp_ProjectDescription: string
+          description: "Project description for context"
+        inp_ProjectState: string
+          description: "Project state"
+      outputs:
+        out_ReviewType: string
+          description: "Recommended NEPA review type: CE, EA, or EIS"
+          filter_from_agent: True
+        out_CECode: string
+          description: "CE regulatory code if CE pathway"
+          filter_from_agent: True
+        out_Confidence: string
+          description: "Screening confidence: High, Medium, or Low"
+          filter_from_agent: True
+        out_ClassificationBasis: string
+          description: "Plain-language explanation of the classification"
+          filter_from_agent: True
+        out_RequiredPermits: string
+          description: "Semicolon-separated list of required federal permits"
+          filter_from_agent: True
+        out_AdjacentReviews: string
+          description: "Semicolon-separated adjacent federal reviews"
+          filter_from_agent: True
+        out_TypicalTimelineMonths: number
+          description: "Median months from receipt to determination for this pathway and sector"
+          filter_from_agent: True
+        out_EISLikelihoodPct: number
+          description: "Percentage of similar projects that escalated to EIS"
+          filter_from_agent: True
+        out_ScreeningComplete: boolean
+          description: "True when screening ran successfully"
+          filter_from_agent: True
+        out_ErrorMessage: string
+          description: "Error description if screening failed"
+          filter_from_agent: True
+      target: "apex://NepaPreAppScreeningController"
+      include_in_progress_indicator: True
+      progress_indicator_message: "Running NEPA screening..."
+
+  reasoning:
+    instructions: ->
+      run @actions.screen_project
+        with inp_NAICSCode = @variables.naics_code
+        with inp_SectorKey = @variables.sector_key
+        with inp_LeadAgencyKey = @variables.lead_agency_key
+        with inp_ProjectDescription = @variables.project_description
+        with inp_ProjectState = @variables.project_state
+        set @variables.review_type = @outputs.out_ReviewType
+        set @variables.ce_code = @outputs.out_CECode
+        set @variables.confidence = @outputs.out_Confidence
+        set @variables.classification_basis = @outputs.out_ClassificationBasis
+        set @variables.required_permits = @outputs.out_RequiredPermits
+        set @variables.adjacent_reviews = @outputs.out_AdjacentReviews
+        set @variables.typical_timeline_months = @outputs.out_TypicalTimelineMonths
+        set @variables.eis_likelihood_pct = @outputs.out_EISLikelihoodPct
+        set @variables.screening_complete = @outputs.out_ScreeningComplete
+        set @variables.screening_error = @outputs.out_ErrorMessage
+
+      if @variables.screening_complete == False:
+        transition to @topic.screening_error
+
+      transition to @topic.results_display
+
+topic results_display:
+  description: "Presents the screening results to the applicant: review pathway, confidence, required permits, typical timeline, and EIS escalation risk. Always includes the preliminary-estimate disclaimer and agency consultation recommendation."
+  reasoning:
+    instructions: ->
+      | ## NEPA Pre-Application Screening Results
+
+      | **Likely Review Pathway: {!@variables.review_type}**
+      | Confidence: {!@variables.confidence}
+
+      | **Basis:** {!@variables.classification_basis}
+
+      if @variables.ce_code != "":
+        | **CE Code:** {!@variables.ce_code}
+
+      | ---
+
+      | **Required Federal Permits**
+      | {!@variables.required_permits}
+
+      if @variables.adjacent_reviews != "":
+        | **Adjacent Federal Reviews**
+        | {!@variables.adjacent_reviews}
+
+      | ---
+
+      | **Typical Timeline:** ~{!@variables.typical_timeline_months} months from application receipt to determination
+      | **EIS Escalation Rate:** {!@variables.eis_likelihood_pct}% of similar projects escalated to full EIS
+
+      if @variables.eis_likelihood_pct >= 50:
+        | ⚠ **Elevated EIS Risk** — More than half of projects in this sector and pathway
+          have required a full Environmental Impact Statement. Early pre-application
+          consultation with the lead agency ({!@variables.lead_agency_key}) is strongly advised.
+
+      | ---
+
+      | **Lead Agency:** {!@variables.lead_agency_key}
+
+      | 📋 **What to do next:**
+      | 1. Contact the lead agency ({!@variables.lead_agency_key}) for a formal pre-application
+           meeting before submitting your application.
+      | 2. Review the required permits list with your legal or environmental consultant.
+      | 3. If your project is near tribal lands, low-income communities, or minority
+           populations, initiate Environmental Justice consultation early (EO 12898).
+
+      | ---
+
+      | *⚠ Disclaimer: This is a **preliminary estimate only**. It is based on
+        sector and NAICS data and does not constitute a formal agency determination,
+        legal advice, or a commitment by any federal agency. Actual review requirements
+        depend on site-specific conditions, agency discretion, and applicable regulations.*
+
+      | Would you like to screen another project or get more details on any of the
+        permits listed?
+    actions:
+      screen_another: @utils.setVariables
+        description: "Reset variables and screen a new project"
+        with project_description = ""
+        with naics_code = ""
+        with sector_key = ""
+        with project_state = ""
+        with screening_complete = False
+      restart_screening: @utils.transition to @topic.sector_qualification
+        description: "Start a new pre-application screening"
+
+topic screening_error:
+  description: "Handles a screening failure. Informs the applicant that automated screening could not complete and provides the lead agency contact guidance for a manual pre-application consultation."
+  reasoning:
+    instructions: ->
+      | I was unable to complete the automated screening for your project.
+
+      if @variables.screening_error != "":
+        | **Technical detail:** {!@variables.screening_error}
+
+      | This sometimes happens when the project does not closely match the standard
+        sector taxonomy or when the screening engine encounters an unexpected input.
+
+      | **What to do next:**
+      | 1. Try re-describing your project with a more specific sector or NAICS code.
+      | 2. Contact the relevant federal lead agency directly for a pre-application
+           consultation. Common contacts:
+      |    - **BLM:** blm.gov/programs/energy-and-minerals/oil-and-gas
+      |    - **USACE:** usace.army.mil/Missions/Regulatory
+      |    - **FHWA:** fhwa.dot.gov/environment/nepa
+      |    - **BOEM:** boem.gov/oil-gas-energy
+
+      | *⚠ Disclaimer: This tool provides preliminary estimates only and does not
+        constitute a formal agency determination.*
+
+      | Would you like to try again with different inputs?
+    actions:
+      retry_screening: @utils.transition to @topic.sector_qualification
+        description: "Retry with revised inputs"

@@ -1,0 +1,509 @@
+config:
+  developer_name: "NEPA_Comment_Triage"
+  agent_label: "NEPA Comment Triage Agent"
+  description: >
+    Agentforce Employee Agent that triages public comments submitted during NEPA
+    review. Implements OMB M-24-10 federal AI governance requirements: deterministic
+    EJ/tribal sovereignty gate runs before any LLM call, sentiment and substance are
+    evaluated as independent parallel dimensions, and every classification leaves a
+    forensic audit trail. AI acts as recommender only; mandatory human escalation is
+    enforced for Environmental Justice and tribal sovereignty topics.
+  agent_type: "AgentforceEmployeeAgent"
+
+variables:
+  # ── Comment under review ────────────────────────────────────────────────────
+  comment_id: mutable string = ""
+    label: "Comment Record Id"
+  comment_body: mutable string = ""
+    label: "Comment Body"
+  process_context: mutable string = ""
+    label: "NEPA Process Context"
+
+  # ── EJ gate outputs (populated before any LLM call) ────────────────────────
+  ej_requires_human_review: mutable boolean = False
+    label: "EJ Gate: Requires Human Review"
+  ej_detected_triggers: mutable string = ""
+    label: "EJ Gate: Detected Trigger Categories"
+  ej_trigger_details: mutable string = ""
+    label: "EJ Gate: Trigger Details"
+
+  # ── AI triage outputs ───────────────────────────────────────────────────────
+  ai_sentiment: mutable string = ""
+    label: "AI Sentiment"
+  ai_is_substantive: mutable boolean = False
+    label: "AI Substantive Flag"
+  ai_confidence_score: mutable number = 0
+    label: "AI Confidence Score"
+  ai_cluster_hint: mutable string = ""
+    label: "AI Cluster Hint"
+  ai_triage_rationale: mutable string = ""
+    label: "AI Triage Rationale"
+
+  # ── Issue exhaustion / litigation threat outputs ────────────────────────────
+  ai_litigation_threat: mutable boolean = False
+    label: "AI Litigation Threat Flag"
+  ai_litigation_threat_basis: mutable string = ""
+    label: "AI Litigation Threat Basis"
+
+  # ── Duplicate check outputs ──────────────────────────────────────────────────
+  is_duplicate: mutable boolean = False
+    label: "Is Duplicate Comment"
+  original_comment_id: mutable string = ""
+    label: "Original Comment Id (if duplicate)"
+  similarity_basis: mutable string = ""
+    label: "Similarity Detection Basis"
+
+  # ── Response task outputs ────────────────────────────────────────────────────
+  response_task_created: mutable boolean = False
+    label: "Response Task Created"
+  response_task_id: mutable string = ""
+    label: "Response Task Id"
+
+  # ── Save result ─────────────────────────────────────────────────────────────
+  save_success: mutable boolean = False
+    label: "Save Success"
+  save_error: mutable string = ""
+    label: "Save Error Message"
+
+  # ── Flow control ─────────────────────────────────────────────────────────────
+  triage_complete: mutable boolean = False
+    label: "Triage Complete"
+
+system:
+  messages:
+    welcome: "NEPA Comment Triage Agent ready. Provide a comment ID or comment text to begin triage."
+    error: "An error occurred during comment triage. Please check the error details and retry or escalate to a human reviewer."
+  instructions: |
+    You are the NEPA Comment Triage Agent supporting federal environmental review.
+    Your role is to assist human environmental analysts by performing initial classification
+    of public comments. You are a recommender, not an adjudicator.
+
+    CORE PRINCIPLES (non-negotiable):
+    1. The EJ/tribal sovereignty gate ALWAYS runs first, before any AI analysis.
+       Comments with EJ or tribal triggers are routed directly to human review — you
+       do not classify them.
+    2. Sentiment (emotional tone) and substantive merit (NEPA value) are ALWAYS
+       evaluated as separate, independent dimensions. Never let tone influence the
+       substantive determination.
+    3. Every triage action leaves a complete audit trail in the comment record.
+    4. You are transparent about your confidence. Low confidence = escalate.
+
+start_agent entry:
+  description: "Entry point: receive comment and begin triage workflow"
+  reasoning:
+    instructions: |
+      Greet the analyst. Ask for the comment ID or comment text to begin triage.
+      Route to the EJ gate topic immediately when a comment is provided.
+    actions:
+      collect_comment: @utils.setVariables
+        description: "Collect the comment ID and body from the analyst"
+        with comment_id = ...
+        with comment_body = ...
+      go_ej_gate: @utils.transition to @topic.ej_gate
+        description: "Begin mandatory EJ/tribal sovereignty screening"
+
+topic ej_gate:
+  description: "Mandatory deterministic EJ and tribal sovereignty keyword gate. Runs before any LLM call. Routes to human review if any EJ, tribal sovereignty, sacred sites, low-income, or civil rights triggers are detected."
+  system:
+    instructions: |
+      This topic runs the deterministic EJ gate. No LLM classification occurs here.
+      The outcome is binary: escalate to human review, or proceed to AI triage.
+      You must not attempt to classify the comment yourself at this stage.
+
+  actions:
+    run_ej_detector:
+      description: "Scan comment body for EJ and tribal sovereignty keyword triggers. This is the Mandate 3 deterministic gate — runs before any AI analysis."
+      inputs:
+        commentBody: string
+          description: "The public comment text to scan"
+        commentId: string
+          description: "Comment record Id for audit logging"
+      outputs:
+        requiresHumanReview: boolean
+          description: "True when any EJ or tribal sovereignty trigger matched"
+          filter_from_agent: True
+        detectedTriggers: string
+          description: "Comma-separated trigger categories found"
+          filter_from_agent: True
+        triggerDetails: string
+          description: "Details of escalation requirement"
+          filter_from_agent: True
+      target: "apex://NepaCommentEJDetector"
+      include_in_progress_indicator: True
+      progress_indicator_message: "Running EJ/tribal sovereignty screening..."
+
+  reasoning:
+    instructions: ->
+      run @actions.run_ej_detector
+        with commentBody = @variables.comment_body
+        with commentId = @variables.comment_id
+        set @variables.ej_requires_human_review = @outputs.requiresHumanReview
+        set @variables.ej_detected_triggers = @outputs.detectedTriggers
+        set @variables.ej_trigger_details = @outputs.triggerDetails
+
+      if @variables.ej_requires_human_review == True:
+        transition to @topic.ej_escalation
+      else:
+        transition to @topic.ai_triage
+
+topic ej_escalation:
+  description: "Handles comments that triggered the EJ/tribal sovereignty gate. Sets nepa_requires_human_review to true and writes the audit record without AI classification. Routes to a human EJ or Tribal Liaison coordinator."
+  system:
+    instructions: |
+      This comment has been flagged by the mandatory EJ gate. Do not perform any
+      AI sentiment or substantive classification. Save the escalation flag and
+      inform the analyst that this comment requires human review.
+
+  actions:
+    save_ej_escalation:
+      description: "Save EJ escalation flag to the comment record. Sets requires_human_review=true and records the trigger details as the triage rationale without AI classification."
+      inputs:
+        inp_CommentId: string
+          description: "PublicComplaint record Id"
+        inp_RequiresHumanReview: boolean
+          description: "Always true for EJ-flagged comments"
+        inp_AITriageRationale: string
+          description: "EJ trigger details as the rationale"
+        inp_Sentiment: string
+          description: "Empty — no AI sentiment for escalated comments"
+        inp_IsSubstantive: boolean
+          description: "False — no AI classification performed"
+        inp_ClusterId: string
+          description: "Empty for escalated comments"
+        inp_AIConfidenceScore: number
+          description: "Zero — no AI confidence for escalated comments"
+        inp_TriageTimestamp: string
+          description: "Timestamp of EJ gate detection"
+        inp_ResponseStatus: string
+          description: "Response status to set"
+      outputs:
+        out_Success: boolean
+          description: "Whether the save succeeded"
+          filter_from_agent: True
+        out_ErrorMessage: string
+          description: "Error details if save failed"
+          filter_from_agent: True
+      target: "flow://NEPA_Comment_Triage_Save"
+
+  reasoning:
+    instructions: ->
+      run @actions.save_ej_escalation
+        with inp_CommentId = @variables.comment_id
+        with inp_RequiresHumanReview = True
+        with inp_AITriageRationale = @variables.ej_trigger_details
+        with inp_Sentiment = ""
+        with inp_IsSubstantive = False
+        with inp_ClusterId = ""
+        with inp_AIConfidenceScore = 0
+        with inp_TriageTimestamp = ""
+        with inp_ResponseStatus = "Pending"
+        set @variables.save_success = @outputs.out_Success
+        set @variables.save_error = @outputs.out_ErrorMessage
+
+      set @variables.triage_complete = True
+      transition to @topic.ej_escalation_summary
+
+topic ej_escalation_summary:
+  description: "Informs the analyst that the comment has been flagged for mandatory human review due to EJ or tribal sovereignty content. Provides the trigger details."
+  reasoning:
+    instructions: ->
+      | This comment has been flagged for **mandatory human review** and has been
+        routed to the EJ/Tribal Liaison coordinator queue.
+
+      | **Triggers detected:** {!@variables.ej_detected_triggers}
+
+      | {!@variables.ej_trigger_details}
+
+      | No AI sentiment or substantive classification has been applied. A human
+        EJ analyst or Tribal Liaison coordinator must review this comment and
+        complete the triage.
+
+      if @variables.save_success == False:
+        | **Warning:** The escalation record could not be saved automatically.
+          Error: {!@variables.save_error}
+          Please manually set "Requires Human Review" on comment {!@variables.comment_id}.
+
+topic ai_triage:
+  description: "AI-assisted triage for comments that cleared the EJ gate. Evaluates sentiment and substantive merit as two independent parallel dimensions using the NEPA_Comment_Triage_Analysis prompt template. Mandates 1 and 2."
+  system:
+    instructions: |
+      You are performing AI-assisted NEPA comment triage. The EJ gate has already
+      confirmed this comment does not require mandatory human escalation.
+
+      You must evaluate SENTIMENT and SUBSTANCE as two completely independent
+      assessments. A comment's emotional tone has zero bearing on its NEPA merit.
+
+      SUBSTANTIVE DEFINITION (Mandate 1):
+      Substantive = contains factual observations, local ecological knowledge,
+      specific community impact concerns, proposed alternatives, or claims of
+      flawed analysis. Grammar, spelling, and tone are irrelevant to this determination.
+
+      SENTIMENT DEFINITION (Mandate 2):
+      Sentiment = emotional tone only (Supportive/Neutral/Opposed/Mixed).
+      Evaluate this independently of substantive merit.
+
+  actions:
+    analyze_comment:
+      description: "Run the NEPA Comment Triage Analysis prompt template. Evaluates sentiment and substantive merit independently per Mandates 1 and 2. Returns structured JSON with both dimensions plus confidence score and rationale."
+      inputs:
+        CommentBody: string
+          description: "The full public comment text to analyze"
+        ProcessContext: string
+          description: "Context about the NEPA process (review type, project, agency)"
+      outputs:
+        promptResponse: string
+          description: "Structured JSON triage result from the prompt template"
+          is_displayable: False
+          is_used_by_planner: True
+      target: "prompt://NEPA_Comment_Triage_Analysis"
+      include_in_progress_indicator: True
+      progress_indicator_message: "Analyzing comment..."
+
+    parse_triage_result:
+      description: "Parse the JSON triage result from the prompt template and store each field as a typed variable for deterministic downstream use."
+      inputs:
+        triageJson: string
+          description: "Raw JSON string returned by the prompt template"
+      outputs:
+        sentiment: string
+          description: "Parsed sentiment value: Supportive, Neutral, Opposed, or Mixed"
+          filter_from_agent: True
+        isSubstantive: boolean
+          description: "Parsed substantive flag"
+          filter_from_agent: True
+        confidenceScore: number
+          description: "Parsed confidence score 0-100"
+          filter_from_agent: True
+        clusterHint: string
+          description: "Parsed cluster hint for near-duplicate detection"
+          filter_from_agent: True
+        triageRationale: string
+          description: "Parsed triage rationale"
+          filter_from_agent: True
+        litigationThreat: boolean
+          description: "True when AI identified a Vermont Yankee issue exhaustion litigation threat"
+          filter_from_agent: True
+        litigationThreatBasis: string
+          description: "AI explanation of the specific legal/technical standard cited and alleged deficiency"
+          filter_from_agent: True
+      target: "apex://NepaCommentTriageParser"
+
+  reasoning:
+    instructions: ->
+      run @actions.analyze_comment
+        with CommentBody = @variables.comment_body
+        with ProcessContext = @variables.process_context
+        set @variables.ai_triage_rationale = @outputs.promptResponse
+
+      run @actions.parse_triage_result
+        with triageJson = @variables.ai_triage_rationale
+        set @variables.ai_sentiment = @outputs.sentiment
+        set @variables.ai_is_substantive = @outputs.isSubstantive
+        set @variables.ai_confidence_score = @outputs.confidenceScore
+        set @variables.ai_cluster_hint = @outputs.clusterHint
+        set @variables.ai_triage_rationale = @outputs.triageRationale
+        set @variables.ai_litigation_threat = @outputs.litigationThreat
+        set @variables.ai_litigation_threat_basis = @outputs.litigationThreatBasis
+
+      if @variables.ai_confidence_score < 60:
+        transition to @topic.low_confidence_review
+
+      transition to @topic.save_triage
+
+topic low_confidence_review:
+  description: "Handles AI triage results with confidence score below 60. Presents the tentative classification to the analyst and asks for confirmation or override before saving."
+  reasoning:
+    instructions: ->
+      | The AI triage returned a **low confidence score** ({!@variables.ai_confidence_score}/100).
+
+      | **Tentative classification:**
+      | - Sentiment: {!@variables.ai_sentiment}
+      | - Substantive: {!@variables.ai_is_substantive}
+      | - Rationale: {!@variables.ai_triage_rationale}
+
+      | Would you like to:
+      |   1. Accept this classification and save it
+      |   2. Override the classification
+      |   3. Flag for mandatory human review
+    actions:
+      accept_low_confidence: @utils.setVariables
+        description: "Accept the low-confidence classification as-is and proceed to save"
+        with triage_complete = False
+      override_classification: @utils.setVariables
+        description: "Override sentiment or substantive determination before saving"
+        with ai_sentiment = ...
+        with ai_is_substantive = ...
+      flag_human_review: @utils.setVariables
+        description: "Flag this comment for mandatory human review regardless of AI output"
+        with ej_requires_human_review = True
+
+  after_reasoning:
+    if @variables.ej_requires_human_review == True:
+      transition to @topic.ej_escalation
+    else:
+      transition to @topic.save_triage
+
+topic save_triage:
+  description: "Saves the final triage result to the PublicComplaint record. Runs duplicate check and (for substantive comments) creates a response task before saving the AI audit trail. Transitions to result summary."
+  actions:
+    check_duplicate:
+      description: "Check whether this comment is substantially similar to an existing comment on the same NEPA process within the past 30 days."
+      inputs:
+        inp_CommentId: string
+          description: "PublicComplaint record Id"
+        inp_CommentBody: string
+          description: "Comment body text for similarity comparison"
+        inp_RelatedProcessId: string
+          description: "Related IndividualApplication (NEPA process) Id"
+      outputs:
+        out_IsDuplicate: boolean
+          description: "True if a near-duplicate was detected"
+          filter_from_agent: True
+        out_OriginalCommentId: string
+          description: "Id of the original comment this duplicates"
+          filter_from_agent: True
+        out_SimilarityBasis: string
+          description: "Description of how similarity was determined"
+          filter_from_agent: True
+      target: "flow://NEPA_Comment_Duplicate_Check"
+      include_in_progress_indicator: True
+      progress_indicator_message: "Checking for duplicate submissions..."
+
+    create_response_task:
+      description: "For substantive, non-duplicate comments: create a high-priority response task assigned to the NEPA Coordinator queue with a 30-day due date."
+      inputs:
+        inp_CommentId: string
+          description: "PublicComplaint record Id"
+        inp_IsSubstantive: boolean
+          description: "Whether the comment was classified as substantive"
+      outputs:
+        out_Created: boolean
+          description: "True if a response Task was created"
+          filter_from_agent: True
+        out_TaskId: string
+          description: "Id of the created Task"
+          filter_from_agent: True
+      target: "flow://NEPA_Comment_ResponseTask_Creator"
+      include_in_progress_indicator: True
+      progress_indicator_message: "Creating response task..."
+
+    save_result:
+      description: "Persist the triage classification and full audit trail to the PublicComplaint record."
+      inputs:
+        inp_CommentId: string
+          description: "PublicComplaint record Id"
+        inp_Sentiment: string
+          description: "AI-assigned sentiment"
+        inp_IsSubstantive: boolean
+          description: "AI substantive determination"
+        inp_ClusterId: string
+          description: "Cluster hint for near-duplicate detection"
+        inp_AIConfidenceScore: number
+          description: "AI confidence score 0-100"
+        inp_AITriageRationale: string
+          description: "AI triage rationale (mandatory when non-substantive)"
+        inp_RequiresHumanReview: boolean
+          description: "Whether human review is required"
+        inp_TriageTimestamp: string
+          description: "ISO timestamp of triage completion"
+        inp_ResponseStatus: string
+          description: "New response status"
+        inp_LitigationThreat: boolean
+          description: "Vermont Yankee litigation threat flag from AI triage"
+        inp_LitigationThreatBasis: string
+          description: "AI explanation of litigation threat basis"
+      outputs:
+        out_Success: boolean
+          description: "Whether the save succeeded"
+          filter_from_agent: True
+        out_ErrorMessage: string
+          description: "Error details if save failed"
+          filter_from_agent: True
+      target: "flow://NEPA_Comment_Triage_Save"
+      include_in_progress_indicator: True
+      progress_indicator_message: "Saving triage result..."
+
+  reasoning:
+    instructions: ->
+      # Step 1: Run duplicate check
+      run @actions.check_duplicate
+        with inp_CommentId = @variables.comment_id
+        with inp_CommentBody = @variables.comment_body
+        with inp_RelatedProcessId = @variables.process_context
+        set @variables.is_duplicate = @outputs.out_IsDuplicate
+        set @variables.original_comment_id = @outputs.out_OriginalCommentId
+        set @variables.similarity_basis = @outputs.out_SimilarityBasis
+
+      # Step 2: Create response task for substantive, non-duplicate comments only
+      if @variables.ai_is_substantive == True and @variables.is_duplicate == False:
+        run @actions.create_response_task
+          with inp_CommentId = @variables.comment_id
+          with inp_IsSubstantive = @variables.ai_is_substantive
+          set @variables.response_task_created = @outputs.out_Created
+          set @variables.response_task_id = @outputs.out_TaskId
+
+      # Step 3: Save triage result and AI audit trail
+      run @actions.save_result
+        with inp_CommentId = @variables.comment_id
+        with inp_Sentiment = @variables.ai_sentiment
+        with inp_IsSubstantive = @variables.ai_is_substantive
+        with inp_ClusterId = @variables.ai_cluster_hint
+        with inp_AIConfidenceScore = @variables.ai_confidence_score
+        with inp_AITriageRationale = @variables.ai_triage_rationale
+        with inp_RequiresHumanReview = @variables.ej_requires_human_review
+        with inp_TriageTimestamp = ""
+        with inp_ResponseStatus = "Pending"
+        with inp_LitigationThreat = @variables.ai_litigation_threat
+        with inp_LitigationThreatBasis = @variables.ai_litigation_threat_basis
+        set @variables.save_success = @outputs.out_Success
+        set @variables.save_error = @outputs.out_ErrorMessage
+
+      set @variables.triage_complete = True
+      transition to @topic.triage_summary
+
+topic triage_summary:
+  description: "Presents the complete triage result to the analyst including all AI audit trail fields. Offers options to override or flag for human review."
+  reasoning:
+    instructions: ->
+      | **Triage Complete** — Comment {!@variables.comment_id}
+
+      | **Sentiment:** {!@variables.ai_sentiment}
+      | **Substantive:** {!@variables.ai_is_substantive}
+      | **Confidence:** {!@variables.ai_confidence_score}/100
+      | **Rationale:** {!@variables.ai_triage_rationale}
+
+      if @variables.is_duplicate == True:
+        | **Duplicate Detected** — This comment is substantially similar to
+          Comment {!@variables.original_comment_id} submitted for this process
+          within the past 30 days. It has been flagged for response consolidation.
+          Basis: {!@variables.similarity_basis}
+
+      if @variables.ai_cluster_hint != "":
+        | **Cluster Hint:** {!@variables.ai_cluster_hint}
+
+      if @variables.response_task_created == True:
+        | **Response Task Created** — Task {!@variables.response_task_id} assigned
+          to the NEPA Coordinator queue with a 30-day due date.
+
+      if @variables.ai_litigation_threat == True:
+        | **⚠ Litigation Threat Detected (Vermont Yankee / Issue Exhaustion)**
+        | **Basis:** {!@variables.ai_litigation_threat_basis}
+        | This comment raises a specific legal or technical standard and alleges a
+          deficiency with enough specificity to support an arbitrary-and-capricious
+          challenge. The record has been flagged for **Pending Legal Review**.
+          Route to your agency's legal counsel before drafting the response.
+
+      if @variables.save_success == False:
+        | **Save Error:** {!@variables.save_error}
+        | Please manually update comment {!@variables.comment_id} or retry.
+
+      | *This classification was made by an AI assistant and is subject to human
+        review. If you believe this classification is incorrect, check the
+        "Human Override Applied" box on the record and update the fields.*
+    actions:
+      override_and_save: @utils.setVariables
+        description: "Override the AI classification. Provide corrected sentiment and/or substantive determination."
+        with ai_sentiment = ...
+        with ai_is_substantive = ...
+      go_to_next_comment: @utils.transition to @topic.ej_gate
+        description: "Triage another comment"
