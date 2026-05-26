@@ -270,6 +270,16 @@ run_apex "inspection visits" "demo/import_data/29_scene7_inspection_visits.apex"
 step_header "Step 30: Scene 7-C BiOp reinitiation (nepa_reinit_new_species_listing__c + ESA Task)"
 run_apex "BiOp reinitiation" "demo/import_data/30_scene7_biop_reinit.apex"
 
+# ── step 31: NEPA Visit Action Plan Templates (AssessmentTaskDefinition + APT + ItemValues) ──
+step_header "Step 31a: AssessmentTaskDefinition records for NEPA Visit APTs"
+run_apex "AssessmentTaskDefinition seed" "demo/import_data/31a_postload_atd.apex"
+
+step_header "Step 31b: ActionPlanTemplate + Version + Items"
+run_apex "ActionPlanTemplate seed" "demo/import_data/31b_postload_apt.apex"
+
+step_header "Step 31c: ActionPlanTemplateItemValue + publish"
+run_apex "ActionPlanTemplateItemValue + publish" "demo/import_data/31c_postload_apt_values.apex"
+
 # ── post-load summary ─────────────────────────────────────────────────────────
 echo ""
 echo "==> Demo data load complete."
