@@ -18,13 +18,13 @@
 Id programId;
 for (Program p : [
     SELECT Id FROM Program
-    WHERE nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'
+    WHERE nepa_project_id__c = 'DOI-LMTF-ID-B030-2019-0014-EA'
     LIMIT 1
 ]) {
     programId = p.Id;
 }
 if (programId == null) {
-    System.debug('ERROR: Program DOI-BLM-ID-B030-2019-0014-EA not found. Run step 08 and 18 first.');
+    System.debug('ERROR: Program DOI-LMTF-ID-B030-2019-0014-EA not found. Run step 08 and 18 first.');
     return;
 }
 
@@ -459,7 +459,7 @@ if (!existingGisData.isEmpty()) {
     gisData.nepa_centroid_lon__c        = -116.9227;
     gisData.nepa_extent__c              = '-116.9264,42.8683,-116.9190,42.8719';
     gisData.nepa_address__c             = 'Owyhee County, Idaho — ~9 miles SE of Jordan Valley, OR';
-    gisData.nepa_description__c         = 'GIS spatial analysis package for Carrie Placer Mine Plan of Operations (IDI-38709, DOI-BLM-ID-B030-2019-0014-EA). Contains project boundary, watershed analysis area, and three resource layers (NWI Wetlands, USFWS Critical Habitat, Sage-Grouse PHMA) used for GIS proximity screening and extraordinary circumstances determination. Proximity check detected NWI Wetlands and FWS Critical Habitat within 1-mile buffer; EC flag set on Program. GIS run completed 2019-03-12.';
+    gisData.nepa_description__c         = 'GIS spatial analysis package for Carrie Placer Mine Plan of Operations (IDI-38709, DOI-LMTF-ID-B030-2019-0014-EA). Contains project boundary, watershed analysis area, and three resource layers (NWI Wetlands, USFWS Critical Habitat, Sage-Grouse PHMA) used for GIS proximity screening and extraordinary circumstances determination. Proximity check detected NWI Wetlands and FWS Critical Habitat within 1-mile buffer; EC flag set on Program. GIS run completed 2019-03-12.';
     gisData.nepa_container_inventory__c = containerInventory;
     gisData.nepa_creator__c             = 'BLM Owyhee Field Office GIS';
     gisData.nepa_creator_contact__c     = '{"name":"GIS Analyst — BLM Owyhee FO","agency":"Bureau of Land Management","email":"blm_ow_gis@blm.gov"}';

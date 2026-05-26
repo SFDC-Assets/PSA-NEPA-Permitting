@@ -17,19 +17,19 @@
 #   08  Program                 — depends on Account
 #   09  IndividualApplication   — depends on Program + Contact
 #   10  ContentVersion          — created via Apex (VersionData requires Blob insert)
-#   11  nepa_engagement__c      — depends on IndividualApplication
+#   11  nepa_engagement__c      — created in step 27 Apex (nepa_process__c required, not in CSV)
 #   12  ApplicationTimeline     — depends on IndividualApplication
 #   16  PublicComplaint         — depends on Account
 #   17  nepa_litigation__c      — no dependencies
 #   18  Post-load Apex          — creates Visit(field surveys)/SR/CV/IA; wires all relationships
-#   19  Task                    — depends on nothing (no WhatId wiring; Task has no External_ID)
+#   19  Task                    — created in step 27 Apex (Bulk API v2 hangs on small Task payloads;
+#                                  WhatId wired in same transaction)
 #   20  Entity 9/8/7 Apex       — RegulatoryCode, team members, GIS container + polygon
 #   21  ServiceResource disc.   — nepa_discipline__c on ServiceResources
 #   22  GIS team assembly       — proximity results, auto-assembled team, auto-generated Visits
 #   23  Flow refresh Apex       — risk scorer + permit coordinator recalc
-#   27  Post-load Apex          — nepa_engagement__c, PublicComplaint PC_003, decision_payload, ar_export
-#                                 (decision_payload + ar_export inserted here; Bulk API v2 does not support
-#                                  relationship-path external ID keys as upsert key on these objects)
+#   27  Post-load Apex          — nepa_engagement__c, PublicComplaint PC_003, decision_payload, ar_export,
+#                                 Task (8 records with WhatId wired)
 
 set -euo pipefail
 
@@ -211,9 +211,7 @@ echo "    Skipping CSV — IndividualApplication created in step 18 (LicenseType
 step_header "Step 10: ContentVersion (via post-load Apex)"
 echo "    Skipping CSV — ContentVersion created in step 18 (VersionData requires Apex Blob insert)"
 
-# ── step 11: nepa_engagement__c ──────────────────────────────────────────────
-step_header "Step 11: nepa_engagement__c (Public Engagement Events)"
-upsert_csv "nepa_engagement__c" "nepa_engagement__c" "11_nepa_engagement__c.csv" "External_ID__c"
+# step 11: nepa_engagement__c — handled in step 27 Apex (nepa_process__c required, not in CSV)
 
 # ── step 12: ApplicationTimeline ─────────────────────────────────────────────
 step_header "Step 12: ApplicationTimeline (Case Events)"
@@ -231,13 +229,7 @@ upsert_csv "nepa_litigation__c" "nepa_litigation__c" "17_nepa_litigation__c.csv"
 step_header "Step 18: Post-load Apex (IA, ContentVersion, SR, Visits + wire all relationships)"
 run_apex "post-load polymorphic wiring" "demo/import_data/18_postload_polymorphic.apex"
 
-# ── step 19: Task ─────────────────────────────────────────────────────────────
-step_header "Step 19: Task"
-insert_csv "Task" "Task" "19_Task.csv"
-
-# Wire Task WhatId/WhoId now that Tasks exist (step 18 Apex also handles this
-# if Tasks were loaded before, but running it again is safe — it queries by
-# External_ID__c and updates in-place).
+# step 19: Task — handled in step 27 Apex (Bulk API v2 hangs on small Task payloads)
 
 # ── step 20: Entity 9/8/7 Apex (RegulatoryCode, team members, GIS container + polygon) ──
 step_header "Step 20: Entity 9/8/7 (RegulatoryCode, Team Members, nepa_gis_data__c + GIS polygon + lat/lon)"
@@ -255,11 +247,11 @@ run_apex "GIS team assembly" "demo/import_data/22_postload_gis_team_assembly.ape
 step_header "Step 23: Flow refresh (risk scorer + permit coordinator recalc)"
 run_apex "flow refresh" "demo/import_data/23_postload_flow_refresh.apex"
 
-# ── step 27: records requiring Apex insert (nepa_engagement__c, PC_003, decision_payload, ar_export) ─
+# ── step 27: records requiring Apex insert (nepa_engagement__c, PC_003, decision_payload, ar_export, Task) ─
 # nepa_decision_payload__c and nepa_ar_export__c are inserted here via Apex rather than CSV upsert.
 # Bulk API v2 does not support relationship-path external ID keys (nepa_process__r.nepa_federal_unique_id__c)
 # as the upsert key on these objects, so CSV upsert always returns 0 records without error.
-step_header "Step 27: Apex insert (engagement, PublicComplaint PC_003, decision_payload, ar_export)"
+step_header "Step 27: Apex insert (engagement, PublicComplaint PC_003, decision_payload, ar_export, Task)"
 run_apex "missing records insert" "demo/import_data/27_postload_missing_records.apex"
 
 # ── step 28 (label): OFD coordination milestones ─────────────────────────────
@@ -284,7 +276,7 @@ echo "==> Demo data load complete."
 echo ""
 echo "    Verify records in $TARGET_ORG:"
 echo ""
-echo "    sf data query --query \"SELECT Id, Name FROM Program WHERE nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'\" --target-org $TARGET_ORG"
+echo "    sf data query --query \"SELECT Id, Name FROM Program WHERE nepa_project_id__c = 'DOI-LMTF-ID-B030-2019-0014-EA'\" --target-org $TARGET_ORG"
 echo "    sf data query --query \"SELECT Id, Name, nepa_risk_score__c, nepa_risk_tier__c FROM IndividualApplication WHERE nepa_federal_unique_id__c = 'IDI-38709'\" --target-org $TARGET_ORG"
 echo "    sf data query --query \"SELECT COUNT() FROM ApplicationTimeline WHERE nepa_related_process__r.nepa_federal_unique_id__c = 'IDI-38709'\" --target-org $TARGET_ORG"
 echo "    sf data query --query \"SELECT COUNT() FROM ContentVersion WHERE nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709' AND IsLatest = true\" --target-org $TARGET_ORG"
@@ -301,14 +293,14 @@ echo "    To clean up all demo records:"
 echo "      sf data delete bulk --sobject Task --where \"Subject LIKE 'Initiate IDWR%' OR Subject LIKE 'File EPA%' OR Subject LIKE 'Day-30%' OR Subject LIKE 'Add Dust%' OR Subject LIKE 'Generate ARMPA%' OR Subject LIKE 'Confirm Tribal%' OR Subject LIKE 'Verify Required%' OR Subject LIKE 'Applicant Portal Update%'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject Visit --where \"nepa_auto_generated__c = true AND nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject nepa_process_team_member__c --where \"nepa_assembly_source__c = 'GIS_Auto_Assembly' AND nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'\" --target-org $TARGET_ORG --async"
-echo "      sf data delete bulk --sobject nepa_detected_protection_layer__c --where \"nepa_program__r.nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'\" --target-org $TARGET_ORG --async"
+echo "      sf data delete bulk --sobject nepa_detected_protection_layer__c --where \"nepa_program__r.nepa_project_id__c = 'DOI-LMTF-ID-B030-2019-0014-EA'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject PublicComplaint --where \"Subject LIKE 'DEMO_PC%' OR Subject LIKE 'ICL Comment%' OR Subject LIKE 'OSC Comment%'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject nepa_litigation__c --where \"nepa_citation__c LIKE '%9th Cir%'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject ApplicationTimeline --where \"nepa_related_process__r.nepa_federal_unique_id__c = 'IDI-38709'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject nepa_engagement__c --where \"nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject ContentVersion --where \"Title LIKE 'Carrie Placer Mine%'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject IndividualApplication --where \"nepa_federal_unique_id__c = 'IDI-38709'\" --target-org $TARGET_ORG --async"
-echo "      sf data delete bulk --sobject Program --where \"nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'\" --target-org $TARGET_ORG --async"
+echo "      sf data delete bulk --sobject Program --where \"nepa_project_id__c = 'DOI-LMTF-ID-B030-2019-0014-EA'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject ServiceResource --where \"External_ID__c LIKE 'DEMO_SR_%'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject WorkType --where \"External_ID__c LIKE 'DEMO_WT_%'\" --target-org $TARGET_ORG --async"
 echo "      sf data delete bulk --sobject Contact --where \"External_ID__c LIKE 'DEMO_CON_%'\" --target-org $TARGET_ORG --async"

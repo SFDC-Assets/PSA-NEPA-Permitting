@@ -37,7 +37,7 @@ Id programId;
 for (Program p : [
     SELECT Id, nepa_project_id__c
     FROM Program
-    WHERE nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'
+    WHERE nepa_project_id__c = 'DOI-LMTF-ID-B030-2019-0014-EA'
     LIMIT 1
 ]) {
     programId = p.Id;
@@ -318,7 +318,7 @@ List<Map<String,Object>> cvDefs = new List<Map<String,Object>>{
         'pubAccess'=> true,
         'arIncl'   => true,
         'category' => 'Supporting Analysis',
-        'summary'  => 'Environmental Assessment for DOI-BLM-ID-B030-2019-0014-EA. Analyzes impacts on Jordan Creek water quality, redband trout habitat, sage-grouse PHMA, Columbia spotted frog riparian zone, and mule deer crucial winter range.'
+        'summary'  => 'Environmental Assessment for DOI-LMTF-ID-B030-2019-0014-EA. Analyzes impacts on Jordan Creek water quality, redband trout habitat, sage-grouse PHMA, Columbia spotted frog riparian zone, and mule deer crucial winter range.'
     },
     new Map<String,Object>{
         'title'    => 'Finding of No Significant Impact - Carrie Placer Mine',

@@ -30,13 +30,13 @@
 Id programId;
 for (Program p : [
     SELECT Id FROM Program
-    WHERE nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'
+    WHERE nepa_project_id__c = 'DOI-LMTF-ID-B030-2019-0014-EA'
     LIMIT 1
 ]) {
     programId = p.Id;
 }
 if (programId == null) {
-    System.debug('ERROR: Program DOI-BLM-ID-B030-2019-0014-EA not found. Run steps 08 and 18 first.');
+    System.debug('ERROR: Program DOI-LMTF-ID-B030-2019-0014-EA not found. Run steps 08 and 18 first.');
     return;
 }
 

@@ -3,7 +3,9 @@
 //   - PublicComplaint DEMO_PC_003 (Shoshone-Paiute — same issue)
 //   - nepa_decision_payload__c (1 record — no External_ID__c on object)
 //   - nepa_ar_export__c (1 record — no External_ID__c on object)
-// Safe to re-run: all DML is conditional on External_ID__c or Name match.
+//   - Task (8 records — Bulk API v2 import hangs at UploadComplete on small batches;
+//     loaded here so WhatId can be wired in the same transaction)
+// Safe to re-run: all DML is conditional on External_ID__c or Subject match.
 
 IndividualApplication ia = [
     SELECT Id FROM IndividualApplication
@@ -182,5 +184,41 @@ if (existingAR.isEmpty()) {
 } else {
     System.debug('nepa_ar_export__c already exists — skipped.');
 }
+
+// ─── 5. Task (8 records — wired to IA) ────────────────────────────────────────
+// Bulk API v2 import hangs at UploadComplete for small Task payloads on APS trial orgs.
+// Loaded here with WhatId set directly to avoid a second Apex pass.
+Set<String> existingTaskSubjects = new Set<String>();
+for (Task t : [SELECT Subject FROM Task WHERE WhatId = :ia.Id]) {
+    existingTaskSubjects.add(t.Subject);
+}
+
+List<Task> tasksToInsert = new List<Task>();
+List<Map<String,Object>> taskDefs = new List<Map<String,Object>>{
+    new Map<String,Object>{ 'Subject', 'Initiate IDWR Water Permit Application - Jordan Creek', 'Status', 'Completed', 'Priority', 'High', 'ActivityDate', Date.newInstance(2019,5,25), 'Description', 'AUTO-TRIGGERED by closure of DEMO_WO_002 (Hydrology Work Order) April 25 2019. Initiate Idaho Department of Water Resources water withdrawal permit application for Jordan Creek. Required before any Jordan Creek water withdrawal. Applicant Sam Uhler notified via portal. 30-day SLA.' },
+    new Map<String,Object>{ 'Subject', 'File EPA NPDES NOI IDG370000 - Small Suction Dredge', 'Status', 'Completed', 'Priority', 'High', 'ActivityDate', Date.newInstance(2019,6,12), 'Description', 'AUTO-TRIGGERED by closure of DEMO_WO_003 (Geology Work Order) May 12 2019. File Notice of Intent for EPA NPDES General Permit IDG370000. 60-day processing clock starts on filing. Land management agencies have 30 days to object. Applicant Sam Uhler cannot operate until written authorization received.' },
+    new Map<String,Object>{ 'Subject', 'Day-30 NPDES Check - Confirm No Agency Objection Filed', 'Status', 'Completed', 'Priority', 'Normal', 'ActivityDate', Date.newInstance(2019,6,14), 'Description', 'AUTO-TRIGGERED at day 30 after NPDES NOI filing (May 15 + 30 days = June 14). Confirm no federal land management agency filed 30-day objection. Check with EPA Region 10. If clear: update co-permit status to On Track.' },
+    new Map<String,Object>{ 'Subject', 'Add Dust Mitigation Analysis to Air Quality Section - ICL Comment', 'Status', 'Completed', 'Priority', 'High', 'ActivityDate', Date.newInstance(2019,8,15), 'Description', 'AUTO-TRIGGERED by Plaintiff Intelligence flagging ICL Comment as substantive. Add quantitative dust emissions assessment for: (1) fugitive dust from 1.7-mile unpaved access road; (2) mercury particulate assessment based on Owyhee County placer mine historical data. Complete before EA revised version August 15.' },
+    new Map<String,Object>{ 'Subject', 'Generate ARMPA Justifiable Departure Response Memo - OSC Comment', 'Status', 'Completed', 'Priority', 'High', 'ActivityDate', Date.newInstance(2019,8,15), 'Description', 'AUTO-TRIGGERED by NEPA Coordinator review of OSC comment. Pull 2019 Idaho ARMPA ROD. Generate response memo citing Section 4.3 Justifiable Departure. Document explicit ARMPA citation and Idaho Governor\'s office consultation. Incorporate into revised EA.' },
+    new Map<String,Object>{ 'Subject', 'Confirm Tribal Consultation Certification Before EA Publication', 'Status', 'Completed', 'Priority', 'High', 'ActivityDate', Date.newInstance(2019,6,28), 'Description', 'HARD GATE CHECK before preliminary EA published July 1. Verify: (1) Shoshone-Paiute Tribes response received; (2) NHPA Section 106 certification completed; (3) Certification document attached to case file. BLOCK publication if not complete. Current status: Certification completed March 16 — gate clear.' },
+    new Map<String,Object>{ 'Subject', 'Verify Required Document Registry All Five Documents', 'Status', 'Completed', 'Priority', 'High', 'ActivityDate', Date.newInstance(2019,11,19), 'Description', 'HARD GATE CHECK before Field Manager issues Decision Record. Verify all five documents complete: (1) Environmental Assessment; (2) FONSI; (3) Decision Record ready for signature; (4) Affected Resources Form; (5) Tribal Consultation Certification. All five green — stage gate clear for November 27 decision.' },
+    new Map<String,Object>{ 'Subject', 'Applicant Portal Update - Decision Record Issued', 'Status', 'Completed', 'Priority', 'Normal', 'ActivityDate', Date.newInstance(2019,11,27), 'Description', 'AUTO-TRIGGERED by Decision Record stage gate completion. Send automated notification to Sam Uhler portal account: Plan of Operations IDI-38709 approved. Decision Record attached. Approved conditions: 50-foot Jordan Creek buffer silt fencing steep-shoreline pond design seasonal mining window March 1 - November 30 reclamation bond.' }
+};
+
+for (Map<String,Object> def : taskDefs) {
+    String subj = (String) def.get('Subject');
+    if (!existingTaskSubjects.contains(subj)) {
+        tasksToInsert.add(new Task(
+            Subject      = subj,
+            Status       = (String) def.get('Status'),
+            Priority     = (String) def.get('Priority'),
+            ActivityDate = (Date)   def.get('ActivityDate'),
+            Description  = (String) def.get('Description'),
+            WhatId       = ia.Id
+        ));
+    }
+}
+if (!tasksToInsert.isEmpty()) insert tasksToInsert;
+System.debug('Tasks inserted: ' + tasksToInsert.size() + ' (skipped ' + (taskDefs.size() - tasksToInsert.size()) + ' already existing)');
 
 System.debug('Step 27 complete.');
