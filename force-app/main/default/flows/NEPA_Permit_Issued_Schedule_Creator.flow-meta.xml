@@ -5,15 +5,14 @@
     <label>NEPA Permit Issued Schedule Creator</label>
     <processType>AutoLaunchedFlow</processType>
     <status>Active</status>
-    <triggerType>RecordAfterSave</triggerType>
-    <object>nepa_required_permit__c</object>
-    <recordTriggerType>CreateAndUpdate</recordTriggerType>
-    <triggerOrder>100</triggerOrder>
 
     <!-- ENTRY CRITERIA: status changed to Issued -->
     <start>
         <locationX>176</locationX>
         <locationY>48</locationY>
+        <object>nepa_required_permit__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
         <connector>
             <targetReference>Get_InspectionSchedules</targetReference>
         </connector>
@@ -25,9 +24,6 @@
                 <stringValue>Issued</stringValue>
             </value>
         </filters>
-        <object>nepa_required_permit__c</object>
-        <recordTriggerType>CreateAndUpdate</recordTriggerType>
-        <triggerType>RecordAfterSave</triggerType>
     </start>
 
     <!-- VARIABLES -->
@@ -66,6 +62,28 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
         <objectType>Visit</objectType>
+    </variables>
+    <variables>
+        <name>var_StateCode</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_StateWarning</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_CurrentSchedule</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>NEPA_Inspection_Schedule__mdt</objectType>
     </variables>
 
     <!-- FORMULAS -->
@@ -189,30 +207,6 @@
             <label>Yes</label>
         </rules>
     </decisions>
-
-    <!-- EXTRA VARIABLES for state lookup -->
-    <variables>
-        <name>var_StateCode</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-    <variables>
-        <name>var_StateWarning</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
-    <variables>
-        <name>var_CurrentSchedule</name>
-        <dataType>SObject</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>NEPA_Inspection_Schedule__mdt</objectType>
-    </variables>
 
     <!-- LOOP: one Visit per schedule record -->
     <loops>

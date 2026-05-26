@@ -5,15 +5,14 @@
     <label>NEPA Post-Decision Monitor Scheduler</label>
     <processType>AutoLaunchedFlow</processType>
     <status>Active</status>
-    <triggerType>RecordAfterSave</triggerType>
-    <object>IndividualApplication</object>
-    <recordTriggerType>Update</recordTriggerType>
-    <triggerOrder>300</triggerOrder>
 
     <!-- ENTRY CRITERIA: nepa_ar_locked__c changed to true -->
     <start>
         <locationX>176</locationX>
         <locationY>48</locationY>
+        <object>IndividualApplication</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
         <connector>
             <targetReference>Get_PostDecisionDocs</targetReference>
         </connector>
@@ -32,9 +31,6 @@
                 <booleanValue>true</booleanValue>
             </value>
         </filters>
-        <object>IndividualApplication</object>
-        <recordTriggerType>Update</recordTriggerType>
-        <triggerType>RecordAfterSave</triggerType>
     </start>
 
     <!-- VARIABLES -->
@@ -70,6 +66,11 @@
         <name>formula_Today</name>
         <dataType>Date</dataType>
         <expression>TODAY()</expression>
+    </formulas>
+    <formulas>
+        <name>formula_TaskSubject</name>
+        <dataType>String</dataType>
+        <expression>"Post-Decision Monitoring: " &amp; {!Loop_PostDecisionDocs.Document_Type__c}</expression>
     </formulas>
 
     <!-- RECORD LOOKUPS: Get all active post-decision doc requirements for this review type -->
@@ -176,7 +177,7 @@
             <assignToReference>var_SingleTask.Subject</assignToReference>
             <operator>Assign</operator>
             <value>
-                <stringValue>Post-Decision Monitoring: {!Loop_PostDecisionDocs.Document_Type__c}</stringValue>
+                <elementReference>formula_TaskSubject</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>

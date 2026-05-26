@@ -5,15 +5,14 @@
     <label>NEPA BiOp Reinitiation Checker</label>
     <processType>AutoLaunchedFlow</processType>
     <status>Active</status>
-    <triggerType>RecordAfterSave</triggerType>
-    <object>Visit</object>
-    <recordTriggerType>CreateAndUpdate</recordTriggerType>
-    <triggerOrder>200</triggerOrder>
 
     <!-- ENTRY CRITERIA: any reinitiation checkbox is true -->
     <start>
         <locationX>176</locationX>
         <locationY>48</locationY>
+        <object>Visit</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
         <connector>
             <targetReference>Decision_AnyTriggered</targetReference>
         </connector>
@@ -53,9 +52,6 @@
                 <booleanValue>true</booleanValue>
             </value>
         </filters>
-        <object>Visit</object>
-        <recordTriggerType>CreateAndUpdate</recordTriggerType>
-        <triggerType>RecordAfterSave</triggerType>
     </start>
 
     <!-- VARIABLES -->
@@ -112,6 +108,12 @@ IF({!$Record.nepa_reinit_rpa_not_implemented__c}, "RPA Not Implemented [50 CFR &
         <name>formula_TaskDue</name>
         <dataType>Date</dataType>
         <expression>TODAY() + 3</expression>
+    </formulas>
+    <formulas>
+        <name>formula_NewRiskDelta</name>
+        <dataType>Number</dataType>
+        <scale>0</scale>
+        <expression>{!var_CurrentRiskDelta} + 12</expression>
     </formulas>
 
     <!-- DECISIONS -->
@@ -299,14 +301,6 @@ IF({!$Record.nepa_reinit_rpa_not_implemented__c}, "RPA Not Implemented [50 CFR &
         </inputAssignments>
         <object>IndividualApplication</object>
     </recordUpdates>
-
-    <!-- FORMULA for +12 -->
-    <formulas>
-        <name>formula_NewRiskDelta</name>
-        <dataType>Number</dataType>
-        <scale>0</scale>
-        <expression>{!var_CurrentRiskDelta} + 12</expression>
-    </formulas>
 
     <!-- FAULT HANDLER -->
     <subflows>
