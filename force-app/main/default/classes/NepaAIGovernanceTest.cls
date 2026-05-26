@@ -85,6 +85,10 @@ private class NepaAIGovernanceTest {
         cv.nepa_reviewed_date__c = Date.today();
         update cv;
 
+        // NEPA_Stage_Gate_Doc_Check also requires nepa_surveys_complete__c = true at Draft EIS Published
+        ia.nepa_surveys_complete__c = true;
+        update ia;
+
         Test.startTest();
         Boolean threw = attemptDecisionGateComplete(ia.Id);
         Test.stopTest();

@@ -38,7 +38,7 @@ public with sharing class NepaCEIntakeController {
             ia.nepa_related_project__c = prog.Id;
             ia.LicenseTypeId = licenseTypeId;
             ia.Category = 'Permit';
-            ia.StatusCode = 'In Progress';
+            ia.InternalStatus = 'In Progress';
             ia.nepa_action_type__c = (String) processData.get('actionType');
             if (processData.get('disturbanceAcres') != null) {
                 ia.nepa_disturbance_acres__c = Decimal.valueOf(String.valueOf(processData.get('disturbanceAcres')));
@@ -47,6 +47,10 @@ public with sharing class NepaCEIntakeController {
             ia.nepa_regulatory_citation__c = (String) processData.get('regulatoryCitation');
             ia.nepa_ec_multi_dod__c = (Boolean) processData.get('ecMultiDod');
             ia.nepa_ec_usace_czma__c = (Boolean) processData.get('ecUsaczma');
+            String processDesc = (String) processData.get('processDescription');
+            if (processDesc != null && processDesc.length() > 0) {
+                ia.nepa_description__c = processDesc;
+            }
             insert ia;
 
             return ia.Id;

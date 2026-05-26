@@ -28,12 +28,13 @@ private class NepaCEIntakeControllerTest {
             'startDate'          => '2026-06-01'
         };
         Map<String, Object> processData = new Map<String, Object>{
-            'actionType'         => 'CE',
-            'disturbanceAcres'   => '5.5',
-            'purposeNeed'        => 'Provide renewable energy',
-            'regulatoryCitation' => '40 CFR 1508.4',
-            'ecMultiDod'         => false,
-            'ecUsaczma'          => false
+            'actionType'          => 'Construct New',
+            'disturbanceAcres'    => '5.5',
+            'purposeNeed'         => 'Provide renewable energy to the Denver metro area via utility-scale solar installation.',
+            'processDescription'  => 'This proposed action involves construction and operation of a new utility-scale solar energy facility. The project is located on previously disturbed land in the Denver metropolitan area. Disturbance type is new construction on existing industrial land. Estimated disturbance acreage is 5.5 acres. No extraordinary circumstances identified.',
+            'regulatoryCitation'  => '40 CFR 1508.4',
+            'ecMultiDod'          => false,
+            'ecUsaczma'           => false
         };
 
         Test.startTest();
@@ -43,14 +44,14 @@ private class NepaCEIntakeControllerTest {
         System.assertNotEquals(null, iaId, 'Should return a new IA Id');
 
         IndividualApplication ia = [
-            SELECT Id, nepa_related_project__c, Category, StatusCode,
+            SELECT Id, nepa_related_project__c, Category, InternalStatus,
                    nepa_action_type__c, nepa_disturbance_acres__c
             FROM IndividualApplication
             WHERE Id = :iaId
         ];
         System.assertEquals('Permit', ia.Category);
-        System.assertEquals('In Progress', ia.StatusCode);
-        System.assertEquals('CE', ia.nepa_action_type__c);
+        System.assertEquals('In Progress', ia.InternalStatus);
+        System.assertEquals('Construct New', ia.nepa_action_type__c);
         System.assertNotEquals(null, ia.nepa_related_project__c, 'IA must be linked to Program');
         System.assertEquals(5.5, ia.nepa_disturbance_acres__c);
 
@@ -123,7 +124,7 @@ private class NepaCEIntakeControllerTest {
         ia.nepa_related_project__c = prog.Id;
         ia.LicenseTypeId = rat.Id;
         ia.Category = 'Permit';
-        ia.StatusCode = 'In Progress';
+        ia.InternalStatus = 'In Progress';
         insert ia;
 
         Test.startTest();
@@ -151,10 +152,10 @@ private class NepaCEIntakeControllerTest {
         ia.nepa_related_project__c = prog.Id;
         ia.LicenseTypeId = rat.Id;
         ia.Category = 'Permit';
-        ia.StatusCode = 'In Progress';
+        ia.InternalStatus = 'In Progress';
         ia.nepa_review_type__c = 'CE';
         ia.nepa_process_code__c = 'CE-001';
-        ia.nepa_screening_confidence__c = 0.92;
+        ia.nepa_screening_confidence__c = 'High';
         insert ia;
 
         Test.startTest();
@@ -163,6 +164,6 @@ private class NepaCEIntakeControllerTest {
 
         System.assertEquals('CE', result.get('reviewType'));
         System.assertEquals('CE-001', result.get('ceCode'));
-        System.assertEquals(0.92, result.get('confidence'));
+        System.assertEquals('High', result.get('confidence'));
     }
 }

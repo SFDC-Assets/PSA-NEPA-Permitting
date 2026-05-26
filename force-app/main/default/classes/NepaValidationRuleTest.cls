@@ -323,26 +323,32 @@ private class NepaValidationRuleTest {
 
     @IsTest
     static void phase2Gate_notApplicable_decisionStageAllowed() {
+        // NEPA_Phase2_Applicability_Setter before-save flow fires on every IA update where
+        // review_type is set. To get applicable=false, switch to CE so the setter clears both flags.
         IndividualApplication ia = getProcess();
-        ia.nepa_phase2_applicable__c          = false;
-        ia.nepa_climate_assessment_required__c = true;
+        ia.nepa_review_type__c                 = 'CE';
         ia.nepa_climate_assessment_complete__c = false;
         ia.nepa_process_stage__c               = 'Decision';
         update ia;
-        IndividualApplication saved = [SELECT nepa_process_stage__c FROM IndividualApplication WHERE Id = :ia.Id];
+        IndividualApplication saved = [SELECT nepa_process_stage__c, nepa_phase2_applicable__c
+                                       FROM IndividualApplication WHERE Id = :ia.Id];
         System.assertEquals('Decision', saved.nepa_process_stage__c);
+        System.assertEquals(false, saved.nepa_phase2_applicable__c);
     }
 
     @IsTest
     static void phase2Gate_notRequired_decisionStageAllowed() {
+        // Switch to CE so the Phase2 setter clears both applicable and required flags,
+        // which is the "not required" bypass path for the climate gate.
         IndividualApplication ia = getProcess();
-        ia.nepa_phase2_applicable__c          = true;
-        ia.nepa_climate_assessment_required__c = false;
+        ia.nepa_review_type__c                 = 'CE';
         ia.nepa_climate_assessment_complete__c = false;
         ia.nepa_process_stage__c               = 'Decision';
         update ia;
-        IndividualApplication saved = [SELECT nepa_process_stage__c FROM IndividualApplication WHERE Id = :ia.Id];
+        IndividualApplication saved = [SELECT nepa_process_stage__c, nepa_climate_assessment_required__c
+                                       FROM IndividualApplication WHERE Id = :ia.Id];
         System.assertEquals('Decision', saved.nepa_process_stage__c);
+        System.assertEquals(false, saved.nepa_climate_assessment_required__c);
     }
 
     @IsTest

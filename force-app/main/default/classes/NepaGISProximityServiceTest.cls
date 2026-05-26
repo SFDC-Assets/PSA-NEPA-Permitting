@@ -415,12 +415,14 @@ private class NepaGISProximityServiceTest {
     }
 
     @IsTest
-    static void gisLayerCmt_bufferDistancesArePositive() {
+    static void gisLayerCmt_bufferDistancesAreNonNegative() {
+        // Buffer_Miles__c = 0 is valid for point-in-polygon containment layers (e.g. EPA Air Nonattainment)
+        // where proximity radius is irrelevant and the query tests whether the point falls inside the polygon.
         List<NEPA_GIS_Layer__mdt> layers = [
             SELECT DeveloperName, Buffer_Miles__c FROM NEPA_GIS_Layer__mdt WHERE Active__c = true
         ];
         for (NEPA_GIS_Layer__mdt l : layers) {
-            System.assert(l.Buffer_Miles__c > 0, l.DeveloperName + ': Buffer_Miles__c must be > 0');
+            System.assert(l.Buffer_Miles__c >= 0, l.DeveloperName + ': Buffer_Miles__c must be >= 0; got: ' + l.Buffer_Miles__c);
         }
     }
 }

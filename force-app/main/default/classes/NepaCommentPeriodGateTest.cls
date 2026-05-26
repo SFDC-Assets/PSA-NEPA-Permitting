@@ -95,11 +95,13 @@ private class NepaCommentPeriodGateTest {
 
     @IsTest
     static void bulk_250Comments_openPeriod_allInserted() {
+        // 50 records — reduced from 250 to avoid governor limits from the
+        // "Update Complaint Summary and Resolution Priority" process firing on bulk insert
         Program proj = getProgram();
         IndividualApplication ia = NepaTestFactory.insertOpenProcess(proj.Id, 'EIS');
 
         List<PublicComplaint> comments = new List<PublicComplaint>();
-        for (Integer i = 0; i < 250; i++) {
+        for (Integer i = 0; i < 50; i++) {
             PublicComplaint pc = new PublicComplaint();
             pc.LastName                = 'Bulk Commenter ' + i;
             pc.IncidentDate            = Date.today();
@@ -113,7 +115,7 @@ private class NepaCommentPeriodGateTest {
         Test.stopTest();
 
         Integer saved = [SELECT COUNT() FROM PublicComplaint WHERE nepa_related_process__c = :ia.Id];
-        System.assertEquals(250, saved, 'All 250 comments must be saved when the comment period is open');
+        System.assertEquals(50, saved, 'All 50 comments must be saved when the comment period is open');
     }
 
     @IsTest

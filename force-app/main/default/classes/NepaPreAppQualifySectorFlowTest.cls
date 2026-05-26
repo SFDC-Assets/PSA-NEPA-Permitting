@@ -69,7 +69,8 @@ private class NepaPreAppQualifySectorFlowTest {
 
     @IsTest
     static void validMiningSector_returnsSectorKeyAndAgency() {
-        Map<String, Object> inputs = buildInputs('212210', 'Mining',
+        // CMT Sector__c value is 'Materials and Manufacturing'; 'Mining' is a picklist label, not the stored value
+        Map<String, Object> inputs = buildInputs('212210', 'Materials and Manufacturing',
             'Open pit copper mine expansion on BLM land', 'NV');
 
         Test.startTest();
@@ -86,7 +87,8 @@ private class NepaPreAppQualifySectorFlowTest {
 
     @IsTest
     static void blankSectorAndNAICS_returnsValidationFailureWithMessage() {
-        Map<String, Object> inputs = buildInputs('', '', 'Some project description', 'CA');
+        // Flow checks IsNull — empty string '' is non-null in Flow; must pass null to trigger the guard
+        Map<String, Object> inputs = buildInputs(null, null, 'Some project description', 'CA');
 
         Test.startTest();
         Flow.Interview interview = Flow.Interview.createInterview('NEPA_PreApp_Qualify_Sector', inputs);

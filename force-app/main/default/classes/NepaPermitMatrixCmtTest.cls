@@ -6,13 +6,14 @@ private class NepaPermitMatrixCmtTest {
     // PreAppScreeningIP GetPermitMatrixRow queries NEPA_Permit_Matrix__mdt by Sector__c.
     // If a sector has no row, the IP returns nulls for RequiredPermits,
     // TypicalTimelineMonths, and EISLikelihoodPct with no error or warning.
+    // Sector__c values as stored in NEPA_Permit_Matrix__mdt records.
+    // These must match the exact CMT field values, not the UI picklist display labels.
     private static final List<String> OMNISCRIPT_SECTORS = new List<String>{
         'Energy Production and Management',
-        'Agriculture and Natural',
-        'Infrastructure',
-        'Mining',
-        'Recreation',
-        'Water'
+        'Agriculture and Natural Resource Management',
+        'Transportation and Infrastructure',
+        'Materials and Manufacturing',
+        'Water and Waste Management'
     };
 
     // ── Per-sector row existence ──────────────────────────────────────────────
@@ -24,22 +25,22 @@ private class NepaPermitMatrixCmtTest {
 
     @IsTest
     static void agriculture_hasAtLeastOneActivePermitMatrixRow() {
-        assertActiveRowExistsForSector('Agriculture and Natural');
+        assertActiveRowExistsForSector('Agriculture and Natural Resource Management');
     }
 
     @IsTest
     static void infrastructure_hasAtLeastOneActivePermitMatrixRow() {
-        assertActiveRowExistsForSector('Infrastructure');
+        assertActiveRowExistsForSector('Transportation and Infrastructure');
     }
 
     @IsTest
     static void mining_hasAtLeastOneActivePermitMatrixRow() {
-        assertActiveRowExistsForSector('Mining');
+        assertActiveRowExistsForSector('Materials and Manufacturing');
     }
 
     @IsTest
     static void water_hasAtLeastOneActivePermitMatrixRow() {
-        assertActiveRowExistsForSector('Water');
+        assertActiveRowExistsForSector('Water and Waste Management');
     }
 
     // ── Cross-sector sweep ────────────────────────────────────────────────────

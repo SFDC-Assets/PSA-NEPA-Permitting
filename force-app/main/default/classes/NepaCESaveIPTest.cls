@@ -37,13 +37,13 @@ private class NepaCESaveIPTest {
         ia.LicenseTypeId                           = getLicenseTypeId();
         ia.nepa_related_project__c                 = proj.Id;
         ia.nepa_review_type__c                     = 'CE';
-        ia.nepa_process_status__c                  = 'submitted';
+        ia.nepa_process_status__c                  = 'pre-application';
         ia.nepa_process_stage__c                   = 'Scoping';
         ia.nepa_action_type__c                     = actionType != null ? actionType : 'Construct New';
         ia.nepa_disturbance_acres__c               = disturbanceAcres;
         ia.nepa_extraordinary_circumstances__c     = extraordinaryCircumstances ? 'Yes' : null;
         ia.nepa_start_date__c                      = Date.today();
-        ia.nepa_description__c                     = 'Test CE intake submission';
+        ia.nepa_description__c                     = 'This is a test CE intake submission for automated test purposes. The proposed action involves construction of new infrastructure within the project area. Disturbance type is new ground disturbance. Estimated acreage subject to impact is provided separately.';
         if (String.isNotBlank(externalId)) {
             ia.nepa_federal_unique_id__c = externalId;
         }
@@ -77,8 +77,8 @@ private class NepaCESaveIPTest {
         IndividualApplication result = [
             SELECT nepa_process_status__c FROM IndividualApplication WHERE Id = :ia.Id
         ];
-        System.assertEquals('submitted', result.nepa_process_status__c,
-            'CESaveIP must write nepa_process_status__c = submitted');
+        System.assertEquals('pre-application', result.nepa_process_status__c,
+            'CESaveIP must write nepa_process_status__c = pre-application on new intake record');
     }
 
     @IsTest
