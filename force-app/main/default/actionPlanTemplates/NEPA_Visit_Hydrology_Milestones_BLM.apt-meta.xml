@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ActionPlanTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>Field survey milestones for a Fisheries and Wildlife Biologist (Aquatic) Work Order. Covers riparian survey, amphibian presence/absence, and CWA Section 404 memo. Target object: Visit.</description>
+    <description>Field survey milestones for a hydrologist Visit triggered by NWI Wetlands or other aquatic/riparian GIS layer detection. Covers pre-survey prep, field assessment, CWA/NPDES review, and delineation report. Target object: Visit.</description>
     <isAdHocItemCreationEnabled>false</isAdHocItemCreationEnabled>
-    <name>NEPA WO Aquatic Milestones</name>
+    <name>NEPA Visit Hydrology Milestones</name>
     <targetEntityType>Visit</targetEntityType>
-    <uniqueName>NEPA_WO_Aquatic_Milestones_BLM</uniqueName>
+    <uniqueName>NEPA_Visit_Hydrology_Milestones_BLM</uniqueName>
     <actionPlanTemplateItem>
         <displayOrder>1</displayOrder>
         <isRequired>true</isRequired>
         <itemEntityType>AssessmentTask</itemEntityType>
-        <name>Aquatic Species Desktop Review</name>
-        <uniqueName>NEPA_WO_Aqua_1_Desktop_BLM</uniqueName>
+        <name>Pre-Survey Desktop Review</name>
+        <uniqueName>NEPA_Visit_Hydro_1_Desktop_BLM</uniqueName>
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
             <name>Name</name>
-            <valueLiteral>Aquatic Species Desktop Review</valueLiteral>
+            <valueLiteral>Pre-Survey Desktop Review — Hydrology</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
@@ -34,19 +34,19 @@
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
-            <valueLiteral>Query USFWS IPaC, NatureServe, and state Natural Heritage Program for T&amp;E fish, amphibian, and aquatic invertebrate species with confirmed occurrences within the HUC-12 watershed containing the project APE. Review state fish passage barrier databases for context. Pull NHD reaches and classify all water features within 1,000 feet of project footprint as perennial, intermittent, or ephemeral. Identify Section 7 ESA consultation history for the watershed and any applicable BO terms and conditions.</valueLiteral>
+            <valueLiteral>Review NWI Wetlands layer detection output, USGS NHD flowlines, and project-area topo maps. Identify all water features within 300 feet of the project footprint. Compile jurisdictional determination history for the APE. Request hydric soils data from NRCS Web Soil Survey. Document any prior Section 404/401 permits for the parcel.</valueLiteral>
         </actionPlanTemplateItemValue>
     </actionPlanTemplateItem>
     <actionPlanTemplateItem>
         <displayOrder>2</displayOrder>
         <isRequired>true</isRequired>
         <itemEntityType>AssessmentTask</itemEntityType>
-        <name>Riparian Survey and Fish Habitat Assessment</name>
-        <uniqueName>NEPA_WO_Aqua_2_Riparian_BLM</uniqueName>
+        <name>Wetland and Waterway Field Assessment</name>
+        <uniqueName>NEPA_Visit_Hydro_2_Field_BLM</uniqueName>
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
             <name>Name</name>
-            <valueLiteral>Riparian Survey and Fish Habitat Assessment</valueLiteral>
+            <valueLiteral>Wetland and Waterway Field Assessment</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
@@ -66,19 +66,19 @@
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
-            <valueLiteral>Conduct habitat assessment of all water features within 300 feet of project APE per Proper Functioning Condition (PFC) or Rosgen method. Document channel condition, substrate composition, pool-riffle ratio, riparian vegetation density and composition, bank stability, and stream flow regime. Conduct visual electrofishing or snorkel survey for fish species documentation where flow allows. Sample macroinvertebrates at representative riffles for biotic integrity index. Note any evidence of channelization, culverts requiring fish passage review, or historic channel avulsion.</valueLiteral>
+            <valueLiteral>Conduct field-based wetland delineation per the Corps of Engineers Wetland Delineation Manual (1987) and applicable regional supplement. Document hydrology indicators, hydric soils, and hydrophytic vegetation. GPS-mark all wetland boundaries, OHWM, and ephemeral/intermittent channel crossings. Photograph and complete data forms for each sample point. Note any evidence of prior disturbance or fill.</valueLiteral>
         </actionPlanTemplateItemValue>
     </actionPlanTemplateItem>
     <actionPlanTemplateItem>
         <displayOrder>3</displayOrder>
         <isRequired>true</isRequired>
         <itemEntityType>AssessmentTask</itemEntityType>
-        <name>Amphibian Presence/Absence Survey</name>
-        <uniqueName>NEPA_WO_Aqua_3_Amphibian_BLM</uniqueName>
+        <name>CWA Section 404/401 and NPDES Review</name>
+        <uniqueName>NEPA_Visit_Hydro_3_CWA_BLM</uniqueName>
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
             <name>Name</name>
-            <valueLiteral>Amphibian Presence/Absence Survey</valueLiteral>
+            <valueLiteral>CWA Section 404/401 and NPDES Permit Review</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
@@ -98,19 +98,19 @@
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
-            <valueLiteral>Conduct presence/absence surveys for T&amp;E amphibian species (e.g., boreal toad, Columbia spotted frog, western toad) using visual encounter surveys and call playback where appropriate. Survey all suitable breeding habitat (ponds, slow-water reaches, seeps) within project APE. Conduct three surveys spaced at least 7 days apart during active breeding season. Document water temperature, pH, and presence of chytrid fungus (Bd) if sampling warranted by protocol. Photograph all detections. Note any evidence of livestock trampling or vehicle disturbance at breeding sites.</valueLiteral>
+            <valueLiteral>Determine whether project activities require CWA Section 404 individual or nationwide permit (NWP). Document applicable NWP conditions and general conditions checklist. Evaluate need for 401 Water Quality Certification from state agency. Assess stormwater discharge triggers for NPDES Construction General Permit (CGP) coverage. Identify any ACOE pre-construction notification (PCN) requirements.</valueLiteral>
         </actionPlanTemplateItemValue>
     </actionPlanTemplateItem>
     <actionPlanTemplateItem>
         <displayOrder>4</displayOrder>
         <isRequired>true</isRequired>
         <itemEntityType>AssessmentTask</itemEntityType>
-        <name>CWA Section 404 and ESA Section 7 Memo</name>
-        <uniqueName>NEPA_WO_Aqua_4_Memo_BLM</uniqueName>
+        <name>Hydrology Assessment Report</name>
+        <uniqueName>NEPA_Visit_Hydro_4_Report_BLM</uniqueName>
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
             <name>Name</name>
-            <valueLiteral>CWA Section 404 and ESA Section 7 Aquatic Species Memo</valueLiteral>
+            <valueLiteral>Hydrology Assessment Report — Final Submission</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
@@ -130,7 +130,7 @@
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
-            <valueLiteral>Compile riparian survey, fish habitat assessment, and amphibian survey results. Provide CWA Section 404 jurisdictional determination memo documenting waters of the U.S. within APE. Document ESA Section 7 effect determination (no effect / may affect, not likely to adversely affect / may affect, likely to adversely affect) for each aquatic T&amp;E species. If formal Section 7 consultation with USFWS is required, draft the Biological Assessment sections covering project description, species account, effects analysis, and minimization measures. Upload report as ContentVersion. Mark Work Order Status = Completed when report is approved.</valueLiteral>
+            <valueLiteral>Compile wetland delineation report, CWA jurisdictional determination summary, permit triggers matrix, and recommended mitigation or avoidance measures. Upload final report as ContentVersion linked to this field survey Visit and to the NEPA IndividualApplication. Confirm Section 7 USFWS coordination needs for any aquatic T&amp;E species. Mark field survey Visit Status = Completed when report is approved by NEPA lead.</valueLiteral>
         </actionPlanTemplateItemValue>
     </actionPlanTemplateItem>
 </ActionPlanTemplate>

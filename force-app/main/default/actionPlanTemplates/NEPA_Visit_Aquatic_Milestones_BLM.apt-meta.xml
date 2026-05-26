@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ActionPlanTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>Field survey milestones for a Botanist Work Order. Two seasonal site visits (June-July and August) for rare plant detection, plus seed mix approval. Target object: Visit.</description>
+    <description>Field survey milestones for a Fisheries and Wildlife Biologist (Aquatic) field survey Visit. Covers riparian survey, amphibian presence/absence, and CWA Section 404 memo. Target object: Visit.</description>
     <isAdHocItemCreationEnabled>false</isAdHocItemCreationEnabled>
-    <name>NEPA WO Botanical Milestones</name>
+    <name>NEPA Visit Aquatic Milestones</name>
     <targetEntityType>Visit</targetEntityType>
-    <uniqueName>NEPA_WO_Botanical_Milestones_BLM</uniqueName>
+    <uniqueName>NEPA_Visit_Aquatic_Milestones_BLM</uniqueName>
     <actionPlanTemplateItem>
         <displayOrder>1</displayOrder>
         <isRequired>true</isRequired>
         <itemEntityType>AssessmentTask</itemEntityType>
-        <name>Botanical Desktop Review and Survey Planning</name>
-        <uniqueName>NEPA_WO_Bot_1_Desktop_BLM</uniqueName>
+        <name>Aquatic Species Desktop Review</name>
+        <uniqueName>NEPA_Visit_Aqua_1_Desktop_BLM</uniqueName>
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
             <name>Name</name>
-            <valueLiteral>Botanical Desktop Review and Survey Planning</valueLiteral>
+            <valueLiteral>Aquatic Species Desktop Review</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
@@ -34,19 +34,19 @@
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
-            <valueLiteral>Query USDA PLANTS database, state Natural Heritage Program, and BLM sensitive species list for all T&amp;E and BLM sensitive plant species with documented occurrences within 5 miles of project APE. Review herbarium records and state/federal GIS occurrence layers. Identify peak bloom windows for each species requiring detection surveys. Pull USGS topo and aerial imagery to map suitable habitat patches within APE. Prepare species-specific survey protocols and field data forms.</valueLiteral>
+            <valueLiteral>Query USFWS IPaC, NatureServe, and state Natural Heritage Program for T&amp;E fish, amphibian, and aquatic invertebrate species with confirmed occurrences within the HUC-12 watershed containing the project APE. Review state fish passage barrier databases for context. Pull NHD reaches and classify all water features within 1,000 feet of project footprint as perennial, intermittent, or ephemeral. Identify Section 7 ESA consultation history for the watershed and any applicable BO terms and conditions.</valueLiteral>
         </actionPlanTemplateItemValue>
     </actionPlanTemplateItem>
     <actionPlanTemplateItem>
         <displayOrder>2</displayOrder>
         <isRequired>true</isRequired>
         <itemEntityType>AssessmentTask</itemEntityType>
-        <name>Site Visit 1 — Early Season Survey (June–July)</name>
-        <uniqueName>NEPA_WO_Bot_2_Visit1_BLM</uniqueName>
+        <name>Riparian Survey and Fish Habitat Assessment</name>
+        <uniqueName>NEPA_Visit_Aqua_2_Riparian_BLM</uniqueName>
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
             <name>Name</name>
-            <valueLiteral>Botanical Site Visit 1 — Early Season Survey (June–July)</valueLiteral>
+            <valueLiteral>Riparian Survey and Fish Habitat Assessment</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
@@ -66,19 +66,19 @@
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
-            <valueLiteral>Conduct early-season floristic survey of entire APE plus 50-foot buffer. Survey all suitable habitat patches for early-blooming T&amp;E and BLM sensitive species. Use 100% coverage transect methodology for high-potential habitat; modified-Whittaker or targeted search for lower-potential areas. Document all occurrences with GPS coordinates, population size, phenological stage, and condition. Photograph representative individuals. Note general vegetation community composition for each habitat patch.</valueLiteral>
+            <valueLiteral>Conduct habitat assessment of all water features within 300 feet of project APE per Proper Functioning Condition (PFC) or Rosgen method. Document channel condition, substrate composition, pool-riffle ratio, riparian vegetation density and composition, bank stability, and stream flow regime. Conduct visual electrofishing or snorkel survey for fish species documentation where flow allows. Sample macroinvertebrates at representative riffles for biotic integrity index. Note any evidence of channelization, culverts requiring fish passage review, or historic channel avulsion.</valueLiteral>
         </actionPlanTemplateItemValue>
     </actionPlanTemplateItem>
     <actionPlanTemplateItem>
         <displayOrder>3</displayOrder>
         <isRequired>true</isRequired>
         <itemEntityType>AssessmentTask</itemEntityType>
-        <name>Site Visit 2 — Late Season Survey (August)</name>
-        <uniqueName>NEPA_WO_Bot_3_Visit2_BLM</uniqueName>
+        <name>Amphibian Presence/Absence Survey</name>
+        <uniqueName>NEPA_Visit_Aqua_3_Amphibian_BLM</uniqueName>
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
             <name>Name</name>
-            <valueLiteral>Botanical Site Visit 2 — Late Season Survey (August)</valueLiteral>
+            <valueLiteral>Amphibian Presence/Absence Survey</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
@@ -98,19 +98,19 @@
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
-            <valueLiteral>Conduct late-season floristic survey targeting late-blooming species not detectable in June-July survey. Re-survey any high-potential habitat patches with negative results from Visit 1 to confirm absence. Document any changes in population condition since Visit 1. Collect voucher specimens for any unidentified individuals requiring taxonomic confirmation. Update GPS data and population size estimates. Photograph all new detections.</valueLiteral>
+            <valueLiteral>Conduct presence/absence surveys for T&amp;E amphibian species (e.g., boreal toad, Columbia spotted frog, western toad) using visual encounter surveys and call playback where appropriate. Survey all suitable breeding habitat (ponds, slow-water reaches, seeps) within project APE. Conduct three surveys spaced at least 7 days apart during active breeding season. Document water temperature, pH, and presence of chytrid fungus (Bd) if sampling warranted by protocol. Photograph all detections. Note any evidence of livestock trampling or vehicle disturbance at breeding sites.</valueLiteral>
         </actionPlanTemplateItemValue>
     </actionPlanTemplateItem>
     <actionPlanTemplateItem>
         <displayOrder>4</displayOrder>
         <isRequired>true</isRequired>
         <itemEntityType>AssessmentTask</itemEntityType>
-        <name>Reclamation Seed Mix Approval</name>
-        <uniqueName>NEPA_WO_Bot_4_SeedMix_BLM</uniqueName>
+        <name>CWA Section 404 and ESA Section 7 Memo</name>
+        <uniqueName>NEPA_Visit_Aqua_4_Memo_BLM</uniqueName>
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
             <name>Name</name>
-            <valueLiteral>Reclamation Seed Mix Review and Approval</valueLiteral>
+            <valueLiteral>CWA Section 404 and ESA Section 7 Aquatic Species Memo</valueLiteral>
         </actionPlanTemplateItemValue>
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
@@ -130,7 +130,7 @@
         <actionPlanTemplateItemValue>
             <itemEntityType>AssessmentTask</itemEntityType>
             <name>Description</name>
-            <valueLiteral>Develop native seed mix appropriate to plant communities documented in survey. Use only locally adapted, weed-free seed from certified sources. Avoid invasive or noxious weed species. Specify seeding rates (lbs PLS/acre) for each species component. Verify mix against BLM state office approved seed lists and habitat type. Document measures to control cheatgrass (Bromus tectorum) and other annual invasives during reclamation. Upload seed mix memo as ContentVersion. Mark Work Order Status = Completed when report and seed mix are approved by NEPA lead.</valueLiteral>
+            <valueLiteral>Compile riparian survey, fish habitat assessment, and amphibian survey results. Provide CWA Section 404 jurisdictional determination memo documenting waters of the U.S. within APE. Document ESA Section 7 effect determination (no effect / may affect, not likely to adversely affect / may affect, likely to adversely affect) for each aquatic T&amp;E species. If formal Section 7 consultation with USFWS is required, draft the Biological Assessment sections covering project description, species account, effects analysis, and minimization measures. Upload report as ContentVersion. Mark field survey Visit Status = Completed when report is approved.</valueLiteral>
         </actionPlanTemplateItemValue>
     </actionPlanTemplateItem>
 </ActionPlanTemplate>

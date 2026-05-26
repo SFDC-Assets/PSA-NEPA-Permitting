@@ -2,11 +2,11 @@
 <CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    <label>WO Aquatic Resources - Field Survey</label>
+    <label>Visit Greater Sage-Grouse - Field Survey</label>
     <protected>false</protected>
     <values>
         <field>Template_Name__c</field>
-        <value xsi:type="xsd:string">Field Survey — Aquatic Resources - Field Survey</value>
+        <value xsi:type="xsd:string">Field Survey — Greater Sage-Grouse - Field Survey</value>
     </values>
     <values>
         <field>Template_Category__c</field>
@@ -18,15 +18,15 @@
     </values>
     <values>
         <field>Review_Type__c</field>
-        <value xsi:type="xsd:string">WO</value>
+        <value xsi:type="xsd:string">Visit</value>
     </values>
     <values>
         <field>Sector__c</field>
-        <value xsi:type="xsd:string">Aquatic Resources - Field Survey</value>
+        <value xsi:type="xsd:string">Greater Sage-Grouse - Field Survey</value>
     </values>
     <values>
         <field>APT_Unique_Name__c</field>
-        <value xsi:type="xsd:string">NEPA_WO_Aquatic_Milestones_BLM</value>
+        <value xsi:type="xsd:string">NEPA_Visit_SageGrouse_Milestones_BLM</value>
     </values>
     <values>
         <field>Package_Version__c</field>
@@ -38,6 +38,6 @@
     </values>
     <values>
         <field>Description__c</field>
-        <value xsi:type="xsd:string">Field Survey milestone checklist for Aquatic Resources - Field Survey projects. Published by BLM.</value>
+        <value xsi:type="xsd:string">Field Survey milestone checklist for Greater Sage-Grouse - Field Survey projects. Published by BLM.</value>
     </values>
 </CustomMetadata>
