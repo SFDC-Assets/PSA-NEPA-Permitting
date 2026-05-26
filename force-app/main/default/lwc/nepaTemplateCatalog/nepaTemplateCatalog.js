@@ -7,7 +7,7 @@ const REVIEW_TYPE_OPTIONS = [
     { label: 'CE — Categorical Exclusion', value: 'CE' },
     { label: 'EA — Environmental Assessment', value: 'EA' },
     { label: 'EIS — Environmental Impact Statement', value: 'EIS' },
-    { label: 'WO — Field Survey / Work Order', value: 'WO' }
+    { label: 'Visit — Field Survey', value: 'Visit' }
 ];
 
 const SECTOR_OPTIONS = [

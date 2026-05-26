@@ -11,7 +11,7 @@
 private class NepaTemplateCatalogCmtTest {
 
     private static final Set<String> VALID_REVIEW_TYPES = new Set<String>{
-        'CE', 'EA', 'EIS', 'WO', 'All'
+        'CE', 'EA', 'EIS', 'Visit', 'All'
     };
 
     private static final Set<String> EXPECTED_APT_NAMES = new Set<String>{
@@ -36,10 +36,10 @@ private class NepaTemplateCatalogCmtTest {
         'NEPA_EIS_Military_Urban_Regulatory', 'NEPA_EIS_Process_Milestones',
         'NEPA_EIS_Transportation_Land', 'NEPA_EIS_Transportation_Water',
         'NEPA_EIS_Water_Resources',
-        'NEPA_WO_Aquatic_Milestones_BLM', 'NEPA_WO_BigGame_Milestones_BLM',
-        'NEPA_WO_Botanical_Milestones_BLM', 'NEPA_WO_Geology_Milestones_BLM',
-        'NEPA_WO_Hydrology_Milestones_BLM', 'NEPA_WO_MigratoryBird_Milestones_BLM',
-        'NEPA_WO_SageGrouse_Milestones_BLM'
+        'NEPA_Visit_Aquatic_Milestones_BLM', 'NEPA_Visit_BigGame_Milestones_BLM',
+        'NEPA_Visit_Botanical_Milestones_BLM', 'NEPA_Visit_Geology_Milestones_BLM',
+        'NEPA_Visit_Hydrology_Milestones_BLM', 'NEPA_Visit_MigratoryBird_Milestones_BLM',
+        'NEPA_Visit_SageGrouse_Milestones_BLM'
     };
 
     // ── Count ─────────────────────────────────────────────────────────────────
@@ -120,7 +120,7 @@ private class NepaTemplateCatalogCmtTest {
         for (NEPA_Template_Catalog__mdt r : records) {
             System.assert(VALID_REVIEW_TYPES.contains(r.Review_Type__c),
                 r.DeveloperName + ': Review_Type__c "' + r.Review_Type__c +
-                '" is not a valid value. Must be one of: CE, EA, EIS, WO, All. ' +
+                '" is not a valid value. Must be one of: CE, EA, EIS, Visit, All. ' +
                 'getCatalog() filter will not return this record correctly.');
         }
     }
@@ -186,8 +186,8 @@ private class NepaTemplateCatalogCmtTest {
     }
 
     @IsTest
-    static void woFieldSurveyRecords_exist() {
-        assertCountByReviewType('WO', 7);
+    static void visitFieldSurveyRecords_exist() {
+        assertCountByReviewType('Visit', 7);
     }
 
     private static void assertCountByReviewType(String reviewType, Integer expected) {
