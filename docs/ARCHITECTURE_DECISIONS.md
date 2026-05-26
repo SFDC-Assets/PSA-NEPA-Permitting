@@ -25,6 +25,9 @@ Open-source NEPA permitting accelerator built on Salesforce Agentforce for Publi
 | 011 | [OmniScript CE Intake over Screen Flow](#adr-011--omniscript-ce-intake-over-screen-flow) | Accepted |
 | 012 | [nepa_process_stage__c Text → Picklist and Salesforce Path](#adr-012--nepa_process_stage__c-text--picklist-and-salesforce-path) | Accepted |
 | 013 | [Cross-Agency Permit Status: Live NEPA REST Callout over External Objects](#adr-013--cross-agency-permit-status-live-nepa-rest-callout-over-external-objects) | Accepted |
+| App. A | [Architecture Diagrams](#appendix-a--architecture-diagrams) | Reference |
+| App. B | [Architecture Review — Static Analysis](#appendix-b--architecture-review--static-analysis) | Reference |
+| App. C | [OmniStudio Backlog Detail](#appendix-c--omnistudio-backlog-detail) | Reference |
 
 ---
 
@@ -604,4 +607,452 @@ The CEQ REST endpoint shape this accelerator parses on incoming calls is the sam
 - **Governor limits.** Each page load makes one HTTP callout per active permit record. For a process with 6 dependent permits across 6 agencies, that is 6 sequential callouts — within the 100-callout-per-transaction governor limit, but large numbers of permits (>20) could approach synchronous timeout. Mitigation: the 10-second per-callout timeout ensures the page does not hang indefinitely; the graceful-degradation path ensures a timeout surfaces as a cached-data warning rather than an error state.
 - **Endpoint placeholder deployment pattern.** The three starter Named Credentials (`NEPA_Agency_USACE`, `NEPA_Agency_USFWS`, `NEPA_Agency_BLM`) deploy with placeholder hostnames. Operators update these to real agency NEPA API URLs post-deploy. Until updated, callouts will fail gracefully and display locally-cached status — this is the intended behavior during initial setup.
 - **CEQ interoperability guarantee.** Because both the callout target (`/services/apexrest/nepa/v1/processes/{id}`) and the callout source use the same CEQ standard REST endpoint shape, no per-agency schema mapping is required. This is a durable interoperability guarantee as long as all agencies deploy against the CEQ standard.
-- **`permits[]` node in CEQExport — delivered via Apex.** The `NepaCeqFullExportService` (`POST /services/apexrest/nepa/v1/export/project`) includes a `permits[]` array under each process node, mapping all `nepa_required_permit__c` fields to CEQ snake_case property names. The OmniStudio IP extension path (`DR_Extract_NEPA_RequiredPermit` + `NEPA_CEQExport` IP) was abandoned; the DR JSON file is present as a design artifact. See `OMNISTUDIO-BACKLOG.md` F3.
+- **`permits[]` node in CEQExport — delivered via Apex.** The `NepaCeqFullExportService` (`POST /services/apexrest/nepa/v1/export/project`) includes a `permits[]` array under each process node, mapping all `nepa_required_permit__c` fields to CEQ snake_case property names. The OmniStudio IP extension path (`DR_Extract_NEPA_RequiredPermit` + `NEPA_CEQExport` IP) was abandoned; the DR JSON file is present as a design artifact. See [Appendix C](#appendix-c--omnistudio-backlog-detail) for full component inventory.
+
+---
+
+## Appendix A — Architecture Diagrams
+
+Architecture and data-flow reference. See also [FLOW-ARCHITECTURE.md](FLOW-ARCHITECTURE.md) for the full flow inventory.
+
+### A.1 System Context
+
+```mermaid
+C4Context
+    title PSA-NEPA Permitting Accelerator — System Context
+
+    Person(coord, "NEPA Coordinator", "Agency staff managing EIS/EA/CE reviews")
+    Person(applicant, "Applicant / Proponent", "Submits permit applications and comments")
+    Person(legal, "Legal / Risk Reviewer", "Reviews litigation risk flags and tribal escalations")
+
+    System(nepa, "PSA-NEPA Accelerator", "Salesforce APS — case management, risk intelligence, GIS proximity, comment triage, CEQ export")
+
+    System_Ext(fpisc, "FPISC Permitting Dashboard", "Federal permitting reporting (CEQ JSON export)")
+    System_Ext(arcgis, "ArcGIS / Federal GIS Services", "Critical habitat, wetlands, EJSCREEN, BLM surface")
+    System_Ext(permittec, "PermitTEC v0.1 Corpus", "761 NEPA litigation cases — calibrates risk weights (offline)")
+    System_Ext(netatec, "NETATEC v2.0 Corpus", "61,881 NEPA projects — calibrates EIS scoping baselines (offline)")
+    System_Ext(idp, "Agency Identity Provider", "PIV/CAC SSO via SAML 2.0")
+
+    Rel(coord, nepa, "Manages reviews, assigns team, reviews risk flags")
+    Rel(applicant, nepa, "Submits application, comments, checks status", "Experience Cloud portal")
+    Rel(legal, nepa, "Reviews litigation risk scores and tribal escalations")
+    Rel(nepa, fpisc, "Exports CEQ-standard JSON payload", "REST API / SFTP")
+    Rel(nepa, arcgis, "Proximity checks on project coordinates", "Named Credential HTTPS")
+    Rel(nepa, idp, "Staff authentication", "SAML 2.0")
+    Rel(permittec, nepa, "Calibration data baked into CMT risk weight records", "offline import")
+    Rel(netatec, nepa, "EIS scoping baselines baked into CMT records", "offline import")
+```
+
+### A.2 Data Model — Core CEQ Entities
+
+```mermaid
+erDiagram
+    Program["Program (CEQ Entity 1 — Project)"] {
+        string nepa_project_id__c "External ID"
+        string nepa_record_owner_agency__c
+        string nepa_circuit__c
+        string nepa_primary_sector__c
+        string nepa_adjacent_statutes__c
+        string nepa_agency_performance_tier__c
+        number nepa_location_lat__c
+        number nepa_location_lon__c
+    }
+
+    IndividualApplication["IndividualApplication (CEQ Entity 2 — Process)"] {
+        string nepa_review_type__c "CE / EA / EIS"
+        string nepa_process_stage__c
+        string StatusCode
+        number nepa_risk_score__c
+        string nepa_risk_tier__c
+        number nepa_challenge_risk_delta__c
+        boolean nepa_tribal_plaintiff_flag__c
+        boolean nepa_scoping_overrun_flag__c
+        number nepa_record_completeness__c
+    }
+
+    ContentVersion["ContentVersion (CEQ Entity 3 — Documents)"] {
+        string nepa_document_type__c
+        string nepa_document_status__c
+        number nepa_page_count__c
+        boolean nepa_public_access__c
+        boolean nepa_ai_generated__c
+    }
+
+    PublicComplaint["PublicComplaint (CEQ Entity 4 — Comments)"] {
+        string nepa_comment_classification__c
+        boolean nepa_plaintiff_risk_flag__c
+        string nepa_ai_classification__c
+        number nepa_ai_confidence__c
+    }
+
+    nepa_engagement["nepa_engagement__c (CEQ Entity 5 — Engagement Events)"] {
+        string nepa_event_type__c
+        boolean nepa_consultation_certified__c
+        number nepa_advance_notice_days__c
+    }
+
+    ApplicationTimeline["ApplicationTimeline (CEQ Entity 6 — Case Events)"] {
+        string Type
+        string Status
+        string nepa_tier__c
+        date StartDate
+        date EndDate
+    }
+
+    nepa_gis_data["nepa_gis_data__c (CEQ Entity 7 — GIS Data)"] {
+        string nepa_format__c
+        string nepa_coordinate_system__c
+        string nepa_bounding_box__c
+        string nepa_access_information__c
+    }
+
+    nepa_process_team_member["nepa_process_team_member__c (CEQ Entity 8 — User Roles)"] {
+        string nepa_role_type__c
+        boolean nepa_active__c
+        date nepa_start_date__c
+    }
+
+    RegulatoryCode["RegulatoryCode (CEQ Entity 9 — Legal Structure)"] {
+        string Name "Citation"
+        date EffectiveFrom
+        date EffectiveTo
+    }
+
+    nepa_litigation["nepa_litigation__c (Litigation Case Registry)"] {
+        string nepa_plaintiff_org__c
+        string nepa_outcome__c
+        string nepa_circuit__c
+        string nepa_statutes__c
+    }
+
+    Program ||--o{ IndividualApplication : "nepa_related_project__c"
+    IndividualApplication ||--o{ ContentVersion : "nepa_process__c"
+    IndividualApplication ||--o{ PublicComplaint : "MasterDetail"
+    IndividualApplication ||--o{ nepa_engagement : "MasterDetail"
+    IndividualApplication ||--o{ ApplicationTimeline : "nepa_related_process__c"
+    IndividualApplication ||--o{ nepa_process_team_member : "MasterDetail"
+    Program ||--o{ nepa_gis_data : "nepa_program__c"
+    nepa_litigation }o--|| Program : "nepa_related_project__c (optional)"
+```
+
+### A.3 Risk Intelligence Pipeline
+
+```mermaid
+flowchart TD
+    subgraph Triggers["Trigger Conditions (IndividualApplication after-save)"]
+        T1["nepa_review_type__c changed"]
+        T2["nepa_record_completeness__c changed"]
+        T3["nepa_scoping_overrun_flag__c changed"]
+    end
+
+    subgraph PreCompute["Pre-computation (NEPA_Litigation_Risk_Scorer Flow)"]
+        P1["Get Related Program\n(agency, circuit, sector, statutes)"]
+        P2["Get Active Statute Risk Weights\n(NEPA_Statute_Risk_Weight__mdt)"]
+        P3["Loop: Statute CONTAINS check\n→ accumulate var_StatutePoints"]
+        P4["Compute formula_SectorCircuitKey\n= sector + '|' + circuit"]
+        P5["Read nepa_challenge_risk_delta__c\n(from Challenge Predictor)"]
+        P6["Evaluate formula_IsExpedited\n(ISPICKVAL Expedited/Emergency)"]
+    end
+
+    subgraph BRE["Business Rules Engine\n(NEPA_Litigation_Risk_Scorer Expression Set V2)"]
+        B1["Decision Matrix: NEPA_Risk_ReviewType\n→ BaseTypeScore"]
+        B2["Decision Matrix: NEPA_Risk_Agency\n→ AgencyPoints\n(e.g. BLM=39, FERC=24)"]
+        B3["Decision Matrix: NEPA_Risk_Circuit\n→ CircuitPoints\n(e.g. 10th=43, 9th=36)"]
+        B4["Statute Points\n(pre-computed, passed as input)"]
+        B5["CompositeScore = BaseTypeScore\n+ AgencyPoints + CircuitPoints\n+ StatutePoints + ChallengeDelta"]
+        B6["APA Penalty: if Expedited + completeness < 100\n→ × 1.5 multiplier"]
+        B7["AssignRiskTier\n≥58 Very High / ≥45 High\n≥35 Moderate / <35 Low"]
+    end
+
+    subgraph WriteBack["Write-back to IndividualApplication"]
+        W1["nepa_risk_score__c"]
+        W2["nepa_risk_tier__c"]
+        W3["nepa_risk_score_factors__c\n(human-readable summary + AI disclosure)"]
+        W4["nepa_risk_score_updated__c"]
+        W5["nepa_expedited_risk_penalty_applied__c"]
+    end
+
+    T1 & T2 & T3 -->|AsyncAfterCommit| P1
+    P1 --> P2 --> P3 --> P4 --> P5 --> P6
+    P3 -->|var_StatutePoints| B4
+    P4 -->|SectorCircuitKey| BRE
+    P5 -->|ChallengeDelta| BRE
+    P6 -->|IsExpedited| BRE
+    P1 -->|AgencyName, CircuitKey| BRE
+    B1 & B2 & B3 & B4 --> B5 --> B6 --> B7
+    B7 --> W1 & W2 & W3 & W4 & W5
+
+    subgraph ChallengePredictor["Challenge Predictor (parallel flow)"]
+        CP1["NEPA_Challenge_Predictor\n(after-save on IA)"]
+        CP2["Loop: NEPA_Challenge_Prediction_Rule__mdt\n10 rules — sector, circuit, tribal flag, etc."]
+        CP3["Accumulate Risk_Delta__c\n(e.g. Energy×4th=+12, Tribal=+20)"]
+        CP4["Write nepa_challenge_risk_delta__c\nand nepa_challenge_prediction_basis__c"]
+    end
+
+    CP1 --> CP2 --> CP3 --> CP4 -->|feeds next Risk Scorer run| P5
+```
+
+### A.4 Error Handling Architecture
+
+```mermaid
+sequenceDiagram
+    participant Flow as Any Flow (fault path)
+    participant Logger as NEPA_Error_Logger (subflow)
+    participant Event as NEPA_Error_Event__e (platform event)
+    participant Handler as NEPA_Error_Event_Handler
+    participant Record as NEPA_Flow_Error__c
+    participant Counter as NEPA_FlowError_CountIncrementer
+
+    Flow->>Logger: fault connector fires<br/>(FaultMessage, RecordId, FlowName,<br/>FailedStep, ErrorContext)
+    Note over Flow,Logger: Original transaction rolls back here
+    Logger->>Event: Publish IMMEDIATELY<br/>(survives rollback)
+    Event-->>Handler: async delivery (seconds–minutes)
+    Handler->>Handler: validate RunningUserId length
+    Handler->>Record: Create NEPA_Flow_Error__c<br/>(error_message, context, user, timestamp)
+    Record->>Counter: before-save trigger
+    Counter->>Counter: increment nepa_flow_error_count__c<br/>on parent IndividualApplication
+```
+
+### A.5 BRE / Decision Engine Layer
+
+```mermaid
+flowchart TB
+    subgraph ES1["Expression Set: NEPA_CE_Screener V2 (Active)"]
+        direction LR
+        DM1["DM: NEPA_CE_Screener_NAICS\n(NAICS → review type routing)"]
+        DM2["DM: NEPA_CE_Screener_Tier1\n(high-confidence CE codes)"]
+        DM3["DM: NEPA_CE_Screener_Tier2\n(ambiguous CE codes)"]
+    end
+
+    subgraph ES2["Expression Set: NEPA_Litigation_Risk_Scorer V2 (Active) / V3 (Draft)"]
+        direction LR
+        DM4["DM: NEPA_Risk_ReviewType\n(review type → base score)"]
+        DM5["DM: NEPA_Risk_Agency\n(agency → points\ne.g. BLM=39, FERC=24)"]
+        DM6["DM: NEPA_Risk_Circuit\n(circuit → points\ne.g. 10th=43, 9th=36)"]
+        DM7["DM: NEPA_Risk_SectorCircuit\n(sector|circuit → win rate + label\n17 cells — V3 only)"]
+    end
+
+    subgraph ES3["Expression Set: NEPA_Permit_Coordinator V2 (Active)"]
+        direction LR
+        DM8["DM: NEPA_Permit_Matrix_BRE\n(sector + review type → permit actions)"]
+    end
+
+    subgraph CMT["Custom Metadata (BRE Inputs)"]
+        C1["NEPA_Statute_Risk_Weight__mdt\n(5 statutes: ESA=10, CWA=4, NHPA=2, NFMA=5, NGA=1)"]
+        C2["NEPA_Agency_Scoping_Baseline__mdt\n(11 agencies — NOI→DEIS median months)"]
+        C3["NEPA_Challenge_Prediction_Rule__mdt\n(10 rules — accumulable risk deltas)"]
+        C4["NEPA_Plaintiff_Profile__mdt\n(14 records — success rates, tribal flag)"]
+    end
+
+    subgraph Flows["Invoking Flows"]
+        F1["NEPA_CE_Screener\n(after-save)"]
+        F2["NEPA_Litigation_Risk_Scorer\n(after-save async)"]
+        F3["NEPA_Permit_Coordinator\n(invocable from Agent)"]
+    end
+
+    F1 -->|runExpressionSet| ES1
+    F2 -->|runExpressionSet| ES2
+    F3 -->|runExpressionSet| ES3
+    C1 -->|pre-computed loop\nin NEPA_Litigation_Risk_Scorer Flow| ES2
+    C2 & C3 & C4 -->|queried in flows\nbefore BRE call| F2
+```
+
+### A.6 Sector × Circuit Litigation Risk Heatmap
+
+Agency win rates by sector and federal circuit, derived from 761 NEPA litigation cases (PermitTEC v0.1, PNNL). **Lower agency win rate = higher litigation risk.**
+
+| Sector | 4th Circuit | 5th Circuit | 9th Circuit | 10th Circuit | DC Circuit |
+|---|:---:|:---:|:---:|:---:|:---:|
+| **Agriculture** | — | — | 38% 🔴 n=50 | 42% 🔴 n=12 | — |
+| **Energy** | 29% 🔴 n=7† | — | 35% 🔴 n=40 | 40% 🔴 n=15 | 64% 🟡 n=11 |
+| **Military** | — | — | 60% 🟡 n=10 | — | 72% 🟡 n=25 |
+| **Other** | — | — | 63% 🟡 n=82 | 48% 🟡 n=21 | — |
+| **Public Lands** | 86% 🟢 n=7† | — | 40% 🔴 n=50 | 45% 🟡 n=20 | — |
+| **Transportation** | 75% 🟢 n=8 | 50% 🟡 n=4† | 58% 🟡 n=24 | 63% 🟡 n=16 | 91% 🟢 n=11 |
+| **Water/Coastal** | — | — | 50% 🟡 n=14 | — | — |
+| **Wildlife** | — | — | 64% 🟡 n=14 | — | — |
+
+**Legend:** 🟢 LOW (≥ 65%) · 🟡 MODERATE (45–64%) · 🔴 HIGH (< 45%) · † low-n cell (n < 10)
+
+---
+
+## Appendix B — Architecture Review: Static Analysis
+
+Static analysis of four architectural areas. Each section states what is implemented, answers design questions, and identifies vulnerabilities with mitigations.
+
+### B.1 Close Administrative Record Flow
+
+`NEPA_Close_Administrative_Record.flow-meta.xml` is fully implemented and Active. It fires `AsyncAfterCommit` on `IndividualApplication` when `nepa_review_type__c` changes to `ROD` or `FONSI` and `nepa_ar_locked__c = false`.
+
+**The flow contains zero SOQL queries.** Document assembly is handled by the flow itself via an inline JSON formula — not by a DataRaptor or bulk SOQL. The `DR_Extract_AR_Manifest` DataRaptor is a design artifact (backlog — see [Appendix C](#appendix-c--omnistudio-backlog-detail)).
+
+**Node-by-node trace (6-element flow):**
+
+| Element | Type | What it does |
+|---|---|---|
+| `var_ManifestTitle` | Formula | `"Administrative Record Manifest — " & $Record.Name & " — " & TEXT(TODAY())` |
+| `formula_ManifestFilename` | Formula | `"ar_manifest_" & $Record.Id & "_" & TEXT(TODAY()) & ".json"` |
+| `formula_ManifestEnvelope` | Formula | Inline JSON from `$Record.*` fields — no SOQL |
+| `Build_JSON_Manifest` | Assignment | Copies `formula_ManifestEnvelope` → `var_ManifestJSON` |
+| `Create_Manifest_ContentVersion` | RecordCreate | Inserts ContentVersion with manifest JSON as `VersionData` |
+| `Lock_Application_Record` | RecordUpdate | Sets `nepa_ar_locked__c = true` |
+
+DML budget: **2 statements**. SOQL budget: **0**.
+
+**Static vulnerabilities:**
+
+| # | Vulnerability | Severity | Mitigation |
+|---|---|---|---|
+| V1 | Duplicate manifest on `Lock_Application_Record` fault — ContentVersion written but IA not locked; next qualifying save creates a second manifest | Medium | Add pre-create check for existing manifest ContentVersion; skip if found |
+| V2 | Invalid JSON when `nepa_risk_score__c` is null — `TEXT(null)` → empty string | Low | Wrap numeric fields in `IF(ISNULL(...), "null", TEXT(...))` |
+| V3 | No async retry mechanism | Low | Scheduled flow querying unlocked ROD/FONSI processes without a manifest ContentVersion provides recovery path |
+| V4 | Formula length growth risk if manifest fields are added | Low | Monitor character count; pivot to Apex-built JSON if envelope exceeds 2,000 characters |
+
+### B.2 Record-Triggered Flow Order of Execution
+
+The accelerator contains **38 record-triggered and supporting flows**. Full trigger map:
+
+| Trigger Object | Flow Name | Type | Phase |
+|---|---|---|---|
+| **IndividualApplication (9)** | `NEPA_Stage_Gate` | RecordBeforeSave | Before-save sync |
+| | `NEPA_SLA_Due_Date_Setter` | RecordBeforeSave | Before-save sync |
+| | `NEPA_Phase2_Applicability_Setter` | RecordBeforeSave | Before-save sync |
+| | `NEPA_Litigation_Risk_Scorer` | RecordAfterSave async | After-commit async |
+| | `NEPA_CE_Screener` | RecordAfterSave async | After-commit async |
+| | `NEPA_CE_Determination_Router` | RecordAfterSave async | After-commit async |
+| | `NEPA_Timeline_Risk_Assessor` | RecordAfterSave async | After-commit async |
+| | `NEPA_Challenge_Predictor` | RecordAfterSave async | After-commit async |
+| | `NEPA_Close_Administrative_Record` | RecordAfterSave async | After-commit async |
+| **ContentVersion (5)** | `NEPA_FRA_Page_Limit_Setter` | RecordBeforeSave | Before-save sync |
+| | `NEPA_Administrative_Record_Checker` | RecordAfterSave async | After-commit async |
+| | `NEPA_AdminRecord_AutoCreate` | RecordAfterSave async | After-commit async |
+| | `NEPA_Defensibility_Trigger_ContentVersion` | RecordAfterSave async | After-commit async |
+| | `NEPA_Record_Completeness_Scorer` | RecordAfterSave async | After-commit async |
+| **ApplicationTimeline (3)** | `NEPA_Stage_Gate_Doc_Check` | RecordBeforeSave | Before-save sync |
+| | `NEPA_Stage_Gate_Orchestrator` | RecordAfterSave async | After-commit async |
+| | `NEPA_EIS_Section_Draft_Trigger` | RecordAfterSave async | After-commit async |
+| **PublicComplaint (3)** | `NEPA_Comment_Period_Gate` | RecordBeforeSave | Before-save sync |
+| | `NEPA_Comment_AI_Router` | RecordAfterSave async | After-commit async |
+| | `NEPA_Plaintiff_Intelligence` | RecordAfterSave async | After-commit async |
+| **Program (3)** | `NEPA_GIS_Proximity_Check` | RecordAfterSave async | After-commit async |
+| | `NEPA_Team_Assembly_Orchestrator` | RecordAfterSave async | After-commit async |
+| | `NEPA_Agency_Tier_Setter` | RecordAfterSave async | After-commit async |
+| **Visit (3)** | `NEPA_Visit_Survey_Window_Setter` | RecordBeforeSave (insert only) | Before-save sync |
+| | `NEPA_Visit_Completion_Assessor` | RecordAfterSave async | After-commit async |
+| | `NepaVisitAfterInsert` → `NepaVisitActionPlanLauncher` | Apex trigger (after insert) | Synchronous |
+| **NEPA_Flow_Error__c (1)** | `NEPA_FlowError_CountIncrementer` | RecordAfterSave async | After-commit async |
+| **NEPA_Error_Event__e (1)** | `NEPA_Error_Event_Handler` | PlatformEvent | Platform event subscriber |
+| **Scheduled (1)** | `NEPA_SLA_Escalation_Monitor` | Scheduled | Daily batch |
+| **Invocable (7)** | Defensibility_Gap_Checker, Comment_ResponseTask_Creator, EIS_Section_Assembler, Comment_Duplicate_Check, EJTribal_Router, Comment_Triage_Save, Error_Logger | Invocable subflow | Called by flows or agents |
+
+**Key flow-interaction notes:**
+
+- `NEPA_CE_Screener` and `NEPA_Litigation_Risk_Scorer` write to disjoint field sets — safe for concurrent async execution. Any future change merging those writes needs a race-condition review.
+- Entry filter pattern must be `fieldA IsChanged = true AND fieldA EqualTo [value]` — `EqualTo` alone re-fires on every save preserving the value.
+- `NEPA_Defensibility_Trigger_ContentVersion` writes to `IndividualApplication`; verify it does not add fields watched by `NEPA_Timeline_Risk_Assessor` entry conditions before extending either flow.
+
+### B.3 CE Screener BRE
+
+The CE Screener BRE is implemented as `NEPA_CE_Screener` Expression Set V3 (activated 2026-05-08). It calls three Decision Matrices in parallel and applies a waterfall priority consolidation:
+
+```
+ReviewType = IF( LEN(NAICS__ReviewType) > 0, NAICS__ReviewType,
+                IF( LEN(Tier1__ReviewType) > 0, Tier1__ReviewType,
+                    IF( LEN(Tier2__ReviewType) > 0, Tier2__ReviewType, 'EA' )))
+```
+
+Priority order: NAICS match > Tier1 (Agency+Sector+TypeKey) > Tier2 (Agency+ActionType) > EA fallback.
+
+Post-consolidation acreage override: `IF(ReviewType == 'CE' AND DisturbanceAcres > 250, 'EA', ReviewType)`.
+
+**Logical gaps:**
+
+| # | Gap | Severity | Mitigation |
+|---|---|---|---|
+| G1 | EC = true does not auto-escalate CE to EA — EC checkbox is a passive input | **High** | Add BRE step after acreage override: `IF(ExtraordinaryCircumstances = true AND ReviewType = 'CE', 'EA', ReviewType)` with `ClassificationBasis = 'EC override — 40 CFR 1508.1(d)'` |
+| G2 | No EIS output path — BRE maximum output is EA (intentional) | Low | Document explicitly; EIS determination is coordinator judgment |
+| G3 | 250-acre threshold is hardcoded — agency-specific thresholds require BRE formula change | Medium | Move to `NEPA_CE_Screening_Rule__mdt.Acreage_Threshold__c` per-agency |
+| G5 | GIS EC detection and BRE EC checkbox are decoupled — neither gates the other | Medium | Wire `nepa_extraordinary_circumstances__c` to be set by either user checkbox OR GIS EC flag via before-save formula |
+
+---
+
+## Appendix C — OmniStudio Backlog Detail
+
+> **Summary status:** Four OmniStudio feature areas are backlog. The component files are present in the repository as design artifacts. None have been verified end-to-end. Where Apex or Flow alternatives exist, those are the working delivery paths.
+
+### C.1 Feature Status Summary
+
+| Feature | Working Path | Backlog Path |
+|---|---|---|
+| CE Intake Wizard | `NEPA_CE_Intake` Screen Flow | `NEPA_CEIntake` OmniScript + `NEPA_CEScreeningIP` / `NEPA_CESaveIP` IPs |
+| GIS Proximity Analysis | `NEPA_GIS_Proximity_Check` Flow + `NepaGISProximityIPInvoker` Apex bridge (logic verified; IP end-to-end not verified) | `NEPA_GISProximityIP` Integration Procedure activation |
+| CEQ Full-Graph Export | `NepaCeqFullExportService` Apex REST (`POST /nepa/v1/export/project`) | `NEPA_CEQExport_Procedure` IP + DataRaptor chain (abandoned — unresolvable "valid bundle name" error) |
+| Per-Process Export | `NepaCeqExportService` Apex REST (`GET /nepa/v1/processes/{id}`) | Same abandoned IP path |
+| Pre-Application Screening | Flow-based path (selector flow + BRE) | `NEPA_PreAppScreeningIP` Integration Procedure |
+
+### C.2 CE Intake Backlog Components
+
+| Component | File | Purpose |
+|---|---|---|
+| `NEPA_CEIntake` OmniScript | `omniScripts/NEPA_CEIntake_OmniScript_1.os-meta.xml` | 7-step guided intake wizard |
+| `NEPA_CEScreeningIP` IP | `omniIntegrationProcedures/NEPA_CEScreeningIP_Procedure_1.oip-meta.xml` | Calls CE screener flow at step 3→4 |
+| `NEPA_CESaveIP` IP | `omniIntegrationProcedures/NEPA_CESaveIP_Procedure_1.oip-meta.xml` | Upserts IndividualApplication at submit |
+| `NEPA_CEScreeningIPTest` IP | `omniIntegrationProcedures/NEPA_CEScreeningIPTest_Procedure_1.oip-meta.xml` | Debug/test version of screening IP |
+| `DR_Load_NEPA_Process` DataRaptor | `omniDataTransforms/DR_Load_NEPA_Process.json` | Writes to IndividualApplication |
+| `nepaIndustryCodePickerOmni` LWC | `lwc/nepaIndustryCodePickerOmni/` | OmniScript custom element — NAICS code picker |
+| `nepaSiteLocationPickerOmni` LWC | `lwc/nepaSiteLocationPickerOmni/` | OmniScript custom element — ArcGIS map polygon capture |
+
+**Resumption requirements:** OmniStudio license active, IPs manually activated post-deploy, element type values verified against platform picklist (ADR 011 — "Text Area" not "TextArea"), ArcGIS API key configured.
+
+### C.3 GIS Proximity Integration Procedure Backlog
+
+| Component | File | Purpose |
+|---|---|---|
+| `NEPA_GISProximityIP` IP | `omniIntegrationProcedures/NEPA_GISProximityIP_Procedure_1.oip-meta.xml` | Calls GIS services, writes results to nepa_gis_data__c |
+| `DR_Extract_GIS_Layers` | `omniDataTransforms/DR_Extract_GIS_Layers.json` | Reads active GIS layers |
+| `DR_Load_GIS_Results` | `omniDataTransforms/DR_Load_GIS_Results.json` | Writes GIS results |
+| `DR_Upsert_Detected_Layer` | `omniDataTransforms/DR_Upsert_Detected_Layer.json` | Upserts detected protection layer records |
+
+**Design note (ADR 009):** The Apex bridge pattern is architecturally correct. The bridge class calls `omnistudio.IntegrationProcedureService.invokeMethod()` — confirmed working. What was not completed was IP end-to-end activation and verification.
+
+**GIS 503 partial-failure behavior (design intent):** `failOnStepError: false` on each layer call. A 503 appends `"[LayerLabel] — query failed"` to `ProtectionAreasSummary` and records a no-hit default for that layer. The loop continues to remaining layers. **Gap:** A partially successful run (4 of 5 layers) sets `nepa_gis_proximity_complete__c = true`, which can proceed with an incomplete EC determination.
+
+### C.4 CEQ Export Integration Procedure Backlog (Abandoned)
+
+The OmniStudio IP+DataRaptor path was abandoned after the "valid bundle name" error proved unresolvable in this org's OmniStudio platform configuration. The DataRaptor JSON files are present as design artifacts.
+
+| Component | File | Purpose |
+|---|---|---|
+| `NEPA_CEQExport_Procedure` IP | `omniIntegrationProcedures/NEPA_CEQExport_Procedure_1.oip-meta.xml` | Orchestrates all DataRaptor Extracts |
+| `DR_Extract_NEPA_Project` | `omniDataTransforms/DR_Extract_NEPA_Project.json` | Project (Program) fields |
+| `DR_Extract_NEPA_Process` | `omniDataTransforms/DR_Extract_NEPA_Process.json` | Process (IndividualApplication) fields |
+| `DR_Extract_NEPA_Document` | `omniDataTransforms/DR_Extract_NEPA_Document.json` | Documents (ContentVersion) fields |
+| `DR_Extract_NEPA_Comment` | `omniDataTransforms/DR_Extract_NEPA_Comment.json` | Comments (PublicComplaint) fields |
+| `DR_Extract_NEPA_EngagementEvent` | `omniDataTransforms/DR_Extract_NEPA_EngagementEvent.json` | Engagement Events |
+| `DR_Extract_NEPA_CaseEvent` | `omniDataTransforms/DR_Extract_NEPA_CaseEvent.json` | Case Events (ApplicationTimeline) |
+| `DR_Extract_NEPA_TeamMember` | `omniDataTransforms/DR_Extract_NEPA_TeamMember.json` | Team Members |
+| `DR_Extract_NEPA_GISData` | `omniDataTransforms/DR_Extract_NEPA_GISData.json` | GIS Data (project-level) |
+| `DR_Extract_NEPA_GISData_ByProcess` | `omniDataTransforms/DR_Extract_NEPA_GISDataByProcess.json` | GIS Data (process-level) |
+| `DR_Extract_NEPA_RequiredPermit` | `omniDataTransforms/DR_Extract_NEPA_RequiredPermit.json` | Required Permits |
+| `DR_Extract_NEPA_LegalStructure` | `omniDataTransforms/DR_Extract_NEPA_LegalStructure.json` | Legal Structure (RegulatoryCode) |
+
+**Working replacement:** `NepaCeqFullExportService` (`POST /services/apexrest/nepa/v1/export/project`) delivers the complete project graph in a single bulk-safe Apex call. 13 tests in `NepaCeqFullExportServiceTest` verify compliance.
+
+### C.5 Pre-Application Screening Backlog
+
+| Component | File | Status |
+|---|---|---|
+| `NEPA_PreAppScreeningIP` IP | `omniIntegrationProcedures/NEPA_PreAppScreeningIP_Procedure_1.oip-meta.xml` | Not verified |
+| `DR_Extract_PreApp_PermitMatrix` | `omniDataTransforms/DR_Extract_PreApp_PermitMatrix.json` | Not verified |
+| `NepaPreAppScreeningController.cls` | `classes/NepaPreAppScreeningController.cls` | Authored; IP path unverified |
+
+**What IS delivered:** `NEPA_Permit_Matrix__mdt` (25 sector/project-type combinations), `NepaPreAppQualifySectorFlowTest` and `NepaPreAppScreeningControllerTest` cover the Flow-based path.
+
+### C.6 What Would Be Required to Complete These Features
+
+1. Confirm OmniStudio license is active in the target org (Setup → Installed Packages).
+2. Deploy and manually activate each Integration Procedure (Setup → OmniStudio → Integration Procedures → Activate).
+3. Verify each IP's element definitions against the current OmniStudio package version.
+4. For CE Intake: verify all OmniScript element type values against platform-restricted picklist; configure ArcGIS API key.
+5. For GIS IP: address the partial-completion gap (set `nepa_gis_proximity_complete__c` only when all layers succeed, or add a `nepa_gis_partial_complete__c` flag).
+6. For CEQ Export IP: the "valid bundle name" error is endemic to this org's configuration and was not resolvable through DR restructuring. The Apex service is the working path; only attempt IP resumption in a fresh org with a verified OmniStudio installation.
