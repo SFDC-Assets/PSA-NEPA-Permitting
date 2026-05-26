@@ -20,6 +20,8 @@
 #   3c Queues                  — must exist before Phase 8 flows; EJTribal_Router queries by DeveloperName
 #   4  Permission set          — FLS grants require fields to exist first
 #   5  Custom metadata records — CMT records used by flow decision logic
+#                                Includes 2122 NEPA_NAICS_Code__mdt records (complete 2022
+#                                NAICS taxonomy) required by nepaIndustryCodePickerOmni LWC
 #   5b BRE Decision Matrices   — DecisionMatrixDefinition metadata schema deploy
 #   5b-data                   — row insertion + activation via Tooling API (replaces manual UI workflow)
 #   5c BRE Expression Sets     — ExpressionSetDefinition metadata (must follow DMs they reference)
