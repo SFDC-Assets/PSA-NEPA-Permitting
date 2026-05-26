@@ -169,7 +169,7 @@ Here's what the review actually required:
 │  │  ✓  FWS ECOS      Greater Sage-Grouse PHMA detected  ◄── │───── NARRATE: extraordinary circ.
 │  │  ✓  USGS NHD      Jordan Creek Cat 4A adjacency      ◄── │───── NARRATE: hydro trigger
 │  │  ✓  EPA EJScreen  EJ Index 18.3 — informational      ◄── │───── NARRATE: recorded, not hard
-│  │  ✓  BLM Tribal    No tribal boundary overlap              │   │
+│  │  ✓  LMTF Tribal   No tribal boundary overlap              │   │
 │  │  ✓  LMTF PLSS      Federal surface confirmed               │   │
 │  └───────────────────────────────────────────────────────────┘   │
 │                                                     [Next →]    │
@@ -598,13 +598,13 @@ Here's what the review actually required:
    - **Litigation Probability Score:** `nepa_risk_score__c = 85` / `nepa_risk_tier__c = Very High`
    Say: *"v3 score: 85 out of 100. Very High tier. This is the probability dimension — likelihood of a challenge."*
    - **Litigation Cost Exposure:** `nepa_litigation_duration_cost__c = 0.63` / normalized cost dimension
-   Say: *"This is new in v3. The cost dimension is separate from probability. BLM averages 17.5 months of litigation even when they win. 9th Circuit averages 29.3 months. A project sponsor making a financing decision based on win-probability alone was missing half the picture."*
+   Say: *"This is new in v3. The cost dimension is separate from probability. LMTF averages 17.5 months of litigation even when they win. 9th Circuit averages 29.3 months. A project sponsor making a financing decision based on win-probability alone was missing half the picture."*
    - `nepa_plaintiff_risk_flag__c = true` (ICL) / `nepa_tribal_plaintiff_flag__c = true` (Shoshone-Paiute Tribes)
    Say: *"Both plaintiff flags set — from Scene 3."*
    - `nepa_defensibility_score__c = 91`
    Say: *"Defensibility score: 91. Very High risk project, 91 defensibility — because every gate has been cleared. Risk 85 tells you what you're up against. Defensibility 91 tells you you've done everything right."*
 
-3. **Click `nepa_risk_score_factors__c`.** Show the v3 factor disclosure: *"Review type (EIS equivalent): 28 pts. BLM agency rate: 21 pts. 9th Circuit adverse rate: 19 pts. FLPMA statute complexity: 5 pts. Tribal plaintiff flag: 8 pts. Sector × Circuit premium: 4 pts. Challenge delta: 0 pts. That's 85. Every input is disclosed. The coordinator can verify any number. This is MFR #1 — the score is deterministic, not a black box."*
+3. **Click `nepa_risk_score_factors__c`.** Show the v3 factor disclosure: *"Review type (EIS equivalent): 28 pts. LMTF agency rate: 21 pts. 9th Circuit adverse rate: 19 pts. FLPMA statute complexity: 5 pts. Tribal plaintiff flag: 8 pts. Sector × Circuit premium: 4 pts. Challenge delta: 0 pts. That's 85. Every input is disclosed. The coordinator can verify any number. This is MFR #1 — the score is deterministic, not a black box."*
 
    Point to the ESA warning: *"Yellow banner: ESA statute weight uses flat 1.48× — pending TAILS/PCTS linkage. OMB M-24-10 requires that automated scoring disclose known limitations at point-of-use. This is that disclosure. The system tells you exactly where the confidence is lower."*
 
@@ -658,7 +658,7 @@ Here's what the review actually required:
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │  Program  DOI-LMTF-ID-B030-2019-0014-EA         [Edit]  [More ▾] │
-│  Carrie Placer Mine Plan of Operations — BLM Owyhee             │
+│  Carrie Placer Mine Plan of Operations — LMTF Owyhee             │
 │  ─────────────────────────────────────────────────────────────  │
 │  ┌─── Agency Performance (auto-populated from PermitTEC) ──┐    │
 │  │  Agency Performance Tier:  Legally Vulnerable  ◄──────  │────── SET DAY ONE: point here
@@ -952,7 +952,7 @@ Here's what the review actually required:
 │  ─────────────────────────────────────────────────────────────  │
 │  CWA Section 404         USACE    ● Pending    Pre-App     ★    │  ◄── POINT: critical path
 │  ESA §7 Consultation     USFWS    ● In Review  Consultation ★   │  ◄── POINT: open from Scene 5
-│  ROW Grant               BLM      ✓ Approved   Issued      —    │  ◄── POINT: done, not blocking
+│  ROW Grant               LMTF     ✓ Approved   Issued      —    │  ◄── POINT: done, not blocking
 │  ─────────────────────────────────────────────────────────────  │
 │  ★ = critical path  ·  Last synced: just now                    │
 │  All 3 agencies responding — no cached data in use              │
@@ -968,7 +968,7 @@ Here's what the review actually required:
 
 ### Landing Tell
 
-> "The permit dependency table fetches live status from USACE, USFWS, and BLM at record open. No phone calls. No emails to the applicant asking them to check. The critical-path flags are set automatically. When the status changes in the other agency's system, it changes here.
+> "The permit dependency table fetches live status from USACE, USFWS, and LMTF at record open. No phone calls. No emails to the applicant asking them to check. The critical-path flags are set automatically. When the status changes in the other agency's system, it changes here.
 >
 > That's MFR #10 — interoperable services, CEQ REST standard, every agency's data in one view. The accelerator publishes and consumes the same API shape. Any CEQ-standard NEPA deployment can join this network."
 
@@ -983,11 +983,11 @@ Here's what the review actually required:
 | IDWR and EPA NPDES permits started after LMTF decision | Parallel permit triggers fired automatically when hydrologist and geologist closed their work orders |
 | ICL and OSC comments sat in an inbox for 60+ days | Plaintiff Intelligence flagged both commenters; responses routed as work orders; resolved in 3 weeks |
 | Tribal consultation tracked in email; no stage gate | Tribal plaintiff flag auto-set when Shoshone-Paiute comment arrived; dual risk flags escalate score; Section 106 work order with hard gate before EA publication |
-| No visibility into agency litigation exposure | Agency Performance Tier (BLM = Legally Vulnerable) set from PermitTEC corpus data; v3 Litigation Risk Score = 85 (Very High) — probability dimension (85%) + cost dimension (15%); BLM 17.5-month median litigation duration disclosed at record load |
+| No visibility into agency litigation exposure | Agency Performance Tier (LMTF = Legally Vulnerable) set from PermitTEC corpus data; v3 Litigation Risk Score = 85 (Very High) — probability dimension (85%) + cost dimension (15%); LMTF 17.5-month median litigation duration disclosed at record load |
 | ESA statute risk: opaque flat multiplier, no disclosure | Low-confidence ESA weight (1.48× flat, pending TAILS/PCTS linkage) disclosed at point-of-use in `nepaRiskIntelligenceCard`; OMB M-24-10 compliant |
 | Defensibility gaps discovered during litigation, post-decision | Defensibility Score = 91 at decision; all stage gates cleared and documented before Field Manager signature |
 | E.O. 13807 master schedule in a spreadsheet, outside the permitting system | OFD Coordination Tracker: 4 milestones across NEPA_Lead / Agency_Consultation / Permit_Milestone / Joint_ROD tracks on ApplicationTimeline; 1.47× federal-to-CEQA friction multiplier for Water/Coastal operationalized as a critical-path milestone |
-| Parallel permit status: unknown until applicant asks | `nepaPermitDependencies` LWC: live status from USACE, USFWS, BLM REST APIs at record load; critical-path flags set automatically; graceful degradation on API unavailability |
+| Parallel permit status: unknown until applicant asks | `nepaPermitDependencies` LWC: live status from USACE, USFWS, LMTF REST APIs at record load; critical-path flags set automatically; graceful degradation on API unavailability |
 | Risk score is a number the coordinator has to decode | Formula image fields render risk score as a red progress bar (85% full), defensibility as a green bar (91% full), permit status as a red/green flag in the related list column — the evaluator reads the story before the presenter narrates it |
 | 25-month timeline; applicant called the field office 14 times | 8-month timeline; real-time status in self-service portal |
 
@@ -1010,7 +1010,7 @@ flowchart TB
         TRIBES["🤝 Shoshone-Paiute Tribes\nSection 106 Consultation"]
         IDWR["🏛️ IDWR\nWater Permit"]
         EPA["🏛️ EPA NPDES\nIDG370000"]
-        AGCY["🏛️ Agency NEPA APIs\nUSACE · USFWS · BLM\n(live permit status)"]
+        AGCY["🏛️ Agency NEPA APIs\nUSACE · USFWS · LMTF\n(live permit status)"]
     end
 
     subgraph CHANNEL["Engagement Layer"]
@@ -1049,12 +1049,12 @@ flowchart TB
         LRS["NEPA_Litigation_\nRisk_Scorer\nv3: Probability (85%) +\nCost Exposure (15%)\n+ ESA disclosure"]
         PPT["Parallel Permit\nTrigger Automation\nWork order close →\nIDWR / NPDES tasks"]
         RIC["nepaRiskIntelligenceCard\n(LWC)\nBifurcated score panel\n+ ESA warning banner"]
-        NPD["nepaPermitDependencies\n(LWC)\nLive permit status\nUSACE · USFWS · BLM"]
+        NPD["nepaPermitDependencies\n(LWC)\nLive permit status\nUSACE · USFWS · LMTF"]
     end
 
     subgraph DATA["Data & Metadata Foundation"]
         direction LR
-        MDT["Custom Metadata Types (23)\n• CE_Code + CE_Screening_Rules\n• Agency_Risk_Rate (16 agencies)\n• Circuit_Risk_Weight (13 circuits)\n• Statute_Risk_Weight (ESA/NFMA/CWA…)\n• Sector_Circuit_Risk (23 cells)\n• Plaintiff_Profile (16 orgs)\n• Challenge_Prediction_Rule (10 rules)\n• Agency_Duration_Cost (16 agencies)\n• OFD_Milestone (8 standard milestones)\n• Agency_Endpoint (USACE/USFWS/BLM)\n• + 13 process config types"]
+        MDT["Custom Metadata Types (23)\n• CE_Code + CE_Screening_Rules\n• Agency_Risk_Rate (16 agencies)\n• Circuit_Risk_Weight (13 circuits)\n• Statute_Risk_Weight (ESA/NFMA/CWA…)\n• Sector_Circuit_Risk (23 cells)\n• Plaintiff_Profile (16 orgs)\n• Challenge_Prediction_Rule (10 rules)\n• Agency_Duration_Cost (16 agencies)\n• OFD_Milestone (8 standard milestones)\n• Agency_Endpoint (USACE/USFWS/LMTF)\n• + 13 process config types"]
         CORPUS["NEPATEC 2.0 Corpus\n61,881 projects\n142,083 documents\n6.9M pages\n60+ agencies"]
         CEQ["CEQ Metadata Standards\nProject / Process /\nDocument entities"]
     end
