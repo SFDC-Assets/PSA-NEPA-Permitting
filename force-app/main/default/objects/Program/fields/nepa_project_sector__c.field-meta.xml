@@ -1,11 +1,27 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_project_sector__c</fullName>
-        <description>High-level project sector(s). Multiple values may apply; separate with semicolons (e.g., Energy Production and Management; Transportation and Infrastructure).</description>
-        <inlineHelpText>High-level project sector(s). Separate multiple values with semicolons.</inlineHelpText>
-        <label>Project Sector</label>
-        <length>32768</length>
-        <required>false</required>
-        <trackHistory>false</trackHistory>
-        <type>LongTextArea</type>
-        <visibleLines>3</visibleLines>
-    </CustomField>
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_project_sector__c</fullName>
+    <description>High-level project sector. Used by CE Screener and Permit Matrix to route to applicable CEs and required permits.</description>
+    <inlineHelpText>Select the primary sector that best describes this project.</inlineHelpText>
+    <label>Project Sector</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>false</restricted>
+        <valueSetDefinition>
+            <sorted>true</sorted>
+            <value><fullName>Agriculture and Natural Resource Management</fullName><default>false</default><label>Agriculture and Natural Resource Management</label></value>
+            <value><fullName>Energy - Oil and Gas</fullName><default>false</default><label>Energy - Oil and Gas</label></value>
+            <value><fullName>Energy - Renewable</fullName><default>false</default><label>Energy - Renewable</label></value>
+            <value><fullName>Energy Production and Management</fullName><default>false</default><label>Energy Production and Management</label></value>
+            <value><fullName>Lands and Realty</fullName><default>false</default><label>Lands and Realty</label></value>
+            <value><fullName>Materials and Manufacturing</fullName><default>false</default><label>Materials and Manufacturing</label></value>
+            <value><fullName>Recreation</fullName><default>false</default><label>Recreation</label></value>
+            <value><fullName>Transportation and Infrastructure</fullName><default>false</default><label>Transportation and Infrastructure</label></value>
+            <value><fullName>Water and Waste Management</fullName><default>false</default><label>Water and Waste Management</label></value>
+            <value><fullName>Water Resources</fullName><default>false</default><label>Water Resources</label></value>
+            <value><fullName>Wildlife and Habitat</fullName><default>false</default><label>Wildlife and Habitat</label></value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

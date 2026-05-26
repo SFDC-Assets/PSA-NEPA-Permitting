@@ -1,11 +1,53 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_project_type__c</fullName>
-        <description>Type(s) of project — a sub-type of project sector (e.g., Renewable Energy Production - Solar; Electricity Transmission). Multiple values may apply; separate with semicolons.</description>
-        <inlineHelpText>Sub-type(s) of project sector. Separate multiple values with semicolons.</inlineHelpText>
-        <label>Project Type</label>
-        <length>32768</length>
-        <required>false</required>
-        <trackHistory>false</trackHistory>
-        <type>LongTextArea</type>
-        <visibleLines>3</visibleLines>
-    </CustomField>
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_project_type__c</fullName>
+    <description>Sub-type of project within the selected sector. Used by CE Screener and Permit Matrix to identify applicable CEs and required permits.</description>
+    <inlineHelpText>Select the project type that best describes the specific action being proposed.</inlineHelpText>
+    <label>Project Type</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>false</restricted>
+        <valueSetDefinition>
+            <sorted>true</sorted>
+            <value><fullName>Aviation and Airports</fullName><default>false</default><label>Aviation and Airports</label></value>
+            <value><fullName>Conventional Energy Production - Land-based Oil &amp; Gas</fullName><default>false</default><label>Conventional Energy Production - Land-based Oil &amp; Gas</label></value>
+            <value><fullName>Electricity Transmission</fullName><default>false</default><label>Electricity Transmission</label></value>
+            <value><fullName>Flood Risk Management</fullName><default>false</default><label>Flood Risk Management</label></value>
+            <value><fullName>Forest Management Plan</fullName><default>false</default><label>Forest Management Plan</label></value>
+            <value><fullName>Geothermal Energy</fullName><default>false</default><label>Geothermal Energy</label></value>
+            <value><fullName>Grazing Permit Renewal</fullName><default>false</default><label>Grazing Permit Renewal</label></value>
+            <value><fullName>Habitat Restoration</fullName><default>false</default><label>Habitat Restoration</label></value>
+            <value><fullName>Land Exchange</fullName><default>false</default><label>Land Exchange</label></value>
+            <value><fullName>Land Use or Forest Management Plan</fullName><default>false</default><label>Land Use or Forest Management Plan</label></value>
+            <value><fullName>Manufacturing and Industrial Facilities</fullName><default>false</default><label>Manufacturing and Industrial Facilities</label></value>
+            <value><fullName>Mineral Extraction - Hard Rock</fullName><default>false</default><label>Mineral Extraction - Hard Rock</label></value>
+            <value><fullName>Mineral Extraction - Placer Mining</fullName><default>false</default><label>Mineral Extraction - Placer Mining</label></value>
+            <value><fullName>Mining - Metals</fullName><default>false</default><label>Mining - Metals</label></value>
+            <value><fullName>Mining - Non-Metallic</fullName><default>false</default><label>Mining - Non-Metallic</label></value>
+            <value><fullName>Nuclear Power Generation</fullName><default>false</default><label>Nuclear Power Generation</label></value>
+            <value><fullName>Offshore Oil and Gas</fullName><default>false</default><label>Offshore Oil and Gas</label></value>
+            <value><fullName>Oil and Gas Permit - APD</fullName><default>false</default><label>Oil and Gas Permit - APD</label></value>
+            <value><fullName>Oil and Gas Permit - Minor Mod</fullName><default>false</default><label>Oil and Gas Permit - Minor Mod</label></value>
+            <value><fullName>Pipelines</fullName><default>false</default><label>Pipelines</label></value>
+            <value><fullName>Railroads and Transit</fullName><default>false</default><label>Railroads and Transit</label></value>
+            <value><fullName>Rangeland Management / Grazing</fullName><default>false</default><label>Rangeland Management / Grazing</label></value>
+            <value><fullName>Renewable Energy Production - Solar</fullName><default>false</default><label>Renewable Energy Production - Solar</label></value>
+            <value><fullName>Right-of-Way Grant</fullName><default>false</default><label>Right-of-Way Grant</label></value>
+            <value><fullName>Solar Energy - Large Scale</fullName><default>false</default><label>Solar Energy - Large Scale</label></value>
+            <value><fullName>Solar Energy - Research</fullName><default>false</default><label>Solar Energy - Research</label></value>
+            <value><fullName>Species Survey</fullName><default>false</default><label>Species Survey</label></value>
+            <value><fullName>Surface Transportation - Highway/Other</fullName><default>false</default><label>Surface Transportation - Highway/Other</label></value>
+            <value><fullName>Timber Sale - Large</fullName><default>false</default><label>Timber Sale - Large</label></value>
+            <value><fullName>Timber Sale - Small</fullName><default>false</default><label>Timber Sale - Small</label></value>
+            <value><fullName>Trail Construction - Minor</fullName><default>false</default><label>Trail Construction - Minor</label></value>
+            <value><fullName>Vegetation and Fuels Management</fullName><default>false</default><label>Vegetation and Fuels Management</label></value>
+            <value><fullName>Waste Management - Non-Nuclear</fullName><default>false</default><label>Waste Management - Non-Nuclear</label></value>
+            <value><fullName>Waste Management - Nuclear/Radiological</fullName><default>false</default><label>Waste Management - Nuclear/Radiological</label></value>
+            <value><fullName>Water Quality Monitoring</fullName><default>false</default><label>Water Quality Monitoring</label></value>
+            <value><fullName>Wind Energy - Research</fullName><default>false</default><label>Wind Energy - Research</label></value>
+            <value><fullName>Wind Energy - Small Scale</fullName><default>false</default><label>Wind Energy - Small Scale</label></value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
