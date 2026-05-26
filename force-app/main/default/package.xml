@@ -909,53 +909,6 @@
         <name>RecordType</name>
     </types>
     <types>
-        <!-- CEQ Export: DataRaptor Extracts (one per entity) -->
-        <members>DR_Extract_NEPA_Project</members>
-        <members>DR_Extract_NEPA_Process</members>
-        <members>DR_Extract_NEPA_Document</members>
-        <members>DR_Extract_NEPA_Comment</members>
-        <members>DR_Extract_NEPA_EngagementEvent</members>
-        <members>DR_Extract_NEPA_CaseEvent</members>
-        <members>DR_Extract_NEPA_GISData</members>
-        <members>DR_Extract_NEPA_GISData_ByProcess</members>
-        <members>DR_Extract_NEPA_TeamMember</members>
-        <members>DR_Extract_NEPA_LegalStructure</members>
-        <!-- CE Intake: DataRaptor Load and CE Library lookup -->
-        <members>DR_Load_NEPA_Process</members>
-        <members>DR_Extract_CE_LibraryByAgency</members>
-        <!-- MFR 9: Administrative Record Manifest Extract -->
-        <members>DR_Extract_AR_Manifest</members>
-        <!-- Legacy metadata-format DataRaptors (rpt-meta.xml) — parallel to JSON versions -->
-        <members>DRExtractCELibraryByAgency_1</members>
-        <members>DRExtractGISLayers_1</members>
-        <members>DRExtractNEPACaseEvent_1</members>
-        <members>DRExtractNEPAComment_1</members>
-        <members>DRExtractNEPADocument_1</members>
-        <members>DRExtractNEPAEngagementEvent_1</members>
-        <members>DRExtractNEPAGISData_1</members>
-        <members>DRExtractNEPAGISDataByProcess_1</members>
-        <members>DRExtractNEPALegalStructure_1</members>
-        <members>DRExtractNEPAProcess_1</members>
-        <members>DRExtractNEPAProject_1</members>
-        <members>DRExtractNEPATeamMember_1</members>
-        <members>DRLoadGISResults_1</members>
-        <members>DRLoadNEPAProcess_1</members>
-        <members>DRUpsertDetectedLayer_1</members>
-        <name>OmniDataTransform</name>
-    </types>
-    <types>
-        <members>NEPA/CEQExport</members>
-        <members>NEPA/CEScreeningIP</members>
-        <members>NEPA/CESaveIP</members>
-        <name>OmniIntegrationProcedure</name>
-    </types>
-    <types>
-        <members>NEPA/CEIntake</members>
-        <!-- CE Intake OmniScript -->
-        <members>NEPA/CE_Intake</members>
-        <name>OmniScript</name>
-    </types>
-    <types>
         <members>NEPA_CEQExport_API</members>
         <name>ConnectedApp</name>
     </types>
