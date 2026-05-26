@@ -1,12 +1,8 @@
 # GIS Proximity Check — Setup and Extension Guide
 
-> **Backlog — OmniStudio Integration Procedure path not verified**
->
-> The GIS proximity check architecture described in this guide (Flow → Apex bridge → `NEPA_GISProximityIP` Integration Procedure) is the intended design but the end-to-end path through the OmniStudio Integration Procedure **was not successfully verified**. The GIS layer catalog (`NEPA_GIS_Layer__mdt`), `nepa_gis_data__c` object, and `nepa_detected_protection_layer__c` schema are fully deployed and working. The Integration Procedure activation and end-to-end GIS callout path are backlog. See [ARCHITECTURE_DECISIONS.md — Appendix C](ARCHITECTURE_DECISIONS.md#appendix-c--omnistudio-backlog-detail).
->
-> The architectural notes in this guide (particularly the ADR 009 Apex bridge pattern) are accurate design documentation and serve as a resumption guide.
+The GIS proximity feature automatically queries federal geospatial services when a project's coordinates are entered. It writes a human-readable protection areas summary, a timestamp, an extraordinary circumstances flag, and per-layer `nepa_gis_data__c` child records back to the project. The entire layer registry lives in custom metadata — adding a new service means adding one record, nothing else.
 
-The GIS proximity feature is designed to automatically query federal geospatial services when a project's coordinates are entered. It writes a human-readable protection areas summary, a timestamp, and an extraordinary circumstances flag back to the project record. The entire layer registry lives in custom metadata — adding a new service means adding one record, nothing else.
+**Implementation:** `NepaGISProximityService` (Apex) replaces the former OmniStudio `NEPA_GISProximityIP` Integration Procedure.
 
 ---
 
@@ -14,18 +10,14 @@ The GIS proximity feature is designed to automatically query federal geospatial 
 
 When `nepa_location_lat__c` or `nepa_location_lon__c` changes on a Program record and both fields are populated:
 
-1. `NEPA_GIS_Proximity_Check` (after-save Flow, AsyncAfterCommit) calls `NepaGISProximityIPInvoker` via an Apex `@InvocableMethod` action
-2. The Apex bridge calls `NEPA_GISProximityIP` (OmniIntegrationProcedure) via `omnistudio.IntegrationProcedureService.invokeMethod()`
-3. The IP reads all active `NEPA_GIS_Layer__mdt` records ordered by Priority
-4. For each layer it builds a spatial query URL and fires an HTTP callout
-5. Matching features are appended to a running summary, and one `nepa_detected_protection_layer__c` record per layer is accumulated
-6. If any match contains a keyword listed in `Extraordinary_Circumstances_Keyword__c`, the extraordinary circumstances flag is set to true
-7. `DRUpsertDetectedLayer` upserts the per-layer records to `nepa_detected_protection_layer__c` using `nepa_upsert_key__c` (idempotent — re-runs update existing records)
-8. The summary, timestamp, and flag are written back to the Program record via `DRLoadGISResults`
-9. The flow stamps `nepa_gis_proximity_complete__c = true`, which triggers `NEPA_Team_Assembly_Orchestrator`
-
-**Why an Apex bridge instead of a Flow subflow:**
-OmniIntegrationProcedures are stored as `OmniProcess` sObject records, not Flow records. A Flow `<subflows>` element resolves only actual Flow records by developer name. Attempting to reference an IP name directly in `<subflows>` causes an HTTP-level `UNKNOWN_EXCEPTION` at Flow activation time with no structured error message. The `NepaGISProximityIPInvoker` Apex invocable is the correct bridge pattern for calling any OmniStudio IP from a Flow.
+1. `NEPA_GIS_Proximity_Check` (after-save Flow, AsyncAfterCommit) calls `NepaGISProximityService` via `@InvocableMethod`
+2. The invocable enqueues a `GISProximityQueueable` (implements `Database.AllowsCallouts`) so callouts run after the transaction commits
+3. The Queueable queries all active `NEPA_GIS_Layer__mdt` records ordered by Priority
+4. For each layer it builds a `callout:NC_NAME/path` endpoint and fires an HTTP GET to the ArcGIS FeatureServer `/query` endpoint
+5. Matching features are extracted using `Result_Key_Field__c`; unique values are deduplicated into a summary line
+6. One `nepa_gis_data__c` record is written per layer that returns hits
+7. If any summary value contains a keyword from `Extraordinary_Circumstances_Keyword__c`, the extraordinary circumstances flag is set to true
+8. `nepa_protection_areas__c`, `nepa_extraordinary_circumstances__c`, `nepa_gis_last_checked__c`, and `nepa_gis_proximity_complete__c` are written back to the Program record
 
 The result looks like this on the record:
 

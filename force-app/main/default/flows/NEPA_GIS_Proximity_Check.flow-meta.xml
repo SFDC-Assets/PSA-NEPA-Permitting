@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>After-save flow on Program. Fires when nepa_location_lat__c or nepa_location_lon__c is changed and both are non-null. Invokes NEPA_GIS_Proximity_IP asynchronously (AsyncAfterCommit) to query federal ArcGIS endpoints and write protection area findings back to nepa_protection_areas__c, nepa_gis_last_checked__c, and nepa_extraordinary_circumstances__c. On success, sets nepa_gis_proximity_complete__c = true so NEPA_CE_Screener can detect that GIS data is available before evaluating extraordinary circumstances. On IP fault, creates a coordinator Task and logs the error via NEPA_Error_Logger. Add new layers by inserting NEPA_GIS_Layer__mdt records -- no flow changes needed.</description>
+    <description>After-save flow on Program. Fires when nepa_location_lat__c or nepa_location_lon__c is changed and both are non-null. Invokes NepaGISProximityService (Apex Queueable) to query federal ArcGIS endpoints for each active NEPA_GIS_Layer__mdt record and write protection area findings to nepa_gis_data__c, nepa_protection_areas__c, nepa_gis_last_checked__c, and nepa_extraordinary_circumstances__c. On success, sets nepa_gis_proximity_complete__c = true so NEPA_CE_Screener can detect that GIS data is available before evaluating extraordinary circumstances. On fault, creates a coordinator Task and logs the error via NEPA_Error_Logger. Add new layers by inserting NEPA_GIS_Layer__mdt records -- no flow changes needed.</description>
     <interviewLabel>NEPA GIS Proximity Check {!$Flow.CurrentDateTime}</interviewLabel>
     <label>NEPA GIS Proximity Check</label>
     <processMetadataValues>
@@ -72,16 +72,15 @@
         </rules>
     </decisions>
 
-    <!-- Invoke NEPA_GISProximityIP OmniStudio IP via Apex invocable bridge.
-         OmniIntegrationProcedures are OmniProcess records, not Flow records, so
-         subflows cannot reference them. NepaGISProximityIPInvoker delegates to
-         omnistudio.IntegrationProcedureService at runtime. -->
+    <!-- Invoke Apex GIS proximity service. NepaGISProximityService enqueues a
+         Queueable that fires callouts for each active NEPA_GIS_Layer__mdt record,
+         writes nepa_gis_data__c records, and stamps protection area fields on Program. -->
     <actionCalls>
         <name>InvokeGISProximityIP</name>
-        <label>Invoke GIS Proximity IP</label>
+        <label>Invoke GIS Proximity Service</label>
         <locationX>176</locationX>
         <locationY>288</locationY>
-        <actionName>NepaGISProximityIPInvoker</actionName>
+        <actionName>NepaGISProximityService</actionName>
         <actionType>apex</actionType>
         <inputParameters>
             <name>projectId</name>

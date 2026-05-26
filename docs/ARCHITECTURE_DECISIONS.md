@@ -985,7 +985,7 @@ Post-consolidation acreage override: `IF(ReviewType == 'CE' AND DisturbanceAcres
 | Feature | Working Path | Backlog Path |
 |---|---|---|
 | CE Intake Wizard | `NEPA_CE_Intake` Screen Flow | `NEPA_CEIntake` OmniScript + `NEPA_CEScreeningIP` / `NEPA_CESaveIP` IPs |
-| GIS Proximity Analysis | `NEPA_GIS_Proximity_Check` Flow + `NepaGISProximityIPInvoker` Apex bridge (logic verified; IP end-to-end not verified) | `NEPA_GISProximityIP` Integration Procedure activation |
+| GIS Proximity Analysis | `NEPA_GIS_Proximity_Check` Flow + `NepaGISProximityService` Apex Queueable (fully delivered) | `NEPA_GISProximityIP` IP (superseded — kept as design artifact) |
 | CEQ Full-Graph Export | `NepaCeqFullExportService` Apex REST (`POST /nepa/v1/export/project`) | `NEPA_CEQExport_Procedure` IP + DataRaptor chain (abandoned — unresolvable "valid bundle name" error) |
 | Per-Process Export | `NepaCeqExportService` Apex REST (`GET /nepa/v1/processes/{id}`) | Same abandoned IP path |
 | Pre-Application Screening | Flow-based path (selector flow + BRE) | `NEPA_PreAppScreeningIP` Integration Procedure |
@@ -1004,18 +1004,18 @@ Post-consolidation acreage override: `IF(ReviewType == 'CE' AND DisturbanceAcres
 
 **Resumption requirements:** OmniStudio license active, IPs manually activated post-deploy, element type values verified against platform picklist (ADR 011 — "Text Area" not "TextArea"), ArcGIS API key configured.
 
-### C.3 GIS Proximity Integration Procedure Backlog
+### C.3 GIS Proximity — Delivered via Apex
 
-| Component | File | Purpose |
+The `NEPA_GISProximityIP` OmniStudio IP was replaced by `NepaGISProximityService` (Apex). The OmniStudio components below are retained as design artifacts but are superseded.
+
+| Component | File | Status |
 |---|---|---|
-| `NEPA_GISProximityIP` IP | `omniIntegrationProcedures/NEPA_GISProximityIP_Procedure_1.oip-meta.xml` | Calls GIS services, writes results to nepa_gis_data__c |
-| `DR_Extract_GIS_Layers` | `omniDataTransforms/DR_Extract_GIS_Layers.json` | Reads active GIS layers |
-| `DR_Load_GIS_Results` | `omniDataTransforms/DR_Load_GIS_Results.json` | Writes GIS results |
-| `DR_Upsert_Detected_Layer` | `omniDataTransforms/DR_Upsert_Detected_Layer.json` | Upserts detected protection layer records |
+| `NEPA_GISProximityIP` IP | `omniIntegrationProcedures/NEPA_GISProximityIP_Procedure_1.oip-meta.xml` | Superseded — Apex Queueable does this work |
+| `DR_Extract_GIS_Layers` | `omniDataTransforms/DR_Extract_GIS_Layers.json` | Superseded — Queueable queries NEPA_GIS_Layer__mdt directly |
+| `DR_Load_GIS_Results` | `omniDataTransforms/DR_Load_GIS_Results.json` | Superseded — Queueable writes nepa_gis_data__c records directly |
+| `DR_Upsert_Detected_Layer` | `omniDataTransforms/DR_Upsert_Detected_Layer.json` | Superseded |
 
-**Design note (ADR 009):** The Apex bridge pattern is architecturally correct. The bridge class calls `omnistudio.IntegrationProcedureService.invokeMethod()` — confirmed working. What was not completed was IP end-to-end activation and verification.
-
-**GIS 503 partial-failure behavior (design intent):** `failOnStepError: false` on each layer call. A 503 appends `"[LayerLabel] — query failed"` to `ProtectionAreasSummary` and records a no-hit default for that layer. The loop continues to remaining layers. **Gap:** A partially successful run (4 of 5 layers) sets `nepa_gis_proximity_complete__c = true`, which can proceed with an incomplete EC determination.
+**Working path:** `NEPA_GIS_Proximity_Check` Flow (AsyncAfterCommit) → `NepaGISProximityService.invoke()` → enqueues `GISProximityQueueable` → queries active `NEPA_GIS_Layer__mdt` records → fires `callout:NC_NAME/path` per layer → writes `nepa_gis_data__c` records → stamps `nepa_protection_areas__c`, `nepa_extraordinary_circumstances__c`, `nepa_gis_last_checked__c`, `nepa_gis_proximity_complete__c` on Program.
 
 ### C.4 CEQ Export Integration Procedure Backlog (Abandoned)
 
