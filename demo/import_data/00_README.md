@@ -51,6 +51,9 @@ Load files strictly in number order. Each file's parent records must exist befor
 | 28 | `28_required_permits.apex` | **Apex script** | — | — | Inserts 2 `nepa_required_permit__c` records: DEMO_RP_001 (NPDES IDG370000, status=Issued) and DEMO_RP_002 (CWA Section 404, status=Pending). DEMO_RP_001 insert triggers `NEPA_Permit_Issued_Schedule_Creator` async — 4 inspection Visits created with Idaho state risk context in `nepa_trigger_layer__c`. Run after step 18. |
 | 29 | `29_scene7_inspection_visits.apex` | **Apex script** | — | — | Pre-seeds 4 NPDES inspection Visit records as fallback if step-28 async flow did not fire. Detects existing Visits by Subject before inserting — safe to run after flow has executed. Each Visit includes Idaho state risk context in `nepa_state_risk_context__c` (Scene 7-B banner). Run after step 28. |
 | 30 | `30_scene7_biop_reinit.apex` | **Apex script** | — | — | Sets `nepa_reinit_new_species_listing__c = TRUE` on the Critical Habitat auto-generated Visit from step 22 — fires `NEPA_BiOp_Reinitiation_Checker` async. Pre-seeds ESA Coordinator Task and sets `nepa_challenge_risk_delta__c = 12` as fallback. Run after step 29. |
+| 31a | `31a_postload_atd.apex` | **Apex script** | — | — | Creates 28 `AssessmentTaskDefinition` records (one per unique task across all 7 NEPA Visit APTs). Idempotent. Run after Phase 8b APT metadata deploy. |
+| 31b | `31b_postload_apt.apex` | **Apex script** | — | — | Creates 7 `ActionPlanTemplate` records (`ActionPlanType='Retail'`, `TargetEntityType='Visit'`), 7 `ActionPlanTemplateVersion` records (Status=Draft), and 28 `ActionPlanTemplateItem` records (4 per APT, `ItemEntityType=AssessmentTask`). Must run after 31a. If 31c previously failed and left Final versions with no values, run `31b_cleanup.apex` first to reset them, then re-run 31b. |
+| 31c | `31c_postload_apt_values.apex` | **Apex script** | — | — | Inserts 56 `ActionPlanTemplateItemValue` records (2 per item: `AssessmentTask.AssessmentTaskDefinitionId` + `AssessmentTask.Name`), then publishes all 7 versions from Draft → Final. Idempotent. Run after 31b. |
 
 ---
 
@@ -179,7 +182,7 @@ IndividualApplication (09)  [also — GIS auto-assembly from step 22]
 | Sam books pre-app; system auto-assembles ID Team | `DEMO_ENG_001`; `DEMO_CON_001–007`; `DEMO_SR_001–007` |
 | GIS check fires on lat/lon save; detects NWI Wetlands + FWS Critical Habitat → EC flag set | `nepa_detected_protection_layer__c` × 4; `Program.nepa_extraordinary_circumstances__c = true` |
 | System auto-assembles ID Team from GIS results; creates 3 auto-generated Visits | GIS_Auto_Assembly `nepa_process_team_member__c` × 3; `nepa_auto_generated__c` Visit × 3 |
-| Each auto-generated Visit gets an Action Plan via NepaVisitAfterInsert trigger | Visit × 3 → ActionPlan × 3 (one per discipline) |
+| Each auto-generated Visit gets an Action Plan via NepaVisitAfterInsert trigger | Visit × 3 → ActionPlan × 3; each ActionPlan has 4 AssessmentTasks from the discipline-specific Visit APT (steps 31a–31c) |
 | Plaintiff Intelligence flags ICL; creates Task for legal review | `DEMO_PC_001`; `DEMO_TASK_004` |
 | OSC comment creates Task for NEPA coordinator | `DEMO_PC_002`; `DEMO_TASK_005` |
 | Required Document Registry all five green | Documents in ContentVersion load; `DEMO_TASK_007` |
@@ -268,6 +271,23 @@ Expected for step 30: 1 Visit with `nepa_reinit_new_species_listing__c = true`; 
 
 Expected for step 23 (post-decision Tasks): 6–10 Task rows from `NEPA_PostDecision_Monitor_Scheduler` covering SWPPP, NPDES DMR, Reclamation, Adaptive Management, BiOp ITS, BiOp RPA (depends on EA review type filter in flow).
 
+```bash
+# Steps 31a–31c — NEPA Visit Action Plan Templates
+sf data query --target-org $TARGET \
+  --query "SELECT COUNT() FROM AssessmentTaskDefinition WHERE Name LIKE '%Survey%' OR Name LIKE '%Lek%' OR Name LIKE '%Riparian%'"
+
+sf data query --target-org $TARGET \
+  --query "SELECT UniqueName, Name FROM ActionPlanTemplate WHERE UniqueName LIKE 'NEPA_Visit_%' ORDER BY UniqueName"
+
+sf data query --target-org $TARGET \
+  --query "SELECT COUNT() FROM ActionPlanTemplateVersion WHERE ActionPlanTemplateId IN (SELECT Id FROM ActionPlanTemplate WHERE UniqueName LIKE 'NEPA_Visit_%') AND Status = 'Final'"
+
+sf data query --target-org $TARGET \
+  --query "SELECT Name, TargetId FROM ActionPlan WHERE Name LIKE '%Field Survey%' ORDER BY CreatedDate DESC LIMIT 10"
+```
+
+Expected for steps 31a–31c: 28 `AssessmentTaskDefinition` records; 7 `ActionPlanTemplate` records with `NEPA_Visit_*` unique names; 7 `ActionPlanTemplateVersion` records with `Status = 'Final'`; 3 `ActionPlan` records (one per GIS-auto-generated Visit from step 22), each with 4 `AssessmentTask` items.
+
 ---
 
 ## Partial Import Recovery
@@ -295,6 +315,14 @@ sf apex run --file demo/import_data/22_postload_gis_team_assembly.apex --target-
 sf apex run --file demo/import_data/23_postload_flow_refresh.apex --target-org $TARGET
 ```
 Apex scripts are idempotent for the step-20 entities (upsert-safe). Steps 18 and 22 may insert duplicates if retried after partial success — run full cleanup first if you see duplicate records.
+
+**If failure is in steps 31a–31c (Visit APT phase):** These scripts are idempotent and safe to re-run individually. The one exception: if 31b ran and created Draft versions but 31c failed partway, subsequent runs of 31c may fail with "available for template versions in Draft state" if versions were partially published. In that case:
+```bash
+# Reset broken Final versions (no item values), then re-run 31b and 31c
+sf apex run --file demo/import_data/31b_cleanup.apex --target-org $TARGET
+sf apex run --file demo/import_data/31b_postload_apt.apex --target-org $TARGET
+sf apex run --file demo/import_data/31c_postload_apt_values.apex --target-org $TARGET
+```
 
 **If re-importing fails with `DUPLICATE_VALUE` errors:** The cleanup below was not run completely or a prior import left orphaned records. Query for and delete any records matching the demo external IDs before reloading.
 

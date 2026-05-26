@@ -1,6 +1,9 @@
 # NEPA Action Plan Templates
 
-46 Action Plan Templates deployed to `IndividualApplication` (NEPA process) and `Visit` (discipline field survey) objects. Deployed via Phase 8b of `scripts/deploy.sh`. Launched at runtime by the `NepaVisitActionPlanLauncher` Apex trigger handler using `NEPA_Layer_Discipline__mdt` to select the correct template for each discipline.
+46 Action Plan Templates across `IndividualApplication` (NEPA process) and `Visit` (discipline field survey) objects.
+
+- **IndividualApplication APTs (39):** Deployed as metadata via Phase 8b of `scripts/deploy.sh`. Launched at runtime by `NEPA_ActionPlan_Launcher` flow when `nepa_process_stage__c` transitions to Determination or Coordination, using `NEPA_ActionPlan_Config__mdt` to select the matching template.
+- **Visit APTs (7):** Shell metadata deployed via Phase 8b, but `ActionPlanType='Retail'` and `AssessmentTaskDefinition` wiring cannot be set via metadata at API v62.0. Fully populated by Apex post-load scripts `31a_postload_atd.apex` → `31b_postload_apt.apex` → `31c_postload_apt_values.apex` (run as part of `load-demo-data.sh`). Launched at runtime by `NepaVisitActionPlanLauncher` Apex trigger handler via `NEPA_Layer_Discipline__mdt` discipline → APT routing.
 
 ## Task Source Methodology
 
@@ -93,17 +96,19 @@ Generic review-type templates assigned when no sector-specific template matches.
 
 ## Visit Discipline Milestone Templates (7)
 
-5 tasks each. Assigned to `Visit` records created by `NepaLayerDisciplineResolver` when GIS proximity detection flags a resource-specific extraordinary circumstance. Items use `itemEntityType=AssessmentTask` with `TaskType=InspectionChecklist`, aligning with the PSS Assessment Execution pattern for field surveys. Tasks cover pre-survey prep, field assessment window compliance, agency coordination memo, and final report upload.
+4 items each. Assigned to `Visit` records auto-created by `NepaLayerDisciplineResolver` when GIS proximity detection flags a resource-specific extraordinary circumstance. Items use `itemEntityType=AssessmentTask` with `TaskType=InspectionChecklist` and are wired to `AssessmentTaskDefinition` records, aligning with the PSS Assessment Execution pattern for field surveys. Items cover desktop review, field assessment window compliance, agency coordination memo, and final report upload.
+
+**Deploy note:** `ActionPlanType='Retail'` and `AssessmentTaskDefinitionId` item values are not settable via metadata at API v62.0. The shell APT XML deploys via Phase 8b; full population requires the `31a` → `31b` → `31c` Apex post-load sequence.
 
 | Unique Name | Label | Trigger | Cooperating Agencies |
 |---|---|---|---|
-| `NEPA_WO_Aquatic_Milestones_BLM` | NEPA WO Aquatic Milestones | NHD / riparian GIS layer | USFWS, NOAA-NMFS, USACE |
-| `NEPA_WO_BigGame_Milestones_BLM` | NEPA WO Big Game Milestones | State Wildlife Agency critical habitat | State Wildlife Agency, BLM, USFS |
-| `NEPA_WO_Botanical_Milestones_BLM` | NEPA WO Botanical Milestones | FWS Critical Habitat / rare plant GIS | USFWS, BLM |
-| `NEPA_WO_Geology_Milestones_BLM` | NEPA WO Geology Milestones | EPA Superfund NPL / contamination GIS layer | EPA, USACE |
-| `NEPA_WO_Hydrology_Milestones_BLM` | NEPA WO Hydrology Milestones | NWI Wetlands / aquatic GIS layer | USACE, EPA, USFWS |
-| `NEPA_WO_MigratoryBird_Milestones_BLM` | NEPA WO Migratory Bird Milestones | MBTA / avian habitat GIS layer | USFWS |
-| `NEPA_WO_SageGrouse_Milestones_BLM` | NEPA WO Sage-Grouse Milestones | FWS Critical Habitat (Sage-Grouse) | USFWS, BLM |
+| `NEPA_Visit_Aquatic_Milestones_BLM` | NEPA Visit Aquatic Milestones | NHD / riparian GIS layer | USFWS, NOAA-NMFS, USACE |
+| `NEPA_Visit_BigGame_Milestones_BLM` | NEPA Visit Big Game Milestones | State Wildlife Agency critical habitat | State Wildlife Agency, BLM, USFS |
+| `NEPA_Visit_Botanical_Milestones_BLM` | NEPA Visit Botanical Milestones | FWS Critical Habitat / rare plant GIS | USFWS, BLM |
+| `NEPA_Visit_Geology_Milestones_BLM` | NEPA Visit Geology Milestones | EPA Superfund NPL / contamination GIS layer | EPA, USACE |
+| `NEPA_Visit_Hydrology_Milestones_BLM` | NEPA Visit Hydrology Milestones | NWI Wetlands / aquatic GIS layer | USACE, EPA, USFWS |
+| `NEPA_Visit_MigratoryBird_Milestones_BLM` | NEPA Visit Migratory Bird Milestones | MBTA / avian habitat GIS layer | USFWS |
+| `NEPA_Visit_SageGrouse_Milestones_BLM` | NEPA Visit Sage-Grouse Milestones | FWS Critical Habitat (Sage-Grouse) | USFWS, BLM |
 
 ---
 
@@ -115,5 +120,5 @@ Generic review-type templates assigned when no sector-specific template matches.
 | CE Sector | 12 | 192 |
 | EA Sector | 12 | 311 |
 | EIS Sector | 12 | 385 |
-| Visit Discipline | 7 | 35 |
-| **Total** | **46** | **943** |
+| Visit Discipline | 7 | 28 |
+| **Total** | **46** | **936** |
