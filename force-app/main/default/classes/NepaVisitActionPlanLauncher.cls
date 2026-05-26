@@ -40,7 +40,7 @@ public with sharing class NepaVisitActionPlanLauncher {
         Map<String, Id> aptNameToVersionId = new Map<String, Id>();
         for (ActionPlanTemplate apt : [
             SELECT Id, UniqueName,
-                   (SELECT Id FROM ActionPlanTemplateVersions WHERE Status = 'Active' ORDER BY Version DESC LIMIT 1)
+                   (SELECT Id FROM ActionPlanTemplateVersions WHERE Status = 'Final' ORDER BY Version DESC LIMIT 1)
             FROM ActionPlanTemplate
             WHERE UniqueName IN :aptNames
             WITH USER_MODE
