@@ -189,7 +189,7 @@ sf project deploy start \
 
 | Excluded component | Reason |
 |---|---|
-| `OmniDataTransform` / `OmniIntegrationProcedure` / `OmniScript` | **BACKLOG — not verified.** Phase 8c deploys these components but end-to-end activation has NOT been confirmed. See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md). Excluded here because `DRUpsertDetectedLayer` requires a two-step deploy; handled in Phase 8c, but the phased deploy does not guarantee a working result. |
+| `OmniDataTransform` / `OmniIntegrationProcedure` / `OmniScript` | **BACKLOG — not verified.** Phase 8c deploys these components but end-to-end activation has NOT been confirmed. See [ARCHITECTURE_DECISIONS.md — Appendix C](ARCHITECTURE_DECISIONS.md#appendix-c--omnistudio-backlog-detail). Excluded here because `DRUpsertDetectedLayer` requires a two-step deploy; handled in Phase 8c, but the phased deploy does not guarantee a working result. |
 | `BotVersion` | Requires Agentforce agent publish workflow; deploy via Agent CLI |
 | `ConnectedApp:NEPA_CEQExport_API` | XML structure error (`oauthFlows` invalid in `oauthConfig`); fix before including |
 | `ExpressionSetDefinition` | Platform rejects deploy if a version is already active; activation handled by `scripts/load_decision_matrix_rows.py --activate-es` (Phase 5c-activate) |
@@ -204,7 +204,7 @@ For a first-time install, use the phased script (Option A) — it handles the Om
 >
 > **What works without OmniStudio:** CE screening via BRE/Flow, GIS layer catalog, `nepa_gis_data__c` schema, CEQ REST export via Apex (`NepaCeqExportService`), and all 40+ flows operate independently of OmniStudio.
 >
-> See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md) for the full list of backlog components and what would be required to complete them.
+> See [ARCHITECTURE_DECISIONS.md — Appendix C](ARCHITECTURE_DECISIONS.md#appendix-c--omnistudio-backlog-detail) for the full list of backlog components and what would be required to complete them.
 
 ---
 
@@ -361,7 +361,7 @@ Expected: 314 (priority load) or 2105 (full load).
 >
 > The **working CE intake path** is the `NEPA_CE_Intake` Screen Flow, which provides full BRE-based CE screening without OmniStudio.
 >
-> See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md) for the full scope of OmniStudio backlog items and what would be needed to complete them.
+> See [ARCHITECTURE_DECISIONS.md — Appendix C](ARCHITECTURE_DECISIONS.md#appendix-c--omnistudio-backlog-detail) for the full scope of OmniStudio backlog items and what would be needed to complete them.
 
 ### 4g. Configure Named Credentials for GIS Services — Backlog
 
@@ -373,19 +373,19 @@ Expected: 314 (priority load) or 2105 (full load).
 >
 > The GIS layer catalog (`NEPA_GIS_Layer__mdt`), `nepa_gis_data__c` schema, and
 > `nepa_detected_protection_layer__c` schema are fully deployed and working.
-> See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md) and [GIS-Proximity-Guide.md](GIS-Proximity-Guide.md) for the resumption checklist.
+> See [ARCHITECTURE_DECISIONS.md — Appendix C](ARCHITECTURE_DECISIONS.md#appendix-c--omnistudio-backlog-detail) and [GIS-Proximity-Guide.md](GIS-Proximity-Guide.md) for the resumption checklist.
 
 ### 4h. Configure the ArcGIS API Key (site location picker) — Backlog
 
 > **Backlog — OmniStudio not verified.** The `nepaSiteLocationPickerOmni` LWC is an OmniScript custom component that is only used within the `NEPA_CEIntake` OmniScript wizard. Since the OmniScript itself is backlog, this configuration step is deferred. The steps below are preserved for reference when the OmniScript path is resumed.
 
-Configuration steps are preserved in [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md) for resumption; do not attempt until the OmniScript path is verified.
+Configuration steps are preserved in [ARCHITECTURE_DECISIONS.md — Appendix C](ARCHITECTURE_DECISIONS.md#appendix-c--omnistudio-backlog-detail) for resumption; do not attempt until the OmniScript path is verified.
 
 ### 4i. Verify NAICS Code Data — Backlog (OmniScript component)
 
 > **Backlog — OmniStudio not verified.** The `nepaIndustryCodePickerOmni` LWC is an OmniScript custom component used within the `NEPA_CEIntake` OmniScript wizard. Since the OmniScript itself is backlog, this step is deferred. The `NEPA_NAICS_Code__mdt` records are still useful for BRE and Flow-based CE screening.
 
-NAICS data is still useful for BRE/Flow-based CE screening. To verify NAICS records are loaded for BRE use, run the SOQL in [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md). Do not attempt OmniScript picker verification until the OmniScript path is verified.
+NAICS data is still useful for BRE/Flow-based CE screening. To verify NAICS records are loaded for BRE use, run the SOQL in [ARCHITECTURE_DECISIONS.md — Appendix C](ARCHITECTURE_DECISIONS.md#appendix-c--omnistudio-backlog-detail). Do not attempt OmniScript picker verification until the OmniScript path is verified.
 
 ---
 

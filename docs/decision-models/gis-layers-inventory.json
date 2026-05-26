@@ -3,7 +3,7 @@
   "standard": "CEQ NEPA and Permitting Data and Technology Standard v1.2 (August 18, 2025)",
   "mfr": "MFR 4 — GIS layer inventory; MFR 6 — Five external GIS services for proximity screening",
   "generated": "2026-05-14",
-  "description": "Registry of the GIS services in the NEPA_GIS_Layer__mdt catalog. Each layer is configured for dynamic proximity checking using the project's latitude/longitude coordinates. Results are written to nepa_gis_data_element__c records and aggregate flags are set on the IndividualApplication. NOTE: The OmniStudio Integration Procedure invocation path (NEPA_GISProximityCheck) is BACKLOG — not verified end-to-end. The GIS layer catalog and schema are delivered; the end-to-end callout path has not been confirmed. See OMNISTUDIO-BACKLOG.md.",
+  "description": "Registry of the GIS services in the NEPA_GIS_Layer__mdt catalog. Each layer is configured for dynamic proximity checking using the project's latitude/longitude coordinates. Results are written to nepa_gis_data_element__c records and aggregate flags are set on the IndividualApplication. NOTE: The OmniStudio Integration Procedure invocation path (NEPA_GISProximityCheck) is BACKLOG — not verified end-to-end. The GIS layer catalog and schema are delivered; the end-to-end callout path has not been confirmed. See ARCHITECTURE_DECISIONS.md (Appendix C).",
   "integration_architecture": {
     "mechanism": "OmniStudio Integration Procedure — NEPA_GISProximityCheck (BACKLOG — not verified). Working trigger: NEPA_GIS_Proximity_Check Flow + NepaGISProximityIPInvoker Apex bridge.",
     "invocation": "Apex bridge class NepaGISProximityIPInvoker.invokeProcedure() called from NEPA_Stage_Gate flow on intake submission",

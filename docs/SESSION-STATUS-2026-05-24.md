@@ -104,7 +104,7 @@ permanently in `.gitignore`, never commit.
 
 All documentation has been updated to accurately reflect that OmniStudio components (DataRaptors, Integration Procedures, OmniScript) are backlog — not delivered. Key changes:
 
-- Created `docs/OMNISTUDIO-BACKLOG.md` — canonical reference for all 4 backlog features (F1 CE Intake Wizard, F2 GIS Proximity IP, F3 CEQ DataRaptor export, F4 Pre-App Screening IP)
+- Created `docs/ARCHITECTURE_DECISIONS.md (Appendix C)` — canonical reference for all 4 backlog features (F1 CE Intake Wizard, F2 GIS Proximity IP, F3 CEQ DataRaptor export, F4 Pre-App Screening IP)
 - Updated `SUBMISSION-NARRATIVE.md` — MFR #2, #3, Readiness section, User-Centered Design, Proposed Solution Approach
 - Updated `QUICKSTART.md` — Phase 8c table, section 4f (OmniScript activation), 4h (site picker), 4i (NAICS picker)
 - Updated `NEPA-Permitting-Acceleration-Plan.md` — Priority 2, 5, and 10 sections

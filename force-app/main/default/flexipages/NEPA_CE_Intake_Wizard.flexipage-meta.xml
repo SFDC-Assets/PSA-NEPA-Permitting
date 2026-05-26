@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlexiPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <flexiPageType>AppPage</flexiPageType>
+    <masterLabel>NEPA CE Intake Wizard</masterLabel>
+    <regions>
+        <name>main</name>
+        <mode>replace</mode>
+        <type>Region</type>
+        <itemInstances>
+            <componentName>c:nepaCeIntakeWizard</componentName>
+        </itemInstances>
+    </regions>
+    <template>
+        <name>One</name>
+        <properties>
+            <name>label</name>
+            <value>Full Width</value>
+        </properties>
+    </template>
+</FlexiPage>

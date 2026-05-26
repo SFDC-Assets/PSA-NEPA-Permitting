@@ -174,7 +174,7 @@ Nine Custom Metadata Types (CMTs — configuration records deployed as metadata 
 
 ## ADR 005 -- Phase 2 OmniStudio Isolation Strategy
 
-**Status:** Accepted — OmniStudio implementation is backlog (see [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md))
+**Status:** Accepted — OmniStudio implementation is backlog (see [ARCHITECTURE_DECISIONS.md — Appendix C](ARCHITECTURE_DECISIONS.md#appendix-c--omnistudio-backlog-detail))
 **Date:** 2026-04-29
 **Deciders:** GPS Accelerators
 
@@ -198,7 +198,7 @@ These flows accept record IDs as inputs and return structured outputs. Their inp
 
 **What to freeze:** `NEPA_CE_Intake` screen flow is the Phase 2 OmniScript replacement target. No new business logic should be added to it. New intake fields belong in the autolaunched scoring flows, not the screen flow.
 
-> **Update (ADR 011, 2026-05-12):** The OmniScript CE intake was attempted in Phase 1.1 but was not successfully deployed and verified. The `NEPA_CE_Intake` screen flow remains the primary (and only verified) intake path. The OmniScript path is backlog. See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md) and ADR 011 for full context.
+> **Update (ADR 011, 2026-05-12):** The OmniScript CE intake was attempted in Phase 1.1 but was not successfully deployed and verified. The `NEPA_CE_Intake` screen flow remains the primary (and only verified) intake path. The OmniScript path is backlog. See [ARCHITECTURE_DECISIONS.md — Appendix C](ARCHITECTURE_DECISIONS.md#appendix-c--omnistudio-backlog-detail) and ADR 011 for full context.
 
 **ContentDocumentLink avoidance:** `nepa_process__c` (Lookup to `IndividualApplication`) was added directly to `ContentVersion` to provide a direct query path. OmniScript Integration Procedures cannot traverse `ContentDocumentLink` junction records the same way Flow `Get Records` can. All queries that previously resolved process context from `ContentDocumentLink` have been rewritten to use `nepa_process__c`.
 
@@ -458,7 +458,7 @@ Replace `NEPA_CE_Code__mdt` as the primary CE catalog with `nepa_ce_library__c` 
 
 ## ADR 011 -- OmniScript CE Intake over Screen Flow
 
-**Status:** Accepted (design decision) — OmniScript implementation is backlog (see [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md))
+**Status:** Accepted (design decision) — OmniScript implementation is backlog (see [ARCHITECTURE_DECISIONS.md — Appendix C](ARCHITECTURE_DECISIONS.md#appendix-c--omnistudio-backlog-detail))
 **Date:** 2026-05-12
 **Deciders:** GPS Accelerators
 

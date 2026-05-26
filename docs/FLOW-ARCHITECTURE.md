@@ -81,7 +81,7 @@ flowchart TD
 | NEPA_Error_Logger | Autolaunched subflow | Called from fault connectors |
 | NEPA_FlowError_CountIncrementer | Before-save | NEPA_Flow_Error__c insert |
 | NEPA_FRA_Page_Limit_Setter | Before-save | ContentVersion insert (Final EA/EIS) |
-| NEPA_GIS_Proximity_Check | Autolaunched subflow | Called from CE Screener — downstream OmniStudio Integration Procedure (`NEPA_GISProximityIP`) is backlog; see [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md) |
+| NEPA_GIS_Proximity_Check | Autolaunched subflow | Called from CE Screener — downstream OmniStudio Integration Procedure (`NEPA_GISProximityIP`) is backlog; see [ARCHITECTURE_DECISIONS.md — Appendix C](ARCHITECTURE_DECISIONS.md#appendix-c--omnistudio-backlog-detail) |
 | NEPA_Litigation_Risk_Scorer | Autolaunched | Invoked from BRE / Agent |
 | NEPA_Permit_Coordinator | Autolaunched | Invoked from Agent |
 | NEPA_Plaintiff_Intelligence | After-save | PublicComplaint insert — writes plaintiff flags to both the comment record and the parent IndividualApplication |

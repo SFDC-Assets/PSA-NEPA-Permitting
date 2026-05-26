@@ -235,7 +235,7 @@ Fields written on every save:
 ## Agent Flow Diagram
 
 ```
-Portal/OmniScript submit (OmniScript path: backlog — see OMNISTUDIO-BACKLOG.md)
+Portal/OmniScript submit (OmniScript path: backlog — see ARCHITECTURE_DECISIONS.md (Appendix C))
          │
          ▼
 ┌─────────────────────────────────────┐

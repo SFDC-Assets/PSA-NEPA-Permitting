@@ -4,7 +4,7 @@
 >
 > The Experience Cloud portal and all OmniStudio components listed in this manifest are planned features that have not been built. This document is a design artifact for Phase 2. Do not present any items in this manifest as delivered capabilities.
 >
-> The OmniScript components specifically (`NEPA_CEIntake`, `NEPA_Comment_Submission`, and all portal OmniScripts) are also in [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md).
+> The OmniScript components specifically (`NEPA_CEIntake`, `NEPA_Comment_Submission`, and all portal OmniScripts) are also in [ARCHITECTURE_DECISIONS.md — Appendix C](ARCHITECTURE_DECISIONS.md#appendix-c--omnistudio-backlog-detail).
 
 **Version:** 1.0  
 **Date:** 2026-04-30  

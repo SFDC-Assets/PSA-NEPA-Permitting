@@ -1,0 +1,289 @@
+<template>
+    <lightning-card title="CE Intake Wizard" icon-name="standard:environment_hub">
+        <div class="slds-p-horizontal_medium">
+
+            <!-- Progress indicator -->
+            <lightning-progress-indicator
+                current-step={currentStepStr}
+                type="base"
+                has-error="false"
+                class="slds-m-bottom_medium"
+            >
+                <lightning-progress-step label="Project" value="1"></lightning-progress-step>
+                <lightning-progress-step label="Location" value="2"></lightning-progress-step>
+                <lightning-progress-step label="Industry" value="3"></lightning-progress-step>
+                <lightning-progress-step label="Action" value="4"></lightning-progress-step>
+                <lightning-progress-step label="Review" value="5"></lightning-progress-step>
+            </lightning-progress-indicator>
+
+            <!-- Step 1: Project Identity -->
+            <template if:true={isStep1}>
+                <div class="slds-form slds-form_stacked slds-p-bottom_medium">
+                    <h2 class="slds-text-heading_medium slds-m-bottom_medium">Project Identity</h2>
+                    <lightning-input
+                        label="Project Title"
+                        value={wizardData.projectTitle}
+                        data-field="projectTitle"
+                        onchange={handleFieldChange}
+                        required
+                    ></lightning-input>
+                    <lightning-input
+                        type="search"
+                        label="Lead Agency"
+                        value={leadAgencyName}
+                        placeholder="Search accounts…"
+                        onchange={handleAgencySearch}
+                        class="slds-m-top_small"
+                    ></lightning-input>
+                    <template if:true={showAgencySuggestions}>
+                        <div class="nepa-suggestions">
+                            <template for:each={agencySuggestions} for:item="sug">
+                                <div
+                                    key={sug.id}
+                                    class="nepa-suggestion-item"
+                                    data-id={sug.id}
+                                    data-name={sug.name}
+                                    onclick={handleAgencySelect}
+                                >{sug.name}</div>
+                            </template>
+                        </div>
+                    </template>
+                    <lightning-textarea
+                        label="Project Description"
+                        value={wizardData.projectDescription}
+                        data-field="projectDescription"
+                        onchange={handleFieldChange}
+                        class="slds-m-top_small"
+                    ></lightning-textarea>
+                    <lightning-input
+                        type="date"
+                        label="Start Date"
+                        value={wizardData.startDate}
+                        data-field="startDate"
+                        onchange={handleFieldChange}
+                        class="slds-m-top_small"
+                    ></lightning-input>
+                </div>
+            </template>
+
+            <!-- Step 2: Location & GIS -->
+            <template if:true={isStep2}>
+                <div class="slds-p-bottom_medium">
+                    <h2 class="slds-text-heading_medium slds-m-bottom_medium">Location &amp; GIS</h2>
+                    <c-nepa-site-location-picker-omni
+                        label="Site Location"
+                        field-name="siteLocation"
+                        lat-field-name="lat"
+                        lng-field-name="lng"
+                        onlocationchange={handleLocationChange}
+                    ></c-nepa-site-location-picker-omni>
+                    <lightning-input
+                        label="Location Description"
+                        value={wizardData.locationText}
+                        data-field="locationText"
+                        onchange={handleFieldChange}
+                        class="slds-m-top_medium"
+                    ></lightning-input>
+                    <template if:true={hasLocation}>
+                        <div class="slds-m-top_small slds-text-color_success">
+                            Location captured: {wizardData.lat}, {wizardData.lng}
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- Step 3: Sector & Industry -->
+            <template if:true={isStep3}>
+                <div class="slds-p-bottom_medium">
+                    <h2 class="slds-text-heading_medium slds-m-bottom_medium">Sector &amp; Industry</h2>
+                    <lightning-combobox
+                        label="Project Sector"
+                        value={wizardData.projectSector}
+                        options={projectSectorOptions}
+                        data-field="projectSector"
+                        onchange={handleFieldChange}
+                        class="slds-m-bottom_small"
+                    ></lightning-combobox>
+                    <lightning-combobox
+                        label="Project Type"
+                        value={wizardData.projectType}
+                        options={projectTypeOptions}
+                        data-field="projectType"
+                        onchange={handleFieldChange}
+                        class="slds-m-bottom_medium"
+                    ></lightning-combobox>
+                    <c-nepa-industry-code-picker-omni
+                        label="NAICS Code"
+                        field-name="naicsCode"
+                        onchange={handleNaicsChange}
+                    ></c-nepa-industry-code-picker-omni>
+                    <template if:true={wizardData.naicsCode}>
+                        <div class="slds-m-top_small slds-text-color_success">
+                            NAICS: {wizardData.naicsCode}
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- Step 4: Action & Scope -->
+            <template if:true={isStep4}>
+                <div class="slds-form slds-form_stacked slds-p-bottom_medium">
+                    <h2 class="slds-text-heading_medium slds-m-bottom_medium">Action &amp; Scope</h2>
+                    <lightning-combobox
+                        label="Action Type"
+                        value={wizardData.actionType}
+                        options={actionTypeOptions}
+                        data-field="actionType"
+                        onchange={handleFieldChange}
+                        required
+                    ></lightning-combobox>
+                    <lightning-input
+                        type="number"
+                        label="Disturbance Acres"
+                        value={wizardData.disturbanceAcres}
+                        data-field="disturbanceAcres"
+                        onchange={handleFieldChange}
+                        step="0.01"
+                        min="0"
+                        class="slds-m-top_small"
+                    ></lightning-input>
+                    <lightning-textarea
+                        label="Purpose and Need"
+                        value={wizardData.purposeNeed}
+                        data-field="purposeNeed"
+                        onchange={handleFieldChange}
+                        class="slds-m-top_small"
+                    ></lightning-textarea>
+                    <lightning-input
+                        label="Regulatory Citation"
+                        value={wizardData.regulatoryCitation}
+                        data-field="regulatoryCitation"
+                        onchange={handleFieldChange}
+                        placeholder="e.g. 40 CFR 1508.4"
+                        class="slds-m-top_small"
+                    ></lightning-input>
+                    <lightning-input
+                        type="checkbox"
+                        label="Multi-DOD Facility?"
+                        checked={wizardData.ecMultiDod}
+                        data-field="ecMultiDod"
+                        data-type="checkbox"
+                        onchange={handleFieldChange}
+                        class="slds-m-top_medium"
+                    ></lightning-input>
+                    <lightning-input
+                        type="checkbox"
+                        label="USACE CZMA Review?"
+                        checked={wizardData.ecUsaczma}
+                        data-field="ecUsaczma"
+                        data-type="checkbox"
+                        onchange={handleFieldChange}
+                        class="slds-m-top_small"
+                    ></lightning-input>
+                </div>
+            </template>
+
+            <!-- Step 5: Review & Result -->
+            <template if:true={isStep5}>
+                <div class="slds-p-bottom_medium">
+                    <h2 class="slds-text-heading_medium slds-m-bottom_medium">Review &amp; Submit</h2>
+                    <template if:false={isSubmitting}>
+                        <template if:false={screeningResult}>
+                            <!-- Summary table -->
+                            <dl class="slds-dl_horizontal slds-m-bottom_medium">
+                                <dt class="slds-dl_horizontal__label slds-text-color_weak">Project Title</dt>
+                                <dd class="slds-dl_horizontal__detail">{wizardData.projectTitle}</dd>
+                                <dt class="slds-dl_horizontal__label slds-text-color_weak">Lead Agency</dt>
+                                <dd class="slds-dl_horizontal__detail">{leadAgencyName}</dd>
+                                <dt class="slds-dl_horizontal__label slds-text-color_weak">Location</dt>
+                                <dd class="slds-dl_horizontal__detail">{wizardData.locationText}</dd>
+                                <dt class="slds-dl_horizontal__label slds-text-color_weak">NAICS Code</dt>
+                                <dd class="slds-dl_horizontal__detail">{wizardData.naicsCode}</dd>
+                                <dt class="slds-dl_horizontal__label slds-text-color_weak">Action Type</dt>
+                                <dd class="slds-dl_horizontal__detail">{wizardData.actionType}</dd>
+                                <dt class="slds-dl_horizontal__label slds-text-color_weak">Disturbance Acres</dt>
+                                <dd class="slds-dl_horizontal__detail">{wizardData.disturbanceAcres}</dd>
+                            </dl>
+                        </template>
+                        <template if:true={screeningResult}>
+                            <!-- Result card -->
+                            <template if:true={hasScreeningReviewType}>
+                                <lightning-card
+                                    title="CE Screening Result"
+                                    icon-name="standard:decision"
+                                    class="slds-m-bottom_medium"
+                                >
+                                    <div class="slds-p-around_medium">
+                                        <p><strong>Review Type:</strong> {screeningResult.reviewType}</p>
+                                        <p><strong>CE Code:</strong> {screeningResult.ceCode}</p>
+                                        <p><strong>Confidence:</strong> {screeningResultConfidencePct}</p>
+                                        <p><strong>Basis:</strong> {screeningResult.basis}</p>
+                                        <div class="slds-m-top_medium">
+                                            <a href={iaRecordUrl} target="_blank">View Process Record</a>
+                                        </div>
+                                    </div>
+                                </lightning-card>
+                            </template>
+                            <template if:false={hasScreeningReviewType}>
+                                <lightning-card title="Classification Pending" icon-name="utility:clock" class="slds-m-bottom_medium">
+                                    <div class="slds-p-around_medium">
+                                        <p>The CE screening is still running. Check back in a few minutes.</p>
+                                        <div class="slds-m-top_small">
+                                            <a href={iaRecordUrl} target="_blank">View Process Record</a>
+                                        </div>
+                                    </div>
+                                </lightning-card>
+                            </template>
+                        </template>
+                    </template>
+                    <template if:true={isSubmitting}>
+                        <lightning-spinner
+                            alternative-text="Submitting and awaiting CE screening…"
+                            size="medium"
+                            class="slds-m-vertical_large"
+                        ></lightning-spinner>
+                        <p class="slds-text-align_center slds-m-top_medium">Submitting intake and awaiting CE screening…</p>
+                    </template>
+                    <template if:true={submitError}>
+                        <div class="slds-notify slds-notify_alert slds-theme_error slds-m-bottom_medium" role="alert">
+                            {submitError}
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <!-- Navigation buttons -->
+            <div class="slds-grid slds-grid_align-spread slds-p-vertical_medium slds-border_top">
+                <lightning-button
+                    label="Back"
+                    onclick={handleBack}
+                    disabled={isStep1}
+                ></lightning-button>
+                <template if:false={isStep5}>
+                    <lightning-button
+                        variant="brand"
+                        label="Next"
+                        onclick={handleNext}
+                    ></lightning-button>
+                </template>
+                <template if:true={isStep5}>
+                    <template if:false={screeningResult}>
+                        <lightning-button
+                            variant="brand"
+                            label="Submit"
+                            onclick={handleSubmit}
+                            disabled={isSubmitting}
+                        ></lightning-button>
+                    </template>
+                    <template if:true={screeningResult}>
+                        <lightning-button
+                            label="Start New Intake"
+                            onclick={handleReset}
+                        ></lightning-button>
+                    </template>
+                </template>
+            </div>
+
+        </div>
+    </lightning-card>
+</template>

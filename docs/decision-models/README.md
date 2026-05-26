@@ -78,7 +78,7 @@ For Decision Matrix exports, each `row` has `conditions` (input match criteria) 
 
 ## GIS Data Layers
 
-The GIS proximity checks use publicly accessible data layers. **Note:** The OmniScript CE Intake Wizard is backlog — GIS checks are invoked by the `NEPA_GIS_Proximity_Check` Flow when project coordinates are saved; see [OMNISTUDIO-BACKLOG.md](../OMNISTUDIO-BACKLOG.md).
+The GIS proximity checks use publicly accessible data layers. **Note:** The OmniScript CE Intake Wizard is backlog — GIS checks are invoked by the `NEPA_GIS_Proximity_Check` Flow when project coordinates are saved; see [ARCHITECTURE_DECISIONS.md — Appendix C](../ARCHITECTURE_DECISIONS.md#appendix-c--omnistudio-backlog-detail).
 
 | Check | Data Source | Access |
 |---|---|---|

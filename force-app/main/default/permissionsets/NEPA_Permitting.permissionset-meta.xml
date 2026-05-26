@@ -69,6 +69,10 @@
         <apexClass>NepaIndustryCodePickerController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
+    <classAccesses>
+        <apexClass>NepaCEIntakeController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <description>Provides access to NEPA Permitting compliant data model. Implements CEQ NEPA and Permitting Data and Technology Standard v1.2. Requires additional Public Sector Access permission set to be assigned.</description>
     <fieldPermissions>
         <editable>true</editable>

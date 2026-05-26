@@ -5,7 +5,7 @@
 >
 > This document describes the intended design for the CE Intake OmniScript wizard. The implementation was **not successfully completed** — the `NEPA_CEIntake` OmniScript and its backing Integration Procedures (`NEPA_CEScreeningIP`, `NEPA_CESaveIP`) are present in the repository as design artifacts but were not deployed and verified end-to-end.
 >
-> The working CE intake path is the `NEPA_CE_Intake` Screen Flow. This spec serves as a resumption guide for when the OmniStudio path is revisited. See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md).
+> The working CE intake path is the `NEPA_CE_Intake` Screen Flow. This spec serves as a resumption guide for when the OmniStudio path is revisited. See [ARCHITECTURE_DECISIONS.md — Appendix C](ARCHITECTURE_DECISIONS.md#appendix-c--omnistudio-backlog-detail).
 
 **Audience:** Junior developer reimplementing the CE Intake OmniScript from scratch.  
 **Version:** v1 (design intent — not verified)  
