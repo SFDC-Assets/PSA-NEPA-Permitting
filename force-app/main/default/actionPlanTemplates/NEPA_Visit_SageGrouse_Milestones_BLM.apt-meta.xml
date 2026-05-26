@@ -2,7 +2,7 @@
 <ActionPlanTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
     <description>Field survey milestones for a Wildlife Biologist (Sage-Grouse) Visit triggered by FWS Critical Habitat detection. Covers lek survey window compliance, ARMPA conformance check, and survey report. Target object: Visit.</description>
     <isAdHocItemCreationEnabled>false</isAdHocItemCreationEnabled>
-    <name>NEPA WO Sage-Grouse Milestones</name>
+    <name>NEPA Visit Sage-Grouse Milestones</name>
     <targetEntityType>Visit</targetEntityType>
     <uniqueName>NEPA_Visit_SageGrouse_Milestones_BLM</uniqueName>
     <actionPlanTemplateItem>
