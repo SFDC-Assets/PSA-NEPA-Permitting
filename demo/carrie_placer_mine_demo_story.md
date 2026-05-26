@@ -1,7 +1,7 @@
 # Demo Story: Carrie Placer Mine Plan of Operations
 ## Salesforce Field Service & Agentforce for Public Sector — NEPA Permitting Acceleration
 
-**Source Data:** DOI-BLM-ID-B030-2019-0014-EA | BLM Owyhee Field Office, Marsing, Idaho
+**Source Data:** DOI-LMTF-ID-B030-2019-0014-EA | LMTF Owyhee Field Office, Marsing, Idaho
 **Real Case File:** IDI-38709 | Applied Oct 18, 2017 → Decision Nov 27, 2019 (25 months)
 **Demo Timeline:** Same project, 8 months (Mar → Nov 2019)
 
@@ -9,7 +9,7 @@
 
 ## Presenter Overview
 
-This demo is submitted to the **CEQ Permitting Innovators Challenge**. You are demonstrating a federal NEPA permitting accelerator — PSA-NEPA — built on Salesforce Agentforce for Public Sector. It implements all **10 Minimum Functional Requirements (MFRs)** from CEQ's Permitting Technology Action Plan. Every data claim in this script comes from real federal datasets: 61,881 NEPA projects (NETATEC v2.0, PNNL), 761 litigation cases (PermitTEC v0.1, PNNL), 1,903 Final EIS records (CEQ EIS Timeline Data 2010–2024), and the public administrative record of a real BLM permit. You do not need to have built it or analyzed the data to deliver this demo. You need to know three numbers cold:
+This demo is submitted to the **CEQ Permitting Innovators Challenge**. You are demonstrating a federal NEPA permitting accelerator — PSA-NEPA — built on Salesforce Agentforce for Public Sector. It implements all **10 Minimum Functional Requirements (MFRs)** from CEQ's Permitting Technology Action Plan. Every data claim in this script comes from real federal datasets: 61,881 NEPA projects (NETATEC v2.0, PNNL), 761 litigation cases (PermitTEC v0.1, PNNL), 1,903 Final EIS records (CEQ EIS Timeline Data 2010–2024), and the public administrative record of a real federal land management permit. You do not need to have built it or analyzed the data to deliver this demo. You need to know three numbers cold:
 
 - **23%** — the share of CE records in the NETATEC corpus with no CE category on record. Each misrouted CE→EA project adds a median 11 months.
 - **87.5%** — the litigation win rate of Tribal Nation plaintiffs across 761 federal NEPA cases. The single most predictable litigation risk factor.
@@ -19,7 +19,7 @@ This demo runs four scenes, each following **Tell → Show → Tell** structure.
 
 **Core message:** The permit didn't take 25 months because the project was hard. It took 25 months because the *process* was broken — wrong people, wrong places, wrong season, no coordination. Salesforce fixes the process, not the project.
 
-**Audience:** BLM field office managers, state permitting directors, NEPA program leads, agency IT/digital transformation leads, CEQ evaluators.
+**Audience:** LMTF field office managers, state permitting directors, NEPA program leads, agency IT/digital transformation leads, CEQ evaluators.
 
 **Total demo time:** 30–40 minutes across seven scenes.
 
@@ -32,9 +32,9 @@ Memorize this table before opening the laptop. It maps each scene to the MFRs yo
 | Scene | MFRs Demonstrated | Must-Know Data Fact | Key UI Moment | The Line That Closes |
 |---|---|---|---|---|
 | **1: Intake** | #3 Leading-Edge, #6 Emerging, #4 Emerging | 23% of NETATEC CE records have no CE category → adds median 11 months per misrouted project | CE pre-screening result card at OmniScript Step 7 | "That feedback loop used to take 6 weeks. Now it happens at submission." |
-| **2: Work Orders** | #5 Emerging→Leading-Edge, Std 1, Std 4 | Every BLM Plan of Operations requires ≥1 co-permit; co-permit clocks typically start *after* BLM decision | Lek survey in slot 1; IDWR task auto-fires on WO close | "The IDWR clock is running before we've drafted a single page of the EA." |
+| **2: Work Orders** | #5 Emerging→Leading-Edge, Std 1, Std 4 | Every LMTF Plan of Operations requires ≥1 co-permit; co-permit clocks typically start *after* LMTF decision | Lek survey in slot 1; IDWR task auto-fires on WO close | "The IDWR clock is running before we've drafted a single page of the EA." |
 | **3: Comments** | #8 Emerging, #5 stage gates | Tribal Nation plaintiffs win 87.5% of contested NEPA cases — the most predictable risk factor in the corpus | Dual-flag on Shoshone-Paiute comment; hard gate blocking EA advance | "The legal work order fired before anyone made a judgment call." |
-| **4: Decision** | #7 Emerging, #9 Emerging, #1 Leading-Edge, #2 Emerging | **42.7%** of challenged EIS/EAs cite inadequate connected actions analysis — the #1 Challenge Prediction Rule; top 3 failure patterns are all stage gate failures | All-5-green Document Registry; `nepa_ar_export__c` Completed status; Challenge Predictor cleared on both fired rules; **v3 bifurcated risk score**: Probability Score (85/100) + Cost Exposure (BLM 17.5 months) | "Eight months. 13 CEQ entities. 10 MFRs. Same regulations." |
+| **4: Decision** | #7 Emerging, #9 Emerging, #1 Leading-Edge, #2 Emerging | **42.7%** of challenged EIS/EAs cite inadequate connected actions analysis — the #1 Challenge Prediction Rule; top 3 failure patterns are all stage gate failures | All-5-green Document Registry; `nepa_ar_export__c` Completed status; Challenge Predictor cleared on both fired rules; **v3 bifurcated risk score**: Probability Score (85/100) + Cost Exposure (LMTF 17.5 months) | "Eight months. 13 CEQ entities. 10 MFRs. Same regulations." |
 | **5: OFD Coordination** | #10 Interoperable, Std 4 (Timeline Minimization) | Federal-state friction accounts for 1.09×–1.65× of timeline overhead by sector (Stage 16) — USACE Section 404 dual-track review is the primary Water/Coastal driver | OFD Coordination Tracker — 4 live ApplicationTimeline milestones across NEPA_Lead / Agency_Consultation / Permit_Milestone / Joint_ROD tracks | "E.O. 13807 requires a master schedule. This is the master schedule — live, in the case record." |
 | **6: Permit Dependencies** | #10 Interoperable, #2 Data Sharing | FTA median litigation duration: 33.4 months — independent of win probability | `nepaPermitDependencies` LWC with live Section 404 (Pending ★), ESA §7 (In Review ★), ROW Grant (Approved) status | "Critical-path permits are flagged before anyone has to ask." |
 | **7: Post-Permit Intelligence** | #5 Post-Decision, F-05 Inspection, F-09 Monitoring | Utah has a 66.7% challenger win rate — every inspector opening a form gets the litigation context for their state before they walk the site | Permit status → Issued triggers 4 Visit inspection tasks; Visit form opens showing state risk briefing; BiOp reinitiation checkboxes create ESA Task + +12 risk delta; AR lock at ROD triggers 10 post-decision monitoring tasks | "The inspector walks into the field knowing which state they're in, and exactly which outcome is most likely to end up in court." |
@@ -43,7 +43,7 @@ Memorize this table before opening the laptop. It maps each scene to the MFRs yo
 
 ## The Problem (Opening Narrative — Deliver Before Opening the Laptop)
 
-Sam Uhler and David Smith acquired a placer gold mining claim adjacent to Jordan Creek, about 9 miles southeast of Jordan Valley, Oregon — 15 acres of BLM-administered land in Owyhee County, Idaho. They needed a Plan of Operations to mine placer gold.
+Sam Uhler and David Smith acquired a placer gold mining claim adjacent to Jordan Creek, about 9 miles southeast of Jordan Valley, Oregon — 15 acres of LMTF-administered land in Owyhee County, Idaho. They needed a Plan of Operations to mine placer gold.
 
 Their permit took **25 months**. Not because the project was controversial. Not because the environmental impacts were severe — the final FONSI confirmed no significant impact. The delay was almost entirely operational.
 
@@ -62,11 +62,11 @@ Here's what the review actually required:
 | Botanist | Special status plants; seed mix approval | Jun – Aug; two visits required |
 
 **Three parallel agency permits ran without coordination:**
-- BLM Plan of Operations (primary)
+- LMTF Plan of Operations (primary)
 - Idaho Dept. of Water Resources (IDWR) — required before any Jordan Creek water withdrawal
 - EPA NPDES General Permit IDG370000 — Small Suction Dredge; 60-day processing; applicant cannot operate until written authorization received
 
-**The failure mode:** A 1.7-mile two-track road with two locked gates was the only access. Specialists drove out independently — sometimes on the same day without knowing it, sometimes in the wrong season entirely. No one had a view across all seven disciplines. The parallel permits started *after* the BLM decision, adding months to the applicant's wait. Sam Uhler called the field office 14 times asking for a status update.
+**The failure mode:** A 1.7-mile two-track road with two locked gates was the only access. Specialists drove out independently — sometimes on the same day without knowing it, sometimes in the wrong season entirely. No one had a view across all seven disciplines. The parallel permits started *after* the LMTF decision, adding months to the applicant's wait. Sam Uhler called the field office 14 times asking for a status update.
 
 **The permit didn't fail. The process did.**
 
@@ -92,7 +92,7 @@ Here's what the review actually required:
 
 2. **Click "New Plan of Operations – Mining."** The OmniScript CE Intake Wizard opens at Step 1. Say: *"Seven steps. Conditional navigation — fields irrelevant to this project type are hidden. Sam only sees what applies to his project."*
 
-3. **Step 1:** Select BLM / Interior. **Step 2:** Select Mining / Plan of Operations. Say: *"These two fields tell the system enough to know which resource disciplines this project will need."*
+3. **Step 1:** Select LMTF / Interior. **Step 2:** Select Mining / Plan of Operations. Say: *"These two fields tell the system enough to know which resource disciplines this project will need."*
 
 4. **Step 3:** Select Action type → Surface Disturbance. Say: *"This single field is the primary CE/EA discriminator. Surface disturbance above the 5-acre threshold routes to EA. Below it, the system checks the CE library. Sam doesn't need to know 40 CFR 1501.4 — the wizard does."*
 
@@ -102,8 +102,8 @@ Here's what the review actually required:
    - FWS ECOS: *"Greater Sage-Grouse PHMA detected — potential extraordinary circumstance."*
    - USGS NHD: *"Jordan Creek adjacency, Category 4A — that's a hydrological proximity trigger."*
    - EPA EJScreen: *"EJ Index 18.3 — informational, not a hard trigger at this score, but it's recorded."*
-   - BLM Tribal Cadastral: *"No tribal boundary overlap in the project footprint."*
-   - BLM PLSS: *"Federal surface confirmed — BLM jurisdiction established."*
+   - LMTF Tribal Cadastral: *"No tribal boundary overlap in the project footprint."*
+   - LMTF PLSS: *"Federal surface confirmed — LMTF jurisdiction established."*
    Say: *"Five GIS services. All public APIs. All called in parallel. No GIS expertise required from the coordinator."*
 
 7. **Step 7 — Review + Submit.** Show the **CE pre-screening result card**:
@@ -125,7 +125,7 @@ Here's what the review actually required:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  BLM NEPA Permitting Portal                   [Sam Uhler ▾]  ≡  │
+│  LMTF NEPA Permitting Portal                   [Sam Uhler ▾]  ≡  │
 │  ─────────────────────────────────────────────────────────────  │
 │  My Applications        Notifications (2)        Help & Docs    │
 ├─────────────────────────────────────────────────────────────────┤
@@ -156,7 +156,7 @@ Here's what the review actually required:
 │  New Plan of Operations — CE Intake Wizard         Step 6 of 7  │
 │  ● ── ● ── ● ── ● ── ● ── ●○── ○                               │
 │  ─────────────────────────────────────────────────────────────  │
-│  Agency/Bureau:         [BLM / Interior            ▾]           │
+│  Agency/Bureau:         [LMTF / Interior            ▾]           │
 │  Action Type:           [Surface Disturbance        ▾]  ◄── STEP 3: primary CE/EA field
 │  Project Type:          [Mining / Plan of Operations▾]           │
 │  Disturbance Acreage:   [15                          ]  ◄── STEP 4: > 5-ac threshold
@@ -170,7 +170,7 @@ Here's what the review actually required:
 │  │  ✓  USGS NHD      Jordan Creek Cat 4A adjacency      ◄── │───── NARRATE: hydro trigger
 │  │  ✓  EPA EJScreen  EJ Index 18.3 — informational      ◄── │───── NARRATE: recorded, not hard
 │  │  ✓  BLM Tribal    No tribal boundary overlap              │   │
-│  │  ✓  BLM PLSS      Federal surface confirmed               │   │
+│  │  ✓  LMTF PLSS      Federal surface confirmed               │   │
 │  └───────────────────────────────────────────────────────────┘   │
 │                                                     [Next →]    │
 └─────────────────────────────────────────────────────────────────┘
@@ -200,7 +200,7 @@ Here's what the review actually required:
 │  │  • Surface disturbance 15 ac > 5-ac threshold            │   │
 │  │    40 CFR 1501.4 (b)(1)                      ◄───────── │───── MFR #4: CFR citation
 │  │  • PHMA detected — extraordinary circumstances           │   │
-│  │    independent trigger (43 CFR 3809 / BLM IM)            │   │
+│  │    independent trigger (43 CFR 3809 / LMTF IM)            │   │
 │  │  ──────────────────────────────────────────────────────  │   │
 │  │  Criteria published: /docs/decision-models/   ◄───────── │───── MFR #4: public access
 │  └──────────────────────────────────────────────────────────┘   │
@@ -244,7 +244,7 @@ Here's what the review actually required:
 ### What You Are Demonstrating
 
 - **MFR #3 — Automated Project Screening (Leading-Edge):** 7-step OmniScript with conditional navigation; BRE CE Screener evaluating against 2,105 CE authorities across 79 agencies; pre-screening result with rule-match basis returned before formal submission.
-- **MFR #6 — Integrated GIS Analysis (Emerging):** 5 GIS proximity checks (FWS ECOS, EPA EJScreen, USGS NHD, BLM tribal cadastral, BLM PLSS) firing at intake and writing structured results to `IndividualApplication` fields; results feed CE screening and extraordinary circumstances determination directly.
+- **MFR #6 — Integrated GIS Analysis (Emerging):** 5 GIS proximity checks (FWS ECOS, EPA EJScreen, USGS NHD, LMTF tribal cadastral, LMTF PLSS) firing at intake and writing structured results to `IndividualApplication` fields; results feed CE screening and extraordinary circumstances determination directly.
 - **MFR #4 — Access to Screening Criteria (Emerging):** Decision model logic published at `/docs/decision-models/` with CE rules, GIS layer inventory, and litigation risk weights; logic traceable to specific CFR citations; version-controlled alongside Salesforce metadata.
 
 ### Landing Tell *(say this after the demo)*
@@ -265,13 +265,13 @@ Here's what the review actually required:
 
 ### Data Context *(know this cold — it goes into your Setup Tell)*
 
-- **Every BLM Plan of Operations requires at least one co-permit** — CWA Section 404, EPA NPDES, IDWR state water rights, ESA Section 7, NHPA Section 106, or some combination. For energy projects with pipelines and transmission, the list reaches six to eight. Co-permit processing times range from 30 days (EPA NPDES small suction dredge) to 48 months (nuclear waste facility).
-- **The typical pattern:** the primary federal permit moves forward on its own clock while co-permits are treated as the applicant's responsibility. Applicants — particularly smaller operators like placer miners — don't know when to start them. The co-permit clock starts *after* the BLM decision. That adds months to a timeline that's already closed.
+- **Every LMTF Plan of Operations requires at least one co-permit** — CWA Section 404, EPA NPDES, IDWR state water rights, ESA Section 7, NHPA Section 106, or some combination. For energy projects with pipelines and transmission, the list reaches six to eight. Co-permit processing times range from 30 days (EPA NPDES small suction dredge) to 48 months (nuclear waste facility).
+- **The typical pattern:** the primary federal permit moves forward on its own clock while co-permits are treated as the applicant's responsibility. Applicants — particularly smaller operators like placer miners — don't know when to start them. The co-permit clock starts *after* the LMTF decision. That adds months to a timeline that's already closed.
 - CEQ EIS data (1,903 Final EIS records): scoping is the universal bottleneck in **34 of 36 agencies**, consuming 60–75% of total EIS time. A 49% improvement in NOI→ROD time since 2016 (4.46 years → 2.28 years) proves process reform works. The remaining delays are structural — sequential execution of parallel-eligible work.
 
 ### Setup Tell *(say this before clicking)*
 
-> "Here's the structural problem with co-permits: every BLM Plan of Operations requires at least one — and in almost every case, the co-permit clock starts after the BLM decision. The applicant waits for the BLM permit, then starts the state water permit, then starts the EPA permit. Sequential. The permits that could run concurrently run in series instead, and nobody told the applicant to start them earlier because no system tracked the dependency. That's not a policy failure. It's a workflow failure. Let me show you what it looks like when the workflow closes the gap instead."
+> "Here's the structural problem with co-permits: every LMTF Plan of Operations requires at least one — and in almost every case, the co-permit clock starts after the LMTF decision. The applicant waits for the LMTF permit, then starts the state water permit, then starts the EPA permit. Sequential. The permits that could run concurrently run in series instead, and nobody told the applicant to start them earlier because no system tracked the dependency. That's not a policy failure. It's a workflow failure. Let me show you what it looks like when the workflow closes the gap instead."
 
 ### Show — Step by Step
 
@@ -285,7 +285,7 @@ Here's what the review actually required:
 
 5. **Click the Sage-Grouse WorkType record.** Show `nepa_survey_window_end__c = April 30`. Say: *"That date is a hard constraint, not a note. A dispatcher cannot schedule a sage-grouse survey after April 30 — the system blocks the appointment. Wrong-season dispatch is not possible."*
 
-6. **Click the Botanist work order.** Show two ServiceAppointments — June and August. Say: *"BLM Manual requires two botanical visits. The system scheduled them automatically. The coordinator didn't have to know that rule."*
+6. **Click the Botanist work order.** Show two ServiceAppointments — June and August. Say: *"LMTF Manual requires two botanical visits. The system scheduled them automatically. The coordinator didn't have to know that rule."*
 
 7. **Show gate resource constraint** — ServiceAppointment dates for all 6 specialists, no overlapping gate access. Say: *"Two locked gates. One 1.7-mile two-track road. Shared resource constraint. No two specialists have overlapping gate dates. Nobody drives 45 minutes to a locked road."*
 
@@ -294,7 +294,7 @@ Here's what the review actually required:
    - Assigned to: NEPA Coordinator
    - Due date: 30-day SLA
    - Portal notification: pushed to Sam's applicant view
-   Say: *"The IDWR clock starts the moment the hydrologist closes his work order. Not after the BLM decision. Now. That's two to four months of post-decision wait, eliminated."*
+   Say: *"The IDWR clock starts the moment the hydrologist closes his work order. Not after the LMTF decision. Now. That's two to four months of post-decision wait, eliminated."*
 
 9. **Click the Geologist work order** — show same pattern, EPA NPDES trigger fires on close. Say: *"Same pattern. EPA NPDES 60-day clock starts at geologist close. Both permits are in processing while the EA is being drafted."*
 
@@ -409,7 +409,7 @@ Here's what the review actually required:
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-> **▲ Point to:** `nepa_trigger_co_permit__c = IDWR`, then click [Mark Complete], then point to the auto-created task. Say: *"The IDWR clock starts the moment the hydrologist closes his work order. Not after the BLM decision. Now."*
+> **▲ Point to:** `nepa_trigger_co_permit__c = IDWR`, then click [Mark Complete], then point to the auto-created task. Say: *"The IDWR clock starts the moment the hydrologist closes his work order. Not after the LMTF decision. Now."*
 
 ### What You Are Demonstrating
 
@@ -458,7 +458,7 @@ Here's what the review actually required:
    - `nepa_tribal_plaintiff_flag__c = true`
    - Risk Tier: **VERY HIGH**
    Say: *"Two flags simultaneously. The system recognized this as a Tribal Nation commenter — the category with the 87.5% win rate. Both flags fire unconditionally. The EJ/Tribal gate cannot be bypassed by configuration."*
-   Show the auto-created Legal Task: *"Government-to-government consultation — verify compliance with NHPA Section 106 and E.O. 13175 before advancing"* — assigned to BLM Field Solicitor. Say: *"That task fired before anyone in the field office made a judgment call."*
+   Show the auto-created Legal Task: *"Government-to-government consultation — verify compliance with NHPA Section 106 and E.O. 13175 before advancing"* — assigned to LMTF Field Solicitor. Say: *"That task fired before anyone in the field office made a judgment call."*
 
 5. **Navigate to IndividualApplication → Risk Intelligence panel.** Show Litigation Risk Score update: `nepa_risk_score__c = 85` / `nepa_risk_tier__c = Very High`. Say: *"Tribal plaintiff flag is an 8-point input in the v3 probability dimension — it ticked the score up the moment that comment was classified."*
 
@@ -517,7 +517,7 @@ Here's what the review actually required:
 │  ┌─── Auto-Created Legal Task ─────────────────────────────┐    │
 │  │  Subject: Govt-to-govt consultation — verify NHPA §106  │    │
 │  │           and E.O. 13175 before advancing     ◄──────── │────── TASK auto-fired at intake
-│  │  Assigned To: BLM Field Solicitor                       │    │
+│  │  Assigned To: LMTF Field Solicitor                       │    │
 │  │  Due Date:    21-day SLA from comment date              │    │
 │  │  ⛔ hard_gate__c = TRUE — EA blocked until this closes  ◄─────── HARD GATE
 │  └─────────────────────────────────────────────────────────┘    │
@@ -563,7 +563,7 @@ Here's what the review actually required:
 
 > "The system flagged ICL because it matched a prior 9th Circuit plaintiff on a similar case type. It double-flagged the Shoshone-Paiute Tribes because it recognized a Tribal Nation commenter — the category with the 87.5% win rate. The legal work order fired before anyone in the field office made a judgment call. Every substantive comment became a work order. Every SLA is tracked. Comment close to revised EA: three weeks. That's MFR #8 — not comment storage, but comment routing, classification, and risk-graded response."
 
-> "The Plaintiff Intelligence module now covers 16 organizations derived from the PermitTEC corpus — including Alliance for the Wild Rockies, the highest-volume plaintiff in BLM and Forest Service 9th Circuit cases with 18 prior filings, and three tribal nation profiles with 100% litigation win rates. When any of these organizations appears in the comment record, the flag fires before anyone opens the email."
+> "The Plaintiff Intelligence module now covers 16 organizations derived from the PermitTEC corpus — including Alliance for the Wild Rockies, the highest-volume plaintiff in LMTF and Forest Service 9th Circuit cases with 18 prior filings, and three tribal nation profiles with 100% litigation win rates. When any of these organizations appears in the comment record, the flag fires before anyone opens the email."
 
 ### Transition *(say this as you move to the next screen)*
 
@@ -592,7 +592,7 @@ Here's what the review actually required:
 
 ### Show — Step by Step
 
-1. **Navigate to the Program record.** Point to `nepa_agency_performance_tier__c = Legally_Vulnerable`. Say: *"This field was set automatically on the day this program was created — before a single survey was scheduled. It comes from the PermitTEC corpus: BLM's litigation loss rate and its 28-month median NOI-to-DEIS placed it in the Legally Vulnerable tier. The Field Manager knew what he was working with on day one."*
+1. **Navigate to the Program record.** Point to `nepa_agency_performance_tier__c = Legally_Vulnerable`. Say: *"This field was set automatically on the day this program was created — before a single survey was scheduled. It comes from the PermitTEC corpus: LMTF's litigation loss rate and its 28-month median NOI-to-DEIS placed it in the Legally Vulnerable tier. The Field Manager knew what he was working with on day one."*
 
 2. **Navigate to IndividualApplication → Risk Intelligence panel.** Walk through each section:
    - **Litigation Probability Score:** `nepa_risk_score__c = 85` / `nepa_risk_tier__c = Very High`
@@ -626,10 +626,10 @@ Here's what the review actually required:
 
 6. **Show stage gate fire → Decision Record issued November 27.** Walk through Alternative B conditions:
    - 50-foot Jordan Creek buffer
-   - Silt fencing with twice-annual BLM inspections
+   - Silt fencing with twice-annual LMTF inspections
    - Steep-shoreline pond design (Columbia spotted frog deterrence)
    - Seasonal mining window: March 1 – November 30
-   - Full reclamation bond to BLM botanist seed mix approval
+   - Full reclamation bond to LMTF botanist seed mix approval
 
 7. **Navigate to `nepa_decision_payload__c` record.** Show each field:
    - Decision type: **FONSI** | Decision date: June 15, 2021
@@ -657,15 +657,15 @@ Here's what the review actually required:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Program  DOI-BLM-ID-B030-2019-0014-EA         [Edit]  [More ▾] │
+│  Program  DOI-LMTF-ID-B030-2019-0014-EA         [Edit]  [More ▾] │
 │  Carrie Placer Mine Plan of Operations — BLM Owyhee             │
 │  ─────────────────────────────────────────────────────────────  │
 │  ┌─── Agency Performance (auto-populated from PermitTEC) ──┐    │
 │  │  Agency Performance Tier:  Legally Vulnerable  ◄──────  │────── SET DAY ONE: point here
-│  │  Agency:                   Bureau of Land Management    │    │
+│  │  Agency:                   Land Management of the Future    │    │
 │  │  Circuit:                  9th Circuit Court of Appeals │    │
-│  │  Agency Litigation Rate:   BLM — above median           │    │
-│  │  Median NOI→DEIS:          28 months (BLM baseline)     │    │
+│  │  Agency Litigation Rate:   LMTF — above median           │    │
+│  │  Median NOI→DEIS:          28 months (LMTF baseline)     │    │
 │  │  Source:                   PermitTEC v0.1 (761 cases)   │    │
 │  └─────────────────────────────────────────────────────────┘    │
 │                                                                  │
@@ -696,7 +696,7 @@ Here's what the review actually required:
 │  ── Litigation Probability Score Factors ──────────────────────  │
 │  ┌─── Risk Score Factors  (nepa_risk_score_factors__c) ────┐    │
 │  │  Review type (EIS):             28 pts   ◄───────────── │──── DISCLOSE each input
-│  │  BLM agency litigation rate:    21 pts   ◄───────────── │    │
+│  │  LMTF agency litigation rate:    21 pts   ◄───────────── │    │
 │  │  9th Circuit adverse rate:      19 pts   ◄───────────── │    │
 │  │  FLPMA statutory complexity:     5 pts                  │    │
 │  │  Tribal plaintiff flag:          8 pts   ◄───────────── │──── from Shoshone-Paiute Scene 3
@@ -707,7 +707,7 @@ Here's what the review actually required:
 │  └─────────────────────────────────────────────────────────┘    │
 │  ── Litigation Cost Exposure ──────────────────────────────────  │
 │  ┌─── Cost Dimension (nepa_litigation_duration_cost__c) ────┐   │
-│  │  Agency: BLM — 17.5 months median   ◄─────────────────  │────── POINT: cost ≠ probability
+│  │  Agency: LMTF — 17.5 months median   ◄─────────────────  │────── POINT: cost ≠ probability
 │  │  Circuit: 9th Circuit — 29.3 months median               │   │
 │  │  Normalized cost dimension: 0.63  (weight: 15%)          │   │
 │  │  ⚠ ESA statute weight uses flat 1.48× — Low Confidence ◄ │────── OMB M-24-10 disclosure
@@ -721,9 +721,9 @@ Here's what the review actually required:
 
 > **▲ Point to first:** The two bars together. Say: *"Look at these two bars. Red at 85 — that's the probability of a challenge. Green at 91 — that's how documented the mitigation is. High-risk project. Fully documented mitigation. The system can tell the difference."*
 >
-> **▲ Point to second:** Probability Score factor breakdown line by line. Say: *"Review type: 28 pts. BLM: 21 pts. 9th Circuit: 19 pts. FLPMA: 5 pts. Tribal plaintiff: 8 pts. Sector-Circuit premium: 4 pts. Challenge delta: 0 pts. That's 85. Every input is disclosed."*
+> **▲ Point to second:** Probability Score factor breakdown line by line. Say: *"Review type: 28 pts. LMTF: 21 pts. 9th Circuit: 19 pts. FLPMA: 5 pts. Tribal plaintiff: 8 pts. Sector-Circuit premium: 4 pts. Challenge delta: 0 pts. That's 85. Every input is disclosed."*
 >
-> **▲ Point to third:** Cost Exposure section. Say: *"v3 separates likelihood of losing from cost if challenged. BLM averages 17.5 months even when they win. Agencies making financing decisions based only on win-probability were missing this."*
+> **▲ Point to third:** Cost Exposure section. Say: *"v3 separates likelihood of losing from cost if challenged. LMTF averages 17.5 months even when they win. Agencies making financing decisions based only on win-probability were missing this."*
 >
 > **▲ Point to fourth:** ESA warning banner. Say: *"The system discloses where the data confidence is lower. OMB M-24-10: AI and automated scoring outputs must disclose known limitations at point-of-use. This is that disclosure."*
 
@@ -840,7 +840,7 @@ Here's what the review actually required:
 
 ### Landing Tell *(say this after the demo)*
 
-> "The system knew BLM was Legally Vulnerable before the first survey. It tracked the tribal plaintiff flag from the moment the comment arrived. It enforced the consultation gate. And then — the moment the Field Manager signed — the administrative record locked, the JSON manifest was generated, and the CEQExport API made all 13 CEQ entities available to every authorized downstream system. Eight months. 13 CEQ entities. 10 MFRs. The same regulations. The only thing that changed was the process."
+> "The system knew LMTF was Legally Vulnerable before the first survey. It tracked the tribal plaintiff flag from the moment the comment arrived. It enforced the consultation gate. And then — the moment the Field Manager signed — the administrative record locked, the JSON manifest was generated, and the CEQExport API made all 13 CEQ entities available to every authorized downstream system. Eight months. 13 CEQ entities. 10 MFRs. The same regulations. The only thing that changed was the process."
 
 > "When this gets challenged — and 14% of federal EA decisions are challenged — every consultation, every comment response, every GIS check is in the administrative record with a timestamp. Defensibility score 91. That's not a compliance feature. That's the difference between a 9th Circuit loss and a decision that holds."
 
@@ -858,15 +858,15 @@ Here's what the review actually required:
 
 ### Setup Tell *(say this before clicking)*
 
-> "E.O. 13807 requires every major federal action to have a master schedule that includes milestones from all cooperating agencies — BLM, USACE, USFWS, state agencies, all of them in one place. We analyzed federal EIS timelines against California CEQA EIR durations as a baseline. What we found is that the federal overhead isn't random — it's sector-specific. Water and Coastal projects take 1.47 times longer than an equivalent CEQA review. Military projects take 1.65 times longer. The driver isn't the analysis. It's the coordination.
+> "E.O. 13807 requires every major federal action to have a master schedule that includes milestones from all cooperating agencies — LMTF, USACE, USFWS, state agencies, all of them in one place. We analyzed federal EIS timelines against California CEQA EIR durations as a baseline. What we found is that the federal overhead isn't random — it's sector-specific. Water and Coastal projects take 1.47 times longer than an equivalent CEQA review. Military projects take 1.65 times longer. The driver isn't the analysis. It's the coordination.
 >
 > The OFD tracker turns E.O. 13807's master schedule requirement into a live record view. Every cooperating agency's milestones — on the same ApplicationTimeline object, same system, same screen as the rest of the permit record."
 
 ### Show — Step by Step
 
-1. **Navigate to IndividualApplication → ApplicationTimeline related list.** Filter to OFD tracks only (click the "OFD Coordination" view). Say: *"Four milestones pre-loaded from CMT — the standard OFD coordination sequence for a BLM mining action with USFWS and USACE coordination."*
+1. **Navigate to IndividualApplication → ApplicationTimeline related list.** Filter to OFD tracks only (click the "OFD Coordination" view). Say: *"Four milestones pre-loaded from CMT — the standard OFD coordination sequence for a LMTF mining action with USFWS and USACE coordination."*
 
-2. **Point to the NEPA_Lead row** — Scoping Notice Published, Completed, Day 30, target Day 45. Say: *"NEPA_Lead track. BLM's own milestones — scoping, public comment, EA publication. This is the primary review track."*
+2. **Point to the NEPA_Lead row** — Scoping Notice Published, Completed, Day 30, target Day 45. Say: *"NEPA_Lead track. LMTF's own milestones — scoping, public comment, EA publication. This is the primary review track."*
 
 3. **Point to the Agency_Consultation row** — ESA Section 7 Initiation, USFWS, In Progress. Say: *"Agency_Consultation track. USFWS is the coordinating agency. ESA Section 7 initiation was logged at Day 90. This is the sage-grouse PHMA consultation that the GIS check triggered at intake in Scene 1 — it didn't fall through the cracks, it became a tracked milestone."*
 
@@ -887,7 +887,7 @@ Here's what the review actually required:
 │  ─────────────────────────────────────────────────────────────  │
 │  Track              Event                        Agency   Status  │
 │  ─────────────────────────────────────────────────────────────  │
-│  NEPA_Lead          Scoping Notice Published      —        ✓ Completed  Day 30   ◄── POINT: BLM primary track
+│  NEPA_Lead          Scoping Notice Published      —        ✓ Completed  Day 30   ◄── POINT: LMTF primary track
 │  Agency_Consultation ESA Section 7 Initiation    USFWS    ● In Progress Day 90  ◄── POINT: sage-grouse from Scene 1
 │  Permit_Milestone   USACE §404 Pre-App Meeting   USACE    ○ Scheduled   Day 120  ◄── POINT: 1.47× friction driver
 │  Joint_ROD          Record of Decision            —        ○ Pending     Day 243  ◄── POINT: 8-month target
@@ -915,8 +915,8 @@ Here's what the review actually required:
 
 ### Data Context *(know this cold)*
 
-- The Stage 14 CourtListener bulk docket analysis (71M+ docket records) produced per-agency median litigation durations that are **independent of outcome**: BOEM 6.5 months median (100% win rate, short cases); FTA 33.4 months median; FHWA 26.1 months; BLM 17.5 months.
-- Duration is driven by case complexity and court schedule, not by who wins. A project sponsor choosing between a BLM permit and an FTA-involvement route based on win-probability alone was missing a 15.9-month gap in expected litigation duration.
+- The Stage 14 CourtListener bulk docket analysis (71M+ docket records) produced per-agency median litigation durations that are **independent of outcome**: BOEM 6.5 months median (100% win rate, short cases); FTA 33.4 months median; FHWA 26.1 months; LMTF 17.5 months.
+- Duration is driven by case complexity and court schedule, not by who wins. A project sponsor choosing between an LMTF permit and an FTA-involvement route based on win-probability alone was missing a 15.9-month gap in expected litigation duration.
 - The `nepaPermitDependencies` LWC surfaces this at the record level — not as a static table, but as live status fetched from each agency's own system.
 
 ### Setup Tell *(say this before clicking)*
@@ -933,7 +933,7 @@ Here's what the review actually required:
 
 3. **Point to ESA §7 row** — USFWS, In Review, ★ Critical Path. Say: *"ESA Section 7, USFWS. In Review — consultation is open, which we already knew from the Agency_Consultation milestone in Scene 5. Both tracks confirm the same status. The system is consistent."*
 
-4. **Point to ROW Grant row** — BLM, Approved. Say: *"ROW Grant, BLM. Approved. Not critical path. Green. Done."*
+4. **Point to ROW Grant row** — LMTF, Approved. Say: *"ROW Grant, LMTF. Approved. Not critical path. Green. Done."*
 
 5. **Click Refresh.** Say: *"Refresh fires the callout again. Each agency's status is fetched in real time. If USACE suspends the Section 404 application, this row turns red before anyone picks up the phone."*
 
@@ -980,7 +980,7 @@ Here's what the review actually required:
 |---|---|
 | Seven specialists scheduled independently, often missing seasonal windows | Optimization engine sequenced six work orders against hard seasonal constraints; all surveys completed within a single field season |
 | Gate access double-booked; specialists drove 45 minutes to a locked road | Shared gate-access resource constraint; no wasted trips |
-| IDWR and EPA NPDES permits started after BLM decision | Parallel permit triggers fired automatically when hydrologist and geologist closed their work orders |
+| IDWR and EPA NPDES permits started after LMTF decision | Parallel permit triggers fired automatically when hydrologist and geologist closed their work orders |
 | ICL and OSC comments sat in an inbox for 60+ days | Plaintiff Intelligence flagged both commenters; responses routed as work orders; resolved in 3 weeks |
 | Tribal consultation tracked in email; no stage gate | Tribal plaintiff flag auto-set when Shoshone-Paiute comment arrived; dual risk flags escalate score; Section 106 work order with hard gate before EA publication |
 | No visibility into agency litigation exposure | Agency Performance Tier (BLM = Legally Vulnerable) set from PermitTEC corpus data; v3 Litigation Risk Score = 85 (Very High) — probability dimension (85%) + cost dimension (15%); BLM 17.5-month median litigation duration disclosed at record load |
@@ -1155,7 +1155,7 @@ flowchart LR
             direction LR
             B_APP1["Submits\napplication"]:::before
             B_APP2["Calls field office\n14 times for status"]:::before
-            B_APP3["Waits for\nco-permit guidance\nafter BLM decision"]:::before
+            B_APP3["Waits for\nco-permit guidance\nafter LMTF decision"]:::before
             B_APP4["Receives decision\nby mail"]:::before
         end
 
@@ -1179,8 +1179,8 @@ flowchart LR
 
         subgraph BP["Parallel Agencies (Before)"]
             direction LR
-            B_P1["🔴 IDWR permit\nnot started until\nafter BLM decision"]:::before
-            B_P2["🔴 EPA NPDES\nnot started until\nafter BLM decision"]:::before
+            B_P1["🔴 IDWR permit\nnot started until\nafter LMTF decision"]:::before
+            B_P2["🔴 EPA NPDES\nnot started until\nafter LMTF decision"]:::before
             B_P3["Additional months\npost-decision wait"]:::before
         end
 
@@ -1248,7 +1248,7 @@ flowchart LR
         D1["1️⃣  Sequential → Parallel scheduling\nOptimization engine sequences all\n6 work orders at meeting close"]
         D2["2️⃣  Missed windows → Hard constraints\nSeasonal biology encoded in WorkType;\nwrong-season dispatch impossible"]
         D3["3️⃣  Gate conflicts → Shared resource\nTwo locked gates managed as a shared\nresource; no double-booking"]
-        D4["4️⃣  Late co-permits → Auto-triggered\nIDWR + EPA clocks start at work\norder close, not after BLM decision"]
+        D4["4️⃣  Late co-permits → Auto-triggered\nIDWR + EPA clocks start at work\norder close, not after LMTF decision"]
         D5["5️⃣  Inbox lag → Plaintiff Intelligence\nICL/OSC comments routed as work\norders in days, not 60+ days"]
         D6["6️⃣  Manual checklist → Stage gate\nAll 5 docs required before Decision\nRecord can be issued — enforced"]
     end
@@ -1283,13 +1283,13 @@ The six numbered innovations in the bottom panel map directly to the six rows in
 
 ### "Is the 25-to-8-month comparison realistic? What was actually happening for 25 months?"
 
-**Response:** This is a real case — DOI-BLM-ID-B030-2019-0014-EA, IDI-38709, BLM Owyhee Field Office. The administrative record is public. The delay wasn't caused by environmental complexity; the FONSI found no significant impact. The delay was caused by sequential scheduling of parallel-eligible surveys, missed seasonal windows requiring rescheduling, parallel agency permits (IDWR and EPA) that didn't start until after the BLM decision, and comment response lag. The 8-month projection assumes all surveys run in parallel, all in-window on the first attempt, and permits are triggered concurrently. That's achievable; it's exactly what the optimization engine is designed to produce.
+**Response:** This is a real case — DOI-LMTF-ID-B030-2019-0014-EA, IDI-38709, LMTF Owyhee Field Office. The administrative record is public. The delay wasn't caused by environmental complexity; the FONSI found no significant impact. The delay was caused by sequential scheduling of parallel-eligible surveys, missed seasonal windows requiring rescheduling, parallel agency permits (IDWR and EPA) that didn't start until after the LMTF decision, and comment response lag. The 8-month projection assumes all surveys run in parallel, all in-window on the first attempt, and permits are triggered concurrently. That's achievable; it's exactly what the optimization engine is designed to produce.
 
 ---
 
 ### "We do a handful of EAs a year. Is this worth the investment for our volume?"
 
-**Response:** Two answers. First, it's rarely just EAs — one BLM field office typically manages CEs, EAs, rights-of-way, grazing renewals, and mining Plans of Operations concurrently. The same scheduling and coordination logic applies across all of them. Second, the cost of one 25-month permit isn't just the permit — it's the specialist time spent on rescheduled field visits, the comment response backlog, the political and legal exposure when a project runs long, and the applicant's carrying costs while they wait. One prevented litigation filing covers the platform investment for years.
+**Response:** Two answers. First, it's rarely just EAs — one LMTF field office typically manages CEs, EAs, rights-of-way, grazing renewals, and mining Plans of Operations concurrently. The same scheduling and coordination logic applies across all of them. Second, the cost of one 25-month permit isn't just the permit — it's the specialist time spent on rescheduled field visits, the comment response backlog, the political and legal exposure when a project runs long, and the applicant's carrying costs while they wait. One prevented litigation filing covers the platform investment for years.
 
 ---
 
@@ -1408,7 +1408,7 @@ All three are stage gate failures, not substantive analysis failures. The agency
 
 ### Finding 5: Co-Permit Drift Is Structural, Not Accidental
 
-The permit matrix analysis across 25 project type / sector combinations reveals that **every single project type requiring a BLM Plan of Operations also requires at least one co-permit** — CWA Section 404, NPDES, ESA Section 7, NHPA Section 106, or state water rights. For energy projects involving pipelines or transmission, the list reaches six to eight concurrent permits across federal and state agencies.
+The permit matrix analysis across 25 project type / sector combinations reveals that **every single project type requiring a LMTF Plan of Operations also requires at least one co-permit** — CWA Section 404, NPDES, ESA Section 7, NHPA Section 106, or state water rights. For energy projects involving pipelines or transmission, the list reaches six to eight concurrent permits across federal and state agencies.
 
 The typical pattern: the primary federal permit (BLM, USFS, USACE) moves forward on its own clock while co-permits are treated as the applicant's responsibility to manage in parallel. In practice, applicants — particularly smaller operators like placer miners, ranchers, and small energy developers — don't know when to start them. Co-permit processing times range from 30 days (EPA NPDES for small suction dredge) to 48 months (nuclear waste facility), and none of them are visible to the primary permit reviewer.
 
@@ -1507,4 +1507,4 @@ Then be quiet and let them do the math.
 
 ---
 
-*All facts, names, case numbers, locations, species, agencies, and dates are drawn directly from the administrative record: DOI-BLM-ID-B030-2019-0014-EA, BLM Owyhee Field Office, Marsing, Idaho.*
+*All facts, names, case numbers, locations, species, agencies, and dates are drawn directly from the administrative record: DOI-LMTF-ID-B030-2019-0014-EA, LMTF Owyhee Field Office, Marsing, Idaho.*

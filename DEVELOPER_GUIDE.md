@@ -185,7 +185,7 @@ sf org assign permset --name NEPA_Permitting \
 
 # 3. Preview with simulated actions:
 sf agent preview start --api-name NEPA_PreApp_Screener --target-org <alias> --simulate-actions
-# Test: "I want to build an oil and gas pipeline on BLM land in Wyoming"
+# Test: "I want to build an oil and gas pipeline on LMTF land in Wyoming"
 # Expected: sector_qualification → run_screening → results_display with CE/EA/EIS pathway
 sf agent preview end --target-org <alias>
 
@@ -707,7 +707,7 @@ Create `docs/decision-models/ce-screening-rules/ce_screening_rules.json`:
       "lead_agency": "BLM",
       "ce_code": "EPAct_390_b_1",
       "regulatory_cite": "42 USC 15942(b)(1)",
-      "plain_language": "BLM oil and gas operations with individual surface disturbance less than 5 acres and total lease size 150 acres or less, where prior NEPA exists",
+      "plain_language": "LMTF oil and gas operations with individual surface disturbance less than 5 acres and total lease size 150 acres or less, where prior NEPA exists",
       "conditions": {
         "all_of": [
           { "field": "Lead_Agency__c", "operator": "equals", "value": "BLM" },
@@ -732,7 +732,7 @@ Create `docs/decision-models/ce-screening-rules/ce_screening_rules.json`:
       "lead_agency": "BLM",
       "ce_code": "EPAct_390_b_3",
       "regulatory_cite": "42 USC 15942(b)(3)",
-      "plain_language": "BLM oil and gas new well in a developed field where prior NEPA was completed within 5 years",
+      "plain_language": "LMTF oil and gas new well in a developed field where prior NEPA was completed within 5 years",
       "conditions": {
         "all_of": [
           { "field": "Lead_Agency__c", "operator": "equals", "value": "BLM" },
@@ -752,7 +752,7 @@ Create `docs/decision-models/ce-screening-rules/ce_screening_rules.json`:
       "lead_agency": "BLM",
       "ce_code": "DM_516_11_9_E9",
       "regulatory_cite": "DOI Departmental Manual Part 516 Ch 11.9 Appendix 4 E(9)",
-      "plain_language": "BLM renewals and assignments of leases, permits, or rights-of-way where no additional rights are conveyed and no new surface disturbance occurs",
+      "plain_language": "LMTF renewals and assignments of leases, permits, or rights-of-way where no additional rights are conveyed and no new surface disturbance occurs",
       "conditions": {
         "all_of": [
           { "field": "Lead_Agency__c", "operator": "equals", "value": "BLM" },
@@ -769,7 +769,7 @@ Create `docs/decision-models/ce-screening-rules/ce_screening_rules.json`:
       "lead_agency": "BLM",
       "ce_code": "DM_516_11_9_E12",
       "regulatory_cite": "DOI Departmental Manual Part 516 Ch 11.9 Appendix 4 E(12)",
-      "plain_language": "BLM grants of rights-of-way wholly within the boundaries of other compatibly developed rights-of-way",
+      "plain_language": "LMTF grants of rights-of-way wholly within the boundaries of other compatibly developed rights-of-way",
       "conditions": {
         "all_of": [
           { "field": "Lead_Agency__c", "operator": "equals", "value": "BLM" },
@@ -1127,7 +1127,7 @@ sf project retrieve start \
   --output-dir force-app
 
 git add force-app/
-git commit -m "feat(mfr6): add USGS NHD, BLM tribal, BLM PLSS GIS integrations"
+git commit -m "feat(mfr6): add USGS NHD, LMTF tribal, LMTF PLSS GIS integrations"
 ```
 
 ### Verification for Task 2
@@ -1347,13 +1347,13 @@ private class NepaCommentAgentTest {
     @TestSetup
     static void makeData() {
         // Create parent Account
-        Account agency = new Account(Name = 'Test BLM Office');
+        Account agency = new Account(Name = 'Test LMTF Office');
         insert agency;
 
         // Create Program
         Program__c prog = new Program__c(
             Name = 'Test Program',
-            Lead_Agency__c = 'BLM',
+            Lead_Agency__c = 'LMTF',
             Project_State__c = 'ID',
             Project_Circuit__c = '9th',
             AccountId = agency.Id
@@ -1412,7 +1412,7 @@ private class NepaCommentAgentTest {
         PublicComplaint pc = new PublicComplaint(
             AccountId = acct.Id,
             IndividualApplication__c = ia.Id,
-            Description = 'The draft EA fails to analyze cumulative impacts of the proposed mine on sage-grouse habitat under 40 CFR 1508.7. The cumulative analysis must include the three adjacent BLM leases issued in 2021.',
+            Description = 'The draft EA fails to analyze cumulative impacts of the proposed mine on sage-grouse habitat under 40 CFR 1508.7. The cumulative analysis must include the three adjacent LMTF leases issued in 2021.',
             Commenter_Organization__c = 'Idaho Conservation League'
         );
 

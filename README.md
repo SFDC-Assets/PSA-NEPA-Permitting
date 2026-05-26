@@ -26,7 +26,7 @@ Three categories of preventable delay drive most of the gap between the current 
 
 **Each number above corresponds to a deployed, deterministic feature — not a roadmap item.**
 
-**Demonstrated impact — Carrie Placer Mine (BLM-ID-B030-2019-0014-EA):** Real BLM Plan of Operations, applied October 2017, decided November 2019 — 25 months. The same project through the accelerator's optimized workflow resolves in 8 months. The accelerator does not change what the process requires; it removes the coordination failures that cause process time to accumulate.
+**Demonstrated impact — Carrie Placer Mine (LMTF-ID-B030-2019-0014-EA):** Real BLM Plan of Operations, applied October 2017, decided November 2019 — 25 months. The same project through the accelerator's optimized workflow resolves in 8 months. The accelerator does not change what the process requires; it removes the coordination failures that cause process time to accumulate.
 
 ---
 

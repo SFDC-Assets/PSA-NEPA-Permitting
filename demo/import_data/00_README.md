@@ -1,8 +1,8 @@
 # Carrie Placer Mine – Demo Import Data
 
 **Demo Story:** Carrie Placer Mine Plan of Operations  
-**Case:** DOI-BLM-ID-B030-2019-0014-EA / IDI-38709  
-**Lead Agency:** BLM Owyhee Field Office, Marsing, Idaho  
+**Case:** DOI-LMTF-ID-B030-2019-0014-EA / IDI-38709  
+**Lead Agency:** LMTF Owyhee Field Office, Marsing, Idaho  
 **Applicants:** Sam Uhler and David Smith  
 **Historical timeline:** 25 months (Oct 2017 → Nov 2019)  
 **Demo timeline:** 8 months (Mar 2019 → Nov 2019)
@@ -105,7 +105,7 @@ Contact (03)  [polymorphic — wired by Apex]
 ServiceResource (06)
   └── Visit.VisitorId (22) — auto-generated Visits from GIS assembly
 
-Program (08)  [nepa_project_id__c = DOI-BLM-ID-B030-2019-0014-EA]
+Program (08)  [nepa_project_id__c = DOI-LMTF-ID-B030-2019-0014-EA]
   ├── IndividualApplication.nepa_related_project__c (09)
   └── nepa_litigation__c.nepa_related_project__c (17)
 
@@ -164,7 +164,7 @@ IndividualApplication (09)  [also — GIS auto-assembly from step 22]
 
 | External_ID__c | Name | Role in Demo |
 |---|---|---|
-| DEMO_ACCT_001 | BLM Owyhee Field Office | Lead agency — parent for Program, Visits, staff contacts |
+| DEMO_ACCT_001 | LMTF Owyhee Field Office | Lead agency — parent for Program, Visits, staff contacts |
 | DEMO_ACCT_002 | Sam Uhler and David Smith | Permit applicant — applicant contact on IndividualApplication |
 | DEMO_ACCT_003 | Idaho Conservation League | High-risk prior commenter — PublicComplaint DEMO_PC_001, litigation reference |
 | DEMO_ACCT_004 | Office of Species Conservation | Agency commenter — PublicComplaint DEMO_PC_002 |
@@ -200,7 +200,7 @@ IndividualApplication (09)  [also — GIS auto-assembly from step 22]
 TARGET=NEPADEMO
 
 sf data query --target-org $TARGET \
-  --query "SELECT Id, Name FROM Program WHERE nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'"
+  --query "SELECT Id, Name FROM Program WHERE nepa_project_id__c = 'DOI-LMTF-ID-B030-2019-0014-EA'"
 
 sf data query --target-org $TARGET \
   --query "SELECT Id, Name, nepa_risk_score__c, nepa_risk_tier__c FROM IndividualApplication WHERE nepa_federal_unique_id__c = 'IDI-38709'"
@@ -215,7 +215,7 @@ sf data query --target-org $TARGET \
   --query "SELECT COUNT() FROM PublicComplaint WHERE nepa_related_process__r.nepa_federal_unique_id__c = 'IDI-38709'"
 
 sf data query --target-org $TARGET \
-  --query "SELECT nepa_layer_developer_name__c, nepa_is_hit__c, nepa_extraordinary_circumstances_triggered__c, nepa_feature_name__c FROM nepa_detected_protection_layer__c WHERE nepa_program__r.nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA' ORDER BY nepa_layer_developer_name__c"
+  --query "SELECT nepa_layer_developer_name__c, nepa_is_hit__c, nepa_extraordinary_circumstances_triggered__c, nepa_feature_name__c FROM nepa_detected_protection_layer__c WHERE nepa_program__r.nepa_project_id__c = 'DOI-LMTF-ID-B030-2019-0014-EA' ORDER BY nepa_layer_developer_name__c"
 
 sf data query --target-org $TARGET \
   --query "SELECT nepa_discipline__c, nepa_assembly_source__c, nepa_active__c FROM nepa_process_team_member__c WHERE nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709' AND nepa_assembly_source__c = 'GIS_Auto_Assembly'"
@@ -279,7 +279,7 @@ If the load script fails midway, use the cleanup commands below to return to a c
 TARGET=NEPADEMO
 
 # Check which anchor records exist
-sf data query --target-org $TARGET --query "SELECT Id FROM Program WHERE nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'"
+sf data query --target-org $TARGET --query "SELECT Id FROM Program WHERE nepa_project_id__c = 'DOI-LMTF-ID-B030-2019-0014-EA'"
 sf data query --target-org $TARGET --query "SELECT Id FROM IndividualApplication WHERE nepa_federal_unique_id__c = 'IDI-38709'"
 sf data query --target-org $TARGET --query "SELECT COUNT() FROM ApplicationTimeline WHERE nepa_related_process__r.nepa_federal_unique_id__c = 'IDI-38709'"
 ```
@@ -312,7 +312,7 @@ sf data delete bulk --sobject ApplicationTimeline     --where "External_ID__c LI
 sf data delete bulk --sobject nepa_engagement__c      --where "External_ID__c LIKE 'DEMO_ENG_%'"  --target-org $TARGET --async
 sf data delete bulk --sobject ContentVersion          --where "nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
 sf data delete bulk --sobject IndividualApplication   --where "nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
-sf data delete bulk --sobject Program                 --where "nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'" --target-org $TARGET --async
+sf data delete bulk --sobject Program                 --where "nepa_project_id__c = 'DOI-LMTF-ID-B030-2019-0014-EA'" --target-org $TARGET --async
 sf data delete bulk --sobject ServiceResource         --where "External_ID__c LIKE 'DEMO_SR_%'"    --target-org $TARGET --async
 sf data delete bulk --sobject WorkType                --where "External_ID__c LIKE 'DEMO_WT_%'"    --target-org $TARGET --async
 sf data delete bulk --sobject Contact                 --where "External_ID__c LIKE 'DEMO_CON_%'"   --target-org $TARGET --async
@@ -326,7 +326,7 @@ sf data delete bulk --sobject Task --where "Subject LIKE '%Post-Decision%' OR Su
 # Step 22 cleanup (run before IndividualApplication deletes above)
 sf data delete bulk --sobject Visit --where "nepa_auto_generated__c = true AND nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
 sf data delete bulk --sobject nepa_process_team_member__c --where "nepa_assembly_source__c = 'GIS_Auto_Assembly' AND nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
-sf data delete bulk --sobject nepa_detected_protection_layer__c --where "nepa_program__r.nepa_project_id__c = 'DOI-BLM-ID-B030-2019-0014-EA'" --target-org $TARGET --async
+sf data delete bulk --sobject nepa_detected_protection_layer__c --where "nepa_program__r.nepa_project_id__c = 'DOI-LMTF-ID-B030-2019-0014-EA'" --target-org $TARGET --async
 
 # Step 20 cleanup (run before Program/IndividualApplication deletes above)
 sf data delete bulk --sobject nepa_gis_data__c        --where "nepa_data_source_system__c = 'NEPA_GIS_Proximity_Check'" --target-org $TARGET --async
@@ -334,7 +334,7 @@ sf data delete bulk --sobject nepa_gis_data_element__c --where "nepa_data_source
 sf data delete bulk --sobject nepa_process_team_member__c --where "nepa_data_source_system__c = 'eNEPA'" --target-org $TARGET --async
 sf data delete bulk --sobject Polygon                 --where "Name = 'Carrie Placer Mine Claim Boundary — IDI-38709'" --target-org $TARGET --async
 sf data delete bulk --sobject RegulatoryCode          --where "Name IN ('42 U.S.C. § 4321','40 CFR § 1501.5','40 CFR § 1501.9','43 CFR § 3809.11','16 U.S.C. § 1536(a)','54 U.S.C. § 306108','33 U.S.C. § 1342')" --target-org $TARGET --async
-sf data delete bulk --sobject RegulatoryAuthority     --where "Name IN ('CEQ','DOI-BLM','Congress','EPA')" --target-org $TARGET --async
+sf data delete bulk --sobject RegulatoryAuthority     --where "Name IN ('CEQ','DOI-LMTF','Congress','EPA')" --target-org $TARGET --async
 
 # Steps 24–25 cleanup
 sf data delete bulk --sobject nepa_ar_export__c       --where "nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org $TARGET --async
