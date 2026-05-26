@@ -4,8 +4,7 @@
  * then makes a live GET callout to each agency's NEPA REST API to retrieve
  * current process status using NEPA_Agency_Endpoint__mdt for endpoint config.
  *
- * Callout pattern mirrors NepaGISProximityIPInvoker: each permit record maps
- * to one HTTP callout keyed by NEPA_Agency_Endpoint__mdt.DeveloperName.
+ * Each permit record maps to one HTTP callout keyed by NEPA_Agency_Endpoint__mdt.DeveloperName.
  * If the agency endpoint is unreachable or the CMT record is missing, the
  * result carries calloutSuccess=false and falls back to locally-cached status.
  */

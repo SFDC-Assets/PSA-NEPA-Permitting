@@ -61,10 +61,7 @@
         <apexClass>NepaCommentTriageParser</apexClass>
         <enabled>true</enabled>
     </classAccesses>
-    <classAccesses>
-        <apexClass>NepaGISProximityIPInvoker</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
+
     <classAccesses>
         <apexClass>NepaIndustryCodePickerController</apexClass>
         <enabled>true</enabled>
