@@ -251,28 +251,29 @@ for (Contact c : [
     contactIdByExt.put(c.External_ID__c, c.Id);
 }
 
-// Check which roles already exist on this process
-Set<String> existingRoles = new Set<String>();
+// Check which team members already exist on this process — keyed by role+notes prefix
+// (nepa_user__c is always the running User for all 7 demo records, so it can't distinguish them;
+//  notes starts with the contact's name and is unique per record)
+Set<String> existingTmKeys = new Set<String>();
 for (nepa_process_team_member__c tm : [
-    SELECT nepa_role_type__c, nepa_user__c
+    SELECT nepa_role_type__c, nepa_notes__c
     FROM nepa_process_team_member__c
     WHERE nepa_process__c = :appId
 ]) {
-    existingRoles.add(tm.nepa_role_type__c + '|' + (tm.nepa_user__c != null ? String.valueOf(tm.nepa_user__c) : ''));
+    existingTmKeys.add(tm.nepa_role_type__c + '|' + (String.isNotBlank(tm.nepa_notes__c) ? tm.nepa_notes__c.left(40) : ''));
 }
 
 List<nepa_process_team_member__c> tmsToInsert = new List<nepa_process_team_member__c>();
 for (Map<String, Object> def : tmDefs) {
     String contactExt = (String) def.get('contactExt');
     String role       = (String) def.get('role');
-    Id     userId     = contactIdByExt.get(contactExt);
+    String notes      = (String) def.get('notes');
 
-    // Use running user as fallback if contact not yet a User; keyed by role+userId
-    String key = role + '|' + (userId != null ? String.valueOf(userId) : '');
-    if (!existingRoles.contains(key)) {
+    String key = role + '|' + (String.isNotBlank(notes) ? notes.left(40) : '');
+    if (!existingTmKeys.contains(key)) {
         nepa_process_team_member__c tm = new nepa_process_team_member__c();
         tm.nepa_process__c            = appId;
-        tm.nepa_user__c               = UserInfo.getUserId(); // demo: map all to running user
+        tm.nepa_user__c               = UserInfo.getUserId();
         tm.nepa_agency__c             = blmAccountId;
         tm.nepa_role_type__c          = role;
         tm.nepa_active__c             = true;
@@ -280,7 +281,7 @@ for (Map<String, Object> def : tmDefs) {
         tm.nepa_end_date__c           = role == 'Lead NEPA Coordinator'
                                             ? null
                                             : Date.newInstance(2019, 11, 27);
-        tm.nepa_notes__c              = (String) def.get('notes');
+        tm.nepa_notes__c              = notes;
         tm.nepa_data_source_agency__c = 'BLM';
         tm.nepa_data_source_system__c = 'eNEPA';
         tm.nepa_data_record_version__c = '1.0';
