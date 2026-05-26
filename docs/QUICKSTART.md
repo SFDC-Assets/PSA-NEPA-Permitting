@@ -56,8 +56,8 @@ This Accelerator depends on three APS standard objects that are not available in
 
 | APS Object | CEQ Entity | Dependency |
 |---|---|---|
-| `IndividualApplication` | Entity 2: Process | All automation flows, permission set FLS, OmniStudio DataRaptors |
-| `Program` | Entity 1: Project | Litigation risk scoring, CE screener, DataRaptor extract |
+| `IndividualApplication` | Entity 2: Process | All automation flows, permission set FLS; OmniStudio DataRaptors (backlog) |
+| `Program` | Entity 1: Project | Litigation risk scoring, CE screener; DataRaptor extract (backlog) |
 | `ApplicationTimeline` | Entity 6: Case Events | CE Determination Router, Timeline Risk Assessor, Admin Record Checker |
 
 **If your org does not have APS installed**, substitute these objects before deploying:
@@ -159,7 +159,7 @@ The script deploys in dependency order:
 | 4b | `NEPA_Permitting` permission set (after Apex so Apex class references resolve) |
 | 8 | 48 flows deployed individually with retry; ordered by subflow dependency tier |
 | 8b | Action Plan Templates |
-| 8c | OmniStudio DataRaptors, Integration Procedures, OmniScripts |
+| 8c | OmniStudio DataRaptors, Integration Procedures, OmniScripts — **see backlog note below** |
 | 8d | `RunLocalTests` (all Apex tests, after flows and permission set are live) |
 | 10–16 | Report types, reports, dashboards, layouts, LWC, FlexiPages (19 record and home pages), Path Assistant (`IndividualApplication_NEPA_Process_Path`), Lightning app |
 
@@ -189,7 +189,7 @@ sf project deploy start \
 
 | Excluded component | Reason |
 |---|---|
-| `OmniDataTransform` / `OmniIntegrationProcedure` / `OmniScript` | Deployed via standard Metadata API in Phase 8c; excluded here because `DRUpsertDetectedLayer` requires a two-step deploy with globalKey patching that the phased script handles automatically |
+| `OmniDataTransform` / `OmniIntegrationProcedure` / `OmniScript` | **BACKLOG — not verified.** Phase 8c deploys these components but end-to-end activation has NOT been confirmed. See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md). Excluded here because `DRUpsertDetectedLayer` requires a two-step deploy; handled in Phase 8c, but the phased deploy does not guarantee a working result. |
 | `BotVersion` | Requires Agentforce agent publish workflow; deploy via Agent CLI |
 | `ConnectedApp:NEPA_CEQExport_API` | XML structure error (`oauthFlows` invalid in `oauthConfig`); fix before including |
 | `ExpressionSetDefinition` | Platform rejects deploy if a version is already active; activation handled by `scripts/load_decision_matrix_rows.py --activate-es` (Phase 5c-activate) |
@@ -197,6 +197,14 @@ sf project deploy start \
 | `Flow:NEPA_EIS_Section_Assembler` + `NEPA_EIS_Section_Draft_Trigger` | Require Einstein Generative AI provisioning |
 
 For a first-time install, use the phased script (Option A) — it handles the OmniStudio two-step deploy and dependency ordering.
+
+> **Backlog — OmniStudio Phase 8c not verified**
+>
+> The OmniStudio DataRaptors, Integration Procedures, and OmniScript components (Phase 8c) are present in the repository and will be deployed by the script, but this deployment path was **not successfully verified**. After deployment the components may not activate correctly, and end-to-end functionality (CE intake wizard, GIS proximity via Integration Procedure, CEQ export via DataRaptors) has not been confirmed. Do not present these features as working until manually verified in your org.
+>
+> **What works without OmniStudio:** CE screening via BRE/Flow, GIS layer catalog, `nepa_gis_data__c` schema, CEQ REST export via Apex (`NepaCeqExportService`), and all 40+ flows operate independently of OmniStudio.
+>
+> See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md) for the full list of backlog components and what would be required to complete them.
 
 ---
 
@@ -347,62 +355,37 @@ sf data query \
 
 Expected: 314 (priority load) or 2105 (full load).
 
-### 4f. Activate the CE Intake OmniScript (if auto-deploy failed)
+### 4f. CE Intake OmniScript — Backlog
 
-> **OmniStudio** is the Salesforce product suite included with PSS; **OmniScript** is the guided-form component within it. Both terms appear in the Salesforce Setup UI under the OmniStudio app.
+> **Backlog — OmniStudio not verified.** The `NEPA_CEIntake` OmniScript and its backing Integration Procedures (`NEPA_CEScreeningIP`, `NEPA_CESaveIP`) were not successfully deployed and verified. Do not attempt to activate these components as part of a standard deployment — the expected activation steps have not been confirmed to produce a working result.
+>
+> The **working CE intake path** is the `NEPA_CE_Intake` Screen Flow, which provides full BRE-based CE screening without OmniStudio.
+>
+> See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md) for the full scope of OmniStudio backlog items and what would be needed to complete them.
 
-`deploy.sh` deploys the `NEPA_CEIntake` OmniScript automatically in Phase 8c. If that phase failed with "Couldn't find dependent components," the Metadata API index hadn't caught up with the newly-deployed Integration Procedures. Activate manually:
+### 4g. Configure Named Credentials for GIS Services — Backlog
 
-1. Go to **OmniStudio → OmniScripts**
-2. Find `NEPA / CEIntake` and click **Activate**
+> **Backlog — OmniStudio Integration Procedure path not verified.**
+> The GIS proximity check (`NEPA_GISProximityIP` Integration Procedure) has not been
+> successfully verified end-to-end. Three Named Credentials (USGS NHD, BLM Tribal Cadastral,
+> BLM PLSS) are deployed but **configuring them will not produce working GIS checks** until
+> the Integration Procedure is activated and verified.
+>
+> The GIS layer catalog (`NEPA_GIS_Layer__mdt`), `nepa_gis_data__c` schema, and
+> `nepa_detected_protection_layer__c` schema are fully deployed and working.
+> See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md) and [GIS-Proximity-Guide.md](GIS-Proximity-Guide.md) for the resumption checklist.
 
-The Integration Procedures (`NEPA_CEScreeningIP`, `NEPA_CESaveIP`) were deployed successfully in Phase 8c and are already available.
+### 4h. Configure the ArcGIS API Key (site location picker) — Backlog
 
-### 4g. Configure Named Credentials for GIS Services
+> **Backlog — OmniStudio not verified.** The `nepaSiteLocationPickerOmni` LWC is an OmniScript custom component that is only used within the `NEPA_CEIntake` OmniScript wizard. Since the OmniScript itself is backlog, this configuration step is deferred. The steps below are preserved for reference when the OmniScript path is resumed.
 
-Three Named Credentials (USGS NHD, BLM Tribal Cadastral, BLM PLSS) were deployed by the script but require OAuth configuration in your org before GIS proximity checks will fire. See [GIS-Proximity-Guide.md](GIS-Proximity-Guide.md) for the step-by-step Named Credential setup procedure. GIS checks are called at intake when project coordinates are saved; without configured Named Credentials, the proximity check flow will fault and log an error to `NEPA_Flow_Error__c`.
+Configuration steps are preserved in [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md) for resumption; do not attempt until the OmniScript path is verified.
 
-### 4h. Configure the ArcGIS API Key (site location picker)
+### 4i. Verify NAICS Code Data — Backlog (OmniScript component)
 
-The `nepaSiteLocationPickerOmni` OmniScript component embeds an ArcGIS map via the `NEPA_Site_Location_Page` Visualforce page.
+> **Backlog — OmniStudio not verified.** The `nepaIndustryCodePickerOmni` LWC is an OmniScript custom component used within the `NEPA_CEIntake` OmniScript wizard. Since the OmniScript itself is backlog, this step is deferred. The `NEPA_NAICS_Code__mdt` records are still useful for BRE and Flow-based CE screening.
 
-**CSP Trusted Sites are deployed automatically in Phase 6.** The two entries (`ArcGIS_JS_CDN` for `https://js.arcgis.com` and `ArcGIS_Tiles` for `https://*.arcgis.com`) are checked into source and require no Setup UI action.
-
-**One manual step is required — set the ESRI API key:**
-
-1. Go to **Setup → Custom Metadata Types → NEPA Map Config → Manage Records**
-2. Click **Edit** next to **API Key**
-3. Set **Value** to your ArcGIS Location Platform API key
-4. Save
-
-Without a valid API key the map container loads but basemap tiles do not render (grey canvas).
-
-**Verify the map works:** Add `nepaSiteLocationPickerOmni` as a Custom LWC element in a test OmniScript. The map iframe should load centered on the continental US (39.5°N, 98.35°W). Draw a polygon and click **Capture Location** — confirm `omniJsonData.siteLocation` contains `{lat, lng, geometry}`.
-
-### 4i. Verify NAICS Code Data
-
-The `nepaIndustryCodePickerOmni` OmniScript component reads from `NEPA_NAICS_Code__mdt`. All 2,129 NAICS 2022 records are loaded via Apex anonymous (not included in the metadata deploy) and must be present for the picker to function.
-
-**Verify records are loaded:**
-
-```bash
-sf data query \
-  --query "SELECT Level__c, COUNT(Id) cnt FROM NEPA_NAICS_Code__mdt GROUP BY Level__c ORDER BY Level__c" \
-  --target-org NEPADEV
-```
-
-**Expected counts:**
-
-| Level | Count |
-|---|---|
-| Sector | 20 |
-| SubSector | 96 |
-| IndustryGroup | 308 |
-| Industry | 692 |
-| NationalIndustry | 1,013 |
-| **Total** | **2,129** |
-
-If records are missing, reload using Apex anonymous with `Metadata.Operations.enqueueDeployment` in 40-record batches from the authoritative NAICS 2022 CSV (`Two-Six Digit NAICS.csv` in the repo root of your local clone). See `NepaIndustryCodePickerController.cls` for the `queryLevel()` method to verify data is accessible after load.
+NAICS data is still useful for BRE/Flow-based CE screening. To verify NAICS records are loaded for BRE use, run the SOQL in [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md). Do not attempt OmniScript picker verification until the OmniScript path is verified.
 
 ---
 

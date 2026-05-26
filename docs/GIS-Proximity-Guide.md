@@ -1,6 +1,12 @@
 # GIS Proximity Check — Setup and Extension Guide
 
-The GIS proximity feature automatically queries federal geospatial services when a project's coordinates are entered. It writes a human-readable protection areas summary, a timestamp, and an extraordinary circumstances flag back to the project record. The entire layer registry lives in custom metadata — adding a new service means adding one record, nothing else.
+> **Backlog — OmniStudio Integration Procedure path not verified**
+>
+> The GIS proximity check architecture described in this guide (Flow → Apex bridge → `NEPA_GISProximityIP` Integration Procedure) is the intended design but the end-to-end path through the OmniStudio Integration Procedure **was not successfully verified**. The GIS layer catalog (`NEPA_GIS_Layer__mdt`), `nepa_gis_data__c` object, and `nepa_detected_protection_layer__c` schema are fully deployed and working. The Integration Procedure activation and end-to-end GIS callout path are backlog. See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md).
+>
+> The architectural notes in this guide (particularly the ADR 009 Apex bridge pattern) are accurate design documentation and serve as a resumption guide.
+
+The GIS proximity feature is designed to automatically query federal geospatial services when a project's coordinates are entered. It writes a human-readable protection areas summary, a timestamp, and an extraordinary circumstances flag back to the project record. The entire layer registry lives in custom metadata — adding a new service means adding one record, nothing else.
 
 ---
 

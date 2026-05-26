@@ -84,7 +84,7 @@ Terms, acronyms, and concepts used throughout the NEPA and Permitting Data Model
 
 **ContentVersion** — Salesforce's file storage object. Used in this Accelerator for CEQ Entity 3 (Documents) with a custom record type (`nepa_permit_document`).
 
-**DataRaptor** — An OmniStudio component for reading or writing Salesforce data. This Accelerator includes 6 DataRaptor Extracts (`DR_Extract_NEPA_*`) used by the CEQ export Integration Procedure.
+**DataRaptor** — An OmniStudio component for reading or writing Salesforce data. This Accelerator includes 15 DataRaptor definitions (`DR_Extract_NEPA_*`) as design artifacts in the repository (backlog — not verified). The CEQ export is implemented via the Apex `NepaCeqExportService` REST endpoint. See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md).
 
 **Decision Matrix (DM)** — A BRE component that evaluates input values against a table of rows and returns output values. Decision Matrix rows are loaded automatically by `scripts/load_decision_matrix_rows.py` (Phase 5b-data in `scripts/deploy.sh`) — no manual Setup UI import is required.
 
@@ -100,7 +100,7 @@ Terms, acronyms, and concepts used throughout the NEPA and Permitting Data Model
 
 **IndividualApplication** — A PSS standard object (API name: `IndividualApplication`) used in this Accelerator for CEQ Entity 2 (Process). Chosen over `BusinessLicenseApplication` because NEPA proponents include individuals, tribes, and agencies — not exclusively commercial entities.
 
-**Integration Procedure (IP / OmniIP)** — An OmniStudio component that orchestrates multi-step data operations server-side. `NEPA/CEQExport` uses this pattern for the CEQ standard v1.2 JSON export.
+**Integration Procedure (IP / OmniIP)** — An OmniStudio component that orchestrates multi-step data operations server-side. The `NEPA_CEQExport` Integration Procedure is a backlog design artifact in this Accelerator — the working CEQ export uses the Apex REST endpoint (`NepaCeqExportService`). See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md).
 
 **LDV (Large Data Volume)** — Salesforce term for orgs with millions of records. LDV mitigations (selective SOQL, skinny tables, deferred sharing recalculation) are documented in ADR-007.
 
@@ -112,7 +112,7 @@ Terms, acronyms, and concepts used throughout the NEPA and Permitting Data Model
 
 **OmniScript** — An OmniStudio component for building guided, multi-step forms and wizards.
 
-**OmniStudio** — Salesforce's declarative integration and UI framework (formerly Vlocity). Required for the CEQ export Integration Procedure, DataRaptors, and FlexCards.
+**OmniStudio** — Salesforce's declarative integration and UI framework (formerly Vlocity). Included in PSS. The CEQ export Integration Procedure, DataRaptors, and OmniScript wizards in this Accelerator are backlog — not verified end-to-end. See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md).
 
 **Permission Set** — A Salesforce configuration that grants object, field, and feature access to users without modifying profiles. `NEPA_Permitting` is the primary permission set for this Accelerator.
 

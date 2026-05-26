@@ -1,9 +1,15 @@
 # NEPA Public Permitting Portal — Component Manifest
 
+> **Backlog — not built**
+>
+> The Experience Cloud portal and all OmniStudio components listed in this manifest are planned features that have not been built. This document is a design artifact for Phase 2. Do not present any items in this manifest as delivered capabilities.
+>
+> The OmniScript components specifically (`NEPA_CEIntake`, `NEPA_Comment_Submission`, and all portal OmniScripts) are also in [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md).
+
 **Version:** 1.0  
 **Date:** 2026-04-30  
 **Consuming design:** [NEPA-ExperienceCloud-Portal-Design.md](./NEPA-ExperienceCloud-Portal-Design.md)  
-**Implementation project:** Separate LWC / OmniStudio project (namespace `c`, API version 62.0)  
+**Implementation project:** Separate LWC / OmniStudio project (namespace `c`, API version 62.0) — **not yet built**  
 **Runtime:** Lightning Web Runtime (LWR) · Lightning Web Security (LWS) · Experience Cloud  
 **USWDS version:** 3.13
 

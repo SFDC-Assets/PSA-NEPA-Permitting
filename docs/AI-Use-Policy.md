@@ -76,7 +76,7 @@ The `nepa_risk_score_factors__c` field always contains the disclaimer:
 3. **Human override always available** — `nepa_human_override__c` checkbox allows analysts to correct any AI classification at any time. All overrides are recorded in the administrative record.
 4. **AI cannot set `nepa_requires_human_review__c = false`** on an EJ-escalated comment.
 
-**Audit trail:** All triage fields, rationale, confidence scores, and override flags are written to the PublicComplaint record and included in the CEQ DataRaptor extract (`DR_Extract_NEPA_Comment`) as part of the litigation-reviewable administrative record.
+**Audit trail:** All triage fields, rationale, confidence scores, and override flags are written to the PublicComplaint record and included in the CEQ export via `NepaCeqExportService` (verified) as part of the litigation-reviewable administrative record. Note: `DR_Extract_NEPA_Comment` DataRaptor is a backlog design artifact.
 
 ---
 

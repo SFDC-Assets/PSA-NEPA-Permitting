@@ -25,8 +25,8 @@ OMB M-24-10 compliance is enforced throughout: AI acts as recommender only, mand
 |---|---|---|---|
 | `nepa_comment_body__c` | LongTextArea | Portal submitter | Full comment text |
 | `nepa_email__c` | Email | Portal submitter | Submitter contact |
-| `nepa_related_process__c` | Lookup → IndividualApplication | Portal OmniScript | Links comment to NEPA process; required for intake gating |
-| `nepa_date_submitted__c` | DateTime | Portal OmniScript | Submission timestamp |
+| `nepa_related_process__c` | Lookup → IndividualApplication | Portal OmniScript (backlog) / staff entry | Links comment to NEPA process; required for intake gating |
+| `nepa_date_submitted__c` | DateTime | Portal OmniScript (backlog) / staff entry | Submission timestamp |
 | `nepa_sentiment__c` | Picklist | AI Triage Agent | Supportive / Neutral / Opposed / Mixed |
 | `nepa_is_substantive__c` | Checkbox | AI Triage Agent | True when comment meets NEPA substantive criteria |
 | `nepa_cluster_id__c` | Text | AI Triage Agent | Near-duplicate grouping hint |
@@ -107,7 +107,7 @@ The three-layer approach handles the "load at 11:55 PM, submit at 12:01 AM" scen
 | Channel | Formula | Before-Save Flow | Validation Rule |
 |---|---|---|---|
 | Portal form | Hides form (prevents load) | Blocks insert if submitted anyway | Backstop |
-| OmniScript direct | Read formula client-side | Blocks at DB layer | Backstop |
+| OmniScript direct (backlog) | Read formula client-side | Blocks at DB layer | Backstop |
 | REST API | N/A | Blocks at DB layer | Backstop |
 | Bulk/Data Loader | N/A | N/A | Blocks at DB layer |
 
@@ -235,7 +235,7 @@ Fields written on every save:
 ## Agent Flow Diagram
 
 ```
-Portal/OmniScript submit
+Portal/OmniScript submit (OmniScript path: backlog — see OMNISTUDIO-BACKLOG.md)
          │
          ▼
 ┌─────────────────────────────────────┐
@@ -321,7 +321,7 @@ Portal/OmniScript submit
 - No sentiment label is applied to EJ-escalated comments
 
 **APA / Administrative Record**
-- All triage fields are written to the PublicComplaint record and included in the CEQ DataRaptor extract (`DR_Extract_NEPA_Comment`)
+- All triage fields are written to the PublicComplaint record and included in the CEQ export via `NepaCeqExportService` (verified); `DR_Extract_NEPA_Comment` DataRaptor is a backlog design artifact
 - The full comment body, triage rationale, confidence score, and human override flag are part of the administrative record available for litigation review
 
 ---

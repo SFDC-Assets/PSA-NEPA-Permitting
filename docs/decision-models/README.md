@@ -78,7 +78,7 @@ For Decision Matrix exports, each `row` has `conditions` (input match criteria) 
 
 ## GIS Data Layers
 
-The five GIS proximity checks that fire at CE intake (Step 6 of the OmniScript CE Intake Wizard) use publicly accessible data layers:
+The GIS proximity checks use publicly accessible data layers. **Note:** The OmniScript CE Intake Wizard is backlog — GIS checks are invoked by the `NEPA_GIS_Proximity_Check` Flow when project coordinates are saved; see [OMNISTUDIO-BACKLOG.md](../OMNISTUDIO-BACKLOG.md).
 
 | Check | Data Source | Access |
 |---|---|---|
@@ -88,7 +88,7 @@ The five GIS proximity checks that fire at CE intake (Step 6 of the OmniScript C
 | Tribal boundaries | BLM Tribal Cadastral Layer | Public, no auth |
 | Surface ownership | BLM PLSS / GeoCommunicator | Public, no auth |
 
-All five calls are made at OmniScript submission via the `NEPA_GIS_Proximity_Checker` Apex class. Results are written to `nepa_gis_*` fields on the `IndividualApplication` record and included in the CE pre-screening result card returned to the applicant before formal submission.
+GIS calls are triggered by the `NEPA_GIS_Proximity_Check` Flow (delivered) via the `NepaGISProximityIPInvoker` Apex bridge class when project coordinates are saved. The Integration Procedure invocation path is backlog — not verified end-to-end. Results are written to `nepa_gis_*` fields on the `IndividualApplication` record. The OmniScript path for submitting coordinates at CE intake has not been verified.
 
 ---
 

@@ -4,6 +4,8 @@ End-to-end test scenarios for the PSA-NEPA accelerator's live-integration and UI
 
 **Prerequisites:** Solution deployed, permission set assigned, BRE Decision Matrix rows loaded (automated by Phase 5b-data in `deploy.sh`), 36 core flows active (see QUICKSTART.md Step 4c for the activation list; 4 flows are deferred and not required for testing), sample data loaded. See QUICKSTART.md Steps 3–5 if any of these are incomplete.
 
+**Note:** Section 16 (GIS Proximity Check) requires backlog OmniStudio components; the live integration test in that section cannot be completed. All other sections in this guide are for delivered features.
+
 **Test suite size:** 63 test classes, 615+ test methods across all feature areas. Run `sf apex run test --test-level RunLocalTests` to execute the full automated suite (see [Section 20](#20-apex-test-suite)).
 
 ---
@@ -15,7 +17,7 @@ End-to-end test scenarios for the PSA-NEPA accelerator's live-integration and UI
 5. [Tribal Plaintiff Intelligence](#5-tribal-plaintiff-intelligence)
 11. [Tribal Consultation Hard Gate](#11-tribal-consultation-hard-gate)
 12. [Public Comment Triage and EJ Detection](#12-public-comment-triage-and-ej-detection)
-16. [GIS Proximity Check](#16-gis-proximity-check)
+16. [GIS Proximity Check — Backlog](#16-gis-proximity-check)
 17. [CEQ JSON Export API](#17-ceq-json-export-api)
 20. [Apex Test Suite](#20-apex-test-suite)
 21. [BRE Configuration Integrity](#21-bre-configuration-integrity)
@@ -216,21 +218,13 @@ Verify OMB M-24-10 guardrail:
 
 ## 16. GIS Proximity Check
 
-**Tests:** GIS layer CMT integrity, proximity invocation logic, extraordinary circumstances flag, flow trigger conditions, detected layer record creation, and idempotent re-runs are fully covered by `NepaGISProximityCheckTest` (20 tests). The step below verifies live Named Credentials and actual ArcGIS connectivity.
+> **Backlog — Integration Procedure path not verified.** The GIS proximity check architecture (Flow → Apex bridge → `NEPA_GISProximityIP` Integration Procedure) has not been verified end-to-end. The GIS layer catalog (`NEPA_GIS_Layer__mdt`), Apex bridge class, and flow trigger are deployed, but the Integration Procedure activation and end-to-end HTTP callout path are backlog. See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md). The Apex test class (`NepaGISProximityCheckTest`) covers the logic layer only, not live IP invocation.
 
-### 16a. Set Project Coordinates
+**Tests:** GIS layer CMT integrity, proximity invocation logic, extraordinary circumstances flag, flow trigger conditions, detected layer record creation, and idempotent re-runs are fully covered by `NepaGISProximityCheckTest` (20 tests). The live integration test cannot be performed because the Integration Procedure path is backlog.
 
-1. Open the TEST-EIS BLM 10th Circuit Program.
-2. Set `nepa_location_lat__c` = `43.4917` and `nepa_location_lon__c` = `-111.8833` (Idaho — BLM land with ESA critical habitat nearby).
-3. Save.
-4. Wait 15–30 seconds (GIS check is async and involves HTTP callouts), refresh.
+### 16a. Live Integration Test — Not Available (Backlog)
 
-**Expected:**
-- `nepa_proximity_result_summary__c` is populated (at minimum a "no hits" summary if the test coordinates don't intersect protected layers)
-- `nepa_gis_run_timestamp__c` is recent
-- One or more `nepa_detected_protection_layer__c` child records created
-
-> **Note:** GIS callouts require the Named Credentials to be properly configured with valid authentication. In a fresh trial org without credentials configured, the GIS IP will fault and log to `NEPA_Flow_Error__c`. See Named Credentials setup in QUICKSTART Step 6 (remote site settings).
+Since the Integration Procedure path is backlog, the live integration test cannot be performed. The `NepaGISProximityCheckTest` Apex tests (20 tests) verify the logic layer and will pass. Do not set coordinates to test live GIS callouts — the Integration Procedure activation has not been verified. See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md) for the resumption checklist.
 
 ---
 
@@ -701,7 +695,7 @@ Use this matrix to track test execution. Mark each test ✅ Pass, ❌ Fail, or �
 | 11a | Tribal Gate | Stage blocked without certified consultation | | |
 | 11b | Tribal Gate | Stage passes after certification | | |
 | 12d | AI AUP | AI classification read-only; human field editable | | |
-| 16a | GIS Proximity | Coordinates trigger IP; layers written back | | |
+| 16a | GIS Proximity | **Backlog** — live IP test not available; `NepaGISProximityCheckTest` (20 tests) passes | | |
 | 17a | CEQ Export | REST API returns 9-entity payload | | |
 | 20a | Test Suite | All tests pass (615+ methods, 0 failures), ≥ 75% coverage | | |
 | 20b | Test Suite | NepaBREConfigTest (46 tests) passes | | |
@@ -725,7 +719,7 @@ Use this matrix to track test execution. Mark each test ✅ Pass, ❌ Fail, or �
 | 20s | F-09 Post-Decision | nepa_ar_locked__c → true creates monitoring Tasks | | |
 | 20t | CMT Seed Counts | 30 Inspection Schedules, 26 State Profiles, 10 Post-Decision docs | | |
 | 22a | NAICS Picker | NAICS code query returns 2,129 records across 5 levels | | |
-| 22b | Site Picker | `nepaSiteLocationPickerOmni` map loads; polygon capture writes `siteLocation` to OmniScript JSON | | |
+| 22b | Site Picker | `nepaSiteLocationPickerOmni` map loads; polygon capture writes `siteLocation` to OmniScript JSON | **Backlog** | OmniScript path not verified — see [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md) |
 | 21a | BRE Config | All DM row counts match expected | | |
 | 21b | BRE Config | 3 Expression Sets Active | | |
 
@@ -740,7 +734,7 @@ Use this matrix to track test execution. Mark each test ✅ Pass, ❌ Fail, or �
 | Tribal flag not set | `NEPA_Plaintiff_Profile__mdt` has no entry for the commenter org | Add org to CMT or check spelling exactly matches `nepa_organization__c` |
 | Agency tier not updating | `NEPA_Agency_Tier_Setter` flow not active | Activate per QUICKSTART Step 4c item 25 |
 | Stage gate not blocking | `NEPA_Stage_Gate` or `NEPA_Stage_Gate_Doc_Check` not active | Activate both; Doc Check must be active before Stage Gate |
-| GIS proximity not firing | Named Credentials not configured | Configure Named Credentials per QUICKSTART Step 6 |
+| GIS proximity not firing | GIS Integration Procedure is backlog — not yet verified end-to-end | See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md); configuring Named Credentials will not resolve this. `NepaGISProximityCheckTest` (20 tests) validates the logic layer. |
 | CEQ API returning 404 | `nepa_project_id__c` value doesn't match | Use exact `nepa_project_id__c` value, not `Name` |
 | Apex tests < 75% coverage | Flow-invoked Apex classes need flows active during test run | Activate the 33 core flows per QUICKSTART Step 4c, then rerun tests |
 | Error record not created | Platform event delivery delay | Wait 30 seconds; if still missing, verify `NEPA_Error_Event_Handler` is active |

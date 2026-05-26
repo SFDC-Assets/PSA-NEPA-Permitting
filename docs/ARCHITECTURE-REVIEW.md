@@ -10,7 +10,7 @@ Static analysis of four architectural areas based on the actual codebase. Each s
 
 `NEPA_Close_Administrative_Record.flow-meta.xml` is fully implemented and Active. It fires `AsyncAfterCommit` on `IndividualApplication` when `nepa_review_type__c` changes to `ROD` or `FONSI` and `nepa_ar_locked__c = false`.
 
-**The flow contains zero SOQL queries.** The prompt premise — a flow querying 5,000 public comments, consultation records, document collections, and risk scores — describes a hypothetical design pattern, not the current implementation. Document assembly is delegated to the `DR_Extract_AR_Manifest` DataRaptor, which operates outside the Flow transaction in OmniStudio's bulk data extraction context. This is the architecturally correct separation.
+**The flow contains zero SOQL queries.** The prompt premise — a flow querying 5,000 public comments, consultation records, document collections, and risk scores — describes a hypothetical design pattern, not the current implementation. Document assembly is handled by the `NEPA_Close_Administrative_Record` Flow itself, which serializes the record to a `ContentVersion` manifest. **Note:** The `DR_Extract_AR_Manifest` DataRaptor design artifact is present in the repository (backlog — not verified); the working path is the Flow-based assembly. See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md).
 
 ---
 
@@ -46,7 +46,7 @@ If the flow were redesigned to query and package linked documents, comments, and
 
 Total bytes copied ≈ n² × avg_size / 2 ≈ 12.5 billion bytes of string copy operations. This would exceed the 10-second CPU limit before iteration 1,000 for any realistic comment body size.
 
-**Safe architecture (current design):** The DataRaptor pattern delegates assembly to OmniStudio's bulk execution context, which has separate, higher limits and supports paginated extraction. Alternatively, a `Queueable` Apex chain with explicit `Limits.getCpuTime()` guards would be appropriate for complex manifest assembly.
+**Safe architecture (current working design):** The `NEPA_Close_Administrative_Record` Flow handles assembly within normal Flow limits — the manifest is a serialized JSON `ContentVersion`, not a multi-query assembly. **Backlog alternative:** The DataRaptor pattern (delegating to OmniStudio's bulk extraction context with paginated extraction) is a design artifact in the repository but has not been verified; see [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md).
 
 ---
 
@@ -69,7 +69,7 @@ Total bytes copied ≈ n² × avg_size / 2 ≈ 12.5 billion bytes of string copy
 | V1 | Duplicate manifest on lock failure | Between `Create_Manifest_ContentVersion` and `Lock_Application_Record` | Medium | Add a `Get Records` check for existing ContentVersion with `nepa_document_type__c = 'Administrative Record Manifest'` and `FirstPublishLocationId = $Record.Id` before the Create step; skip if found |
 | V2 | Invalid JSON on null risk_score | `formula_ManifestEnvelope` line: `TEXT({!$Record.nepa_risk_score__c})` | Low | Wrap numeric fields in `IF(ISNULL(...), "null", TEXT(...))` |
 | V3 | No async retry mechanism | `AsyncAfterCommit` path has no platform retry | Low | The error log (`NEPA_Flow_Error__c`) provides an audit trail; a scheduled flow querying for unlocked processes with `nepa_review_type__c` IN ('ROD','FONSI') that lack a manifest ContentVersion would provide a recovery path |
-| V4 | Formula length growth risk | `formula_ManifestEnvelope` | Low | Monitor formula character count if fields are added to the manifest; consider switching to a DataRaptor-built JSON if the envelope grows beyond 2,000 characters |
+| V4 | Formula length growth risk | `formula_ManifestEnvelope` | Low | Monitor formula character count if fields are added to the manifest; consider switching to Apex-built JSON (or a DataRaptor approach once the backlog OmniStudio path is verified) if the envelope grows beyond 2,000 characters |
 
 ---
 
@@ -190,15 +190,21 @@ Flows confirmed to use `IsChanged` guards: `NEPA_Close_Administrative_Record` (f
 
 ## Item 15: OmniScript & GIS Integration Procedure Trace
 
-### Implementation Status
+> **Backlog — OmniStudio components described in this section are not verified.**
+> The OmniScript CE intake, Integration Procedures, and GIS IP trace below document
+> the intended architecture. None of these components have been successfully activated
+> end-to-end. Do not interpret `isActive = false` as a staged rollout — these components
+> have not been verified as production-ready. See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md).
 
-The CE Intake OmniScript (`NEPA_CEIntake_OmniScript_1`) is implemented (7 steps, `isActive = false` — inactive pending Phase 2 portal activation). Three Integration Procedures are implemented: `NEPA_CEScreeningIP` (pre-screening heuristic), `NEPA_CESaveIP` (record persistence), and `NEPA_GISProximityIP` (GIS proximity loop).
+### Design Artifact Status
 
-The GIS Integration Procedure does **not** call five hardcoded agency endpoints. It loops over `NEPA_GIS_Layer__mdt` custom metadata records — each CMT record supplies the endpoint URL, named credential, layer number, buffer miles, and result key field. Named services (FWS ECOS, EPA EJScreen, USGS NHD, BLM Tribal, BLM PLSS) are configured as CMT records. Swapping or adding an endpoint requires a CMT record change, not a code deployment.
+The CE Intake OmniScript (`NEPA_CEIntake_OmniScript_1`) is present in the repository as a design artifact (7 steps, `isActive = false` — backlog, not a staged rollout). Three Integration Procedures are present as design artifacts: `NEPA_CEScreeningIP` (pre-screening heuristic), `NEPA_CESaveIP` (record persistence), and `NEPA_GISProximityIP` (GIS proximity loop). None have been verified end-to-end.
+
+The GIS Integration Procedure (design artifact) does **not** call five hardcoded agency endpoints. The intended design loops over `NEPA_GIS_Layer__mdt` custom metadata records — each CMT record supplying the endpoint URL, named credential, layer number, buffer miles, and result key field. This is the architecturally correct pattern for endpoint configurability. However, this IP has not been verified end-to-end.
 
 ---
 
-### Data Variable Path: OmniScript → DataRaptor → IndividualApplication
+### Data Variable Path: OmniScript → DataRaptor → IndividualApplication (Design Artifact)
 
 | Step | Action | Variable Name | Maps To |
 |---|---|---|---|

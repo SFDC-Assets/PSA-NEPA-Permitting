@@ -3,9 +3,9 @@
   "standard": "CEQ NEPA and Permitting Data and Technology Standard v1.2 (August 18, 2025)",
   "mfr": "MFR 4 — GIS layer inventory; MFR 6 — Five external GIS services for proximity screening",
   "generated": "2026-05-14",
-  "description": "Registry of the five external GIS services integrated into the NEPA_GISProximityCheck OmniIntegrationProcedure. Each layer is queried dynamically during intake using the project's latitude/longitude coordinates. Results are written to nepa_gis_data_element__c records and aggregate flags are set on the IndividualApplication. Layers 1–2 were in initial release; layers 3–5 added in MFR 6 expansion.",
+  "description": "Registry of the GIS services in the NEPA_GIS_Layer__mdt catalog. Each layer is configured for dynamic proximity checking using the project's latitude/longitude coordinates. Results are written to nepa_gis_data_element__c records and aggregate flags are set on the IndividualApplication. NOTE: The OmniStudio Integration Procedure invocation path (NEPA_GISProximityCheck) is BACKLOG — not verified end-to-end. The GIS layer catalog and schema are delivered; the end-to-end callout path has not been confirmed. See OMNISTUDIO-BACKLOG.md.",
   "integration_architecture": {
-    "mechanism": "OmniStudio Integration Procedure — NEPA_GISProximityCheck (dynamic loop over layer records)",
+    "mechanism": "OmniStudio Integration Procedure — NEPA_GISProximityCheck (BACKLOG — not verified). Working trigger: NEPA_GIS_Proximity_Check Flow + NepaGISProximityIPInvoker Apex bridge.",
     "invocation": "Apex bridge class NepaGISProximityIPInvoker.invokeProcedure() called from NEPA_Stage_Gate flow on intake submission",
     "output_objects": ["nepa_gis_data_element__c (one record per layer per run)", "nepa_gis_data__c (aggregate run record)"],
     "output_fields_on_application": [
@@ -114,7 +114,7 @@
     }
   ],
   "configuration_management": {
-    "description": "GIS layer endpoints and parameters are stored as nepa_gis_layer__c custom metadata records, not hardcoded in the Integration Procedure. This allows endpoint updates without code deployment.",
+    "description": "GIS layer endpoints and parameters are stored as NEPA_GIS_Layer__mdt custom metadata records (delivered), not hardcoded in the Integration Procedure. This allows endpoint updates without code deployment. The Integration Procedure itself is backlog — not verified end-to-end.",
     "layer_metadata_object": "nepa_gis_layer__c (custom metadata type)",
     "key_fields": [
       "Service_URL__c — ArcGIS endpoint base URL",

@@ -214,11 +214,13 @@ flowchart TD
 
 How a CE application is routed from submission through screening to review type assignment.
 
+> **Note:** OmniScript intake path and Integration Procedures shown in this diagram are backlog — not verified end-to-end. The working path is the `NEPA_CE_Intake` Screen Flow + BRE. See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md).
+
 ```mermaid
 flowchart TD
-    A["Applicant submits CE application\n(OmniScript NEPA_CE_Intake\nor Screen Flow fallback)"]
+    A["Applicant submits CE application\n(Screen Flow NEPA_CE_Intake — verified)\n(OmniScript path — backlog)"]
 
-    subgraph CEScreeningIP["OmniStudio: CEScreeningIP Integration Procedure"]
+    subgraph CEScreeningIP["OmniStudio: CEScreeningIP Integration Procedure (backlog)"]
         S1["DataRaptor Extract\nnepa_ce_library__c\n(2,105 CE codes, SOSL-searchable)"]
         S2["Query NEPA_CE_Screening_Rule__mdt\n(agency-specific + ALL fallback)"]
         S3["GIS Proximity Check\n→ NEPA_GISProximityIP"]
@@ -246,7 +248,7 @@ flowchart TD
     C2 --> O2
     C3 --> O3 & O4
 
-    subgraph CESaveIP["OmniStudio: CESaveIP Integration Procedure"]
+    subgraph CESaveIP["OmniStudio: CESaveIP Integration Procedure (backlog)"]
         W1["Create / update IndividualApplication\nnepa_review_type__c\nnepa_classification_basis__c\nnepa_ce_code__c"]
         W2["Log audit trail\n(AI confidence, human-readable rationale)"]
     end
@@ -502,10 +504,10 @@ flowchart TD
         A4["Flows (31)\n(deploy as Draft, then activate\nper QUICKSTART.md sequence)"]
     end
 
-    subgraph Phase3["Phase 3 — OmniStudio"]
-        O1["DataRaptor Extracts\n(9 DRs for CEQ export +\n3 for CE screening + GIS)"]
-        O2["Integration Procedures\n(5 IPs: CEQ Export, CE Screening,\nCE Save, GIS Proximity, AR Export)"]
-        O3["OmniScripts\n(NEPA_CE_Intake — 7-step wizard)"]
+    subgraph Phase3["Phase 3 — OmniStudio (BACKLOG — not verified)"]
+        O1["DataRaptor Extracts\n(15 DRs — design artifacts\nnot verified end-to-end)"]
+        O2["Integration Procedures\n(5 IPs — design artifacts\nnot verified end-to-end)"]
+        O3["OmniScripts\n(NEPA_CE_Intake — design artifact\nnot verified end-to-end)"]
     end
 
     subgraph Phase4["Phase 4 — Agentforce"]
