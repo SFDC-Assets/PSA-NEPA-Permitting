@@ -2994,6 +2994,14 @@
         <tab>nepa_required_permit__c</tab>
         <visibility>Available</visibility>
     </tabSettings>
+    <tabSettings>
+        <tab>NEPA_CE_Intake_Wizard</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>nepaTemplateCatalog</tab>
+        <visibility>Available</visibility>
+    </tabSettings>
     <applicationVisibilities>
         <application>NEPA_Permitting</application>
         <visible>true</visible>

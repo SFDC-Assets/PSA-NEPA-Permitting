@@ -39,7 +39,7 @@
 #  12  Dashboards              — depend on reports
 #  13  Layouts                 — compact layouts for related-list display
 #  14  LWC                     — custom components referenced by FlexiPages
-#  14a LWC-backed tabs         — nepaTemplateCatalog; requires LWC (Phase 14) to exist first
+#  14a LWC-backed tabs         — nepaTemplateCatalog; requires LWC (Phase 14); NEPA_CE_Intake_Wizard tab deploys after Phase 15 (FlexiPage dep)
 #  15  FlexiPages              — depend on fields, layouts, LWC
 #  15a Path Assistants         — depends on nepa_process_stage__c picklist (Phase 2) and IA page (Phase 15)
 #  15b Agentforce agents       — depends on Flow/Apex targets being live
@@ -697,8 +697,8 @@ phase_3b_3d_app_initial() {
     local APP_TMP_DIR
     APP_TMP_DIR="/tmp/nepa_app_initial_$$/apps"
     mkdir -p "$APP_TMP_DIR"
-    grep -v "nepaTemplateCatalog" "$APP_SRC" > "$APP_TMP_DIR/NEPA_Permitting.app-meta.xml"
-    deploy "app (initial without LWC-backed tab)" \
+    grep -v "nepaTemplateCatalog\|NEPA_CE_Intake_Wizard" "$APP_SRC" > "$APP_TMP_DIR/NEPA_Permitting.app-meta.xml"
+    deploy "app (initial without LWC-backed tabs)" \
         --source-dir "$APP_TMP_DIR" \
         --target-org "$TARGET_ORG"
     rm -rf "/tmp/nepa_app_initial_$$"
@@ -1114,19 +1114,12 @@ phase_8d_tests
 # because the permset references tabSettings by name and the platform validates
 # their existence at deploy time). Nothing to do here.
 
-# ── phase 14a: lwc-backed tabs + app redeploy (after LWC lands) ──────────────
-# nepaTemplateCatalog is an LWC-backed tab — the platform requires the LWC to
-# exist before the tab can be deployed. Deploying here (after Phase 14 LWC) avoids
-# the "no LightningComponentBundle named nepaTemplateCatalog found" error that
-# occurs if it is included in the Phase 3b object-tab batch.
+# ── phase 14a: lwc-backed tab (nepaTemplateCatalog, after LWC) ────────────────
+# nepaTemplateCatalog is LWC-backed and requires the LWC bundle to exist first.
+# NEPA_CE_Intake_Wizard tab is flexipage-backed — deployed after Phase 15 below.
 phase_header "Phase 14a: LWC-backed tabs"
-deploy "lwc-backed tabs" \
+deploy "lwc-backed tab (nepaTemplateCatalog)" \
     --metadata "CustomTab:nepaTemplateCatalog" \
-    --target-org "$TARGET_ORG"
-
-# Redeploy app to add nepaTemplateCatalog to nav now that the LWC-backed tab exists
-deploy "app (with nepaTemplateCatalog tab)" \
-    --source-dir force-app/main/default/apps \
     --target-org "$TARGET_ORG"
 
 # ── phase 15: flexipages ──────────────────────────────────────────────────────
@@ -1155,6 +1148,7 @@ deploy "flexipages (non-Program)" \
     --metadata "FlexiPage:NEPA_Visit_Record_Page" \
     --metadata "FlexiPage:Public_Comment_Record_Page" \
     --metadata "FlexiPage:RegulatoryCode_Record_Page" \
+    --metadata "FlexiPage:NEPA_CE_Intake_Wizard" \
     --target-org "$TARGET_ORG"
 
 # NEPA_Permitting_Home uses flexipage:filterListCard components that look up list views
@@ -1168,6 +1162,17 @@ deploy "NEPA_Permitting_Home" allow-failure \
 
 deploy "Program_Record_Page" allow-failure \
     --metadata "FlexiPage:Program_Record_Page" \
+    --target-org "$TARGET_ORG"
+
+# ── phase 15b-tab: NEPA_CE_Intake_Wizard tab (after FlexiPage lands) ─────────
+# The tab references the FlexiPage by name — must deploy after Phase 15.
+deploy "CE Intake tab (flexipage-backed)" \
+    --metadata "CustomTab:NEPA_CE_Intake_Wizard" \
+    --target-org "$TARGET_ORG"
+
+# Redeploy app to add all LWC-backed and flexipage-backed tabs to nav
+deploy "app (final with all tabs)" \
+    --source-dir force-app/main/default/apps \
     --target-org "$TARGET_ORG"
 
 # ── parallel group E (after Phase 15 flexipages) ─────────────────────────────

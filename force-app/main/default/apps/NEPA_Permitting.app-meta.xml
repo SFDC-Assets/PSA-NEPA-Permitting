@@ -10,6 +10,7 @@
     <label>NEPA Permitting</label>
     <navType>Standard</navType>
     <tabs>standard-home</tabs>
+    <tabs>NEPA_CE_Intake_Wizard</tabs>
     <tabs>standard-IndividualApplication</tabs>
     <tabs>standard-Program</tabs>
     <tabs>standard-ApplicationTimeline</tabs>
