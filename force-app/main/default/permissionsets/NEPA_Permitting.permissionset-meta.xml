@@ -2996,11 +2996,11 @@
     </tabSettings>
     <tabSettings>
         <tab>NEPA_CE_Intake_Wizard</tab>
-        <visibility>Available</visibility>
+        <visibility>Visible</visibility>
     </tabSettings>
     <tabSettings>
         <tab>nepaTemplateCatalog</tab>
-        <visibility>Available</visibility>
+        <visibility>Visible</visibility>
     </tabSettings>
     <applicationVisibilities>
         <application>NEPA_Permitting</application>
