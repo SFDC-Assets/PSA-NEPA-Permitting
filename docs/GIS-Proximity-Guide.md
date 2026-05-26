@@ -2,7 +2,7 @@
 
 > **Backlog — OmniStudio Integration Procedure path not verified**
 >
-> The GIS proximity check architecture described in this guide (Flow → Apex bridge → `NEPA_GISProximityIP` Integration Procedure) is the intended design but the end-to-end path through the OmniStudio Integration Procedure **was not successfully verified**. The GIS layer catalog (`NEPA_GIS_Layer__mdt`), `nepa_gis_data__c` object, and `nepa_detected_protection_layer__c` schema are fully deployed and working. The Integration Procedure activation and end-to-end GIS callout path are backlog. See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md).
+> The GIS proximity check architecture described in this guide (Flow → Apex bridge → `NEPA_GISProximityIP` Integration Procedure) is the intended design but the end-to-end path through the OmniStudio Integration Procedure **was not successfully verified**. The GIS layer catalog (`NEPA_GIS_Layer__mdt`), `nepa_gis_data__c` object, and `nepa_detected_protection_layer__c` schema are fully deployed and working. The Integration Procedure activation and end-to-end GIS callout path are backlog. See [ARCHITECTURE_DECISIONS.md — Appendix C](ARCHITECTURE_DECISIONS.md#appendix-c--omnistudio-backlog-detail).
 >
 > The architectural notes in this guide (particularly the ADR 009 Apex bridge pattern) are accurate design documentation and serve as a resumption guide.
 
