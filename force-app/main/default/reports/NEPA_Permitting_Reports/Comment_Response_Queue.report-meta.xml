@@ -16,6 +16,7 @@
     <filter>
         <criteriaItems>
             <column>PublicComplaint$nepa_response_status__c</column>
+            <columnToColumn>false</columnToColumn>
             <isUnlocked>true</isUnlocked>
             <operator>notEqual</operator>
             <value>Finalized</value>
@@ -23,9 +24,19 @@
     </filter>
     <format>Tabular</format>
     <name>Comment Response Queue</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
     <reportType>NEPA_Comment_Reports__c</reportType>
     <scope>organization</scope>
     <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
     <sortColumn>PublicComplaint$nepa_litigation_threat_flag__c</sortColumn>
     <sortOrder>Desc</sortOrder>
+    <timeFrameFilter>
+        <dateColumn>PublicComplaint$CreatedDate</dateColumn>
+        <interval>INTERVAL_CURRENT</interval>
+    </timeFrameFilter>
 </Report>

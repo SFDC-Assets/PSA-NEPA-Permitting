@@ -530,9 +530,14 @@ phase_10_12_reports() {
         --source-dir force-app/main/default/reports \
         --target-org "$TARGET_ORG"
     phase_header "Phase 12: Dashboards"
+    local org_username
+    org_username=$(sf org display --target-org "$TARGET_ORG" --json | jq -r '.result.username')
+    local dashboard_file="force-app/main/default/dashboards/NEPA_Permitting_Dashboards/NEPA_Permitting_Operations.dashboard-meta.xml"
+    sed -i.bak "s|<runningUser>.*</runningUser>|<runningUser>${org_username}</runningUser>|" "$dashboard_file"
     deploy "dashboards" \
         --source-dir force-app/main/default/dashboards \
         --target-org "$TARGET_ORG"
+    mv "${dashboard_file}.bak" "$dashboard_file"
 }
 
 phase_13_layouts() {
