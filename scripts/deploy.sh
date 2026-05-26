@@ -854,9 +854,30 @@ _tmp_es="/tmp/nepa_deploy_es_$$.out"
     phase_7_apex
     phase_7a_triggers
     phase_header "Phase 4b: Permission set"
-    deploy "permission set" \
-        --source-dir force-app/main/default/permissionsets \
+    # Strip tabSettings for tabs that don't exist yet (nepaTemplateCatalog is LWC-backed,
+    # NEPA_CE_Intake_Wizard is FlexiPage-backed — both deploy in Phase 14a/15b).
+    # The full permset with all tab settings is redeployed after Phase 15b.
+    local PERMSET_SRC="force-app/main/default/permissionsets/NEPA_Permitting.permissionset-meta.xml"
+    local PERMSET_TMP_DIR
+    PERMSET_TMP_DIR="/tmp/nepa_permset_initial_$$/permissionsets"
+    mkdir -p "$PERMSET_TMP_DIR"
+    python3 - "$PERMSET_SRC" "$PERMSET_TMP_DIR/NEPA_Permitting.permissionset-meta.xml" << 'PYEOF'
+import sys, re
+src, dst = sys.argv[1], sys.argv[2]
+with open(src) as f:
+    content = f.read()
+# Remove tabSettings blocks for the two late-deploy tabs
+content = re.sub(
+    r'\s*<tabSettings>\s*<tab>(?:NEPA_CE_Intake_Wizard|nepaTemplateCatalog)</tab>.*?</tabSettings>',
+    '', content, flags=re.DOTALL
+)
+with open(dst, 'w') as f:
+    f.write(content)
+PYEOF
+    deploy "permission set (initial without late-deploy tabs)" \
+        --source-dir "$PERMSET_TMP_DIR" \
         --target-org "$TARGET_ORG"
+    rm -rf "/tmp/nepa_permset_initial_$$"
     # Auto-assign permset to the deploying admin user so post-deploy data loads
     # (demo data, Apex anonymous, verify queries) work without a separate manual step.
     phase_header "Phase 4b-assign: Permission set auto-assign to deploying user"
@@ -1180,6 +1201,11 @@ deploy "CE Intake tab (flexipage-backed)" \
 # Redeploy app to add all LWC-backed and flexipage-backed tabs to nav
 deploy "app (final with all tabs)" \
     --source-dir force-app/main/default/apps \
+    --target-org "$TARGET_ORG"
+
+# Redeploy permset with full tabSettings now that both late-deploy tabs exist
+deploy "permission set (final with all tab settings)" \
+    --source-dir force-app/main/default/permissionsets \
     --target-org "$TARGET_ORG"
 
 # ── parallel group E (after Phase 15 flexipages) ─────────────────────────────
