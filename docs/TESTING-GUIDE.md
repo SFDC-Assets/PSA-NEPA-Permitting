@@ -6,7 +6,7 @@ End-to-end test scenarios for the PSA-NEPA accelerator's live-integration and UI
 
 **Note:** Section 16 (GIS Proximity Check) requires backlog OmniStudio components; the live integration test in that section cannot be completed. All other sections in this guide are for delivered features.
 
-**Test suite size:** 63 test classes, 615+ test methods across all feature areas. Run `sf apex run test --test-level RunLocalTests` to execute the full automated suite (see [Section 20](#20-apex-test-suite)).
+**Test suite size:** 64 test classes, 628+ test methods across all feature areas. Run `sf apex run test --test-level RunLocalTests` to execute the full automated suite (see [Section 20](#20-apex-test-suite)).
 
 ---
 
@@ -230,18 +230,44 @@ Since the Integration Procedure path is backlog, the live integration test canno
 
 ## 17. CEQ JSON Export API
 
-**Tests:** Service logic, DTO field mapping, filter/pagination behavior, all 15 PIC v1.2 property names, provenance fields, envelope shapes, and error response structure are fully covered by `NepaCeqExportServiceTest` (22 tests including 9 PIC/MFR compliance tests — see Section 20e). The step below verifies live endpoint routing and HTTP authentication.
+Two delivered Apex REST services expose the CEQ v1.2 payload:
 
-### 17a. Call the Export Endpoint
+| Service | Endpoint | Use case |
+|---|---|---|
+| `NepaCeqExportService` | `GET /services/apexrest/nepa/v1/processes/{id}` | Per-process export; used by cross-agency permit callouts |
+| `NepaCeqFullExportService` | `POST /services/apexrest/nepa/v1/export/project` | Full project graph — Project → Processes → all 8 child arrays |
+
+**Tests:** `NepaCeqExportServiceTest` (36 tests including 9 PIC/MFR compliance tests — see Section 20e) covers the per-process service. `NepaCeqFullExportServiceTest` (13 tests — see Section 20e2) covers the full-graph service including schema version, CEQ snake_case field names, nested comment structure, GIS at project and process level, permit DTOs, and 400/404 error guard rails. The steps below verify live endpoint routing and HTTP authentication.
+
+### 17a. Call the Per-Process Export Endpoint
 
 ```bash
 INSTANCE=$(sf org display --target-org $ALIAS --json | jq -r '.result.instanceUrl')
 TOKEN=$(sf org display --target-org $ALIAS --json | jq -r '.result.accessToken')
 
+# Replace TEST-BLM-EIS-001 with the nepa_project_id__c value of a deployed test project
 curl -s \
   -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
   "$INSTANCE/services/apexrest/nepa/v1/processes/TEST-BLM-EIS-001" | jq .
+```
+
+**Pass criteria:**
+- `success: true`
+- `data` is an array of process objects
+- Each process object contains `federalUniqueId`, `reviewType`, `processStatus`
+
+### 17b. Call the Full Project Graph Export Endpoint
+
+```bash
+INSTANCE=$(sf org display --target-org $ALIAS --json | jq -r '.result.instanceUrl')
+TOKEN=$(sf org display --target-org $ALIAS --json | jq -r '.result.accessToken')
+
+# Replace <PROGRAM_ID> with the Salesforce record Id of a deployed Program
+curl -s -X POST \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"projectId": "<PROGRAM_ID>"}' \
+  "$INSTANCE/services/apexrest/nepa/v1/export/project" | jq .
 ```
 
 **Expected response shape:**
@@ -250,34 +276,44 @@ curl -s \
 {
   "success": true,
   "data": {
-    "ceq_standard_version": "1.2",
-    "standard_name": "CEQ NEPA and Permitting Data and Technology Standard",
-    "export_timestamp": "...",
-    "project": { "federal_unique_project_id": "TEST-BLM-EIS-001", ... },
-    "gis_data": [ ... ],
-    "processes": [
-      {
-        "federal_unique_process_id": "...",
-        "review_type": "EIS",
-        "risk_score": ...,
-        "documents": [ ... ],
-        "comments": [ ... ],
-        "engagements": [ ... ],
-        "timeline": [ ... ],
-        "team_members": [ ... ],
-        "legal_structure": { ... }
-      }
-    ]
+    "schema_version": "1.2",
+    "standard": "CEQ NEPA and Permitting Data and Technology Standard",
+    "exported_at": "2026-05-25T...",
+    "project": {
+      "id": "...",
+      "project_id": "TEST-BLM-EIS-001",
+      "project_title": "...",
+      "lead_agency": "BLM",
+      "gis_data": [ ... ],
+      "processes": [
+        {
+          "id": "...",
+          "federal_unique_id": "...",
+          "nepa_review_type": "EIS",
+          "process_description": "...",
+          "agency_process_id": "...",
+          "documents": [ { "id": "...", "comments": [ ... ] } ],
+          "public_engagement_events": [ ... ],
+          "case_events": [ ... ],
+          "team_members": [ ... ],
+          "legal_structure": [],
+          "gis_data": [ ... ],
+          "permits": [ ... ]
+        }
+      ]
+    }
   }
 }
 ```
 
 **Pass criteria:**
 - `success: true`
-- `ceq_standard_version: "1.2"` present in root
-- `project` node contains `federal_unique_project_id`
-- `processes` array is non-empty
-- At least one of `documents`, `comments`, `timeline` is non-empty
+- `data.schema_version` = `"1.2"`
+- `data.project.id` matches the Program record Id supplied
+- `data.project.processes` is an array (may be empty for a project with no processes)
+- Process objects use snake_case CEQ property names (`federal_unique_id`, `nepa_review_type`, `process_description`) — not camelCase
+- `documents` array is present on each process (empty array when none exist)
+- `permits` array is present on each process (empty array when none exist)
 
 ---
 
@@ -297,12 +333,13 @@ sf apex run test \
 ```
 
 **Expected:**
-- **All tests pass**, 0 failures. The current baseline is 615+ test methods across 63 test classes; the exact count increases as tests are added. When using `--result-format json`, a passing run shows `"summary": { "outcome": "Passed", "failing": 0 }` and the `summary.passing` field shows the current count.
+- **All tests pass**, 0 failures. The current baseline is 628+ test methods across 64 test classes; the exact count increases as tests are added. When using `--result-format json`, a passing run shows `"summary": { "outcome": "Passed", "failing": 0 }` and the `summary.passing` field shows the current count.
 - Overall Apex coverage ≥ 75%
 - Key test classes that must pass:
   - `NepaApiComplianceTest` (55 tests)
   - `NepaBREConfigTest` (46 tests)
   - `NepaCeqExportServiceTest` (36 tests — includes 9 PIC/MFR compliance tests + F-15 FPISC/YoY methods)
+  - `NepaCeqFullExportServiceTest` (13 tests — full project graph export, schema version, CEQ field names)
   - `NepaEntity789Test` (25 tests)
   - `NepaStageGateTest` (17 tests)
   - `NepaTemplateCatalogControllerTest` (8 tests)
@@ -318,6 +355,7 @@ sf apex run test \
 | `NepaEntity789Test` | 25 | GIS data, team members, legal structure |
 | `NepaPlaintiffIntelligenceTest` | 25 | Plaintiff risk flag, tribal dual-flag, comment-level flags, ICL/Shoshone-Paiute CMT, 200-record bulk |
 | `NepaCeqExportServiceTest` | 36 | REST export API, PIC/MFR compliance, null-field serialization, combined filters, FPISC export (F-15), year-over-year trend |
+| `NepaCeqFullExportServiceTest` | 13 | Full project graph export: schema version v1.2, CEQ snake_case field names, nested comments under documents, GIS at project+process level, permit DTOs, multi-process, 400/404 guard rails |
 | `NepaCommentControllerTest` | 19 | Comment intake and LWC controller |
 | `NepaLitigationRiskScorerTest` | 19 | BRE risk scoring, tier thresholds, 200-record bulk, null project link |
 | `NepaChallengePredictorTest` | 13 | Challenge prediction rules, basis field, bulk 3-record safety |
@@ -392,7 +430,7 @@ sf apex run test \
 
 **Expected:** GIS data (`nepa_gis_data__c`), user roles (`nepa_process_team_member__c`), and legal structure (`RegulatoryCode`) all pass field coverage assertions.
 
-### 20e. Targeted Test — CEQ Export PIC/MFR Compliance
+### 20e. Targeted Test — CEQ Export PIC/MFR Compliance (per-process service)
 
 ```bash
 sf apex run test \
@@ -415,6 +453,34 @@ sf apex run test \
 | `compliance_errorEnvelope_hasRequiredFields` | Error responses carry `success: false`, `errorCode`, and `message` |
 | `compliance_allDtoFields_matchPicPropertyNames` | All 15 PIC v1.2 DTO keys present: `id, federalUniqueId, reviewType, processStatus, processStage, agencyId, startDate, targetCompletionDate, slaDueDate, slaOverdue, riskScore, riskTier, recordCompleteness, lastStageTransition, lastModified` |
 | `compliance_agencyId_nonNullWhenSet` | `agencyId` round-trips exactly — CEQ uses this as the join key to the agency registry |
+
+### 20e2. Targeted Test — CEQ Full Project Graph Export
+
+```bash
+sf apex run test \
+  --class-names NepaCeqFullExportServiceTest \
+  --target-org $ALIAS \
+  --result-format human \
+  --wait 10
+```
+
+**Expected:** All 13 tests pass. Tests verify:
+
+| Test | Constraint verified |
+|---|---|
+| `export_missingProjectId_returns400` | Missing `projectId` in body → 400 + `MISSING_PARAM` |
+| `export_unknownProjectId_returns404` | Valid ID format but no matching Program → 404 + `NOT_FOUND` |
+| `export_invalidId_returns400` | Non-ID string in `projectId` → 400 + `INVALID_PARAM` |
+| `export_schemaVersionIs12` | `data.schema_version` = `"1.2"`, `data.standard` present, `data.exported_at` non-null |
+| `export_emptyProject_noProcesses_returnsEmptyArray` | Project with no processes → `processes` = `[]`, not null |
+| `export_validProject_returnsFullPayload` | All 8 child arrays present on process node (documents, public_engagement_events, case_events, team_members, legal_structure, gis_data, permits); counts match inserted records |
+| `export_processFields_mapToCeqNames` | `federal_unique_id`, `nepa_review_type`, `process_description`, `agency_process_id` present; camelCase keys (`federalUniqueId`, `reviewType`) absent |
+| `export_projectFields_mapToCeqNames` | `project_id`, `project_title`, `name`, `status`, `lead_agency`, `last_updated` all present on project node |
+| `export_multipleProcesses_allIncluded` | 3 processes on one project → `processes.size()` = 3 |
+| `export_commentsNestedUnderDocument` | `PublicComplaint` linked via `nepa_parent_document__c` appears in `documents[0].comments`, not at process level |
+| `export_processWithNoDocuments_documentsArrayEmpty` | All 4 arrays (documents, public_engagement_events, case_events, permits) are empty arrays, not null |
+| `export_gisData_presentAtProjectAndProcessLevel` | GIS records appear in both `project.gis_data` and `process.gis_data` |
+| `export_permitFields_mapToCeqNames` | Permit DTO contains `id`, `permit_type`, `permit_status`, `is_critical_path`, `lead_agency`, `regulatory_citation`, `process_id`, `last_updated`; `is_critical_path` = `true` round-trips correctly |
 
 ### 20f. Targeted Test — SLA Escalation Monitor
 
@@ -696,12 +762,14 @@ Use this matrix to track test execution. Mark each test ✅ Pass, ❌ Fail, or �
 | 11b | Tribal Gate | Stage passes after certification | | |
 | 12d | AI AUP | AI classification read-only; human field editable | | |
 | 16a | GIS Proximity | **Backlog** — live IP test not available; `NepaGISProximityCheckTest` (20 tests) passes | | |
-| 17a | CEQ Export | REST API returns 9-entity payload | | |
+| 17a | CEQ Export | Per-process GET endpoint returns process payload (`success: true`, process fields present) | | |
+| 17b | CEQ Export | Full project graph POST endpoint returns v1.2 payload (`schema_version: "1.2"`, snake_case keys, nested documents/comments/permits) | | |
 | 20a | Test Suite | All tests pass (615+ methods, 0 failures), ≥ 75% coverage | | |
 | 20b | Test Suite | NepaBREConfigTest (46 tests) passes | | |
 | 20c | Test Suite | NepaApiComplianceTest (55 tests) passes | | |
 | 20d | Test Suite | NepaEntity789Test (25 tests) passes | | |
 | 20e | Test Suite | NepaCeqExportServiceTest (36 tests) passes | | |
+| 20e2 | Test Suite | NepaCeqFullExportServiceTest (13 tests) passes | | |
 | 20f | Test Suite | NepaSlaEscalationMonitorTest (12 tests) passes | | |
 | 20g | Test Suite | NepaPlaintiffIntelligenceTest (23 tests) passes | | |
 | 20h | Test Suite | NepaValidationRuleTest (27 tests) passes | | |
@@ -735,7 +803,10 @@ Use this matrix to track test execution. Mark each test ✅ Pass, ❌ Fail, or �
 | Agency tier not updating | `NEPA_Agency_Tier_Setter` flow not active | Activate per QUICKSTART Step 4c item 25 |
 | Stage gate not blocking | `NEPA_Stage_Gate` or `NEPA_Stage_Gate_Doc_Check` not active | Activate both; Doc Check must be active before Stage Gate |
 | GIS proximity not firing | GIS Integration Procedure is backlog — not yet verified end-to-end | See [OMNISTUDIO-BACKLOG.md](OMNISTUDIO-BACKLOG.md); configuring Named Credentials will not resolve this. `NepaGISProximityCheckTest` (20 tests) validates the logic layer. |
-| CEQ API returning 404 | `nepa_project_id__c` value doesn't match | Use exact `nepa_project_id__c` value, not `Name` |
+| Per-process GET returning 404 | `nepa_project_id__c` value doesn't match | Use exact `nepa_project_id__c` value, not `Name` |
+| Full-graph POST returning 404 | `projectId` in request body is a valid ID but no matching Program record exists | Use the Salesforce record Id (15 or 18 char) of an existing Program |
+| Full-graph POST returning 400 `MISSING_PARAM` | `projectId` key absent from request body | Include `{"projectId": "<Id>"}` in the POST body |
+| Full-graph POST returning 400 `INVALID_PARAM` | `projectId` value is not a valid Salesforce ID format | Pass an 18-character Salesforce record Id |
 | Apex tests < 75% coverage | Flow-invoked Apex classes need flows active during test run | Activate the 33 core flows per QUICKSTART Step 4c, then rerun tests |
 | Error record not created | Platform event delivery delay | Wait 30 seconds; if still missing, verify `NEPA_Error_Event_Handler` is active |
 | `INVALID_FIELD` on SOQL | Permission set not assigned | Run `sf org assign permset --name NEPA_Permitting --target-org $ALIAS` |

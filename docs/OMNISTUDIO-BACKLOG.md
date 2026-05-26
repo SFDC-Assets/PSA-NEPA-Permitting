@@ -70,14 +70,15 @@ The GIS proximity check has two paths:
 
 ### F3 — CEQ Data Export via Integration Procedure
 
-The CEQ REST export API has two layers:
+The CEQ REST export API has three layers:
 
 | Path | Status |
 |---|---|
-| `NepaCeqExportService.cls` and `NepaApiController.cls` REST API | **Delivered** — Apex-based export covering all 13 entities via REST endpoint `/services/apexrest/nepa/v1/processes/{id}` |
-| `NEPA_CEQExport_Procedure` Integration Procedure + Extract DataRaptors | **Backlog** — the OmniStudio-based export path has not been verified |
+| `NepaCeqExportService.cls` — process-level export | **Delivered** — Apex-based export covering all 13 entities via REST endpoint `GET /services/apexrest/nepa/v1/processes/{id}` |
+| `NepaCeqFullExportService.cls` — full project graph export | **Delivered** — Apex-based full-graph export producing the complete CEQ v1.2 nested payload via `POST /services/apexrest/nepa/v1/export/project` |
+| `NEPA_CEQExport_Procedure` Integration Procedure + Extract DataRaptors | **Backlog / Abandoned** — the OmniStudio-based export path was not successfully deployed; a "valid bundle name" error endemic to the org's OmniStudio platform configuration is unresolvable. The DR JSON files are present as design artifacts. The Apex services above are the working export paths. |
 
-**Backlog OmniStudio components:**
+**Backlog OmniStudio components (abandoned — Apex services replace these):**
 
 | Component | File | Purpose |
 |---|---|---|
@@ -89,15 +90,15 @@ The CEQ REST export API has two layers:
 | `DR_Extract_NEPA_Comment` | `force-app/main/default/omniDataTransforms/DR_Extract_NEPA_Comment.json` + `.rpt-meta.xml` | Extracts Comments (PublicComplaint) |
 | `DR_Extract_NEPA_EngagementEvent` | `force-app/main/default/omniDataTransforms/DR_Extract_NEPA_EngagementEvent.json` + `.rpt-meta.xml` | Extracts Engagement Events (nepa_engagement__c) |
 | `DR_Extract_NEPA_LegalStructure` | `force-app/main/default/omniDataTransforms/DR_Extract_NEPA_LegalStructure.json` + `.rpt-meta.xml` | Extracts Legal Structure (RegulatoryCode) |
-| `DR_Extract_NEPA_RequiredPermit` | (not yet authored) | Extracts Required Permits — Phase 7 backlog |
+| `DR_Extract_NEPA_RequiredPermit` | `force-app/main/default/omniDataTransforms/DR_Extract_NEPA_RequiredPermit.json` + `.rpt-meta.xml` | Extracts Required Permits (implemented in Apex full-graph service) |
 | `DR_Extract_NEPA_TeamMember` | `force-app/main/default/omniDataTransforms/DR_Extract_NEPA_TeamMember.json` + `.rpt-meta.xml` | Extracts Team Members |
 | `DR_Extract_NEPA_GISData` | `force-app/main/default/omniDataTransforms/DR_Extract_NEPA_GISData.json` + `.rpt-meta.xml` | Extracts GIS Data |
 | `DR_Extract_NEPA_GISDataByProcess` | `force-app/main/default/omniDataTransforms/DR_Extract_NEPA_GISDataByProcess.json` + `.rpt-meta.xml` | Extracts GIS Data filtered by process |
 
 **What IS delivered for CEQ export (no dependency on OmniStudio):**
-- `NepaCeqExportService.cls` — Apex service covering all 13 entities
-- `NepaApiController.cls` — REST endpoint at `/services/apexrest/nepa/v1/processes/{id}`
-- Full test coverage in `NepaCeqExportServiceTest` (36 tests including 9 PIC v1.2 compliance tests)
+- `NepaCeqExportService.cls` — Apex service covering all 13 entities; `GET /services/apexrest/nepa/v1/processes/{id}`; used for per-process cross-agency callouts
+- `NepaCeqFullExportService.cls` — Apex service producing the complete CEQ v1.2 project graph (Project → Processes → Documents+Comments, Engagement Events, Case Events, Team Members, GIS, Permits); `POST /services/apexrest/nepa/v1/export/project`; bulk-safe (11 SOQL queries, all outside loops); 500-process hard limit
+- Full test coverage in `NepaCeqExportServiceTest` (36 tests including 9 PIC v1.2 compliance tests) and `NepaCeqFullExportServiceTest` (13 tests covering schema version, field name compliance, nested comment structure, GIS at project and process level, permit DTOs, and error guard rails)
 
 ---
 
@@ -137,7 +138,7 @@ The following DataRaptors have no Integration Procedure binding verified and are
 3. **Verify each IP in OmniStudio Designer.** The IP JSON definitions need to be verified against the current OmniStudio package version — the `invokeMethod` API confirmed working (see ADR 009) but the IP step definitions and DataRaptor references may need adjustment.
 4. **Test the OmniScript end-to-end.** Element type naming is a known risk (see ADR 011 — "Text Area" not "TextArea"); the deployed OmniScript XML needs to be verified against the current platform's restricted picklist values.
 5. **Configure ArcGIS API key** for the `nepaSiteLocationPickerOmni` component.
-6. **CEQExport Integration Procedure** requires authoring `DR_Extract_NEPA_RequiredPermit` DataRaptor before the `permits[]` node can be included.
+6. **CEQExport Integration Procedure** — the `permits[]` node is now fully implemented in `NepaCeqFullExportService.cls` via the Apex path. If the OmniStudio IP path is ever resumed, `DR_Extract_NEPA_RequiredPermit` (already authored) would need to be wired into the IP element sequence.
 
 ---
 

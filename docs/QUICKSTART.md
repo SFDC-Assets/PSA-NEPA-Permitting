@@ -842,14 +842,9 @@ EOF
 
 ### 7f. Verify the CEQ REST API
 
-Test the CEQ export endpoint:
+Two endpoints are available:
 
-```bash
-# Get the EIS process by its Federal Unique ID
-sf org open --target-org NEPADEV --path "/services/apexrest/nepa/v1/processes/DOI-BLM-WY-2026-EIS-001"
-```
-
-Or using curl (replace the instance URL and session ID):
+**Per-process export** (returns process-level data by `nepa_federal_unique_id__c`):
 
 ```bash
 INSTANCE=$(sf org display --target-org NEPADEV --json | jq -r '.result.instanceUrl')
@@ -859,16 +854,39 @@ curl -s -H "Authorization: Bearer $TOKEN" \
   "$INSTANCE/services/apexrest/nepa/v1/processes/DOI-BLM-WY-2026-EIS-001" | jq .
 ```
 
-Expected response shape:
+Expected: `success: true`, `data` array with process fields (`federalUniqueId`, `reviewType`, `processStatus`, etc.)
+
+**Full project graph export** (returns complete CEQ v1.2 nested payload by Program record Id):
+
+```bash
+# Replace <PROGRAM_ID> with the Salesforce record Id of the deployed Program
+curl -s -X POST \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"projectId": "<PROGRAM_ID>"}' \
+  "$INSTANCE/services/apexrest/nepa/v1/export/project" | jq .
+```
+
+Expected:
 ```json
 {
   "success": true,
   "data": {
-    "federalUniqueId": "DOI-BLM-WY-2026-EIS-001",
-    "reviewType": "EIS",
-    "processStatus": "in progress",
-    "riskScore": 83,
-    "riskTier": "Very High"
+    "schema_version": "1.2",
+    "standard": "CEQ NEPA and Permitting Data and Technology Standard",
+    "exported_at": "...",
+    "project": {
+      "project_id": "DOI-BLM-WY-2026-EIS-001",
+      "lead_agency": "BLM",
+      "processes": [
+        {
+          "federal_unique_id": "...",
+          "nepa_review_type": "EIS",
+          "documents": [...],
+          "permits": [...]
+        }
+      ]
+    }
   }
 }
 ```
