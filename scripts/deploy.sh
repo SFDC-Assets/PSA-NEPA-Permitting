@@ -857,8 +857,7 @@ _tmp_es="/tmp/nepa_deploy_es_$$.out"
     # Strip tabSettings for tabs that don't exist yet (nepaTemplateCatalog is LWC-backed,
     # NEPA_CE_Intake_Wizard is FlexiPage-backed — both deploy in Phase 14a/15b).
     # The full permset with all tab settings is redeployed after Phase 15b.
-    local PERMSET_SRC="force-app/main/default/permissionsets/NEPA_Permitting.permissionset-meta.xml"
-    local PERMSET_TMP_DIR
+    PERMSET_SRC="force-app/main/default/permissionsets/NEPA_Permitting.permissionset-meta.xml"
     PERMSET_TMP_DIR="/tmp/nepa_permset_initial_$$/permissionsets"
     mkdir -p "$PERMSET_TMP_DIR"
     python3 - "$PERMSET_SRC" "$PERMSET_TMP_DIR/NEPA_Permitting.permissionset-meta.xml" << 'PYEOF'
