@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>NAICS 485510</label>
+    <protected>false</protected>
+    <values>
+        <field>Code__c</field>
+        <value xsi:type="xsd:string">485510</value>
+    </values>
+    <values>
+        <field>Level__c</field>
+        <value xsi:type="xsd:string">NationalIndustry</value>
+    </values>
+    <values>
+        <field>Parent_Code__c</field>
+        <value xsi:type="xsd:string">48551</value>
+    </values>
+    <values>
+        <field>Title__c</field>
+        <value xsi:type="xsd:string">Charter Bus Industry</value>
+    </values>
+</CustomMetadata>
