@@ -4,6 +4,10 @@
         <backgroundColor1>#FFFFFF</backgroundColor1>
         <backgroundColor2>#FFFFFF</backgroundColor2>
         <backgroundFadeDir>Diagonal</backgroundFadeDir>
+        <chartSummaries>
+            <axisBinding>y</axisBinding>
+            <column>RowCount</column>
+        </chartSummaries>
         <chartType>Donut</chartType>
         <enableHoverLabels>true</enableHoverLabels>
         <expandOthers>true</expandOthers>
@@ -15,7 +19,7 @@
         <showTotal>true</showTotal>
         <showValues>false</showValues>
         <size>Medium</size>
-        <summaryAxisLocationType>AutoLocationType</summaryAxisLocationType>
+        <summaryAxisRange>Auto</summaryAxisRange>
         <textColor>#000000</textColor>
         <textSize>12</textSize>
         <titleColor>#000000</titleColor>
@@ -40,7 +44,17 @@
         <sortOrder>Asc</sortOrder>
     </groupingsDown>
     <name>Active Permits by Stage</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
     <reportType>NEPA_Process_Reports__c</reportType>
     <scope>organization</scope>
     <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>IndividualApplication$nepa_sla_due_date__c</dateColumn>
+        <interval>INTERVAL_CURRENT</interval>
+    </timeFrameFilter>
 </Report>

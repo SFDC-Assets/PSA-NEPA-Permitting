@@ -4,7 +4,11 @@
         <backgroundColor1>#FFFFFF</backgroundColor1>
         <backgroundColor2>#FFFFFF</backgroundColor2>
         <backgroundFadeDir>Diagonal</backgroundFadeDir>
-        <chartType>Column</chartType>
+        <chartSummaries>
+            <axisBinding>y</axisBinding>
+            <column>RowCount</column>
+        </chartSummaries>
+        <chartType>Pie</chartType>
         <enableHoverLabels>true</enableHoverLabels>
         <expandOthers>true</expandOthers>
         <groupingColumn>IndividualApplication$nepa_review_type__c</groupingColumn>
@@ -15,7 +19,7 @@
         <showTotal>false</showTotal>
         <showValues>true</showValues>
         <size>Medium</size>
-        <summaryAxisLocationType>AutoLocationType</summaryAxisLocationType>
+        <summaryAxisRange>Auto</summaryAxisRange>
         <textColor>#000000</textColor>
         <textSize>12</textSize>
         <titleColor>#000000</titleColor>

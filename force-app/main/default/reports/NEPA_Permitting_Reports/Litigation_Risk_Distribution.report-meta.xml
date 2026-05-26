@@ -4,18 +4,22 @@
         <backgroundColor1>#FFFFFF</backgroundColor1>
         <backgroundColor2>#FFFFFF</backgroundColor2>
         <backgroundFadeDir>Diagonal</backgroundFadeDir>
-        <chartType>Bar</chartType>
+        <chartSummaries>
+            <axisBinding>y</axisBinding>
+            <column>RowCount</column>
+        </chartSummaries>
+        <chartType>HorizontalBarStacked</chartType>
         <enableHoverLabels>true</enableHoverLabels>
         <expandOthers>true</expandOthers>
         <groupingColumn>IndividualApplication$nepa_risk_tier__c</groupingColumn>
         <legendPosition>Bottom</legendPosition>
         <location>CHART_BOTTOM</location>
+        <secondaryGroupingColumn>IndividualApplication$nepa_review_type__c</secondaryGroupingColumn>
         <showAxisLabels>true</showAxisLabels>
         <showPercentage>false</showPercentage>
         <showTotal>false</showTotal>
-        <showValues>true</showValues>
         <size>Medium</size>
-        <summaryAxisLocationType>AutoLocationType</summaryAxisLocationType>
+        <summaryAxisRange>Auto</summaryAxisRange>
         <textColor>#000000</textColor>
         <textSize>12</textSize>
         <titleColor>#000000</titleColor>
