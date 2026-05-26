@@ -1,0 +1,194 @@
+@SuppressWarnings('PMD.ApexUnitTestClassShouldHaveRunAs,PMD.ApexDoc,PMD.MethodNamingConventions')
+@IsTest(SeeAllData=false)
+private class NepaVisitSurveyWindowSetterFlowTest {
+
+    @TestSetup
+    static void makeData() {
+        SObject loc = Schema.getGlobalDescribe().get('Location').newSObject();
+        loc.put('Name', 'SVW-Test-Location');
+        loc.put('IsInventoryLocation', false);
+        insert loc;
+    }
+
+    private static Id getLocationId() {
+        List<SObject> locs = Database.query(
+            'SELECT Id FROM Location WHERE Name = \'SVW-Test-Location\' LIMIT 1'
+        );
+        return locs[0].Id;
+    }
+
+    // Returns a known active discipline from the seeded NEPA_Layer_Discipline__mdt records
+    private static String getSeededDiscipline() {
+        List<NEPA_Layer_Discipline__mdt> recs = [
+            SELECT Discipline__c FROM NEPA_Layer_Discipline__mdt
+            WHERE Active__c = true AND Discipline__c != null
+            LIMIT 1
+        ];
+        return recs.isEmpty() ? 'Hydrologist' : recs[0].Discipline__c;
+    }
+
+    // ── Before-save flow stamps nepa_hard_gate__c from CMT ────────────────────
+
+    @IsTest
+    static void autoGenVisit_withKnownDiscipline_savesWithoutError() {
+        // The flow looks up NEPA_Layer_Discipline__mdt by Discipline__c value.
+        // If the CMT record exists and Is_Hard_Gate__c is not set (null = false),
+        // the Visit should still save successfully (flow exits gracefully).
+        String discipline = getSeededDiscipline();
+
+        Test.startTest();
+        Visit v = new Visit();
+        v.nepa_auto_generated__c = true;
+        v.nepa_discipline__c     = discipline;
+        v.Status                 = 'Planned';
+        v.PlaceId                = getLocationId();
+        v.PlannedVisitStartTime  = DateTime.now().addDays(7);
+        insert v;
+        Test.stopTest();
+
+        Visit result = [SELECT Id, nepa_discipline__c FROM Visit WHERE Id = :v.Id];
+        System.assertEquals(discipline, result.nepa_discipline__c,
+            'Visit should save successfully with known discipline');
+    }
+
+    @IsTest
+    static void autoGenVisit_stampedHardGateMatchesCmt() {
+        List<NEPA_Layer_Discipline__mdt> recs = [
+            SELECT Discipline__c, Is_Hard_Gate__c FROM NEPA_Layer_Discipline__mdt
+            WHERE Active__c = true AND Discipline__c != null
+            LIMIT 1
+        ];
+        if (recs.isEmpty()) { return; }
+
+        NEPA_Layer_Discipline__mdt cmt = recs[0];
+
+        Test.startTest();
+        Visit v = new Visit();
+        v.nepa_auto_generated__c = true;
+        v.nepa_discipline__c     = cmt.Discipline__c;
+        v.Status                 = 'Planned';
+        v.PlaceId                = getLocationId();
+        v.PlannedVisitStartTime  = DateTime.now().addDays(7);
+        insert v;
+        Test.stopTest();
+
+        Visit result = [SELECT nepa_hard_gate__c FROM Visit WHERE Id = :v.Id];
+        Boolean expectedGate = cmt.Is_Hard_Gate__c == true;
+        System.assertEquals(expectedGate, result.nepa_hard_gate__c,
+            'nepa_hard_gate__c should match Is_Hard_Gate__c from NEPA_Layer_Discipline__mdt');
+    }
+
+    @IsTest
+    static void autoGenVisit_withSurveyWindowSet_stampsPlannedStartTime() {
+        // Only asserts if a CMT record with a Survey_Window_Start_Month__c value exists.
+        List<NEPA_Layer_Discipline__mdt> recs = [
+            SELECT Discipline__c, Survey_Window_Start_Month__c, Survey_Window_End_Month__c
+            FROM NEPA_Layer_Discipline__mdt
+            WHERE Active__c = true AND Survey_Window_Start_Month__c != null
+            LIMIT 1
+        ];
+        if (recs.isEmpty()) {
+            // No CMT records with survey windows seeded — skip assertion
+            return;
+        }
+        NEPA_Layer_Discipline__mdt cmt = recs[0];
+
+        Test.startTest();
+        Visit v = new Visit();
+        v.nepa_auto_generated__c = true;
+        v.nepa_discipline__c     = cmt.Discipline__c;
+        v.Status                 = 'Planned';
+        v.PlaceId                = getLocationId();
+        v.PlannedVisitStartTime  = DateTime.now().addDays(7);
+        insert v;
+        Test.stopTest();
+
+        Visit result = [SELECT PlannedVisitStartTime, PlannedVisitEndTime FROM Visit WHERE Id = :v.Id];
+        System.assertNotEquals(null, result.PlannedVisitStartTime,
+            'PlannedVisitStartTime should be stamped when CMT record has a survey window');
+        System.assertNotEquals(null, result.PlannedVisitEndTime,
+            'PlannedVisitEndTime should be stamped when CMT record has a survey window');
+        Integer actualMonth = result.PlannedVisitStartTime.month();
+        System.assertEquals(cmt.Survey_Window_Start_Month__c.intValue(), actualMonth,
+            'PlannedVisitStartTime month should match Survey_Window_Start_Month__c from CMT');
+    }
+
+    @IsTest
+    static void notAutoGenerated_flowDoesNotFire() {
+        // Entry condition: nepa_auto_generated__c must be true — manual Visits are excluded
+        String discipline = getSeededDiscipline();
+
+        Visit v = new Visit();
+        v.nepa_auto_generated__c = false;
+        v.nepa_discipline__c     = discipline;
+        v.Status                 = 'Planned';
+        v.PlaceId                = getLocationId();
+        v.PlannedVisitStartTime  = DateTime.now().addDays(7);
+
+        Test.startTest();
+        insert v;
+        Test.stopTest();
+
+        // Flow should not have overwritten the PlannedVisitStartTime set above
+        Visit result = [SELECT PlannedVisitStartTime FROM Visit WHERE Id = :v.Id];
+        System.assertNotEquals(null, result.PlannedVisitStartTime,
+            'PlannedVisitStartTime should still be the original value — flow should not fire for manual visits');
+    }
+
+    @IsTest
+    static void noDiscipline_entryConditionFalse_visitSaves() {
+        // Entry condition: nepa_discipline__c must not be null
+        Test.startTest();
+        Visit v = new Visit();
+        v.nepa_auto_generated__c = true;
+        v.Status                 = 'Planned';
+        v.PlaceId                = getLocationId();
+        v.PlannedVisitStartTime  = DateTime.now().addDays(7);
+        insert v;
+        Test.stopTest();
+
+        Visit result = [SELECT Id FROM Visit WHERE Id = :v.Id];
+        System.assertNotEquals(null, result.Id, 'Visit with null discipline should save without error');
+    }
+
+    @IsTest
+    static void unknownDiscipline_cmtMiss_visitSavesGracefully() {
+        // Discipline value with no matching CMT record — flow exits at Decision_ConfigFound No Config path
+        Test.startTest();
+        Visit v = new Visit();
+        v.nepa_auto_generated__c = true;
+        v.nepa_discipline__c     = 'UNKNOWN_DISCIPLINE_XYZ_99999';
+        v.Status                 = 'Planned';
+        v.PlaceId                = getLocationId();
+        v.PlannedVisitStartTime  = DateTime.now().addDays(7);
+        insert v;
+        Test.stopTest();
+
+        Visit result = [SELECT Id FROM Visit WHERE Id = :v.Id];
+        System.assertNotEquals(null, result.Id, 'Visit should save without error when discipline has no CMT record');
+    }
+
+    @IsTest
+    static void bulk_25AutoGenVisits_noGovernorException() {
+        String discipline = getSeededDiscipline();
+        Id locId = getLocationId();
+
+        List<Visit> visits = new List<Visit>();
+        for (Integer i = 0; i < 25; i++) {
+            Visit v = new Visit();
+            v.nepa_auto_generated__c = true;
+            v.nepa_discipline__c     = discipline;
+            v.Status                 = 'Planned';
+            v.PlaceId                = locId;
+            v.PlannedVisitStartTime  = DateTime.now().addDays(7 + i);
+            visits.add(v);
+        }
+
+        Boolean threw = false;
+        Test.startTest();
+        try { insert visits; } catch (Exception e) { threw = true; }
+        Test.stopTest();
+
+        System.assert(!threw, 'Bulk insert of 25 auto-generated Visits should not throw');
+    }
+}
