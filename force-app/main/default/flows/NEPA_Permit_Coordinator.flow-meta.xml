@@ -193,7 +193,7 @@ IF(
     <formulas>
         <name>formula_ErrorContext</name>
         <dataType>String</dataType>
-        <expression>"Sector:" &amp; TEXT({!Get_ParentProgram.nepa_primary_sector__c}) &amp; "|ProjectType:" &amp; {!Get_ParentProgram.nepa_project_type__c}</expression>
+        <expression>"Sector:" &amp; TEXT({!Get_ParentProgram.nepa_primary_sector__c}) &amp; "|ProjectType:" &amp; TEXT({!Get_ParentProgram.nepa_project_type__c})</expression>
     </formulas>
 
     <!-- RECORD CREATES -->

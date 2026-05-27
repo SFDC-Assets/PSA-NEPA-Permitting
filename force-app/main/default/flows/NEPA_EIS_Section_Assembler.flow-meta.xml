@@ -312,7 +312,7 @@
         <dataType>String</dataType>
         <expression>"Project: " &amp; {!rec_Project.nepa_project_title__c} &amp; CHAR(10) &amp;
 "Agency: " &amp; {!rec_Project.nepa_lead_agency__c} &amp; CHAR(10) &amp;
-"Sector: " &amp; {!rec_Project.nepa_project_sector__c} &amp; CHAR(10) &amp;
+"Sector: " &amp; TEXT({!rec_Project.nepa_project_sector__c}) &amp; CHAR(10) &amp;
 "Location: " &amp; {!rec_Project.nepa_location_text__c} &amp; CHAR(10) &amp;
 "Project Description: " &amp; {!rec_Project.nepa_project_description__c} &amp; CHAR(10) &amp;
 "Purpose and Need: " &amp; {!rec_Process.nepa_purpose_need__c}</expression>
