@@ -3,7 +3,7 @@
 46 Action Plan Templates across `IndividualApplication` (NEPA process) and `Visit` (discipline field survey) objects.
 
 - **IndividualApplication APTs (39):** Deployed as metadata via Phase 8b of `scripts/deploy.sh`. Launched at runtime by `NEPA_ActionPlan_Launcher` flow when `nepa_process_stage__c` transitions to Determination or Coordination, using `NEPA_ActionPlan_Config__mdt` to select the matching template.
-- **Visit APTs (7):** Shell metadata deployed via Phase 8b, but `ActionPlanType='Retail'` and `AssessmentTaskDefinition` wiring cannot be set via metadata at API v62.0. Fully populated by Apex post-load scripts `31a_postload_atd.apex` → `31b_postload_apt.apex` → `31c_postload_apt_values.apex` (run as part of `load-demo-data.sh`). Launched at runtime by `NepaVisitActionPlanLauncher` Apex trigger handler via `NEPA_Layer_Discipline__mdt` discipline → APT routing.
+- **Visit APTs (7):** **Not deployed via metadata.** Excluded from Phase 8b due to a platform limitation (see below). Created exclusively by Apex post-load scripts `31a_postload_atd.apex` → `31b_postload_apt.apex` → `31c_postload_apt_values.apex` (run as part of `load-demo-data.sh`). Launched at runtime by `NepaVisitActionPlanLauncher` Apex trigger handler via `NEPA_Layer_Discipline__mdt` discipline → APT routing.
 
 ## Task Source Methodology
 
@@ -98,7 +98,7 @@ Generic review-type templates assigned when no sector-specific template matches.
 
 4 items each. Assigned to `Visit` records auto-created by `NepaLayerDisciplineResolver` when GIS proximity detection flags a resource-specific extraordinary circumstance. Items use `itemEntityType=AssessmentTask` with `TaskType=InspectionChecklist` and are wired to `AssessmentTaskDefinition` records, aligning with the PSS Assessment Execution pattern for field surveys. Items cover desktop review, field assessment window compliance, agency coordination memo, and final report upload.
 
-**Deploy note:** `ActionPlanType='Retail'` and `AssessmentTaskDefinitionId` item values are not settable via metadata at API v62.0. The shell APT XML deploys via Phase 8b; full population requires the `31a` → `31b` → `31c` Apex post-load sequence.
+**Deploy note:** See platform limitation below — these 7 templates are excluded from Phase 8b and created entirely by the Apex post-load scripts.
 
 | Unique Name | Label | Trigger | Cooperating Agencies |
 |---|---|---|---|
@@ -109,6 +109,40 @@ Generic review-type templates assigned when no sector-specific template matches.
 | `NEPA_Visit_Hydrology_Milestones_BLM` | NEPA Visit Hydrology Milestones | NWI Wetlands / aquatic GIS layer | USACE, EPA, USFWS |
 | `NEPA_Visit_MigratoryBird_Milestones_BLM` | NEPA Visit Migratory Bird Milestones | MBTA / avian habitat GIS layer | USFWS |
 | `NEPA_Visit_SageGrouse_Milestones_BLM` | NEPA Visit Sage-Grouse Milestones | FWS Critical Habitat (Sage-Grouse) | USFWS, BLM |
+
+---
+
+## Platform Limitation: Visit APTs and ActionPlanType
+
+### Why the 7 Visit APTs cannot be deployed via Metadata API
+
+The `ActionPlanTemplate` Metadata API schema does not expose the `ActionPlanType` field. When any APT is deployed via metadata, the platform always defaults `ActionPlanType` to `Industries` — ignoring any value the developer intended.
+
+For the 39 CE/EA/EIS APTs this is fine — `Industries` type supports `Task` items, which is all they use.
+
+For the 7 Visit discipline APTs, this is a blocking incompatibility:
+- They use `itemEntityType = AssessmentTask` (PSS Inspections pattern)
+- `AssessmentTask` items are only valid when `ActionPlanType = Retail`
+- Deploying them via metadata sets `ActionPlanType = Industries`, which rejects `AssessmentTask` items at deploy time with the error: **"This target object can't be used with this action plan type."**
+
+Crucially, `ActionPlanType` has no `Update` property in the sObject API — it can only be set at `Create` time. This means there is no post-deploy patch path: once a template is created with `Industries`, it cannot be changed to `Retail` without deleting and recreating it.
+
+### Confirmed platform behavior
+
+This is a known Salesforce platform limitation. The Salesforce engineering team has confirmed that Metadata API deploys always default `ActionPlanType` to `Industries`, affecting customers who need `Sales` or `Retail` types. The only documented workaround is to create the template via Apex DML (which supports setting `ActionPlanType` at creation) or via the UI clone workflow.
+
+Reference: Salesforce Known Issue — Action Plan Template deployed via Metadata API defaults `ActionPlanType` to `Industries`.
+
+### How this accelerator handles it
+
+The 7 Visit APTs are **excluded from Phase 8b** of `deploy.sh`. They are created exclusively by `demo/import_data/31b_postload_apt.apex`, which uses Apex DML and sets `ActionPlanType = 'Retail'` explicitly at insert time. The `containsKey` guard in the script ensures idempotent re-runs do not create duplicates.
+
+The post-load sequence to fully wire Visit APTs:
+1. `31a_postload_atd.apex` — creates `AssessmentTaskDefinition` records
+2. `31b_postload_apt.apex` — creates APTs with `ActionPlanType='Retail'` and their `ActionPlanTemplateVersion` records
+3. `31c_postload_apt_values.apex` — wires `AssessmentTaskDefinitionId` into each `ActionPlanTemplateItem`
+
+These scripts are invoked automatically by `scripts/load-demo-data.sh`.
 
 ---
 
