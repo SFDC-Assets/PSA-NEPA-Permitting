@@ -904,10 +904,9 @@ private class NepaCeqExportServiceTest {
         Test.stopTest();
 
         System.assertNotEquals(null, jsonOut, 'generateCeqExport must return a non-null string');
-        Map<String, Object> dto = (Map<String, Object>) JSON.deserializeUntyped(jsonOut);
-
-        // Must be an object (single record), not an array
-        System.assert(dto instanceof Map<String, Object>, 'Single-process export must be a JSON object');
+        Object parsed = JSON.deserializeUntyped(jsonOut);
+        System.assert(parsed instanceof Map<String, Object>, 'Single-process export must be a JSON object, not an Array');
+        Map<String, Object> dto = (Map<String, Object>) parsed;
         System.assertEquals('FUID-001', (String) dto.get('federal_id'),
             'federal_id must round-trip through generateCeqExport');
         System.assertEquals('1.0', (String) dto.get('data_record_version'),
@@ -924,8 +923,9 @@ private class NepaCeqExportServiceTest {
         Test.stopTest();
 
         System.assertNotEquals(null, jsonOut, 'generateCeqExport(null) must return a non-null string');
-        List<Object> dtos = (List<Object>) JSON.deserializeUntyped(jsonOut);
-        System.assert(dtos instanceof List<Object>, 'Null processId export must return a JSON array');
+        Object parsed = JSON.deserializeUntyped(jsonOut);
+        System.assert(parsed instanceof List<Object>, 'Null processId export must return a JSON array, not an Object');
+        List<Object> dtos = (List<Object>) parsed;
         // At least the 'in progress' record from @TestSetup is in the active set
         System.assert(dtos.size() >= 1, 'Active export must include at least one record');
         Map<String, Object> first = (Map<String, Object>) dtos[0];
