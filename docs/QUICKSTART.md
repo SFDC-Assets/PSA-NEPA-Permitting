@@ -857,7 +857,9 @@ curl -s -H "Authorization: Bearer $TOKEN" \
   "$INSTANCE/services/apexrest/nepa/v1/processes/DOI-BLM-WY-2026-EIS-001" | jq .
 ```
 
-Expected: `success: true`, `data` array with process fields (`federalUniqueId`, `reviewType`, `processStatus`, etc.)
+Expected: `success: true`, `data` array with CEQ v1.2 snake_case fields (`federal_id`, `type`, `status`, `agency_id`, `lead_agency`, `data_record_version`, and an `other` block containing `salesforce_id`, `risk_score`, `required_permits`, etc.)
+
+The same CEQ v1.2 payload is also available directly from the `IndividualApplication` record page via the **CEQ Export** card (`c:nepaCeqExportButton`). "Export This Process" downloads a single-record JSON; "Export All Active" downloads all active processes as a JSON array.
 
 **Full project graph export** (returns complete CEQ v1.2 nested payload by Program record Id):
 

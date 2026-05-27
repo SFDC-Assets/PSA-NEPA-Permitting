@@ -237,7 +237,7 @@ Two delivered Apex REST services expose the CEQ v1.2 payload:
 | `NepaCeqExportService` | `GET /services/apexrest/nepa/v1/processes/{id}` | Per-process export; used by cross-agency permit callouts |
 | `NepaCeqFullExportService` | `POST /services/apexrest/nepa/v1/export/project` | Full project graph — Project → Processes → all 8 child arrays |
 
-**Tests:** `NepaCeqExportServiceTest` (36 tests including 9 PIC/MFR compliance tests — see Section 20e) covers the per-process service. `NepaCeqFullExportServiceTest` (13 tests — see Section 20e2) covers the full-graph service including schema version, CEQ snake_case field names, nested comment structure, GIS at project and process level, permit DTOs, and 400/404 error guard rails. The steps below verify live endpoint routing and HTTP authentication.
+**Tests:** `NepaCeqExportServiceTest` (43 tests including 16 CEQ v1.2 compliance tests — see Section 20e) covers the per-process service. `NepaCeqFullExportServiceTest` (13 tests — see Section 20e2) covers the full-graph service including schema version, CEQ snake_case field names, nested comment structure, GIS at project and process level, permit DTOs, and 400/404 error guard rails. The steps below verify live endpoint routing and HTTP authentication.
 
 ### 17a. Call the Per-Process Export Endpoint
 
@@ -254,7 +254,7 @@ curl -s \
 **Pass criteria:**
 - `success: true`
 - `data` is an array of process objects
-- Each process object contains `federalUniqueId`, `reviewType`, `processStatus`
+- Each process object contains CEQ v1.2 snake_case keys: `federal_id`, `type`, `status`, `agency_id`, `lead_agency`, `data_record_version`, and an `other` block with `salesforce_id`, `risk_score`, `required_permits`
 
 ### 17b. Call the Full Project Graph Export Endpoint
 
@@ -338,7 +338,7 @@ sf apex run test \
 - Key test classes that must pass:
   - `NepaApiComplianceTest` (55 tests)
   - `NepaBREConfigTest` (46 tests)
-  - `NepaCeqExportServiceTest` (36 tests — includes 9 PIC/MFR compliance tests + F-15 FPISC/YoY methods)
+  - `NepaCeqExportServiceTest` (43 tests — includes 16 CEQ v1.2 compliance tests + `@AuraEnabled` export tests + F-15 FPISC/YoY methods)
   - `NepaCeqFullExportServiceTest` (13 tests — full project graph export, schema version, CEQ field names)
   - `NepaEntity789Test` (25 tests)
   - `NepaStageGateTest` (17 tests)
@@ -354,7 +354,7 @@ sf apex run test \
 | `NepaValidationRuleTest` | 27 | Field validation rules — all 7 VRs incl. Comment_Period_Closed, AIDocRequiresSMEReview, Phase2_Climate_Gate |
 | `NepaEntity789Test` | 25 | GIS data, team members, legal structure |
 | `NepaPlaintiffIntelligenceTest` | 25 | Plaintiff risk flag, tribal dual-flag, comment-level flags, ICL/Shoshone-Paiute CMT, 200-record bulk |
-| `NepaCeqExportServiceTest` | 36 | REST export API, PIC/MFR compliance, null-field serialization, combined filters, FPISC export (F-15), year-over-year trend |
+| `NepaCeqExportServiceTest` | 43 | REST export API, CEQ v1.2 snake_case compliance, `@AuraEnabled` export, provenance fields, lead_agency Account name, `other` nesting, null-field serialization, FPISC export (F-15), year-over-year trend |
 | `NepaCeqFullExportServiceTest` | 13 | Full project graph export: schema version v1.2, CEQ snake_case field names, nested comments under documents, GIS at project+process level, permit DTOs, multi-process, 400/404 guard rails |
 | `NepaCommentControllerTest` | 19 | Comment intake and LWC controller |
 | `NepaLitigationRiskScorerTest` | 19 | BRE risk scoring, tier thresholds, 200-record bulk, null project link |
@@ -440,19 +440,26 @@ sf apex run test \
   --wait 10
 ```
 
-**Expected:** All 36 tests pass (27 original + 9 new F-15 methods). The 9 PIC compliance tests verify:
+**Expected:** All 43 tests pass. The 16 CEQ v1.2 compliance tests verify:
 
 | Test | Constraint verified |
 |---|---|
-| `compliance_federalUniqueId_nonNullOnExportedRecord` | `federalUniqueId` non-null — required for all MFR submissions |
-| `compliance_reviewType_isValidPicValue` | `reviewType` ∈ `{EIS, EA, CE, Other Authorization}` |
-| `compliance_processStatus_isValidPicValue` | `processStatus` ∈ `{planned, pre-application, in progress, paused, completed, cancelled}` |
-| `compliance_completedRecord_hasStartDate` | `startDate` key present and non-null when `nepa_start_date__c` was set |
+| `compliance_federalUniqueId_nonNullOnExportedRecord` | `federal_id` non-null — required for all MFR submissions |
+| `compliance_reviewType_isValidPicValue` | `type` ∈ `{EIS, EA, CE, Other Authorization}` |
+| `compliance_processStatus_isValidPicValue` | `status` ∈ `{planned, pre-application, in progress, paused, completed, cancelled}` |
+| `compliance_completedRecord_hasStartDate` | `start_date` key present and non-null when `nepa_start_date__c` was set |
 | `compliance_envelopeShape_listResponseAlwaysArray` | List response `data` is always a JSON Array |
 | `compliance_envelopeShape_singleResponseIsObject` | Single-record response `data` is a JSON Object, not Array |
 | `compliance_errorEnvelope_hasRequiredFields` | Error responses carry `success: false`, `errorCode`, and `message` |
-| `compliance_allDtoFields_matchPicPropertyNames` | All 15 PIC v1.2 DTO keys present: `id, federalUniqueId, reviewType, processStatus, processStage, agencyId, startDate, targetCompletionDate, slaDueDate, slaOverdue, riskScore, riskTier, recordCompleteness, lastStageTransition, lastModified` |
-| `compliance_agencyId_nonNullWhenSet` | `agencyId` round-trips exactly — CEQ uses this as the join key to the agency registry |
+| `compliance_allDtoFields_matchCeqV12PropertyNames` | All 25 CEQ v1.2 top-level snake_case keys present; 9 NEPA-operational keys verified under `other` |
+| `compliance_agencyId_nonNullWhenSet` | `agency_id` round-trips exactly — CEQ uses this as the join key to the agency registry |
+| `compliance_provenanceFields_allPresent` | `data_record_version = "1.0"`, `last_updated`, `retrieved_timestamp`, `created_at` all non-null |
+| `compliance_parentProjectId_populatedFromRelatedProject` | `parent_project_id` = `nepa_related_project__r.nepa_project_id__c` |
+| `compliance_leadAgency_isAccountName` | `lead_agency` = Account Name traversed from `nepa_related_project__r.nepa_lead_agency__r.Name` |
+| `compliance_nepaOperationalFields_nestedUnderOther` | `sla_due_date`, `risk_score`, `required_permits` in `other`; absent from top-level |
+| `compliance_slaOverdue_isBoolean` | `other.sla_overdue` serializes as Boolean, not String |
+| `generateCeqExport_singleProcess_returnsCompliantShape` | `@AuraEnabled` method returns CEQ v1.2 shape with `federal_id`, `data_record_version`, `other` block |
+| `generateCeqExport_allActive_returnsArray` | Null `processId` returns JSON array; each element has required CEQ keys |
 
 ### 20e2. Targeted Test — CEQ Full Project Graph Export
 
