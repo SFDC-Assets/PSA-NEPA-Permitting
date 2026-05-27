@@ -40,6 +40,16 @@ private class NepaAgencyPermitServiceTest {
         }
     }
 
+    /** Returns 503 to exercise the non-200/non-404 branch in performCallout. */
+    private class ServerErrorMock implements HttpCalloutMock {
+        public HTTPResponse respond(HTTPRequest req) {
+            HttpResponse res = new HttpResponse();
+            res.setStatusCode(503);
+            res.setBody('Service Unavailable');
+            return res;
+        }
+    }
+
     // ── Setup ─────────────────────────────────────────────────────────────────
 
     @TestSetup
@@ -181,6 +191,66 @@ private class NepaAgencyPermitServiceTest {
             thrown = true;
         }
         System.assertEquals(true, thrown);
+    }
+
+    // ── ep == null guard: endpoint key set but no matching CMT ───────────────────
+
+    @IsTest
+    static void getPermitStatuses_endpointKeyMissingFromCmt_degradesGracefully() {
+        // Add a permit with an endpoint key that will NOT exist in NEPA_Agency_Endpoint__mdt
+        Id processId = getProcessId();
+        nepa_required_permit__c orphan = new nepa_required_permit__c(
+            nepa_process__c             = processId,
+            nepa_permit_type__c         = 'Rivers and Harbors Act Section 10',
+            nepa_lead_agency__c         = 'USACE',
+            nepa_external_federal_id__c = 'RHA-2026-999',
+            nepa_agency_endpoint_ref__c = 'NONEXISTENT_ENDPOINT_KEY_XYZ',
+            nepa_permit_status__c       = 'Not Started',
+            nepa_is_critical_path__c    = false
+        );
+        insert orphan;
+
+        Test.setMock(HttpCalloutMock.class, new SuccessMock());
+
+        Test.startTest();
+        List<NepaAgencyPermitService.PermitStatusResult> results =
+            NepaAgencyPermitService.getPermitStatuses(processId);
+        Test.stopTest();
+
+        NepaAgencyPermitService.PermitStatusResult orphanResult = null;
+        for (NepaAgencyPermitService.PermitStatusResult r : results) {
+            if (r.permitType == 'Rivers and Harbors Act Section 10') { orphanResult = r; }
+        }
+        System.assertNotEquals(null, orphanResult, 'Result must exist for the orphaned permit');
+        System.assertEquals(false, orphanResult.calloutSuccess,
+            'calloutSuccess must be false when the endpoint CMT record is missing');
+        System.assertNotEquals(null, orphanResult.calloutError,
+            'calloutError must be populated when the CMT entry is absent');
+        System.assert(orphanResult.calloutError.contains('NONEXISTENT_ENDPOINT_KEY_XYZ'),
+            'Error message must identify the missing key');
+    }
+
+    // ── Non-200/non-404 status → generic HTTP error message ───────────────────
+
+    @IsTest
+    static void getPermitStatuses_nonStandardStatusCode_setsCalloutError() {
+        Test.setMock(HttpCalloutMock.class, new ServerErrorMock());
+
+        Test.startTest();
+        List<NepaAgencyPermitService.PermitStatusResult> results =
+            NepaAgencyPermitService.getPermitStatuses(getProcessId());
+        Test.stopTest();
+
+        NepaAgencyPermitService.PermitStatusResult usaceResult = null;
+        for (NepaAgencyPermitService.PermitStatusResult r : results) {
+            if (r.leadAgency == 'USACE') { usaceResult = r; }
+        }
+        System.assertNotEquals(null, usaceResult);
+        System.assertEquals(false, usaceResult.calloutSuccess);
+        System.assertNotEquals(null, usaceResult.calloutError,
+            'calloutError must be set for non-standard HTTP status');
+        System.assert(usaceResult.calloutError.contains('503'),
+            'Error must include the HTTP status code');
     }
 
     @IsTest

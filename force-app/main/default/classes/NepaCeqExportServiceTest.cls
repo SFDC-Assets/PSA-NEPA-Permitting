@@ -983,6 +983,72 @@ private class NepaCeqExportServiceTest {
         System.assert(result.containsKey('error'), 'Not-found single export must return error key');
     }
 
+    // ── doGet catch block: null requestURI → 500 with error envelope ─────────
+
+    @IsTest
+    static void doGet_nullRequestUri_returns500() {
+        // Setting requestURI = null causes req.requestURI.substringAfter(...) to throw
+        // an NPE inside the try block, exercising the catch block and 500 error envelope.
+        RestRequest badReq = new RestRequest();
+        badReq.httpMethod  = 'GET';
+        badReq.requestURI  = null;
+
+        RestResponse badRes = new RestResponse();
+
+        RestContext.request  = badReq;
+        RestContext.response = badRes;
+
+        Boolean threw = false;
+        try {
+            Test.startTest();
+            NepaCeqExportService.doGet();
+            Test.stopTest();
+        } catch (Exception ex) {
+            threw = true;
+        }
+
+        System.assertEquals(false, threw,
+            'doGet catch block must absorb the NPE — must not re-throw to caller');
+        System.assertEquals(500, badRes.statusCode,
+            'Catch block must set status 500');
+        Blob responseBlob = badRes.responseBody;
+        System.assertNotEquals(null, responseBlob, 'Response body must be set by catch block');
+        Map<String, Object> body = (Map<String, Object>)
+            JSON.deserializeUntyped(responseBlob.toString());
+        System.assertEquals(false, body.get('success'));
+        System.assertEquals('SERVER_ERROR', (String) body.get('errorCode'));
+    }
+
+    // ── lead_agency null when project has no lead agency account ─────────────
+
+    @IsTest
+    static void getSingle_projectHasNoLeadAgency_leadAgencyNull() {
+        // Create a Program where nepa_lead_agency__c (Account lookup) is null.
+        // The toDto ternary must return null rather than throw.
+        Program proj = new Program();
+        proj.Name                = 'No Lead Agency Project';
+        proj.nepa_project_id__c  = 'NEPA-NULL-LA';
+        // nepa_lead_agency__c intentionally omitted — leave null
+        insert proj;
+
+        IndividualApplication ia = NepaTestFactory.insertOpenProcess(proj.Id, 'CE');
+        ia.nepa_federal_unique_id__c = 'FUID-NULL-LA';
+        update ia;
+
+        RestContext.request  = buildRequest('GET',
+            '/services/apexrest/nepa/v1/processes/FUID-NULL-LA', null);
+        RestContext.response = new RestResponse();
+
+        Test.startTest();
+        NepaCeqExportService.doGet();
+        Test.stopTest();
+
+        System.assertEquals(200, RestContext.response.statusCode);
+        Map<String, Object> dto = (Map<String, Object>) parseBody().get('data');
+        System.assertEquals(null, dto.get('lead_agency'),
+            'lead_agency must be null when project has no lead agency Account');
+    }
+
     // ── generateFPISCExport ───────────────────────────────────────────────────
 
     @IsTest

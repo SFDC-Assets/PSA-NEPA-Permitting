@@ -130,6 +130,78 @@ private class NepaVisitActionPlanLauncherTest {
             'Bulk call with no CMT match must not throw');
     }
 
+    // ── APT found with Final version → ActionPlan inserted for each visit ───────
+    // Uses the org-deployed 'NEPA_Visit_Hydrology_Milestones_BLM' APT which has
+    // ActionPlanType='Retail' and a Final version — no test-data APT insert needed.
+
+    @IsTest
+    static void createActionPlans_finalVersionApt_createsActionPlan() {
+        // Verify the deployed APT exists before proceeding; skip gracefully if missing
+        List<ActionPlanTemplate> apts = [
+            SELECT Id, (SELECT Id FROM ActionPlanTemplateVersions WHERE Status = 'Final' LIMIT 1)
+            FROM ActionPlanTemplate
+            WHERE UniqueName = 'NEPA_Visit_Hydrology_Milestones_BLM'
+            LIMIT 1
+        ];
+        if (apts.isEmpty() || apts[0].ActionPlanTemplateVersions.isEmpty()) {
+            // APT not deployed in this org — test can't run
+            return;
+        }
+
+        IndividualApplication ia = insertProcess();
+        // Visit with discipline matching NHD_Flowlines CMT → 'Hydrologist'
+        Visit v = buildVisit(ia.Id, true, 'Hydrologist');
+        insert v;
+
+        Integer plansBefore = [SELECT COUNT() FROM ActionPlan];
+
+        Test.startTest();
+        NepaVisitActionPlanLauncher.createActionPlans(new List<Visit>{ v });
+        Test.stopTest();
+
+        Integer plansAfter = [SELECT COUNT() FROM ActionPlan];
+        System.assertEquals(plansBefore + 1, plansAfter,
+            'One ActionPlan must be created when APT with Final version exists for the discipline');
+
+        ActionPlan ap = [SELECT Id, TargetId, StartDate FROM ActionPlan WHERE TargetId = :v.Id LIMIT 1];
+        System.assertEquals(v.Id, ap.TargetId, 'ActionPlan TargetId must be the Visit Id');
+        System.assertNotEquals(null, ap.StartDate, 'StartDate must not be null');
+    }
+
+    // ── APT Final version but PlannedVisitStartTime is null → defaults to Date.today() ──
+
+    @IsTest
+    static void createActionPlans_nullStartTime_defaultsToToday() {
+        List<ActionPlanTemplate> apts = [
+            SELECT Id, (SELECT Id FROM ActionPlanTemplateVersions WHERE Status = 'Final' LIMIT 1)
+            FROM ActionPlanTemplate
+            WHERE UniqueName = 'NEPA_Visit_Hydrology_Milestones_BLM'
+            LIMIT 1
+        ];
+        if (apts.isEmpty() || apts[0].ActionPlanTemplateVersions.isEmpty()) {
+            return;
+        }
+
+        IndividualApplication ia = insertProcess();
+        // Visit without PlannedVisitStartTime — StartDate must default to Date.today()
+        Visit v = new Visit();
+        v.ContextId              = ia.Id;
+        v.PlaceId                = getOrCreatePlace();
+        v.PlannedVisitStartTime  = null;
+        v.Status                 = 'Planned';
+        v.nepa_auto_generated__c = true;
+        v.nepa_discipline__c     = 'Hydrologist';
+        insert v;
+
+        Test.startTest();
+        NepaVisitActionPlanLauncher.createActionPlans(new List<Visit>{ v });
+        Test.stopTest();
+
+        ActionPlan ap = [SELECT StartDate FROM ActionPlan WHERE TargetId = :v.Id LIMIT 1];
+        System.assertEquals(Date.today(), ap.StartDate,
+            'StartDate must default to today() when PlannedVisitStartTime is null');
+    }
+
     // ── Mixed auto/manual visits — only auto-generated ones are processed ─────
 
     @IsTest

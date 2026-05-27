@@ -111,6 +111,43 @@ private class NepaCEIntakeControllerTest {
     }
 
     @IsTest
+    static void testCreateIntake_invalidData_rollsBackAndThrowsAuraHandledException() {
+        // Pass a processData map that causes the insert to fail:
+        // nepa_disturbance_acres__c has a non-parseable value which throws during Decimal.valueOf,
+        // triggering the catch block, rollback, and AuraHandledException.
+        Map<String, Object> programData = new Map<String, Object>{
+            'projectTitle' => 'Rollback Test Project'
+        };
+        Map<String, Object> processData = new Map<String, Object>{
+            'disturbanceAcres' => 'not-a-number',  // forces Decimal.valueOf to throw
+            'ecMultiDod'       => false,
+            'ecUsaczma'        => false
+        };
+
+        Integer programsBefore = [SELECT COUNT() FROM Program];
+
+        Boolean threw = false;
+        String errorMsg = '';
+        Test.startTest();
+        try {
+            NepaCEIntakeController.createIntake(programData, processData);
+        } catch (AuraHandledException e) {
+            threw = true;
+            errorMsg = e.getMessage();
+        }
+        Test.stopTest();
+
+        System.assertEquals(true, threw,
+            'createIntake must throw AuraHandledException when an error occurs mid-transaction');
+        System.assertNotEquals('', errorMsg, 'AuraHandledException message must be non-blank');
+
+        // Rollback must have removed the Program inserted before the IA failed
+        Integer programsAfter = [SELECT COUNT() FROM Program];
+        System.assertEquals(programsBefore, programsAfter,
+            'Savepoint rollback must undo the Program insert when IA insert fails');
+    }
+
+    @IsTest
     static void testGetScreeningResultPending() {
         RegulatoryAuthorizationType rat = new RegulatoryAuthorizationType();
         rat.Name = 'NEPA Environmental Review';
