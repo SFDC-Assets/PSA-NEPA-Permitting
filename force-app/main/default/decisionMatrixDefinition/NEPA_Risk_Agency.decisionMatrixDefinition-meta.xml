@@ -9,22 +9,18 @@
             <columnType>Input</columnType>
             <dataType>Text</dataType>
             <displaySequence>1</displaySequence>
-            <isWildcardColumn>true</isWildcardColumn>
             <name>AgencyName</name>
-            <wildcardValue>*</wildcardValue>
         </columns>
         <columns>
             <columnType>Output</columnType>
             <dataType>Number</dataType>
             <displaySequence>2</displaySequence>
-            <isWildcardColumn>false</isWildcardColumn>
             <name>Points</name>
         </columns>
         <columns>
             <columnType>Output</columnType>
             <dataType>Number</dataType>
             <displaySequence>3</displaySequence>
-            <isWildcardColumn>false</isWildcardColumn>
             <name>MatchScore</name>
         </columns>
         <decisionMatrixDefinition>NEPA_Risk_Agency</decisionMatrixDefinition>

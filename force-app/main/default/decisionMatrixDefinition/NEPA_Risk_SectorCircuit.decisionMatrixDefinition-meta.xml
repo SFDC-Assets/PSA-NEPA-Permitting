@@ -9,29 +9,24 @@
             <columnType>Input</columnType>
             <dataType>Text</dataType>
             <displaySequence>1</displaySequence>
-            <isWildcardColumn>true</isWildcardColumn>
             <name>SectorCircuitKey</name>
-            <wildcardValue>*</wildcardValue>
         </columns>
         <columns>
             <columnType>Output</columnType>
             <dataType>Number</dataType>
             <displaySequence>2</displaySequence>
-            <isWildcardColumn>false</isWildcardColumn>
             <name>WinRatePct</name>
         </columns>
         <columns>
             <columnType>Output</columnType>
             <dataType>Number</dataType>
             <displaySequence>3</displaySequence>
-            <isWildcardColumn>false</isWildcardColumn>
             <name>CaseCount</name>
         </columns>
         <columns>
             <columnType>Output</columnType>
             <dataType>Text</dataType>
             <displaySequence>4</displaySequence>
-            <isWildcardColumn>false</isWildcardColumn>
             <name>RiskCellLabel</name>
         </columns>
         <decisionMatrixDefinition>NEPA_Risk_SectorCircuit</decisionMatrixDefinition>

@@ -9,28 +9,24 @@
             <columnType>Input</columnType>
             <dataType>Text</dataType>
             <displaySequence>1</displaySequence>
-            <isWildcardColumn>false</isWildcardColumn>
             <name>Sector</name>
         </columns>
         <columns>
             <columnType>Input</columnType>
             <dataType>Text</dataType>
             <displaySequence>2</displaySequence>
-            <isWildcardColumn>false</isWildcardColumn>
             <name>ProjectType</name>
         </columns>
         <columns>
             <columnType>Output</columnType>
             <dataType>Text</dataType>
             <displaySequence>3</displaySequence>
-            <isWildcardColumn>false</isWildcardColumn>
             <name>RequiredPermits</name>
         </columns>
         <columns>
             <columnType>Output</columnType>
             <dataType>Text</dataType>
             <displaySequence>4</displaySequence>
-            <isWildcardColumn>false</isWildcardColumn>
             <name>CooperatingAgencies</name>
         </columns>
         <decisionMatrixDefinition>NEPA_Permit_Matrix_BRE</decisionMatrixDefinition>

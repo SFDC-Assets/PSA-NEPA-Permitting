@@ -9,43 +9,36 @@
             <columnType>Input</columnType>
             <dataType>Text</dataType>
             <displaySequence>1</displaySequence>
-            <isWildcardColumn>true</isWildcardColumn>
             <name>Discipline</name>
-            <wildcardValue>*</wildcardValue>
         </columns>
         <columns>
             <columnType>Input</columnType>
             <dataType>Text</dataType>
             <displaySequence>2</displaySequence>
-            <isWildcardColumn>false</isWildcardColumn>
             <name>ReviewType</name>
         </columns>
         <columns>
             <columnType>Output</columnType>
             <dataType>Text</dataType>
             <displaySequence>3</displaySequence>
-            <isWildcardColumn>false</isWildcardColumn>
             <name>Priority</name>
         </columns>
         <columns>
             <columnType>Output</columnType>
             <dataType>Boolean</dataType>
             <displaySequence>4</displaySequence>
-            <isWildcardColumn>false</isWildcardColumn>
             <name>IsHardGate</name>
         </columns>
         <columns>
             <columnType>Output</columnType>
             <dataType>Number</dataType>
             <displaySequence>5</displaySequence>
-            <isWildcardColumn>false</isWildcardColumn>
             <name>WindowStartMonth</name>
         </columns>
         <columns>
             <columnType>Output</columnType>
             <dataType>Number</dataType>
             <displaySequence>6</displaySequence>
-            <isWildcardColumn>false</isWildcardColumn>
             <name>WindowEndMonth</name>
         </columns>
         <decisionMatrixDefinition>NEPA_Survey_Priority_Gate</decisionMatrixDefinition>
