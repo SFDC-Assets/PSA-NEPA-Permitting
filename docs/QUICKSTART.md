@@ -26,7 +26,7 @@ The deploy script automates nearly everything. The following steps still require
 
 | Step | What you'll do | When |
 |---|---|---|
-| **Lightning Record Page assignment** | In Setup → Lightning App Builder, assign **9** pages as Org Default (IndividualApplication, Program, PublicComplaint, Engagement, Litigation, CE Library, Decision Payload, Decision Log, Visit). The remaining 10 pages auto-apply via object assignment at deploy time. | After Step 3 (deploy), see Step 4d |
+| **Lightning Record Page assignment** | Run `./scripts/assign-record-pages.sh <alias>` to set 4 standard/APS object pages (IndividualApplication, Program, PublicComplaint, Visit) as org default via Tooling API. The 5 custom-object pages (Engagement, Litigation, CE Library, Decision Payload, Decision Log) auto-assign on deploy. The remaining 10 pages auto-apply at deploy time. | After Step 3 (deploy), see Step 4d |
 | **Agency Named Credential URLs** | In Setup → Security → Named Credentials, update the 3 agency credentials (`NEPA_Agency_USACE`, `NEPA_Agency_USFWS`, `NEPA_Agency_BLM`) from placeholder hostnames to real agency NEPA API URLs | After Step 3 (deploy), see DEVELOPER_GUIDE.md Task 6 |
 | **ArcGIS API key** | Set `NEPA_Map_Config__mdt.ApiKey` to your ESRI key (Setup → Custom Metadata Types → NEPA Map Config → API Key → Edit). CSP Trusted Sites for ArcGIS are deployed automatically in Phase 6. | After Step 3 (deploy), see Step 4h |
 | **NAICS code data load** | 2,129 `NEPA_NAICS_Code__mdt` records loaded via Apex anonymous — verify with count query | After Step 3 (deploy), see Step 4i |
@@ -304,21 +304,34 @@ The most common transient error is `UNKNOWN_EXCEPTION` on the Salesforce pod —
 
 ### 4d. Assign Lightning Record Pages
 
-Phase 15 deploys **19 custom Lightning Record Pages**. Nine of these serve the 6 CEQ entities and must be manually assigned as org defaults — the rest auto-apply to their object by the platform after deploy.
+Run the script:
 
-1. Go to **Setup → Lightning App Builder**.
-2. Open each of the following pages and click **Activation → Assign as Org Default**:
-   - `IndividualApplication Record Page` (NEPA Process)
-   - `Program Record Page` (NEPA Project)
-   - `Public Comment Record Page`
-   - `NEPA Engagement Record Page`
-   - `NEPA Litigation Record Page`
-   - `NEPA CE Library Record Page`
-   - `NEPA Decision Payload Record Page`
-   - `NEPA Decision Log Record Page`
-   - `NEPA Visit Record Page`
+```bash
+chmod +x scripts/assign-record-pages.sh
+./scripts/assign-record-pages.sh NEPADEV
+```
 
-The remaining 10 pages (`NEPA_GIS_Data_Record_Page`, `NEPA_GIS_Data_Element_Record_Page`, `NEPA_Detected_Protection_Layer_Record_Page`, `NEPA_Required_Permit_Record_Page`, `NEPA_AR_Export_Record_Page`, `NEPA_Process_Team_Member_Record_Page`, `nepa_litigation__c_Record_Page`, `RegulatoryCode_Record_Page`, `ApplicationTimeline_Record_Page`, `NEPA_Permitting_Home`) are assigned automatically to their object at deploy time and do not require manual activation.
+This uses the Tooling API to set 4 pages as org default for their standard/APS objects:
+
+| Page | Object |
+|---|---|
+| `IndividualApplication_Record_Page` | `IndividualApplication` |
+| `Program_Record_Page` | `Program` |
+| `Public_Comment_Record_Page` | `PublicComplaint` |
+| `NEPA_Visit_Record_Page` | `Visit` |
+
+The script is safe to re-run — it checks for existing assignments before creating new ones.
+
+**Why only 4?** The Metadata API cannot override org-default page assignments for objects that already have a platform default (standard and APS objects). The Tooling API `FlexiPageRegion` object is the only supported way to set this programmatically.
+
+**The 5 custom-object pages auto-assign on deploy** because they are the sole RecordPage for their object and the object has no prior platform default:
+- `NEPA_Engagement_Record_Page` (`nepa_engagement__c`)
+- `NEPA_Litigation_Record_Page` (`nepa_litigation__c`)
+- `NEPA_CE_Library_Record_Page` (`nepa_ce_library__c`)
+- `NEPA_Decision_Payload_Record_Page` (`nepa_decision_payload__c`)
+- `NEPA_Decision_Log_Record_Page` (`nepa_decision_log__c`)
+
+The remaining 10 pages (`NEPA_GIS_Data_Record_Page`, `NEPA_GIS_Data_Element_Record_Page`, `NEPA_Detected_Protection_Layer_Record_Page`, `NEPA_Required_Permit_Record_Page`, `NEPA_AR_Export_Record_Page`, `NEPA_Process_Team_Member_Record_Page`, `RegulatoryCode_Record_Page`, `ApplicationTimeline_Record_Page`, `NEPA_Permitting_Home`) auto-apply at deploy time.
 
 ### 4e. CE Library Reference Data (Automated)
 

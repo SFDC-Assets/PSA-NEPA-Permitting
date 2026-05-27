@@ -536,7 +536,6 @@
     </flexiPageRegions>
 
     <masterLabel>NEPA Decision Payload Record Page</masterLabel>
-    <parentFlexiPage>flexipage__default_rec_L</parentFlexiPage>
     <sobjectType>nepa_decision_payload__c</sobjectType>
     <template>
         <name>flexipage:recordHomeTemplateDesktop</name>
