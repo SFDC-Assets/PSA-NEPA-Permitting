@@ -53,15 +53,18 @@ _org_raw=$(sf org display --target-org "$TARGET_ORG" --json 2>/dev/null)
 INSTANCE=$(echo "$_org_raw" | python3 -c "import sys,re; d=sys.stdin.read(); print(re.search(r'\"instanceUrl\"\s*:\s*\"([^\"]+)\"',d).group(1))")
 TOKEN=$(echo "$_org_raw" | python3 -c "import sys,re; d=sys.stdin.read(); print(re.search(r'\"accessToken\"\s*:\s*\"([^\"]+)\"',d).group(1))")
 TOOLING="$INSTANCE/services/data/v62.0/tooling"
+REST="$INSTANCE/services/data/v62.0"
 
 # Look up the AppDefinition Id for NEPA_Permitting
+# AppDefinition is a standard REST object (not Tooling API); its .Id field
+# returns a dummy value so we extract the real Id from the record URL.
 echo ""
 echo "  Looking up AppDefinition: $APP_DEV_NAME"
 APP_RESULT=$(curl -s \
     -H "Authorization: Bearer $TOKEN" \
-    "$TOOLING/query?q=SELECT+Id,DeveloperName+FROM+AppDefinition+WHERE+DeveloperName='$APP_DEV_NAME'")
+    "$REST/query?q=SELECT+Id,DeveloperName+FROM+AppDefinition+WHERE+DeveloperName='$APP_DEV_NAME'")
 
-APP_ID=$(echo "$APP_RESULT" | jq -r '.records[0].Id // empty')
+APP_ID=$(echo "$APP_RESULT" | jq -r '.records[0].attributes.url // empty' | sed 's|.*/||')
 
 if [[ -z "$APP_ID" ]]; then
     echo "  ERROR: AppDefinition '$APP_DEV_NAME' not found. Deploy the NEPA_Permitting app first." >&2
