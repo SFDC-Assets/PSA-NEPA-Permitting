@@ -483,9 +483,23 @@ phase_7_apex() {
 
 phase_8b_apts() {
     phase_header "Phase 8b: Action Plan Templates"
+    # Visit APTs (NEPA_Visit_*_BLM) are excluded here because the Metadata API always
+    # defaults ActionPlanType to 'Industries', ignoring the Retail type required for
+    # Visit+AssessmentTask. They are created via Apex DML in 31b_postload_apt.apex
+    # (run by load-demo-data.sh) which sets ActionPlanType='Retail' at insert time.
+    local APT_TMP_DIR
+    APT_TMP_DIR="/tmp/nepa_apts_$$/actionPlanTemplates"
+    mkdir -p "$APT_TMP_DIR"
+    for f in force-app/main/default/actionPlanTemplates/*.apt-meta.xml; do
+        case "$(basename "$f")" in
+            NEPA_Visit_*_BLM.apt-meta.xml) ;;  # skip — created by Apex post-load
+            *) cp "$f" "$APT_TMP_DIR/" ;;
+        esac
+    done
     deploy "action plan templates" allow-failure \
-        --source-dir force-app/main/default/actionPlanTemplates \
+        --source-dir "/tmp/nepa_apts_$$" \
         --target-org "$TARGET_ORG"
+    rm -rf "/tmp/nepa_apts_$$"
 }
 
 phase_8c_omnistudio() {
