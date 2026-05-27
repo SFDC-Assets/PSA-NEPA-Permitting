@@ -29,79 +29,38 @@ End-to-end test scenarios for the PSA-NEPA accelerator's live-integration and UI
 
 Create three clean test projects and processes. If you loaded sample data in QUICKSTART Step 5, you can use those records — the project and process IDs are printed to the debug log.
 
-### 1a. Create Test Projects via CLI
+### 1a. Run the test data script
 
 ```bash
-ALIAS=NEPADEV   # substitute your org alias
+sf apex run --file scripts/create-test-data.apex --target-org <alias>
 ```
 
-Create a BLM EIS project (highest-risk scenario):
+The script creates (or upserts if already present):
 
-```bash
-sf data create record \
-  --sobject Program \
-  --values "Name='TEST-EIS BLM 10th Circuit' nepa_project_id__c='TEST-BLM-EIS-001' nepa_record_owner_agency__c='BLM' nepa_circuit__c='10th' nepa_primary_sector__c='Energy Production and Management' nepa_adjacent_statutes__c='ESA;CWA'" \
-  --target-org $ALIAS
+| Record | External ID | Scenario |
+|---|---|---|
+| Program | `TEST-BLM-EIS-001` | BLM / 10th Circuit / Energy / ESA+CWA — highest-risk EIS |
+| Program | `TEST-FERC-EA-001` | FERC / DC Circuit — moderate-risk EA |
+| Program | `TEST-BLM-CE-001` | BLM / 9th Circuit — CE scenario |
+| IndividualApplication | `TEST-DOI-BLM-EIS-001` | EIS process, stage = Draft EIS Preparation |
+| IndividualApplication | `TEST-FERC-EA-001` | EA process, stage = Comment Period |
+| IndividualApplication | `TEST-DOI-BLM-CE-001` | CE process, stage = Scoping |
+
+The script is idempotent — Programs are upserted by `nepa_project_id__c` and IndividualApplications are only inserted if one does not already exist for the linked project. Safe to re-run.
+
+**Capture the IDs from the debug log output:**
+
+```
+=== Test data ready ===
+EIS Program  (TEST-BLM-EIS-001):  <id>
+EA  Program  (TEST-FERC-EA-001):   <id>
+CE  Program  (TEST-BLM-CE-001):    <id>
+EIS IndividualApplication:         <id>
+EA  IndividualApplication:         <id>
+CE  IndividualApplication:         <id>
 ```
 
-Create a FERC EA project (moderate-risk scenario):
-
-```bash
-sf data create record \
-  --sobject Program \
-  --values "Name='TEST-EA FERC DC Circuit' nepa_project_id__c='TEST-FERC-EA-001' nepa_record_owner_agency__c='FERC' nepa_circuit__c='DC'" \
-  --target-org $ALIAS
-```
-
-Create a BLM CE project:
-
-```bash
-sf data create record \
-  --sobject Program \
-  --values "Name='TEST-CE BLM 9th Circuit' nepa_project_id__c='TEST-BLM-CE-001' nepa_record_owner_agency__c='BLM' nepa_circuit__c='9th'" \
-  --target-org $ALIAS
-```
-
-### 1b. Create Test Processes
-
-`IndividualApplication` requires a `LicenseTypeId` (a `RegulatoryAuthorizationType` record). Create it once if it does not already exist, capture its ID, then create the three process records.
-
-```bash
-# Replace <EIS_PROGRAM_ID>, <EA_PROGRAM_ID>, <CE_PROGRAM_ID> with actual IDs
-
-# Step 1 — ensure the RegulatoryAuthorizationType exists and capture its ID
-LICENSE_TYPE_ID=$(sf data query \
-  --query "SELECT Id FROM RegulatoryAuthorizationType WHERE Name='NEPA Environmental Review' LIMIT 1" \
-  --target-org $ALIAS --json \
-  | jq -r '.result.records[0].Id // empty')
-
-if [ -z "$LICENSE_TYPE_ID" ]; then
-  LICENSE_TYPE_ID=$(sf data create record \
-    --sobject RegulatoryAuthorizationType \
-    --values "Name='NEPA Environmental Review' RegulatoryAuthCategory='Permit'" \
-    --target-org $ALIAS --json \
-    | jq -r '.result.id')
-fi
-echo "LicenseTypeId: $LICENSE_TYPE_ID"
-
-# Step 2 — create the three IndividualApplication records
-sf data create record \
-  --sobject IndividualApplication \
-  --values "Category='Permit' LicenseTypeId='$LICENSE_TYPE_ID' nepa_related_project__c='<EIS_PROGRAM_ID>' nepa_review_type__c='EIS' nepa_process_stage__c='Draft EIS Preparation' StatusCode='In Progress'" \
-  --target-org $ALIAS
-
-sf data create record \
-  --sobject IndividualApplication \
-  --values "Category='Permit' LicenseTypeId='$LICENSE_TYPE_ID' nepa_related_project__c='<EA_PROGRAM_ID>' nepa_review_type__c='EA' nepa_process_stage__c='Comment Period' StatusCode='In Progress'" \
-  --target-org $ALIAS
-
-sf data create record \
-  --sobject IndividualApplication \
-  --values "Category='Permit' LicenseTypeId='$LICENSE_TYPE_ID' nepa_related_project__c='<CE_PROGRAM_ID>' nepa_review_type__c='CE' nepa_process_stage__c='Scoping' StatusCode='In Progress'" \
-  --target-org $ALIAS
-```
-
-Record all six IDs — they are referenced throughout this guide.
+These IDs are referenced throughout this guide.
 
 ---
 
@@ -117,11 +76,13 @@ Record all six IDs — they are referenced throughout this guide.
 
 **Steps:**
 1. Open the EIS `IndividualApplication` record in your org.
-2. Set **NEPA Review Type** to `EIS` (if not already set).
+2. Set **NEPA Review Type** to `EIS`. The `create-test-data.apex` script leaves this field blank so this is always a genuine field change — required to fire the `IsChanged` trigger on the Risk Scorer flow.
 3. Set **Record Completeness** (`nepa_record_completeness__c`) to `85`.
 4. Click **Save**.
 5. Wait 10–15 seconds (flow runs `AsyncAfterCommit`).
 6. Refresh the record page.
+
+> **Re-running after a previous test:** If **NEPA Review Type** is already `EIS` from a prior run, clear it first (set to blank), save, then set it back to `EIS` and save again. The flow entry condition is `IsChanged = true` — a no-op save will not fire it.
 
 **Expected results:**
 - `nepa_risk_score__c` ≥ 58 (Very High threshold)
@@ -131,7 +92,7 @@ Record all six IDs — they are referenced throughout this guide.
 
 **Pass criteria:** All four fields populated; tier = Very High; score factors string present.
 
-**If score is 0:** Check that (a) BRE Decision Matrix rows are loaded — run the SOQL query below (Section 21a) to verify row counts, and (b) the parent Program has `nepa_record_owner_agency__c` and `nepa_circuit__c` populated. The Risk Scorer reads both from the parent Program via a `Get_RelatedProject` query.
+**If score is 0:** Verify (a) BRE Decision Matrix rows are loaded — run the SOQL in Section 21a, and (b) the parent Program has `nepa_record_owner_agency__c` and `nepa_circuit__c` populated. The Risk Scorer reads both from the parent Program via `Get_RelatedProject`. Verify with: `sf data query --query "SELECT nepa_circuit__c, nepa_record_owner_agency__c FROM Program WHERE nepa_project_id__c='TEST-BLM-EIS-001'" --target-org $ALIAS`
 
 ---
 

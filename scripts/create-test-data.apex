@@ -115,7 +115,8 @@ if (!existingIA.containsKey(programIds.get('TEST-BLM-EIS-001'))) {
     eisIA.Category                  = 'Permit';
     eisIA.LicenseTypeId             = licenseTypeId;
     eisIA.nepa_related_project__c   = programIds.get('TEST-BLM-EIS-001');
-    eisIA.nepa_review_type__c       = 'EIS';
+    // nepa_review_type__c intentionally left blank — tester sets it in the UI to
+    // guarantee IsChanged=true fires the Risk Scorer flow (TESTING-GUIDE §2)
     eisIA.nepa_process_stage__c     = 'Draft EIS Preparation';
     eisIA.nepa_process_status__c    = 'in progress';
     eisIA.nepa_federal_unique_id__c = 'TEST-DOI-BLM-EIS-001';
@@ -127,7 +128,6 @@ if (!existingIA.containsKey(programIds.get('TEST-FERC-EA-001'))) {
     eaIA.Category                  = 'Permit';
     eaIA.LicenseTypeId             = licenseTypeId;
     eaIA.nepa_related_project__c   = programIds.get('TEST-FERC-EA-001');
-    eaIA.nepa_review_type__c       = 'EA';
     eaIA.nepa_process_stage__c     = 'Comment Period';
     eaIA.nepa_process_status__c    = 'in progress';
     eaIA.nepa_federal_unique_id__c = 'TEST-FERC-EA-001';
@@ -139,7 +139,6 @@ if (!existingIA.containsKey(programIds.get('TEST-BLM-CE-001'))) {
     ceIA.Category                  = 'Permit';
     ceIA.LicenseTypeId             = licenseTypeId;
     ceIA.nepa_related_project__c   = programIds.get('TEST-BLM-CE-001');
-    ceIA.nepa_review_type__c       = 'CE';
     ceIA.nepa_process_stage__c     = 'Scoping';
     ceIA.nepa_process_status__c    = 'in progress';
     ceIA.nepa_federal_unique_id__c = 'TEST-DOI-BLM-CE-001';
