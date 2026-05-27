@@ -113,4 +113,31 @@ private class NepaTemplateCatalogControllerTest {
 
         System.assert(threw, 'Expected AuraHandledException for missing/inactive template');
     }
+
+    @IsTest
+    static void installTemplate_validFinalVersionApt_createsActionPlan() {
+        // Query any APT with a Final version deployed in this org
+        List<ActionPlanTemplate> apts = [
+            SELECT Id, Name, UniqueName,
+                   (SELECT Id FROM ActionPlanTemplateVersions WHERE Status = 'Final' LIMIT 1)
+            FROM ActionPlanTemplate
+            WHERE TargetEntityType = 'IndividualApplication'
+            LIMIT 1
+        ];
+        if (apts.isEmpty() || apts[0].ActionPlanTemplateVersions.isEmpty()) {
+            return; // no suitable APT deployed — skip gracefully
+        }
+        IndividualApplication ia = [SELECT Id FROM IndividualApplication LIMIT 1];
+        Integer plansBefore = [SELECT COUNT() FROM ActionPlan];
+
+        Test.startTest();
+        String apId = NepaTemplateCatalogController.installTemplate(ia.Id, apts[0].UniqueName);
+        Test.stopTest();
+
+        System.assertNotEquals(null, apId, 'installTemplate must return the new ActionPlan Id');
+        System.assertEquals(plansBefore + 1, [SELECT COUNT() FROM ActionPlan],
+            'installTemplate must insert exactly one ActionPlan');
+        ActionPlan ap = [SELECT TargetId, StartDate FROM ActionPlan WHERE Id = :apId LIMIT 1];
+        System.assertEquals(Date.today(), ap.StartDate, 'StartDate must be today');
+    }
 }

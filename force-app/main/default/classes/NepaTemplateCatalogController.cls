@@ -82,7 +82,7 @@ public with sharing class NepaTemplateCatalogController {
 
         List<ActionPlanTemplate> templates = [
             SELECT Id, Name, UniqueName,
-                   (SELECT Id FROM ActionPlanTemplateVersions WHERE Status = 'Active' ORDER BY Version DESC LIMIT 1)
+                   (SELECT Id FROM ActionPlanTemplateVersions WHERE Status = 'Final' ORDER BY Version DESC LIMIT 1)
             FROM ActionPlanTemplate
             WHERE UniqueName = :aptUniqueName
             WITH USER_MODE
