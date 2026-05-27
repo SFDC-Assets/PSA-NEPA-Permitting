@@ -68,29 +68,29 @@ global with sharing class NepaCeqExportService {
         // sfge-disable-next-line MissingNullCheckOnSoqlVariable -- caller (doGet) guards isNotBlank before invoking
         List<IndividualApplication> records = [
             SELECT Id, Name,
-                   nepa_federal_unique_id__c,
-                   nepa_review_type__c,
-                   nepa_process_status__c,
-                   nepa_process_stage__c,
-                   nepa_agency_id__c,
-                   nepa_start_date__c,
-                   nepa_target_completion_date__c,
-                   nepa_sla_due_date__c,
-                   nepa_sla_overdue__c,
-                   nepa_risk_score__c,
-                   nepa_risk_tier__c,
-                   nepa_record_completeness__c,
-                   nepa_last_stage_transition__c,
-                   LastModifiedDate,
+                   nepa_federal_unique_id__c, nepa_review_type__c,
+                   nepa_process_status__c, nepa_process_stage__c,
+                   nepa_agency_id__c, nepa_start_date__c,
+                   nepa_completion_date__c, nepa_target_completion_date__c,
+                   nepa_process_outcome__c, nepa_purpose_need__c, nepa_description__c,
+                   nepa_public_comment_period_start__c, nepa_public_comment_period_end_date__c,
+                   nepa_joint_lead_agency__c, nepa_cooperating_agencies__c,
+                   nepa_process_code__c, nepa_related_project__c,
+                   nepa_record_owner_agency__c, nepa_data_source_agency__c, nepa_data_source_system__c,
+                   nepa_sla_due_date__c, nepa_sla_overdue__c,
+                   nepa_risk_score__c, nepa_risk_tier__c,
+                   nepa_record_completeness__c, nepa_last_stage_transition__c,
+                   LastModifiedDate, CreatedDate,
+                   nepa_related_project__r.nepa_project_id__c,
+                   nepa_related_project__r.nepa_lead_agency__r.Name,
+                   nepa_related_project__r.nepa_record_owner_agency__c,
+                   nepa_related_project__r.nepa_data_source_agency__c,
+                   nepa_related_project__r.nepa_data_source_system__c,
                    (SELECT Id, Name,
-                           nepa_permit_status__c,
-                           nepa_lead_agency__c,
-                           nepa_regulatory_citation__c,
-                           nepa_is_critical_path__c,
-                           nepa_sla_due_date__c,
-                           nepa_expected_completion__c,
-                           nepa_actual_completion__c,
-                           nepa_external_federal_id__c,
+                           nepa_permit_status__c, nepa_lead_agency__c,
+                           nepa_regulatory_citation__c, nepa_is_critical_path__c,
+                           nepa_sla_due_date__c, nepa_expected_completion__c,
+                           nepa_actual_completion__c, nepa_external_federal_id__c,
                            nepa_last_synced__c
                     FROM Required_Permits__r
                     ORDER BY nepa_is_critical_path__c DESC, Name ASC)
@@ -168,29 +168,29 @@ global with sharing class NepaCeqExportService {
 
         List<IndividualApplication> records = Database.query(
             'SELECT Id, Name,'
-            + ' nepa_federal_unique_id__c,'
-            + ' nepa_review_type__c,'
-            + ' nepa_process_status__c,'
-            + ' nepa_process_stage__c,'
-            + ' nepa_agency_id__c,'
-            + ' nepa_start_date__c,'
-            + ' nepa_target_completion_date__c,'
-            + ' nepa_sla_due_date__c,'
-            + ' nepa_sla_overdue__c,'
-            + ' nepa_risk_score__c,'
-            + ' nepa_risk_tier__c,'
-            + ' nepa_record_completeness__c,'
-            + ' nepa_last_stage_transition__c,'
-            + ' LastModifiedDate,'
+            + ' nepa_federal_unique_id__c, nepa_review_type__c,'
+            + ' nepa_process_status__c, nepa_process_stage__c,'
+            + ' nepa_agency_id__c, nepa_start_date__c,'
+            + ' nepa_completion_date__c, nepa_target_completion_date__c,'
+            + ' nepa_process_outcome__c, nepa_purpose_need__c, nepa_description__c,'
+            + ' nepa_public_comment_period_start__c, nepa_public_comment_period_end_date__c,'
+            + ' nepa_joint_lead_agency__c, nepa_cooperating_agencies__c,'
+            + ' nepa_process_code__c, nepa_related_project__c,'
+            + ' nepa_record_owner_agency__c, nepa_data_source_agency__c, nepa_data_source_system__c,'
+            + ' nepa_sla_due_date__c, nepa_sla_overdue__c,'
+            + ' nepa_risk_score__c, nepa_risk_tier__c,'
+            + ' nepa_record_completeness__c, nepa_last_stage_transition__c,'
+            + ' LastModifiedDate, CreatedDate,'
+            + ' nepa_related_project__r.nepa_project_id__c,'
+            + ' nepa_related_project__r.nepa_lead_agency__r.Name,'
+            + ' nepa_related_project__r.nepa_record_owner_agency__c,'
+            + ' nepa_related_project__r.nepa_data_source_agency__c,'
+            + ' nepa_related_project__r.nepa_data_source_system__c,'
             + ' (SELECT Id, Name,'
-            + '         nepa_permit_status__c,'
-            + '         nepa_lead_agency__c,'
-            + '         nepa_regulatory_citation__c,'
-            + '         nepa_is_critical_path__c,'
-            + '         nepa_sla_due_date__c,'
-            + '         nepa_expected_completion__c,'
-            + '         nepa_actual_completion__c,'
-            + '         nepa_external_federal_id__c,'
+            + '         nepa_permit_status__c, nepa_lead_agency__c,'
+            + '         nepa_regulatory_citation__c, nepa_is_critical_path__c,'
+            + '         nepa_sla_due_date__c, nepa_expected_completion__c,'
+            + '         nepa_actual_completion__c, nepa_external_federal_id__c,'
             + '         nepa_last_synced__c'
             + '  FROM Required_Permits__r'
             + '  ORDER BY nepa_is_critical_path__c DESC, Name ASC)'
@@ -220,25 +220,63 @@ global with sharing class NepaCeqExportService {
 
     // ── DTO ───────────────────────────────────────────────────────────────────
 
+    // CEQ Data Standard v1.2 process_instance shape.
+    // Standard fields use snake_case per the spec; NEPA-operational fields are nested under "other".
     private static Map<String, Object> toDto(IndividualApplication r) {
+        String leadAgency = r.nepa_related_project__r != null && r.nepa_related_project__r.nepa_lead_agency__r != null
+            ? r.nepa_related_project__r.nepa_lead_agency__r.Name
+            : null;
+
         return new Map<String, Object>{
-            'id'                   => r.Id,
-            'name'                 => r.Name,
-            'federalUniqueId'      => r.nepa_federal_unique_id__c,
-            'reviewType'           => r.nepa_review_type__c,
-            'processStatus'        => r.nepa_process_status__c,
-            'processStage'         => r.nepa_process_stage__c,
-            'agencyId'             => r.nepa_agency_id__c,
-            'startDate'            => r.nepa_start_date__c,
-            'targetCompletionDate' => r.nepa_target_completion_date__c,
-            'slaDueDate'           => r.nepa_sla_due_date__c,
-            'slaOverdue'           => r.nepa_sla_overdue__c,
-            'riskScore'            => r.nepa_risk_score__c,
-            'riskTier'             => r.nepa_risk_tier__c,
-            'recordCompleteness'   => r.nepa_record_completeness__c,
-            'lastStageTransition'  => r.nepa_last_stage_transition__c,
-            'lastModified'         => r.LastModifiedDate,
-            'permits'              => toPermitDtos(r.Required_Permits__r)
+            // ── CEQ standard fields ───────────────────────────────────────────
+            'federal_id'              => r.nepa_federal_unique_id__c,
+            'parent_project_id'       => r.nepa_related_project__r != null
+                                            ? r.nepa_related_project__r.nepa_project_id__c : null,
+            'agency_id'               => r.nepa_agency_id__c,
+            'type'                    => r.nepa_review_type__c,
+            'status'                  => r.nepa_process_status__c,
+            'stage'                   => r.nepa_process_stage__c,
+            'start_date'              => r.nepa_start_date__c,
+            'complete_date'           => r.nepa_completion_date__c,
+            'estimated_completion'    => r.nepa_target_completion_date__c,
+            'outcome'                 => r.nepa_process_outcome__c,
+            'purpose_need'            => r.nepa_purpose_need__c,
+            'description'             => r.nepa_description__c,
+            'comment_start'           => r.nepa_public_comment_period_start__c,
+            'comment_end'             => r.nepa_public_comment_period_end_date__c,
+            'lead_agency'             => leadAgency,
+            'joint_lead_agency'       => r.nepa_joint_lead_agency__c,
+            'cooperating_agencies'    => r.nepa_cooperating_agencies__c,
+            'process_code'            => r.nepa_process_code__c,
+            'created_at'              => r.CreatedDate,
+            // ── Provenance ────────────────────────────────────────────────────
+            'record_owner_agency'     => r.nepa_record_owner_agency__c != null
+                                            ? r.nepa_record_owner_agency__c
+                                            : (r.nepa_related_project__r != null
+                                                ? r.nepa_related_project__r.nepa_record_owner_agency__c : null),
+            'data_source_agency'      => r.nepa_data_source_agency__c != null
+                                            ? r.nepa_data_source_agency__c
+                                            : (r.nepa_related_project__r != null
+                                                ? r.nepa_related_project__r.nepa_data_source_agency__c : null),
+            'data_source_system'      => r.nepa_data_source_system__c != null
+                                            ? r.nepa_data_source_system__c
+                                            : (r.nepa_related_project__r != null
+                                                ? r.nepa_related_project__r.nepa_data_source_system__c : null),
+            'data_record_version'     => '1.0',
+            'last_updated'            => r.LastModifiedDate,
+            'retrieved_timestamp'     => Datetime.now(),
+            // ── NEPA-operational (non-standard, nested per CEQ "other" field) ─
+            'other'                   => new Map<String, Object>{
+                'salesforce_id'           => r.Id,
+                'salesforce_name'         => r.Name,
+                'sla_due_date'            => r.nepa_sla_due_date__c,
+                'sla_overdue'             => r.nepa_sla_overdue__c,
+                'risk_score'              => r.nepa_risk_score__c,
+                'risk_tier'               => r.nepa_risk_tier__c,
+                'record_completeness_pct' => r.nepa_record_completeness__c,
+                'last_stage_transition'   => r.nepa_last_stage_transition__c,
+                'required_permits'        => toPermitDtos(r.Required_Permits__r)
+            }
         };
     }
 
@@ -303,10 +341,21 @@ global with sharing class NepaCeqExportService {
                        nepa_federal_unique_id__c, nepa_review_type__c,
                        nepa_process_status__c, nepa_process_stage__c,
                        nepa_agency_id__c, nepa_start_date__c,
-                       nepa_target_completion_date__c, nepa_sla_due_date__c,
-                       nepa_sla_overdue__c, nepa_risk_score__c, nepa_risk_tier__c,
+                       nepa_completion_date__c, nepa_target_completion_date__c,
+                       nepa_process_outcome__c, nepa_purpose_need__c, nepa_description__c,
+                       nepa_public_comment_period_start__c, nepa_public_comment_period_end_date__c,
+                       nepa_joint_lead_agency__c, nepa_cooperating_agencies__c,
+                       nepa_process_code__c, nepa_related_project__c,
+                       nepa_record_owner_agency__c, nepa_data_source_agency__c, nepa_data_source_system__c,
+                       nepa_sla_due_date__c, nepa_sla_overdue__c,
+                       nepa_risk_score__c, nepa_risk_tier__c,
                        nepa_record_completeness__c, nepa_last_stage_transition__c,
-                       LastModifiedDate,
+                       LastModifiedDate, CreatedDate,
+                       nepa_related_project__r.nepa_project_id__c,
+                       nepa_related_project__r.nepa_lead_agency__r.Name,
+                       nepa_related_project__r.nepa_record_owner_agency__c,
+                       nepa_related_project__r.nepa_data_source_agency__c,
+                       nepa_related_project__r.nepa_data_source_system__c,
                        (SELECT Id, Name, nepa_permit_status__c, nepa_lead_agency__c,
                                nepa_regulatory_citation__c, nepa_is_critical_path__c,
                                nepa_sla_due_date__c, nepa_expected_completion__c,
@@ -328,10 +377,21 @@ global with sharing class NepaCeqExportService {
                    nepa_federal_unique_id__c, nepa_review_type__c,
                    nepa_process_status__c, nepa_process_stage__c,
                    nepa_agency_id__c, nepa_start_date__c,
-                   nepa_target_completion_date__c, nepa_sla_due_date__c,
-                   nepa_sla_overdue__c, nepa_risk_score__c, nepa_risk_tier__c,
+                   nepa_completion_date__c, nepa_target_completion_date__c,
+                   nepa_process_outcome__c, nepa_purpose_need__c, nepa_description__c,
+                   nepa_public_comment_period_start__c, nepa_public_comment_period_end_date__c,
+                   nepa_joint_lead_agency__c, nepa_cooperating_agencies__c,
+                   nepa_process_code__c, nepa_related_project__c,
+                   nepa_record_owner_agency__c, nepa_data_source_agency__c, nepa_data_source_system__c,
+                   nepa_sla_due_date__c, nepa_sla_overdue__c,
+                   nepa_risk_score__c, nepa_risk_tier__c,
                    nepa_record_completeness__c, nepa_last_stage_transition__c,
-                   LastModifiedDate,
+                   LastModifiedDate, CreatedDate,
+                   nepa_related_project__r.nepa_project_id__c,
+                   nepa_related_project__r.nepa_lead_agency__r.Name,
+                   nepa_related_project__r.nepa_record_owner_agency__c,
+                   nepa_related_project__r.nepa_data_source_agency__c,
+                   nepa_related_project__r.nepa_data_source_system__c,
                    (SELECT Id, Name, nepa_permit_status__c, nepa_lead_agency__c,
                            nepa_regulatory_citation__c, nepa_is_critical_path__c,
                            nepa_sla_due_date__c, nepa_expected_completion__c,
