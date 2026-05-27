@@ -312,8 +312,8 @@ Salesforce does not expose a public API for setting app-default page assignments
 | Page | Object |
 |---|---|
 | `NEPA Process Record Page` | `IndividualApplication` |
-| `NEPA Project Record Page` | `Program` |
-| `NEPA Public Comment Record Page` | `PublicComplaint` |
+| `Program Record Page` | `Program` |
+| `Public Comment Record Page` | `PublicComplaint` |
 | `NEPA Visit Record Page` | `Visit` |
 
 **Why only 4?** App default is preferable to org default — it scopes the NEPA pages to just the NEPA Permitting app without affecting those objects in any other app in the org. The Metadata API cannot override assignments for objects that already have a platform default (standard and APS objects).
