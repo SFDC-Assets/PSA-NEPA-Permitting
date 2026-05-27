@@ -420,6 +420,8 @@ phase_3b_tabs() {
         --metadata "CustomTab:nepa_process_team_member__c" \
         --metadata "CustomTab:nepa_ce_library__c" \
         --metadata "CustomTab:nepa_required_permit__c" \
+        --metadata "CustomTab:nepa_decision_payload__c" \
+        --metadata "CustomTab:nepa_decision_log__c" \
         --target-org "$TARGET_ORG"
 }
 
