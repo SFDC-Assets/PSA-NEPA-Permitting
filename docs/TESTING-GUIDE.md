@@ -237,7 +237,7 @@ Two delivered Apex REST services expose the CEQ v1.2 payload:
 | `NepaCeqExportService` | `GET /services/apexrest/nepa/v1/processes/{id}` | Per-process export; used by cross-agency permit callouts |
 | `NepaCeqFullExportService` | `POST /services/apexrest/nepa/v1/export/project` | Full project graph — Project → Processes → all 8 child arrays |
 
-**Tests:** `NepaCeqExportServiceTest` (43 tests including 16 CEQ v1.2 compliance tests — see Section 20e) covers the per-process service. `NepaCeqFullExportServiceTest` (13 tests — see Section 20e2) covers the full-graph service including schema version, CEQ snake_case field names, nested comment structure, GIS at project and process level, permit DTOs, and 400/404 error guard rails. The steps below verify live endpoint routing and HTTP authentication.
+**Tests:** `NepaCeqExportServiceTest` (51 tests including 17 CEQ v1.2 compliance tests — see Section 20e) covers the per-process service. `NepaCeqFullExportServiceTest` (13 tests — see Section 20e2) covers the full-graph service including schema version, CEQ snake_case field names, nested comment structure, GIS at project and process level, permit DTOs, and 400/404 error guard rails. The steps below verify live endpoint routing and HTTP authentication.
 
 ### 17a. Call the Per-Process Export Endpoint
 
@@ -338,7 +338,7 @@ sf apex run test \
 - Key test classes that must pass:
   - `NepaApiComplianceTest` (55 tests)
   - `NepaBREConfigTest` (46 tests)
-  - `NepaCeqExportServiceTest` (43 tests — includes 16 CEQ v1.2 compliance tests + `@AuraEnabled` export tests + F-15 FPISC/YoY methods)
+  - `NepaCeqExportServiceTest` (51 tests — includes 17 CEQ v1.2 compliance tests + `@AuraEnabled` export tests + F-15 FPISC/YoY methods)
   - `NepaCeqFullExportServiceTest` (13 tests — full project graph export, schema version, CEQ field names)
   - `NepaEntity789Test` (25 tests)
   - `NepaStageGateTest` (17 tests)
@@ -354,7 +354,7 @@ sf apex run test \
 | `NepaValidationRuleTest` | 27 | Field validation rules — all 7 VRs incl. Comment_Period_Closed, AIDocRequiresSMEReview, Phase2_Climate_Gate |
 | `NepaEntity789Test` | 25 | GIS data, team members, legal structure |
 | `NepaPlaintiffIntelligenceTest` | 25 | Plaintiff risk flag, tribal dual-flag, comment-level flags, ICL/Shoshone-Paiute CMT, 200-record bulk |
-| `NepaCeqExportServiceTest` | 43 | REST export API, CEQ v1.2 snake_case compliance, `@AuraEnabled` export, provenance fields, lead_agency Account name, `other` nesting, null-field serialization, FPISC export (F-15), year-over-year trend |
+| `NepaCeqExportServiceTest` | 51 | REST export API, CEQ v1.2 snake_case compliance, `@AuraEnabled` export, provenance fields + IA-override fallback, lead_agency Account name, `other` nesting, permit DTO completeness + sort order, active-filter exclusion, null-field serialization, FPISC export (F-15), year-over-year trend |
 | `NepaCeqFullExportServiceTest` | 13 | Full project graph export: schema version v1.2, CEQ snake_case field names, nested comments under documents, GIS at project+process level, permit DTOs, multi-process, 400/404 guard rails |
 | `NepaCommentControllerTest` | 19 | Comment intake and LWC controller |
 | `NepaLitigationRiskScorerTest` | 19 | BRE risk scoring, tier thresholds, 200-record bulk, null project link |
@@ -440,7 +440,7 @@ sf apex run test \
   --wait 10
 ```
 
-**Expected:** All 43 tests pass. The 16 CEQ v1.2 compliance tests verify:
+**Expected:** All 51 tests pass. The 17 CEQ v1.2 compliance tests verify:
 
 | Test | Constraint verified |
 |---|---|
@@ -460,6 +460,7 @@ sf apex run test \
 | `compliance_slaOverdue_isBoolean` | `other.sla_overdue` serializes as Boolean, not String |
 | `generateCeqExport_singleProcess_returnsCompliantShape` | `@AuraEnabled` method returns CEQ v1.2 shape with `federal_id`, `data_record_version`, `other` block |
 | `generateCeqExport_allActive_returnsArray` | Null `processId` returns JSON array; each element has required CEQ keys |
+| `compliance_provenanceFields_iaLevelOverridesProject` | IA-level `record_owner_agency` / `data_source_agency` / `data_source_system` override Project-level fallback |
 
 ### 20e2. Targeted Test — CEQ Full Project Graph Export
 

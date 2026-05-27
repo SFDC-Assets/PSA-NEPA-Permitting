@@ -125,6 +125,26 @@ private class NepaCeqExportServiceTest {
         System.assertEquals('EA', (String) row.get('type'));
     }
 
+    @IsTest
+    static void getList_filterReviewType_noMatch_returnsEmpty() {
+        // CE — neither @TestSetup record is a CE; verifies the data:[] + totalCount:0 path
+        Map<String, String> params = new Map<String, String>{ 'reviewType' => 'CE' };
+        RestContext.request  = buildRequest('GET', '/services/apexrest/nepa/v1/processes/', params);
+        RestContext.response = new RestResponse();
+
+        Test.startTest();
+        NepaCeqExportService.doGet();
+        Test.stopTest();
+
+        System.assertEquals(200, RestContext.response.statusCode);
+        Map<String, Object> body = parseBody();
+        System.assertEquals(true, body.get('success'));
+        System.assertEquals(0, (Integer) body.get('totalCount'),
+            'totalCount must be 0 when no records match the filter');
+        List<Object> data = (List<Object>) body.get('data');
+        System.assertEquals(0, data.size(), 'data array must be empty when no records match');
+    }
+
     // ── GET list — filtered by status ────────────────────────────────────────
 
     @IsTest
@@ -192,6 +212,42 @@ private class NepaCeqExportServiceTest {
         Map<String, Object> body = parseBody();
         System.assertEquals(false, body.get('success'));
         System.assertEquals('INVALID_PARAM', (String) body.get('errorCode'));
+    }
+
+    @IsTest
+    static void getList_pageZero_defaultsToPage1() {
+        Map<String, String> params = new Map<String, String>{ 'page' => '0' };
+        RestContext.request  = buildRequest('GET', '/services/apexrest/nepa/v1/processes/', params);
+        RestContext.response = new RestResponse();
+
+        Test.startTest();
+        NepaCeqExportService.doGet();
+        Test.stopTest();
+
+        System.assertEquals(200, RestContext.response.statusCode);
+        Map<String, Object> body = parseBody();
+        System.assertEquals(1, (Integer) body.get('page'),
+            'page=0 must default to page 1');
+        System.assertEquals(2, ((List<Object>) body.get('data')).size(),
+            'page=0 must return full first page of results');
+    }
+
+    @IsTest
+    static void getList_nonNumericPage_defaultsToPage1() {
+        Map<String, String> params = new Map<String, String>{ 'page' => 'abc' };
+        RestContext.request  = buildRequest('GET', '/services/apexrest/nepa/v1/processes/', params);
+        RestContext.response = new RestResponse();
+
+        Test.startTest();
+        NepaCeqExportService.doGet();
+        Test.stopTest();
+
+        System.assertEquals(200, RestContext.response.statusCode);
+        Map<String, Object> body = parseBody();
+        System.assertEquals(1, (Integer) body.get('page'),
+            'non-numeric page must default to page 1');
+        System.assertEquals(2, ((List<Object>) body.get('data')).size(),
+            'non-numeric page must return full first page of results');
     }
 
     // ── GET list — pagination ─────────────────────────────────────────────────
@@ -470,6 +526,33 @@ private class NepaCeqExportServiceTest {
     }
 
     @IsTest
+    static void compliance_provenanceFields_iaLevelOverridesProject() {
+        // When the IA has its own provenance fields set, they must take precedence over
+        // the Project-level fallback values. toDto() uses IA value if non-null, else Project's.
+        IndividualApplication ia = [SELECT Id FROM IndividualApplication WHERE nepa_federal_unique_id__c = 'FUID-001' LIMIT 1];
+        ia.nepa_record_owner_agency__c = 'LMTF';
+        ia.nepa_data_source_agency__c  = 'LMTF-DOI';
+        ia.nepa_data_source_system__c  = 'IA-OVERRIDE';
+        update ia;
+
+        RestContext.request  = buildRequest('GET', '/services/apexrest/nepa/v1/processes/FUID-001', null);
+        RestContext.response = new RestResponse();
+
+        Test.startTest();
+        NepaCeqExportService.doGet();
+        Test.stopTest();
+
+        System.assertEquals(200, RestContext.response.statusCode);
+        Map<String, Object> dto = (Map<String, Object>) parseBody().get('data');
+        System.assertEquals('LMTF', (String) dto.get('record_owner_agency'),
+            'IA-level record_owner_agency must override Project fallback');
+        System.assertEquals('LMTF-DOI', (String) dto.get('data_source_agency'),
+            'IA-level data_source_agency must override Project fallback');
+        System.assertEquals('IA-OVERRIDE', (String) dto.get('data_source_system'),
+            'IA-level data_source_system must override Project fallback');
+    }
+
+    @IsTest
     static void compliance_parentProjectId_populatedFromRelatedProject() {
         RestContext.request  = buildRequest('GET', '/services/apexrest/nepa/v1/processes/FUID-001', null);
         RestContext.response = new RestResponse();
@@ -563,6 +646,72 @@ private class NepaCeqExportServiceTest {
         System.assert(firstPermit.containsKey('leadAgency'),    'permit DTO must contain leadAgency');
         System.assert(firstPermit.containsKey('isCriticalPath'), 'permit DTO must contain isCriticalPath');
         System.assert(firstPermit.containsKey('slaDueDate'),    'permit DTO must contain slaDueDate');
+    }
+
+    @IsTest
+    static void getSingle_withPermits_allPermitDtoFieldsPresent() {
+        IndividualApplication ia = [
+            SELECT Id FROM IndividualApplication
+            WHERE nepa_federal_unique_id__c = 'FUID-001' LIMIT 1
+        ];
+        nepa_required_permit__c p = NepaTestFactory.insertRequiredPermit(ia.Id, 'In Progress', true, Date.today().addDays(45));
+        p.nepa_regulatory_citation__c  = '33 USC 408';
+        p.nepa_expected_completion__c  = Date.today().addDays(60);
+        p.nepa_external_federal_id__c  = 'USACE-2026-001';
+        update p;
+
+        RestContext.request  = buildRequest('GET', '/services/apexrest/nepa/v1/processes/' + ia.Id, null);
+        RestContext.response = new RestResponse();
+
+        Test.startTest();
+        NepaCeqExportService.doGet();
+        Test.stopTest();
+
+        System.assertEquals(200, RestContext.response.statusCode);
+        Map<String, Object> dto   = (Map<String, Object>) parseBody().get('data');
+        Map<String, Object> other = (Map<String, Object>) dto.get('other');
+        Map<String, Object> permit = (Map<String, Object>) ((List<Object>) other.get('required_permits'))[0];
+
+        Set<String> expectedPermitKeys = new Set<String>{
+            'id', 'name', 'permitStatus', 'leadAgency', 'regulatoryCitation',
+            'isCriticalPath', 'slaDueDate', 'expectedCompletion',
+            'actualCompletion', 'externalFederalId', 'lastSynced'
+        };
+        List<String> missingKeys = new List<String>();
+        for (String key : expectedPermitKeys) {
+            if (!permit.containsKey(key)) { missingKeys.add(key); }
+        }
+        System.assertEquals(0, missingKeys.size(),
+            'permit DTO is missing keys: ' + String.join(missingKeys, ', '));
+        System.assertEquals('33 USC 408', (String) permit.get('regulatoryCitation'));
+        System.assertEquals('USACE-2026-001', (String) permit.get('externalFederalId'));
+    }
+
+    @IsTest
+    static void getSingle_withPermits_criticalPathSortedFirst() {
+        IndividualApplication ia = [
+            SELECT Id FROM IndividualApplication
+            WHERE nepa_federal_unique_id__c = 'FUID-001' LIMIT 1
+        ];
+        // Insert non-critical first, critical second — ORDER BY must flip them
+        NepaTestFactory.insertRequiredPermit(ia.Id, 'Not Started', false, null);
+        NepaTestFactory.insertRequiredPermit(ia.Id, 'In Progress', true, Date.today().addDays(30));
+
+        RestContext.request  = buildRequest('GET', '/services/apexrest/nepa/v1/processes/' + ia.Id, null);
+        RestContext.response = new RestResponse();
+
+        Test.startTest();
+        NepaCeqExportService.doGet();
+        Test.stopTest();
+
+        System.assertEquals(200, RestContext.response.statusCode);
+        Map<String, Object> dto   = (Map<String, Object>) parseBody().get('data');
+        List<Object> permits = (List<Object>) ((Map<String, Object>) dto.get('other')).get('required_permits');
+        System.assertEquals(2, permits.size());
+        System.assertEquals(true, (Boolean) ((Map<String, Object>) permits[0]).get('isCriticalPath'),
+            'Critical-path permit must sort first (ORDER BY nepa_is_critical_path__c DESC)');
+        System.assertEquals(false, (Boolean) ((Map<String, Object>) permits[1]).get('isCriticalPath'),
+            'Non-critical permit must sort second');
     }
 
     @IsTest
@@ -783,6 +932,42 @@ private class NepaCeqExportServiceTest {
         System.assert(first.containsKey('federal_id'),    'Each array element must have federal_id');
         System.assert(first.containsKey('data_record_version'), 'Each array element must have data_record_version');
         System.assert(first.containsKey('other'),         'Each array element must have other block');
+    }
+
+    @IsTest
+    static void generateCeqExport_singleProcess_includesPermits() {
+        IndividualApplication ia = [SELECT Id FROM IndividualApplication WHERE nepa_federal_unique_id__c = 'FUID-001' LIMIT 1];
+        NepaTestFactory.insertRequiredPermit(ia.Id, 'In Progress', true, Date.today().addDays(30));
+
+        Test.startTest();
+        String jsonOut = NepaCeqExportService.generateCeqExport(ia.Id);
+        Test.stopTest();
+
+        Map<String, Object> dto = (Map<String, Object>) JSON.deserializeUntyped(jsonOut);
+        List<Object> permits = (List<Object>) ((Map<String, Object>) dto.get('other')).get('required_permits');
+        System.assertEquals(1, permits.size(),
+            'generateCeqExport must include nested permits in the @AuraEnabled path');
+        Map<String, Object> permit = (Map<String, Object>) permits[0];
+        System.assert(permit.containsKey('id'),           'permit must have id in AuraEnabled export');
+        System.assert(permit.containsKey('isCriticalPath'), 'permit must have isCriticalPath in AuraEnabled export');
+    }
+
+    @IsTest
+    static void generateCeqExport_allActive_excludesCompletedRecords() {
+        // @TestSetup inserts a completed EA (ia2 with status='completed').
+        // generateCeqExport(null) filters WHERE status NOT IN ('Closed','Withdrawn','completed').
+        // The completed record must be absent from the result.
+        Test.startTest();
+        String jsonOut = NepaCeqExportService.generateCeqExport(null);
+        Test.stopTest();
+
+        List<Object> dtos = (List<Object>) JSON.deserializeUntyped(jsonOut);
+        for (Object o : dtos) {
+            Map<String, Object> dto = (Map<String, Object>) o;
+            String status = (String) dto.get('status');
+            System.assertNotEquals('completed', status,
+                'generateCeqExport(null) must not include completed processes; found status=' + status);
+        }
     }
 
     @IsTest
