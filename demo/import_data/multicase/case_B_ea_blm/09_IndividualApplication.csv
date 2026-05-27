@@ -1,0 +1,2 @@
+nepa_federal_unique_id__c,Status,Category,nepa_review_type__c,nepa_process_status__c,nepa_process_stage__c,nepa_risk_score__c,nepa_defensibility_score__c,nepa_project_sector__c,nepa_project_type__c,nepa_related_project__r.nepa_project_id__c,nepa_record_owner_agency__c,nepa_data_source_agency__c,nepa_data_source_system__c,nepa_data_record_version__c,nepa_climate_assessment_complete__c
+SAMPLE-E70EA3AD,Approved,Permit,EA,completed,Decision,52.30,88,Energy,Energy - Renewables,SAMPLE-E70EA3AD,Bureau of Land Management,Bureau of Land Management,nepadata/samples,1,TRUE

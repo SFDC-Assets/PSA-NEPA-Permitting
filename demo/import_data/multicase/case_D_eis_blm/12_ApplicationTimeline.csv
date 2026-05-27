@@ -1,0 +1,10 @@
+External_ID__c,Name,nepa_event_type__c,nepa_event_description__c,nepa_status__c,nepa_start_date__c
+SAMPLE_D_EIS_BLM_AT_01,NOI,NOI,Notice of Intent filed; NEPA scoping initiated.,Completed,2014-03-01
+SAMPLE_D_EIS_BLM_AT_02,Scoping Open,Scoping Open,Scoping period opened; public scoping meetings scheduled.,Completed,2014-03-31
+SAMPLE_D_EIS_BLM_AT_03,Scoping Complete,Scoping Complete,Scoping period closed; final scope of issues identified.,Completed,2014-05-30
+SAMPLE_D_EIS_BLM_AT_04,Draft EIS Published,Draft EIS Published,Draft Environmental Impact Statement published.,Completed,2015-03-01
+SAMPLE_D_EIS_BLM_AT_05,Comment Period Open,Comment Period Open,45-day public comment period on Draft EIS opened.,Completed,2015-03-01
+SAMPLE_D_EIS_BLM_AT_06,Comment Period Closed,Comment Period Closed,Public comment period on Draft EIS closed.,Completed,2015-04-15
+SAMPLE_D_EIS_BLM_AT_07,Final EIS Published,Final EIS Published,Final Environmental Impact Statement published.,Completed,2015-10-22
+SAMPLE_D_EIS_BLM_AT_08,ROD Issued,ROD Issued,Record of Decision signed; project approved.,Completed,2015-12-21
+SAMPLE_D_EIS_BLM_AT_09,Decision Issued,Decision Issued,Final agency decision recorded; project authorization complete.,Completed,2015-12-21

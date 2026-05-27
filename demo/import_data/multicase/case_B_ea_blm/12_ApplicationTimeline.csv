@@ -1,0 +1,10 @@
+External_ID__c,Name,nepa_event_type__c,nepa_event_description__c,nepa_status__c,nepa_start_date__c
+SAMPLE_B_EA_BLM_AT_01,Intake Complete,Intake Complete,Initial project application received and logged.,Completed,2011-03-01
+SAMPLE_B_EA_BLM_AT_02,Scoping Open,Scoping Open,Scoping period opened; public notice issued.,Completed,2011-03-22
+SAMPLE_B_EA_BLM_AT_03,Scoping Complete,Scoping Complete,Scoping period closed; issues and alternatives identified.,Completed,2011-04-21
+SAMPLE_B_EA_BLM_AT_04,EA Initiated,EA Initiated,Environmental Assessment preparation initiated.,Completed,2011-05-30
+SAMPLE_B_EA_BLM_AT_05,Draft EA Published,Draft EA Published,Draft Environmental Assessment published for public review.,Completed,2011-06-29
+SAMPLE_B_EA_BLM_AT_06,Comment Period Open,Comment Period Open,30-day public comment period opened.,Completed,2011-06-29
+SAMPLE_B_EA_BLM_AT_07,Comment Period Closed,Comment Period Closed,Public comment period closed; comments received and logged.,Completed,2011-07-29
+SAMPLE_B_EA_BLM_AT_08,FONSI Issued,FONSI Issued,Finding of No Significant Impact signed by Authorized Officer.,Completed,2011-09-27
+SAMPLE_B_EA_BLM_AT_09,Decision Issued,Decision Issued,Decision Record issued; project approved with mitigation measures.,Completed,2011-10-12

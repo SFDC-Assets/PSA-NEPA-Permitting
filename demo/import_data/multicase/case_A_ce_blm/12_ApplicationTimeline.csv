@@ -1,0 +1,6 @@
+External_ID__c,Name,nepa_event_type__c,nepa_event_description__c,nepa_status__c,nepa_start_date__c
+SAMPLE_A_CE_BLM_AT_01,Intake Complete,Intake Complete,Initial project application received and intake screening complete.,Completed,2018-03-01
+SAMPLE_A_CE_BLM_AT_02,Screening Complete,Screening Complete,Categorical Exclusion screening completed; no extraordinary circumstances identified.,Completed,2018-03-15
+SAMPLE_A_CE_BLM_AT_03,Analysis Complete,Analysis Complete,Informal agency consultation with resource staff completed.,Completed,2018-03-31
+SAMPLE_A_CE_BLM_AT_04,CE Determination Complete,CE Determination Complete,Categorical Exclusion determination finalized by Authorized Officer.,Completed,2018-04-30
+SAMPLE_A_CE_BLM_AT_05,Decision Issued,Decision Issued,Decision Record issued; project approved under CE.,Completed,2018-05-15
