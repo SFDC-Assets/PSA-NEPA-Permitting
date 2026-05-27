@@ -23,6 +23,8 @@
     <tabs>nepa_gis_data__c</tabs>
     <tabs>nepa_ce_library__c</tabs>
     <tabs>nepa_ar_export__c</tabs>
+    <tabs>nepa_decision_payload__c</tabs>
+    <tabs>nepa_decision_log__c</tabs>
     <tabs>nepa_process_team_member__c</tabs>
     <tabs>nepa_detected_protection_layer__c</tabs>
     <tabs>standard-Visit</tabs>

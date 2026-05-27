@@ -2952,11 +2952,11 @@
     </objectPermissions>
     <tabSettings>
         <tab>nepa_engagement__c</tab>
-        <visibility>Available</visibility>
+        <visibility>DefaultOn</visibility>
     </tabSettings>
     <tabSettings>
         <tab>nepa_litigation__c</tab>
-        <visibility>Available</visibility>
+        <visibility>DefaultOn</visibility>
     </tabSettings>
     <tabSettings>
         <tab>nepa_ar_export__c</tab>
@@ -2984,11 +2984,19 @@
     </tabSettings>
     <tabSettings>
         <tab>standard-Visit</tab>
-        <visibility>Available</visibility>
+        <visibility>DefaultOn</visibility>
     </tabSettings>
     <tabSettings>
         <tab>nepa_ce_library__c</tab>
-        <visibility>Available</visibility>
+        <visibility>DefaultOn</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>nepa_decision_payload__c</tab>
+        <visibility>DefaultOn</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>nepa_decision_log__c</tab>
+        <visibility>DefaultOn</visibility>
     </tabSettings>
     <tabSettings>
         <tab>nepa_required_permit__c</tab>
