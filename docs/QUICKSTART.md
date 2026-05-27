@@ -26,7 +26,7 @@ The deploy script automates nearly everything. The following steps still require
 
 | Step | What you'll do | When |
 |---|---|---|
-| **Lightning Record Page assignment** | Run `./scripts/assign-record-pages.sh <alias>` to set 4 standard/APS object pages (IndividualApplication, Program, PublicComplaint, Visit) as org default via Tooling API. The 5 custom-object pages (Engagement, Litigation, CE Library, Decision Payload, Decision Log) auto-assign on deploy. The remaining 10 pages auto-apply at deploy time. | After Step 3 (deploy), see Step 4d |
+| **Lightning Record Page assignment** | Run `./scripts/assign-record-pages.sh <alias>` to set 4 standard/APS object pages (IndividualApplication, Program, PublicComplaint, Visit) as the **NEPA Permitting app default** via Tooling API — does not affect org-wide defaults for other apps. The 5 custom-object pages (Engagement, Litigation, CE Library, Decision Payload, Decision Log) auto-assign on deploy. The remaining 10 pages auto-apply at deploy time. | After Step 3 (deploy), see Step 4d |
 | **Agency Named Credential URLs** | In Setup → Security → Named Credentials, update the 3 agency credentials (`NEPA_Agency_USACE`, `NEPA_Agency_USFWS`, `NEPA_Agency_BLM`) from placeholder hostnames to real agency NEPA API URLs | After Step 3 (deploy), see DEVELOPER_GUIDE.md Task 6 |
 | **ArcGIS API key** | Set `NEPA_Map_Config__mdt.ApiKey` to your ESRI key (Setup → Custom Metadata Types → NEPA Map Config → API Key → Edit). CSP Trusted Sites for ArcGIS are deployed automatically in Phase 6. | After Step 3 (deploy), see Step 4h |
 | **NAICS code data load** | 2,129 `NEPA_NAICS_Code__mdt` records loaded via Apex anonymous — verify with count query | After Step 3 (deploy), see Step 4i |
@@ -322,7 +322,7 @@ This uses the Tooling API to set 4 pages as org default for their standard/APS o
 
 The script is safe to re-run — it checks for existing assignments before creating new ones.
 
-**Why only 4?** The Metadata API cannot override org-default page assignments for objects that already have a platform default (standard and APS objects). The Tooling API `FlexiPageRegion` object is the only supported way to set this programmatically.
+**Why only 4, and why app default?** The Metadata API cannot override page assignments for objects that already have a platform default (standard and APS objects). App default is preferable to org default — it scopes the NEPA pages to just the NEPA Permitting app without replacing the default for those objects in any other app in the org. The Tooling API `FlexiPageRegion` object is the only supported way to set this programmatically.
 
 **The 5 custom-object pages auto-assign on deploy** because they are the sole RecordPage for their object and the object has no prior platform default:
 - `NEPA_Engagement_Record_Page` (`nepa_engagement__c`)
