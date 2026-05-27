@@ -37,7 +37,7 @@
         <label>NEPA Permit Matrix V1</label>
         <rank>1</rank>
         <startDate>2026-05-08T00:00:00.000Z</startDate>
-        <status>Active</status>
+        <status>Draft</status>
         <versionNumber>1</versionNumber>
     </versions>
 </DecisionMatrixDefinition>

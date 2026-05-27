@@ -312,9 +312,12 @@ def process_dm(
     is_enabled = cmv.get("IsEnabled", False)
     load_status = cmv.get("LoadProcessStatus")
 
-    if skip_existing and (current_status == "Active" or load_status == "Completed"):
+    # Only skip if rows are confirmed loaded (LoadProcessStatus=Completed).
+    # DMDV.Status=Active alone is not sufficient — the metadata deploy can
+    # activate the CMV before rows are inserted, leaving an empty active matrix.
+    if skip_existing and load_status == "Completed":
         print(
-            f"  [SKIP] {dmdv_dev_name} — already Active/Completed (use --no-skip to reload)"
+            f"  [SKIP] {dmdv_dev_name} — rows already loaded (use --no-skip to reload)"
         )
         return True
 
@@ -328,9 +331,11 @@ def process_dm(
     # Insert rows (only safe while CMV is NOT enabled)
     if is_enabled:
         print(
-            f"  [WARN] CMV is already enabled — cannot insert rows. "
-            "This DM was already activated. Skipping row load."
+            f"  [ERROR] CMV is already enabled (IsEnabled=True) but LoadProcessStatus={load_status}. "
+            "This means the DM was activated before rows were loaded (likely deployed as Active). "
+            "Redeploy the DM metadata as Draft, then re-run this script."
         )
+        return False
     else:
         inserted = 0
         errors = 0
