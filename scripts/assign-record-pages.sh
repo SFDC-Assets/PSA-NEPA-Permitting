@@ -49,7 +49,7 @@ skip() { echo "    – $1 (already set)"; }
 step "Assigning NEPA Lightning Record Pages as app default for $APP_DEV_NAME"
 echo "    Target org: $TARGET_ORG"
 
-ORG_JSON=$(sf org display --target-org "$TARGET_ORG" --json)
+ORG_JSON=$(sf org display --target-org "$TARGET_ORG" --json | sed 's/\x1b\[[0-9;]*m//g; s/[[:cntrl:]]//g')
 INSTANCE=$(echo "$ORG_JSON" | jq -r '.result.instanceUrl')
 TOKEN=$(echo "$ORG_JSON" | jq -r '.result.accessToken')
 TOOLING="$INSTANCE/services/data/v62.0/tooling"
