@@ -26,7 +26,7 @@ The deploy script automates nearly everything. The following steps still require
 
 | Step | What you'll do | When |
 |---|---|---|
-| **Lightning Record Page assignment** | Run `./scripts/assign-record-pages.sh <alias>` to set 4 standard/APS object pages (IndividualApplication, Program, PublicComplaint, Visit) as the **NEPA Permitting app default** via Tooling API — does not affect org-wide defaults for other apps. The 5 custom-object pages (Engagement, Litigation, CE Library, Decision Payload, Decision Log) auto-assign on deploy. The remaining 10 pages auto-apply at deploy time. | After Step 3 (deploy), see Step 4d |
+| **Lightning Record Page assignment** | Manually assign 4 standard/APS object pages as **NEPA Permitting app default** in Lightning App Builder (see Step 4d). The 5 custom-object pages auto-assign on deploy. The remaining 10 pages auto-apply at deploy time. | After Step 3 (deploy), see Step 4d |
 | **Agency Named Credential URLs** | In Setup → Security → Named Credentials, update the 3 agency credentials (`NEPA_Agency_USACE`, `NEPA_Agency_USFWS`, `NEPA_Agency_BLM`) from placeholder hostnames to real agency NEPA API URLs | After Step 3 (deploy), see DEVELOPER_GUIDE.md Task 6 |
 | **ArcGIS API key** | Set `NEPA_Map_Config__mdt.ApiKey` to your ESRI key (Setup → Custom Metadata Types → NEPA Map Config → API Key → Edit). CSP Trusted Sites for ArcGIS are deployed automatically in Phase 6. | After Step 3 (deploy), see Step 4h |
 | **NAICS code data load** | 2,129 `NEPA_NAICS_Code__mdt` records loaded via Apex anonymous — verify with count query | After Step 3 (deploy), see Step 4i |
@@ -304,25 +304,21 @@ The most common transient error is `UNKNOWN_EXCEPTION` on the Salesforce pod —
 
 ### 4d. Assign Lightning Record Pages
 
-Run the script:
+Salesforce does not expose a public API for setting app-default page assignments on standard or APS objects. These 4 pages must be assigned manually in Lightning App Builder:
 
-```bash
-chmod +x scripts/assign-record-pages.sh
-./scripts/assign-record-pages.sh NEPADEV
-```
-
-This uses the Tooling API to set 4 pages as org default for their standard/APS objects:
+1. Go to **Setup → Lightning App Builder** (or open the quick link: `<your-org>/lightning/setup/AppBuilder/home`)
+2. For each page below, click **Edit**, then **Activation → Assign as App Default → NEPA Permitting**:
 
 | Page | Object |
 |---|---|
-| `IndividualApplication_Record_Page` | `IndividualApplication` |
-| `Program_Record_Page` | `Program` |
-| `Public_Comment_Record_Page` | `PublicComplaint` |
-| `NEPA_Visit_Record_Page` | `Visit` |
+| `NEPA Process Record Page` | `IndividualApplication` |
+| `NEPA Project Record Page` | `Program` |
+| `NEPA Public Comment Record Page` | `PublicComplaint` |
+| `NEPA Visit Record Page` | `Visit` |
 
-The script is safe to re-run — it checks for existing assignments before creating new ones.
+Running `./scripts/assign-record-pages.sh <alias>` will print this same checklist with a direct link to your org's Lightning App Builder.
 
-**Why only 4, and why app default?** The Metadata API cannot override page assignments for objects that already have a platform default (standard and APS objects). App default is preferable to org default — it scopes the NEPA pages to just the NEPA Permitting app without replacing the default for those objects in any other app in the org. The Tooling API `FlexiPageRegion` object is the only supported way to set this programmatically.
+**Why only 4?** App default is preferable to org default — it scopes the NEPA pages to just the NEPA Permitting app without affecting those objects in any other app in the org. The Metadata API cannot override assignments for objects that already have a platform default (standard and APS objects).
 
 **The 5 custom-object pages auto-assign on deploy** because they are the sole RecordPage for their object and the object has no prior platform default:
 - `NEPA_Engagement_Record_Page` (`nepa_engagement__c`)
