@@ -285,6 +285,70 @@ global with sharing class NepaCeqExportService {
         }
     }
 
+    // ── CEQ Data Standard export ──────────────────────────────────────────────
+
+    /**
+     * Returns CEQ Data Standard v1.2 JSON for one process (or all active processes).
+     * Reuses the same DTO shape as the REST endpoint so the export is machine-readable
+     * by CEQ tooling that already consumes /nepa/v1/processes/.
+     *
+     * @param processId  IndividualApplication Id to scope to one record; null = all active
+     * @return           JSON string — array when processId is null, single object when scoped
+     */
+    @AuraEnabled(cacheable=false)
+    public static String generateCeqExport(Id processId) {
+        if (processId != null) {
+            List<IndividualApplication> records = [
+                SELECT Id, Name,
+                       nepa_federal_unique_id__c, nepa_review_type__c,
+                       nepa_process_status__c, nepa_process_stage__c,
+                       nepa_agency_id__c, nepa_start_date__c,
+                       nepa_target_completion_date__c, nepa_sla_due_date__c,
+                       nepa_sla_overdue__c, nepa_risk_score__c, nepa_risk_tier__c,
+                       nepa_record_completeness__c, nepa_last_stage_transition__c,
+                       LastModifiedDate,
+                       (SELECT Id, Name, nepa_permit_status__c, nepa_lead_agency__c,
+                               nepa_regulatory_citation__c, nepa_is_critical_path__c,
+                               nepa_sla_due_date__c, nepa_expected_completion__c,
+                               nepa_actual_completion__c, nepa_external_federal_id__c,
+                               nepa_last_synced__c
+                        FROM Required_Permits__r
+                        ORDER BY nepa_is_critical_path__c DESC, Name ASC)
+                FROM IndividualApplication
+                WHERE Id = :processId
+                WITH SECURITY_ENFORCED
+                LIMIT 1
+            ];
+            if (records.isEmpty()) { return JSON.serialize(new Map<String, Object>{ 'error' => 'Record not found' }); }
+            return JSON.serialize(toDto(records[0]));
+        }
+
+        List<IndividualApplication> records = [
+            SELECT Id, Name,
+                   nepa_federal_unique_id__c, nepa_review_type__c,
+                   nepa_process_status__c, nepa_process_stage__c,
+                   nepa_agency_id__c, nepa_start_date__c,
+                   nepa_target_completion_date__c, nepa_sla_due_date__c,
+                   nepa_sla_overdue__c, nepa_risk_score__c, nepa_risk_tier__c,
+                   nepa_record_completeness__c, nepa_last_stage_transition__c,
+                   LastModifiedDate,
+                   (SELECT Id, Name, nepa_permit_status__c, nepa_lead_agency__c,
+                           nepa_regulatory_citation__c, nepa_is_critical_path__c,
+                           nepa_sla_due_date__c, nepa_expected_completion__c,
+                           nepa_actual_completion__c, nepa_external_federal_id__c,
+                           nepa_last_synced__c
+                    FROM Required_Permits__r
+                    ORDER BY nepa_is_critical_path__c DESC, Name ASC)
+            FROM IndividualApplication
+            WHERE nepa_process_status__c NOT IN ('Closed', 'Withdrawn', 'completed')
+            WITH SECURITY_ENFORCED
+            ORDER BY nepa_start_date__c DESC NULLS LAST, Id ASC
+        ];
+        List<Map<String, Object>> dtos = new List<Map<String, Object>>();
+        for (IndividualApplication r : records) { dtos.add(toDto(r)); }
+        return JSON.serialize(dtos);
+    }
+
     // ── FPISC / FAST-41 export ─────────────────────────────────────────────────
 
     /** Per-process row for FPISC dashboard export. */

@@ -2072,6 +2072,12 @@
         </itemInstances>
         <itemInstances>
             <componentInstance>
+                <componentName>c:nepaCeqExportButton</componentName>
+                <identifier>ia_nepa_ceq_export_button</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
                     <value>ia-risk-cols</value>
