@@ -248,6 +248,73 @@ def load_csv_rows(csv_path, input_cols, output_cols):
     return rows
 
 
+def create_new_dmdv_version(base_url, token, dmd_dev_name, existing_metadata):
+    """Create a new Draft DMDV for an existing DecisionMatrixDefinition.
+
+    Used when the V1 CMV is already enabled (locked) with no rows — typically
+    because the metadata deploy activated it before Phase 5b-data could run.
+    Returns (new_dmdv_id, error_message).
+    """
+    import http.client
+
+    # Build new version metadata from existing, bumping versionNumber and forcing Draft
+    new_meta = {k: v for k, v in existing_metadata.items() if k not in ("urls", "status", "versionNumber")}
+    new_meta["status"] = "Draft"
+    new_ver_num_val = (existing_metadata.get("versionNumber") or 1) + 1
+    new_meta["versionNumber"] = new_ver_num_val
+    new_meta["rank"] = (existing_metadata.get("rank") or 1) + 1
+    new_meta["decisionMatrixDefinition"] = dmd_dev_name
+    # startDate is required
+    if not new_meta.get("startDate"):
+        new_meta["startDate"] = "2025-01-01"
+
+    full_name = f"{dmd_dev_name}_V{new_ver_num_val}"
+    new_meta["label"] = full_name.replace("_", " ")
+
+    payload = json.dumps({"FullName": full_name, "Metadata": new_meta}).encode()
+    parsed = urllib.parse.urlparse(base_url)
+    conn = http.client.HTTPSConnection(parsed.hostname)
+    path = "/services/data/v62.0/tooling/sobjects/DecisionMatrixDefinitionVersion/"
+    try:
+        conn.request("POST", path, body=payload,
+                     headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"})
+        resp = conn.getresponse()
+        data = json.loads(resp.read())
+        if isinstance(data, list):
+            return None, "; ".join(e.get("message", str(e)) for e in data)
+        if data.get("success"):
+            return data["id"], None
+        return None, str(data.get("errors", data))
+    except Exception as e:
+        return None, str(e)
+    finally:
+        conn.close()
+
+
+def deactivate_cmv(base_url, token, cmv_id):
+    """Disable a CalculationMatrixVersion via REST PATCH. Returns (success, error)."""
+    import http.client
+
+    payload = json.dumps({"IsEnabled": False}).encode()
+    parsed = urllib.parse.urlparse(base_url)
+    conn = http.client.HTTPSConnection(parsed.hostname)
+    path = f"/services/data/v62.0/sobjects/CalculationMatrixVersion/{cmv_id}"
+    try:
+        conn.request("PATCH", path, body=payload,
+                     headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"})
+        resp = conn.getresponse()
+        body = resp.read()
+        if resp.status in (200, 204):
+            return True, None
+        data = json.loads(body) if body else []
+        msg = data[0].get("message", str(data)) if isinstance(data, list) else str(data)
+        return False, msg
+    except Exception as e:
+        return False, str(e)
+    finally:
+        conn.close()
+
+
 def activate_dmdv(base_url, token, dmdv_id, current_metadata):
     """Activate a DecisionMatrixDefinitionVersion via Tooling API PATCH."""
     metadata = dict(current_metadata)
@@ -328,14 +395,76 @@ def process_dm(
         print(f"    [DRY-RUN] would insert {len(rows)} rows then activate")
         return True
 
-    # Insert rows (only safe while CMV is NOT enabled)
+    # Insert rows (only safe while CMV is NOT enabled).
+    # Recovery path: if CMV is already enabled with no rows (metadata deploy activated it
+    # before Phase 5b-data ran), create a new Draft version, load rows into it, activate
+    # it, then deactivate the old empty version.
     if is_enabled:
         print(
-            f"  [ERROR] CMV is already enabled (IsEnabled=True) but LoadProcessStatus={load_status}. "
-            "This means the DM was activated before rows were loaded (likely deployed as Active). "
-            "Redeploy the DM metadata as Draft, then re-run this script."
+            f"  [WARN] CMV IsEnabled=True but LoadProcessStatus={load_status} — "
+            "DM was activated before rows were loaded. Creating new Draft version to recover..."
         )
-        return False
+        dmd_dev_name = dmdv_dev_name.rsplit("_V", 1)[0]  # strip _V1 suffix
+        new_dmdv_id, err = create_new_dmdv_version(base_url, token, dmd_dev_name, current_metadata)
+        if err:
+            print(f"  [ERROR] Could not create new DMDV version: {err}")
+            return False
+        print(f"    Created new Draft DMDV: {new_dmdv_id}")
+
+        # Get the new CMV (unlocked)
+        new_cmv_recs = soql_query(
+            base_url, token,
+            f"SELECT Id FROM CalculationMatrixVersion WHERE DecisionMatrixDefinitionVerId = '{new_dmdv_id}'"
+        )
+        if not new_cmv_recs:
+            print(f"  [ERROR] No CMV linked to new DMDV {new_dmdv_id}")
+            return False
+        cmv_id = new_cmv_recs[0]["Id"]
+        old_cmv_id = cmv["Id"]
+        print(f"    New CMV: {cmv_id}  (old empty CMV: {old_cmv_id})")
+
+        # Insert rows into the new unlocked CMV
+        inserted = 0
+        errors = 0
+        for input_data, output_data in rows:
+            row_name = build_row_name(input_data)
+            rec_id, success, errs = rest_post(
+                base_url, token, "CalculationMatrixRow",
+                {"CalculationMatrixVersionId": cmv_id, "Name": row_name,
+                 "InputData": json.dumps(input_data), "OutputData": json.dumps(output_data)},
+            )
+            if success:
+                inserted += 1
+            else:
+                errors += 1
+                if errors <= 3:
+                    print(f"    [ROW-ERROR] {input_data}: {errs}")
+        print(f"    Inserted {inserted}/{len(rows)} rows into new version ({errors} errors)")
+        if errors > 0 and errors == len(rows):
+            print(f"  [FAIL] All rows failed — not activating new version")
+            return False
+
+        # Activate new version
+        new_dmdv_rec = tooling_query(
+            base_url, token,
+            f"SELECT Id, Status, Metadata FROM DecisionMatrixDefinitionVersion WHERE Id = '{new_dmdv_id}'"
+        )
+        new_meta = new_dmdv_rec[0].get("Metadata", {}) if new_dmdv_rec else {}
+        ok, err = activate_dmdv(base_url, token, new_dmdv_id, new_meta)
+        if not ok:
+            print(f"  [ERROR] Failed to activate new DMDV: {err}")
+            return False
+        print(f"    Activated new DMDV version")
+
+        # Deactivate the old empty CMV
+        ok, err = deactivate_cmv(base_url, token, old_cmv_id)
+        if ok:
+            print(f"    Deactivated old empty CMV {old_cmv_id}")
+        else:
+            print(f"    [WARN] Could not deactivate old CMV (non-fatal): {err}")
+
+        print(f"  [OK] {dmdv_dev_name} — recovered: {inserted} rows loaded in new version")
+        return True
     else:
         inserted = 0
         errors = 0
