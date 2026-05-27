@@ -11,6 +11,7 @@
             <valueSetDefinition>
                 <sorted>false</sorted>
                 <value><fullName>Agriculture and Natural Resource Management</fullName><default>false</default><label>Agriculture and Natural Resource Management</label></value>
+                <value><fullName>Public Lands Management</fullName><default>false</default><label>Public Lands Management</label></value>
                 <value><fullName>Energy Production and Management</fullName><default>false</default><label>Energy Production and Management</label></value>
                 <value><fullName>Transportation and Infrastructure</fullName><default>false</default><label>Transportation and Infrastructure</label></value>
                 <value><fullName>Land Development and Urban Planning</fullName><default>false</default><label>Land Development and Urban Planning</label></value>

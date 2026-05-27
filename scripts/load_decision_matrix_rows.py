@@ -7,8 +7,9 @@ Replaces the manual BRE UI workflow:
 
 Correct sequence per Salesforce BRE platform behavior:
   1. Query the deployed DMDV (status=Draft, CMV.IsEnabled=False after Metadata API deploy)
-  2. Insert CalculationMatrixRows while the version is NOT enabled
-     (rows cannot be modified on an enabled CMV)
+  2. POST rows via the Connect API (/connect/omnistudio/decision-matrices/.../rows)
+     — this is the only path that triggers BRE indexing and sets LoadProcessStatus=Completed.
+     Direct CalculationMatrixRow REST inserts are SOQL-visible but BRE-invisible.
   3. Activate the DMDV via Tooling API PATCH (Metadata.status="Active")
      → This sets CMV.IsEnabled=True and DMDV.Status=Active atomically
 
@@ -28,11 +29,9 @@ Options:
 
 import argparse
 import csv
-import hashlib
 import json
 import os
 import subprocess
-import sys
 import urllib.parse
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -176,34 +175,6 @@ def tooling_patch(base_url, token, sobject, record_id, payload):
         conn.close()
 
 
-def rest_post(base_url, token, sobject, payload):
-    """POST a record via Data REST API. Returns (id, success, errors)."""
-    import http.client
-
-    body = json.dumps(payload).encode()
-    parsed = urllib.parse.urlparse(base_url)
-    conn = http.client.HTTPSConnection(parsed.hostname)
-    path = f"/services/data/v62.0/sobjects/{sobject}"
-    try:
-        conn.request(
-            "POST",
-            path,
-            body=body,
-            headers={
-                "Authorization": f"Bearer {token}",
-                "Content-Type": "application/json",
-            },
-        )
-        resp = conn.getresponse()
-        data = json.loads(resp.read())
-        if isinstance(data, list):
-            return None, False, [e.get("message", str(e)) for e in data]
-        return data.get("id"), data.get("success", False), data.get("errors", [])
-    except Exception as e:
-        return None, False, [str(e)]
-    finally:
-        conn.close()
-
 
 def soql_query(base_url, token, soql):
     """Run a Data REST API SOQL query and return records."""
@@ -221,30 +192,81 @@ def soql_query(base_url, token, soql):
         conn.close()
 
 
-def build_row_name(input_data: dict) -> str:
-    """Build an MD5 row name matching Salesforce's format (sorted keys, compact JSON)."""
-    compact = json.dumps(input_data, sort_keys=True, separators=(",", ":"))
-    return hashlib.md5(compact.encode()).hexdigest()
+def connect_post_rows(base_url, token, matrix_id, version_id, rows, batch_size=200):
+    """POST rows to a Decision Matrix version via the Connect API.
+
+    Uses /connect/omnistudio/decision-matrices/{matrixId}/versions/{versionId}/rows,
+    the official documented endpoint that triggers BRE indexing and sets
+    LoadProcessStatus=Completed (unlike direct CalculationMatrixRow REST inserts
+    which are SOQL-visible but invisible to the BRE evaluation engine).
+
+    rows: list of flat dicts merging input and output column values, e.g.
+          [{"CircuitKey": "4th", "Points": "20", "MatchScore": "100"}]
+    Returns (inserted_count, error_messages_list).
+    """
+    import http.client
+
+    inserted = 0
+    errors = []
+    parsed = urllib.parse.urlparse(base_url)
+    path = (
+        f"/services/data/v62.0/connect/omnistudio/decision-matrices"
+        f"/{matrix_id}/versions/{version_id}/rows"
+    )
+
+    for batch_start in range(0, len(rows), batch_size):
+        batch = rows[batch_start : batch_start + batch_size]
+        payload = json.dumps(
+            {"rows": [{"rowData": {k: str(v) for k, v in r.items()}} for r in batch]}
+        ).encode()
+        conn = http.client.HTTPSConnection(parsed.hostname)
+        try:
+            conn.request(
+                "POST",
+                path,
+                body=payload,
+                headers={
+                    "Authorization": f"Bearer {token}",
+                    "Content-Type": "application/json",
+                },
+            )
+            resp = conn.getresponse()
+            body = resp.read()
+            if resp.status in (200, 201):
+                inserted += len(batch)
+            else:
+                try:
+                    data = json.loads(body)
+                    if isinstance(data, list):
+                        msg = "; ".join(e.get("message", str(e)) for e in data)
+                    else:
+                        msg = data.get("message") or str(data)[:300]
+                except Exception:
+                    msg = body[:300].decode(errors="replace")
+                errors.append(
+                    f"batch {batch_start}-{batch_start + len(batch) - 1}: "
+                    f"HTTP {resp.status}: {msg}"
+                )
+        except Exception as e:
+            errors.append(f"batch {batch_start}-{batch_start + len(batch) - 1}: {e}")
+        finally:
+            conn.close()
+
+    return inserted, errors
+
 
 
 def load_csv_rows(csv_path, input_cols, output_cols):
-    """Read a CSV file and return list of (input_data, output_data) dicts."""
+    """Read a CSV file and return list of flat row dicts (all columns as strings).
+
+    The Connect API accepts rowData values as strings; no numeric coercion needed.
+    """
+    all_cols = input_cols + output_cols
     rows = []
     with open(csv_path, newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            input_data = {k: row[k] for k in input_cols if k in row}
-            output_data = {}
-            for k in output_cols:
-                if k not in row:
-                    continue
-                val = row[k]
-                # Coerce numeric outputs to numbers
-                try:
-                    output_data[k] = int(val) if "." not in val else float(val)
-                except (ValueError, TypeError):
-                    output_data[k] = val
-            rows.append((input_data, output_data))
+            rows.append({k: row[k] for k in all_cols if k in row})
     return rows
 
 
@@ -257,12 +279,34 @@ def create_new_dmdv_version(base_url, token, dmd_dev_name, existing_metadata):
     """
     import http.client
 
-    # Build new version metadata from existing, bumping versionNumber and forcing Draft
+    # Build new version metadata from existing, bumping versionNumber and forcing Draft.
+    # Strip isWildcardColumn/wildcardValue from columns — Decision Matrices are exact-match
+    # only; those fields break all DM lookups by causing the platform to ignore row data.
     new_meta = {k: v for k, v in existing_metadata.items() if k not in ("urls", "status", "versionNumber")}
+    if "columns" in new_meta:
+        cleaned_cols = []
+        for col in new_meta["columns"]:
+            cleaned_col = {k: v for k, v in col.items() if k not in ("isWildcardColumn", "wildcardValue")}
+            cleaned_cols.append(cleaned_col)
+        new_meta["columns"] = cleaned_cols
     new_meta["status"] = "Draft"
-    new_ver_num_val = (existing_metadata.get("versionNumber") or 1) + 1
+    # Find the highest existing versionNumber/rank for this DMD to avoid duplicates
+    existing_versions = tooling_query(
+        base_url, token,
+        f"SELECT VersionNumber, Metadata FROM DecisionMatrixDefinitionVersion "
+        f"WHERE DecisionMatrixDefinition.DeveloperName = '{dmd_dev_name}' "
+        f"ORDER BY VersionNumber DESC LIMIT 1",
+    )
+    if existing_versions:
+        latest_meta = existing_versions[0].get("Metadata") or {}
+        max_ver = existing_versions[0].get("VersionNumber") or 1
+        max_rank = latest_meta.get("rank") or 1
+    else:
+        max_ver = existing_metadata.get("versionNumber") or 1
+        max_rank = existing_metadata.get("rank") or 1
+    new_ver_num_val = max_ver + 1
     new_meta["versionNumber"] = new_ver_num_val
-    new_meta["rank"] = (existing_metadata.get("rank") or 1) + 1
+    new_meta["rank"] = max_rank + 1
     new_meta["decisionMatrixDefinition"] = dmd_dev_name
     # startDate is required
     if not new_meta.get("startDate"):
@@ -363,11 +407,11 @@ def process_dm(
     current_status = dmdv.get("Status", "")
     current_metadata = dmdv.get("Metadata") or {}
 
-    # Query corresponding CMV
+    # Query corresponding CMV (include CalculationMatrixId for Connect API path)
     cmv_recs = soql_query(
         base_url,
         token,
-        f"SELECT Id, Name, IsEnabled, LoadProcessStatus FROM CalculationMatrixVersion "
+        f"SELECT Id, CalculationMatrixId, IsEnabled, LoadProcessStatus FROM CalculationMatrixVersion "
         f"WHERE DecisionMatrixDefinitionVerId = '{dmdv_id}'",
     )
     if not cmv_recs:
@@ -376,6 +420,7 @@ def process_dm(
 
     cmv = cmv_recs[0]
     cmv_id = cmv["Id"]
+    matrix_id = cmv["CalculationMatrixId"]
     is_enabled = cmv.get("IsEnabled", False)
     load_status = cmv.get("LoadProcessStatus")
 
@@ -395,9 +440,9 @@ def process_dm(
         print(f"    [DRY-RUN] would insert {len(rows)} rows then activate")
         return True
 
-    # Insert rows (only safe while CMV is NOT enabled).
+    # Insert rows via Connect API (triggers BRE indexing and sets LoadProcessStatus=Completed).
     # Recovery path: if CMV is already enabled with no rows (metadata deploy activated it
-    # before Phase 5b-data ran), create a new Draft version, load rows into it, activate
+    # before rows were loaded), create a new Draft version, load rows into it, activate
     # it, then deactivate the old empty version.
     if is_enabled:
         print(
@@ -411,36 +456,25 @@ def process_dm(
             return False
         print(f"    Created new Draft DMDV: {new_dmdv_id}")
 
-        # Get the new CMV (unlocked)
+        # Get the new CMV and its parent CalculationMatrix ID
         new_cmv_recs = soql_query(
             base_url, token,
-            f"SELECT Id FROM CalculationMatrixVersion WHERE DecisionMatrixDefinitionVerId = '{new_dmdv_id}'"
+            f"SELECT Id, CalculationMatrixId FROM CalculationMatrixVersion "
+            f"WHERE DecisionMatrixDefinitionVerId = '{new_dmdv_id}'"
         )
         if not new_cmv_recs:
             print(f"  [ERROR] No CMV linked to new DMDV {new_dmdv_id}")
             return False
-        cmv_id = new_cmv_recs[0]["Id"]
+        new_cmv_id = new_cmv_recs[0]["Id"]
+        new_matrix_id = new_cmv_recs[0]["CalculationMatrixId"]
         old_cmv_id = cmv["Id"]
-        print(f"    New CMV: {cmv_id}  (old empty CMV: {old_cmv_id})")
+        print(f"    New CMV: {new_cmv_id}  (old empty CMV: {old_cmv_id})")
 
-        # Insert rows into the new unlocked CMV
-        inserted = 0
-        errors = 0
-        for input_data, output_data in rows:
-            row_name = build_row_name(input_data)
-            rec_id, success, errs = rest_post(
-                base_url, token, "CalculationMatrixRow",
-                {"CalculationMatrixVersionId": cmv_id, "Name": row_name,
-                 "InputData": json.dumps(input_data), "OutputData": json.dumps(output_data)},
-            )
-            if success:
-                inserted += 1
-            else:
-                errors += 1
-                if errors <= 3:
-                    print(f"    [ROW-ERROR] {input_data}: {errs}")
-        print(f"    Inserted {inserted}/{len(rows)} rows into new version ({errors} errors)")
-        if errors > 0 and errors == len(rows):
+        inserted, errs = connect_post_rows(base_url, token, new_matrix_id, new_cmv_id, rows)
+        for e in errs[:3]:
+            print(f"    [ROW-ERROR] {e}")
+        print(f"    Inserted {inserted}/{len(rows)} rows into new version ({len(errs)} errors)")
+        if errs and inserted == 0:
             print(f"  [FAIL] All rows failed — not activating new version")
             return False
 
@@ -466,29 +500,11 @@ def process_dm(
         print(f"  [OK] {dmdv_dev_name} — recovered: {inserted} rows loaded in new version")
         return True
     else:
-        inserted = 0
-        errors = 0
-        for input_data, output_data in rows:
-            row_name = build_row_name(input_data)
-            rec_id, success, errs = rest_post(
-                base_url,
-                token,
-                "CalculationMatrixRow",
-                {
-                    "CalculationMatrixVersionId": cmv_id,
-                    "Name": row_name,
-                    "InputData": json.dumps(input_data),
-                    "OutputData": json.dumps(output_data),
-                },
-            )
-            if success:
-                inserted += 1
-            else:
-                errors += 1
-                if errors <= 3:
-                    print(f"    [ROW-ERROR] {input_data}: {errs}")
-        print(f"    Inserted {inserted}/{len(rows)} rows ({errors} errors)")
-        if errors > 0 and errors == len(rows):
+        inserted, errs = connect_post_rows(base_url, token, matrix_id, cmv_id, rows)
+        for e in errs[:3]:
+            print(f"    [ROW-ERROR] {e}")
+        print(f"    Inserted {inserted}/{len(rows)} rows ({len(errs)} errors)")
+        if errs and inserted == 0:
             print(f"  [FAIL] All rows failed — not activating {dmdv_dev_name}")
             return False
 

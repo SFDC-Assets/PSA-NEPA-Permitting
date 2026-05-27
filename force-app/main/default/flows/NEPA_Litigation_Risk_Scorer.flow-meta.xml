@@ -460,7 +460,7 @@ IF({!var_PermitGapPoints} &gt; 0,
     <formulas>
         <name>formula_SectorCircuitKey</name>
         <dataType>String</dataType>
-        <expression>IF( NOT(ISBLANK(TEXT({!Get_RelatedProject.nepa_primary_sector__c}))) &amp;&amp; NOT(ISBLANK({!Get_RelatedProject.nepa_circuit__c})), TEXT({!Get_RelatedProject.nepa_primary_sector__c}) &amp; &quot;|&quot; &amp; {!Get_RelatedProject.nepa_circuit__c}, &quot;Default|Default&quot; )</expression>
+        <expression>IF( NOT(ISBLANK(TEXT({!Get_RelatedProject.nepa_primary_sector__c}))) &amp;&amp; NOT(ISBLANK({!Get_RelatedProject.nepa_circuit__c})), CASE(TEXT({!Get_RelatedProject.nepa_primary_sector__c}), &quot;Energy Production and Management&quot;, &quot;Energy&quot;, &quot;Transportation and Infrastructure&quot;, &quot;Transportation&quot;, &quot;Water and Waste Management&quot;, &quot;Water&quot;, &quot;Military, Defense, and Emergency Response&quot;, &quot;Military&quot;, &quot;Agriculture and Natural Resource Management&quot;, &quot;Agriculture&quot;, &quot;Public Lands Management&quot;, &quot;PublicLands&quot;, &quot;Materials and Manufacturing&quot;, &quot;Materials&quot;, TEXT({!Get_RelatedProject.nepa_primary_sector__c})) &amp; &quot;|&quot; &amp; {!Get_RelatedProject.nepa_circuit__c}, &quot;Default|Default&quot; )</expression>
     </formulas>
     <label>NEPA Litigation Risk Scorer</label>
     <loops>
