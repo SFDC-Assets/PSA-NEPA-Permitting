@@ -316,8 +316,6 @@ Salesforce does not expose a public API for setting app-default page assignments
 | `NEPA Public Comment Record Page` | `PublicComplaint` |
 | `NEPA Visit Record Page` | `Visit` |
 
-Running `./scripts/assign-record-pages.sh <alias>` will print this same checklist with a direct link to your org's Lightning App Builder.
-
 **Why only 4?** App default is preferable to org default — it scopes the NEPA pages to just the NEPA Permitting app without affecting those objects in any other app in the org. The Metadata API cannot override assignments for objects that already have a platform default (standard and APS objects).
 
 **The 5 custom-object pages auto-assign on deploy** because they are the sole RecordPage for their object and the object has no prior platform default:
