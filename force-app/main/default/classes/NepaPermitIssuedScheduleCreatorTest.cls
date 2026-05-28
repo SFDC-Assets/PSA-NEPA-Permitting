@@ -4,9 +4,16 @@ private class NepaPermitIssuedScheduleCreatorTest {
 
     @TestSetup
     static void setup() {
+        SObject loc = Schema.getGlobalDescribe().get('Location').newSObject();
+        loc.put('Name', 'PISC Test Site');
+        insert loc;
+
         Program proj = NepaTestFactory.insertProgram(
             'PISC-TEST-001', 'Permit Issued Schedule Creator Test', 'BLM'
         );
+        proj.nepa_location__c = (Id) loc.get('Id');
+        update proj;
+
         IndividualApplication ia = NepaTestFactory.makeProcess(proj.Id, 'EA', null, null);
         insert ia;
     }
@@ -20,19 +27,28 @@ private class NepaPermitIssuedScheduleCreatorTest {
         ];
     }
 
+    // Returns the first active CMT permit type, or null if none are seeded.
+    private static String getMatchingPermitType() {
+        List<NEPA_Inspection_Schedule__mdt> schedules = [
+            SELECT Permit_Type__c
+            FROM NEPA_Inspection_Schedule__mdt
+            WHERE Active__c = true
+            LIMIT 1
+        ];
+        return schedules.isEmpty() ? null : schedules[0].Permit_Type__c;
+    }
+
     @IsTest
     static void permitStatusChangedToIssued_createsVisits() {
-        List<NEPA_Inspection_Schedule__mdt> schedules = [
-            SELECT Id FROM NEPA_Inspection_Schedule__mdt WHERE Active__c = true LIMIT 1
-        ];
-        if (schedules.isEmpty()) {
-            return;
-        }
+        String permitType = getMatchingPermitType();
+        if (permitType == null) { return; }
 
         IndividualApplication ia = getIA();
-        nepa_required_permit__c permit = NepaTestFactory.insertRequiredPermit(
+        nepa_required_permit__c permit = NepaTestFactory.makeRequiredPermit(
             ia.Id, 'Not Started', true, Date.today().addDays(90)
         );
+        permit.nepa_permit_type__c = permitType;
+        insert permit;
 
         Test.startTest();
         permit.nepa_permit_status__c = 'Issued';
@@ -57,17 +73,14 @@ private class NepaPermitIssuedScheduleCreatorTest {
 
     @IsTest
     static void permitAlreadyIssued_onInsert_createsVisits() {
-        List<NEPA_Inspection_Schedule__mdt> schedules = [
-            SELECT Id FROM NEPA_Inspection_Schedule__mdt WHERE Active__c = true LIMIT 1
-        ];
-        if (schedules.isEmpty()) {
-            return;
-        }
+        String permitType = getMatchingPermitType();
+        if (permitType == null) { return; }
 
         IndividualApplication ia = getIA();
         nepa_required_permit__c permit = NepaTestFactory.makeRequiredPermit(
             ia.Id, 'Issued', true, Date.today().addDays(90)
         );
+        permit.nepa_permit_type__c = permitType;
 
         Test.startTest();
         insert permit;
@@ -120,17 +133,15 @@ private class NepaPermitIssuedScheduleCreatorTest {
 
     @IsTest
     static void permitIssued_visitFieldsPopulatedCorrectly() {
-        List<NEPA_Inspection_Schedule__mdt> schedules = [
-            SELECT Id FROM NEPA_Inspection_Schedule__mdt WHERE Active__c = true LIMIT 1
-        ];
-        if (schedules.isEmpty()) {
-            return;
-        }
+        String permitType = getMatchingPermitType();
+        if (permitType == null) { return; }
 
         IndividualApplication ia = getIA();
-        nepa_required_permit__c permit = NepaTestFactory.insertRequiredPermit(
+        nepa_required_permit__c permit = NepaTestFactory.makeRequiredPermit(
             ia.Id, 'Not Started', true, Date.today().addDays(90)
         );
+        permit.nepa_permit_type__c = permitType;
+        insert permit;
 
         Test.startTest();
         permit.nepa_permit_status__c = 'Issued';
@@ -140,7 +151,7 @@ private class NepaPermitIssuedScheduleCreatorTest {
         List<Visit> visits = [
             SELECT Id, nepa_discipline__c, nepa_auto_generated__c, nepa_hard_gate__c,
                    nepa_state_risk_context__c, nepa_trigger_layer__c,
-                   nepa_process__c
+                   nepa_process__c, PlaceId, PlannedVisitStartTime, Status
             FROM Visit WHERE nepa_process__c = :ia.Id
         ];
         System.assertNotEquals(0, visits.size(), 'Expected Visit records after permit issued');
@@ -156,21 +167,29 @@ private class NepaPermitIssuedScheduleCreatorTest {
                 'nepa_trigger_layer__c must be null — this field is for GIS-triggered visits only, not permit-issued visits');
             System.assertEquals(ia.Id, v.nepa_process__c,
                 'Visit must be linked to the parent IndividualApplication');
+            System.assertNotEquals(null, v.PlaceId,
+                'PlaceId must be set from Program.nepa_location__c');
+            System.assertNotEquals(null, v.PlannedVisitStartTime,
+                'PlannedVisitStartTime must be set from issued date + Frequency_Days__c');
+            System.assertEquals('Planned', v.Status,
+                'Status must be Planned on newly created inspection visits');
         }
     }
 
     @IsTest
     static void bulkPath_multiplePermits_createsVisits() {
-        List<NEPA_Inspection_Schedule__mdt> schedules = [
-            SELECT Id FROM NEPA_Inspection_Schedule__mdt WHERE Active__c = true LIMIT 1
-        ];
-        if (schedules.isEmpty()) {
-            return;
-        }
+        String permitType = getMatchingPermitType();
+        if (permitType == null) { return; }
+
+        SObject bulkLoc = Schema.getGlobalDescribe().get('Location').newSObject();
+        bulkLoc.put('Name', 'PISC Bulk Test Site');
+        insert bulkLoc;
 
         Program proj = NepaTestFactory.insertProgram(
             'PISC-BULK-001', 'Permit Issued Bulk Test', 'BLM'
         );
+        proj.nepa_location__c = (Id) bulkLoc.get('Id');
+        update proj;
 
         List<IndividualApplication> ias = new List<IndividualApplication>();
         for (Integer i = 0; i < 5; i++) {
@@ -180,9 +199,11 @@ private class NepaPermitIssuedScheduleCreatorTest {
 
         List<nepa_required_permit__c> permits = new List<nepa_required_permit__c>();
         for (IndividualApplication ia : ias) {
-            permits.add(NepaTestFactory.makeRequiredPermit(
+            nepa_required_permit__c p = NepaTestFactory.makeRequiredPermit(
                 ia.Id, 'Not Started', true, Date.today().addDays(90)
-            ));
+            );
+            p.nepa_permit_type__c = permitType;
+            permits.add(p);
         }
         insert permits;
 

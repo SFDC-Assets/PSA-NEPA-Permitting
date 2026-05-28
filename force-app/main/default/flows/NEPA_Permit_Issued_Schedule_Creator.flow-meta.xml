@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>Record-triggered after-save on nepa_required_permit__c. Fires when nepa_permit_status__c changes to "Issued". Queries NEPA_Inspection_Schedule__mdt by Permit_Type__c match, then creates a series of Visit inspection tasks with pre-populated inspection type and due dates. State risk context (from NEPA_State_Risk_Profile__mdt via parent IA) is written to Visit.nepa_state_risk_context__c for display in the mobile OmniScript. Fault connector routes to NEPA_Error_Logger per ADR 003.</description>
+    <description>Record-triggered after-save on nepa_required_permit__c. Fires when nepa_permit_status__c changes to "Issued". Queries NEPA_Inspection_Schedule__mdt by Permit_Type__c match, then creates a series of Visit inspection tasks with pre-populated inspection type and due dates. PlaceId sourced from parent Program.nepa_location__c; PlannedVisitStartTime = issued date + Frequency_Days__c. State risk context (from NEPA_State_Risk_Profile__mdt via parent IA) is written to Visit.nepa_state_risk_context__c. Fault connector routes to NEPA_Error_Logger per ADR 003.</description>
     <label>NEPA Permit Issued Schedule Creator</label>
     <processType>AutoLaunchedFlow</processType>
     <status>Active</status>
@@ -45,6 +45,31 @@
         <isOutput>false</isOutput>
         <value>
             <elementReference>$Record.nepa_process__c</elementReference>
+        </value>
+    </variables>
+    <variables>
+        <name>var_ProgramId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_LocationId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>var_DaysOffset</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <scale>0</scale>
+        <value>
+            <numberValue>0.0</numberValue>
         </value>
     </variables>
     <variables>
@@ -92,6 +117,12 @@
         <dataType>Date</dataType>
         <expression>TODAY()</expression>
     </formulas>
+    <!-- PlannedVisitStartTime = issued date + per-schedule offset days (var_DaysOffset set in loop) -->
+    <formulas>
+        <name>formula_PlannedStart</name>
+        <dataType>DateTime</dataType>
+        <expression>DATETIMEVALUE(TEXT(TODAY() + var_DaysOffset) &amp; " 08:00:00")</expression>
+    </formulas>
 
     <!-- RECORD LOOKUPS -->
     <recordLookups>
@@ -133,7 +164,7 @@
         <locationY>264</locationY>
         <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Get_StateRiskProfile</targetReference>
+            <targetReference>Get_ParentProgram</targetReference>
         </connector>
         <faultConnector>
             <targetReference>Handle_Error</targetReference>
@@ -151,6 +182,39 @@
         <outputAssignments>
             <assignToReference>var_StateCode</assignToReference>
             <field>nepa_state_code__c</field>
+        </outputAssignments>
+        <outputAssignments>
+            <assignToReference>var_ProgramId</assignToReference>
+            <field>nepa_related_project__c</field>
+        </outputAssignments>
+        <storeOutputAutomatically>false</storeOutputAutomatically>
+    </recordLookups>
+
+    <recordLookups>
+        <name>Get_ParentProgram</name>
+        <label>Get Parent Program (for Location)</label>
+        <locationX>352</locationX>
+        <locationY>318</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_StateRiskProfile</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Handle_Error</targetReference>
+        </faultConnector>
+        <filterLogic>1</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>var_ProgramId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Program</object>
+        <outputAssignments>
+            <assignToReference>var_LocationId</assignToReference>
+            <field>nepa_location__c</field>
         </outputAssignments>
         <storeOutputAutomatically>false</storeOutputAutomatically>
     </recordLookups>
@@ -217,7 +281,7 @@
         <collectionReference>Get_InspectionSchedules</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
-            <targetReference>Build_Visit</targetReference>
+            <targetReference>Set_DaysOffset</targetReference>
         </nextValueConnector>
         <noMoreValuesConnector>
             <targetReference>Create_Visits</targetReference>
@@ -225,6 +289,24 @@
     </loops>
 
     <!-- ASSIGNMENTS -->
+    <!-- Set the per-iteration offset so formula_PlannedStart can reference it -->
+    <assignments>
+        <name>Set_DaysOffset</name>
+        <label>Set Days Offset from Schedule</label>
+        <locationX>528</locationX>
+        <locationY>426</locationY>
+        <assignmentItems>
+            <assignToReference>var_DaysOffset</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_Schedules.Frequency_Days__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Build_Visit</targetReference>
+        </connector>
+    </assignments>
+
     <assignments>
         <name>Build_Visit</name>
         <label>Build Visit Record</label>
@@ -263,6 +345,27 @@
             <operator>Assign</operator>
             <value>
                 <booleanValue>false</booleanValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_SingleVisit.Status</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Planned</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_SingleVisit.PlaceId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>var_LocationId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>var_SingleVisit.PlannedVisitStartTime</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formula_PlannedStart</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
