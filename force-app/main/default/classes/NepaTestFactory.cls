@@ -271,6 +271,23 @@ public class NepaTestFactory {
         return e;
     }
 
+    /**
+     * Inserts a certified Tribal Consultation engagement event linked to a process.
+     * Sets nepa_consultation_certified__c = true to clear the VR-005 stage gate.
+     */
+    public static nepa_engagement__c insertCertifiedTribalConsultation(Id processId) {
+        nepa_engagement__c e = new nepa_engagement__c();
+        e.nepa_process__c                  = processId;
+        e.nepa_engagement_type__c          = 'Tribal Consultation';
+        e.nepa_location_format__c          = 'In-Person';
+        e.nepa_start_datetime__c           = DateTime.now().addDays(-10);
+        e.nepa_end_datetime__c             = DateTime.now().addDays(-10).addHours(2);
+        e.nepa_public_access__c            = false;
+        e.nepa_consultation_certified__c   = true;
+        insert e;
+        return e;
+    }
+
     // ── ApplicationTimeline ───────────────────────────────────────────────────
 
     /**

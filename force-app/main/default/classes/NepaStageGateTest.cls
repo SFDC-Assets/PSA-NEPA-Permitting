@@ -254,6 +254,43 @@ private class NepaStageGateTest {
         }
     }
 
+    // ── VR-005: Tribal Consultation Hard Gate ────────────────────────────────
+
+    @IsTest
+    static void stageGate_vr005_tribalFlagNoConsultation_blocksFinalEIS() {
+        Program proj = getProgram();
+        IndividualApplication ia = NepaTestFactory.insertProcess(proj.Id, 'EIS', null, null);
+        ia.nepa_tribal_plaintiff_flag__c = true;
+        update ia;
+
+        ia.nepa_process_stage__c = 'Final EIS Preparation';
+        try {
+            update ia;
+            System.assert(false, 'Expected DmlException from VR_005');
+        } catch (DmlException e) {
+            String msg = e.getMessage();
+            System.assert(
+                msg.contains('tribal') || msg.contains('Tribal') || msg.contains('consultation') || msg.contains('Consultation'),
+                'VR_005 error message must reference tribal consultation; got: ' + msg);
+        }
+    }
+
+    @IsTest
+    static void stageGate_vr005_certifiedConsultation_allowsFinalEIS() {
+        Program proj = getProgram();
+        IndividualApplication ia = NepaTestFactory.insertProcess(proj.Id, 'EIS', null, null);
+        ia.nepa_tribal_plaintiff_flag__c = true;
+        update ia;
+
+        NepaTestFactory.insertCertifiedTribalConsultation(ia.Id);
+
+        ia.nepa_process_stage__c = 'Final EIS Preparation';
+        update ia;
+
+        IndividualApplication result = [SELECT nepa_process_stage__c FROM IndividualApplication WHERE Id = :ia.Id];
+        System.assertEquals('Final EIS Preparation', result.nepa_process_stage__c);
+    }
+
     @IsTest
     static void stageGate_baseline_reviewTypeFirstSet_stampsTargetDate() {
         Program proj = getProgram();

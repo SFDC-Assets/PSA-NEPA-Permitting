@@ -221,6 +221,13 @@
 #     use storeOutputAutomatically if preferred, but explicit outputParameters work
 #     for all types and should be preferred for clarity and cross-type safety.
 #
+# 22. Rollup Summary fields (e.g., nepa_tribal_consultation_count__c on IndividualApplication)
+#     must deploy in Phase 2 (objects/fields) before any flow that reads them deploys in Phase 8.
+#     The NEPA_Stage_Gate VR-005 gate reads nepa_tribal_consultation_count__c at runtime; if
+#     the field is missing the flow silently skips the condition (null ≤ 0 evaluates true) and
+#     the gate never fires. Phase 2 deploys the full objects/ directory which includes this field.
+#     No change to phase order is needed — Phase 2 already runs before Phase 8.
+#
 # 19. Text field length for formula-populated fields:
 #     Flow formula values written to Text fields fail silently when the output string
 #     exceeds the field's length. The DML exception is caught by any faultConnector on

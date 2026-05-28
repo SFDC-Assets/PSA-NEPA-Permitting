@@ -118,6 +118,18 @@
     </customErrors>
 
     <customErrors>
+        <name>Error_VR005</name>
+        <label>VR-005 Tribal Consultation Not Certified</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <description>VR-005: Blocks stage advance to Final EIS Preparation or Record of Decision when a tribal plaintiff flag is set but no certified Tribal Consultation engagement exists. Citation: NHPA Section 106; EO 13175.</description>
+        <customErrorMessages>
+            <errorMessage>Tribal consultation certification required before advancing to Final EIS or Record of Decision. Create a Tribal Consultation engagement event and check Consultation Certified. See EO 13175 and NHPA Section 106.</errorMessage>
+            <isFieldError>false</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+
+    <customErrors>
         <name>Error_VR004</name>
         <label>VR-004 ESA Consultation Open</label>
         <locationX>0</locationX>
@@ -300,6 +312,41 @@
     </decisions>
 
     <decisions>
+        <name>Decision_VR005_TribalGate</name>
+        <label>VR-005: Tribal Consultation Certified?</label>
+        <description>Blocks stage advance to Final EIS Preparation or Record of Decision when nepa_tribal_plaintiff_flag__c is true and no certified Tribal Consultation engagement exists (nepa_tribal_consultation_count__c = 0).</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Tribal Gate Cleared or Not Applicable</defaultConnectorLabel>
+        <defaultConnector>
+            <targetReference>Assign_StageTransitionTimestamp</targetReference>
+        </defaultConnector>
+        <rules>
+            <name>VR005_TribalNotCertified</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_tribal_plaintiff_flag__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><booleanValue>true</booleanValue></rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>formula_TribalGateStage</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue><booleanValue>true</booleanValue></rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.nepa_tribal_consultation_count__c</leftValueReference>
+                <operator>LessThanOrEqualTo</operator>
+                <rightValue><numberValue>0</numberValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Error_VR005</targetReference>
+            </connector>
+            <label>Tribal Flag Set + Blocking Stage + No Certified Consultation</label>
+        </rules>
+    </decisions>
+
+    <decisions>
         <name>Decision_VR004_ESAGate</name>
         <label>VR-004: Decision Issued with Open ESA Consultation?</label>
         <description>Blocks stage advance to Decision Issued when an EA or EIS process has an unresolved ESA Section 7 consultation.</description>
@@ -307,7 +354,7 @@
         <locationY>0</locationY>
         <defaultConnectorLabel>ESA Cleared or Not Applicable</defaultConnectorLabel>
         <defaultConnector>
-            <targetReference>Assign_StageTransitionTimestamp</targetReference>
+            <targetReference>Decision_VR005_TribalGate</targetReference>
         </defaultConnector>
         <rules>
             <name>VR004_ESAOpenOnDecision</name>
@@ -333,6 +380,16 @@
             <label>Decision Issued + EA/EIS + ESA Not Cleared</label>
         </rules>
     </decisions>
+
+    <formulas>
+        <name>formula_TribalGateStage</name>
+        <description>VR-005 guard: true when the target stage requires tribal consultation certification (Final EIS Preparation or Record of Decision).</description>
+        <dataType>Boolean</dataType>
+        <expression>OR(
+  ISPICKVAL({!$Record.nepa_process_stage__c}, "Final EIS Preparation"),
+  ISPICKVAL({!$Record.nepa_process_stage__c}, "Record of Decision")
+)</expression>
+    </formulas>
 
     <formulas>
         <name>formula_ESANotCleared</name>

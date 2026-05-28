@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_consultation_certified__c</fullName>
+    <description>Marks this Tribal Consultation engagement event as formally certified by the responsible agency official. Required to clear the VR-005 tribal stage gate on the parent IndividualApplication before advancing to Final EIS Preparation or Record of Decision.</description>
+    <inlineHelpText>Check when the agency official has formally certified that government-to-government tribal consultation requirements are met for this process. Required before advancing to Final EIS or ROD.</inlineHelpText>
+    <defaultValue>false</defaultValue>
+    <label>Consultation Certified</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>
