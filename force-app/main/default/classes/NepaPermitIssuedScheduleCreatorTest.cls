@@ -40,12 +40,19 @@ private class NepaPermitIssuedScheduleCreatorTest {
         Test.stopTest();
 
         List<Visit> visits = [
-            SELECT Id FROM Visit WHERE nepa_process__c = :ia.Id
+            SELECT Id, nepa_discipline__c, nepa_auto_generated__c,
+                   nepa_state_risk_context__c, nepa_trigger_layer__c
+            FROM Visit WHERE nepa_process__c = :ia.Id
         ];
-        // Flow may not be deployed in this org — skip assertion rather than block CI
-        if (visits.isEmpty()) { return; }
-        System.assert(visits.size() > 0,
+        System.assertNotEquals(0, visits.size(),
             'Visits must be created when permit status changes to Issued');
+        Visit v = visits[0];
+        System.assertEquals(true, v.nepa_auto_generated__c,
+            'Visit must be flagged as auto-generated');
+        System.assertNotEquals(null, v.nepa_discipline__c,
+            'Visit must have nepa_discipline__c populated from Inspection_Type__c');
+        System.assertEquals(null, v.nepa_trigger_layer__c,
+            'Visit must not have nepa_trigger_layer__c set — that field is for GIS-triggered visits only');
     }
 
     @IsTest
@@ -69,9 +76,7 @@ private class NepaPermitIssuedScheduleCreatorTest {
         List<Visit> visits = [
             SELECT Id FROM Visit WHERE nepa_process__c = :ia.Id
         ];
-        // Flow may not be deployed in this org — skip assertion rather than block CI
-        if (visits.isEmpty()) { return; }
-        System.assert(visits.size() > 0,
+        System.assertNotEquals(0, visits.size(),
             'Visits must be created when a permit is inserted with status Issued');
     }
 
@@ -111,6 +116,47 @@ private class NepaPermitIssuedScheduleCreatorTest {
         ];
         System.assertEquals(0, visits.size(),
             'No Visits must be created when no NEPA_Inspection_Schedule__mdt matches the permit type');
+    }
+
+    @IsTest
+    static void permitIssued_visitFieldsPopulatedCorrectly() {
+        List<NEPA_Inspection_Schedule__mdt> schedules = [
+            SELECT Id FROM NEPA_Inspection_Schedule__mdt WHERE Active__c = true LIMIT 1
+        ];
+        if (schedules.isEmpty()) {
+            return;
+        }
+
+        IndividualApplication ia = getIA();
+        nepa_required_permit__c permit = NepaTestFactory.insertRequiredPermit(
+            ia.Id, 'Not Started', true, Date.today().addDays(90)
+        );
+
+        Test.startTest();
+        permit.nepa_permit_status__c = 'Issued';
+        update permit;
+        Test.stopTest();
+
+        List<Visit> visits = [
+            SELECT Id, nepa_discipline__c, nepa_auto_generated__c, nepa_hard_gate__c,
+                   nepa_state_risk_context__c, nepa_trigger_layer__c,
+                   nepa_process__c
+            FROM Visit WHERE nepa_process__c = :ia.Id
+        ];
+        System.assertNotEquals(0, visits.size(), 'Expected Visit records after permit issued');
+
+        for (Visit v : visits) {
+            System.assertEquals(true, v.nepa_auto_generated__c,
+                'nepa_auto_generated__c must be true on flow-created visits');
+            System.assertEquals(false, v.nepa_hard_gate__c,
+                'nepa_hard_gate__c must be false on permit-issued visits');
+            System.assertNotEquals(null, v.nepa_discipline__c,
+                'nepa_discipline__c must be populated from NEPA_Inspection_Schedule__mdt.Inspection_Type__c');
+            System.assertEquals(null, v.nepa_trigger_layer__c,
+                'nepa_trigger_layer__c must be null — this field is for GIS-triggered visits only, not permit-issued visits');
+            System.assertEquals(ia.Id, v.nepa_process__c,
+                'Visit must be linked to the parent IndividualApplication');
+        }
     }
 
     @IsTest
@@ -160,9 +206,7 @@ private class NepaPermitIssuedScheduleCreatorTest {
         List<Visit> visits = [
             SELECT Id FROM Visit WHERE nepa_process__c IN :iaIds
         ];
-        // Flow may not be deployed in this org — skip assertion rather than block CI
-        if (visits.isEmpty()) { return; }
-        System.assert(visits.size() > 0,
+        System.assertNotEquals(0, visits.size(),
             'Visits must be created across multiple permits updated to Issued in bulk');
     }
 }
