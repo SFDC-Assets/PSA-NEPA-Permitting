@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>Record-triggered after-save on nepa_required_permit__c. Fires when nepa_permit_status__c changes to "Issued". Queries NEPA_Inspection_Schedule__mdt by Permit_Type__c match, then creates a series of Visit inspection tasks with pre-populated statutory authority, inspection type, and due dates. State risk context (from NEPA_State_Risk_Profile__mdt via parent IA) is written to Visit.nepa_trigger_layer__c for display in the mobile OmniScript. Fault connector routes to NEPA_Error_Logger per ADR 003.</description>
+    <description>Record-triggered after-save on nepa_required_permit__c. Fires when nepa_permit_status__c changes to "Issued". Queries NEPA_Inspection_Schedule__mdt by Permit_Type__c match, then creates a series of Visit inspection tasks with pre-populated inspection type and due dates. State risk context (from NEPA_State_Risk_Profile__mdt via parent IA) is written to Visit.nepa_state_risk_context__c for display in the mobile OmniScript. Fault connector routes to NEPA_Error_Logger per ADR 003.</description>
     <label>NEPA Permit Issued Schedule Creator</label>
     <processType>AutoLaunchedFlow</processType>
     <status>Active</status>
@@ -245,10 +245,10 @@
             </value>
         </assignmentItems>
         <assignmentItems>
-            <assignToReference>var_SingleVisit.nepa_trigger_layer__c</assignToReference>
+            <assignToReference>var_SingleVisit.nepa_state_risk_context__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>Loop_Schedules.Statutory_Authority__c</elementReference>
+                <elementReference>var_StateWarning</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
