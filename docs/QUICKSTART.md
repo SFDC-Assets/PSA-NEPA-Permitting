@@ -730,7 +730,7 @@ sf data query --query "SELECT Id, Name, nepa_risk_score__c, nepa_risk_tier__c FR
 sf data query --query "SELECT COUNT() FROM nepa_required_permit__c WHERE nepa_process__r.nepa_federal_unique_id__c = 'IDI-38709'" --target-org NEPADEV
 ```
 
-Expected: 1 IA record with `nepa_risk_score__c > 0`, and 6+ required permits.
+Expected: 1 IA record with `nepa_risk_score__c > 0`, and 4 required permits (DEMO_RP_001: CWA §402 NPDES Issued/EPA, DEMO_RP_002: CWA §404 In Progress/USACE, plus 2 additional permits from earlier load steps).
 
 **Clean up demo data:**
 

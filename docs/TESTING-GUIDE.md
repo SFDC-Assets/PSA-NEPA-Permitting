@@ -602,12 +602,12 @@ sf apex run test \
   --wait 10
 ```
 
-**Expected:** Visit records are auto-created when `nepa_permit_status__c` changes to `Issued` on a `nepa_required_permit__c` record. `nepa_discipline__c` populated from `NEPA_Inspection_Schedule__mdt.Inspection_Type__c`; `nepa_trigger_layer__c` populated from `Statutory_Authority__c`; `nepa_auto_generated__c = true`. No Visits created when status is not `Issued`.
+**Expected:** Visit records are auto-created when `nepa_permit_status__c` changes to `Issued` on a `nepa_required_permit__c` record. `nepa_discipline__c` populated from `NEPA_Inspection_Schedule__mdt.Inspection_Type__c`; `nepa_state_risk_context__c` populated from `NEPA_State_Risk_Profile__mdt.Field_Inspector_Warning__c` (state risk briefing text for the permit's parent IA state); `nepa_auto_generated__c = true`. No Visits created when status is not `Issued`.
 
 **Manual smoke test:**
 1. Open a `nepa_required_permit__c` record where `nepa_permit_type__c` matches a seeded `NEPA_Inspection_Schedule__mdt` record (e.g., "CWA Section 402 NPDES Construction")
 2. Change `nepa_permit_status__c` to `Issued` and save
-3. Navigate to the related Visits list — confirm Visit records created with `nepa_auto_generated__c = true`, `nepa_discipline__c` populated, `nepa_trigger_layer__c` containing the CFR citation
+3. Navigate to the related Visits list — confirm Visit records created with `nepa_auto_generated__c = true`, `nepa_discipline__c` populated, `nepa_state_risk_context__c` containing the state risk briefing text
 
 ---
 
