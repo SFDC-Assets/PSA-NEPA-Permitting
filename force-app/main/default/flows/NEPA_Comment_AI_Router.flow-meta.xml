@@ -16,7 +16,7 @@
         <name>Call_EJ_Detector</name>
         <label>Run EJ Detector</label>
         <locationX>176</locationX>
-        <locationY>107</locationY>
+        <locationY>215</locationY>
         <actionName>NepaCommentEJDetector</actionName>
         <actionType>apex</actionType>
         <connector>
@@ -42,15 +42,49 @@
     </actionCalls>
 
     <!-- ============================================================
+         ELEMENT 0: NULL GUARD — skip processing if comment body is blank.
+         The EJ Detector Apex action has required=true on commentBody;
+         passing a null/blank value throws a platform-level error before
+         Apex runs. Comments with no body are marked Queued so the triage
+         agent can handle them (or a human can fill in the body later).
+
          ELEMENT 2: DECISION — EJ TRIGGERS DETECTED?
          Routes EJ/tribal comments to the deterministic router;
          non-EJ comments are queued for AI classification.
     ============================================================ -->
     <decisions>
+        <name>Decision_HasCommentBody</name>
+        <label>Comment Body Present?</label>
+        <locationX>176</locationX>
+        <locationY>107</locationY>
+        <defaultConnector>
+            <targetReference>Update_Status_Queued</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No body — skip to Queued</defaultConnectorLabel>
+        <rules>
+            <name>HasBody</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.nepa_comment_body__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>false</booleanValue></rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.nepa_comment_body__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue><stringValue></stringValue></rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Call_EJ_Detector</targetReference>
+            </connector>
+            <label>Has comment body</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Decision_EJ_Detected</name>
         <label>EJ Triggers Detected?</label>
         <locationX>176</locationX>
-        <locationY>215</locationY>
+        <locationY>323</locationY>
         <defaultConnector>
             <targetReference>Update_Status_Queued</targetReference>
         </defaultConnector>
@@ -83,7 +117,7 @@
         <name>Call_EJTribal_Router</name>
         <label>Route to EJ Tribal Coordinator</label>
         <locationX>176</locationX>
-        <locationY>323</locationY>
+        <locationY>431</locationY>
         <flowName>NEPA_EJTribal_Router</flowName>
         <inputAssignments>
             <name>inp_CommentId</name>
@@ -128,7 +162,7 @@
     </subflows>
 
     <!-- ============================================================
-         ELEMENT 4: UPDATE STATUS = QUEUED (non-EJ path)
+         ELEMENT 4: UPDATE STATUS = QUEUED (non-EJ path, or no body)
          Marks the comment for async AI classification by the
          NEPA_Comment_Triage agent. No AI action is taken here;
          status = Queued signals to the agent that triage is needed.
@@ -138,7 +172,7 @@
         <name>Update_Status_Queued</name>
         <label>Set Triage Status Queued</label>
         <locationX>440</locationX>
-        <locationY>215</locationY>
+        <locationY>323</locationY>
         <faultConnector>
             <targetReference>Handle_Error</targetReference>
         </faultConnector>
@@ -190,7 +224,7 @@
         <triggerType>RecordAfterSave</triggerType>
         <scheduledPaths>
             <connector>
-                <targetReference>Call_EJ_Detector</targetReference>
+                <targetReference>Decision_HasCommentBody</targetReference>
             </connector>
             <pathType>AsyncAfterCommit</pathType>
         </scheduledPaths>
