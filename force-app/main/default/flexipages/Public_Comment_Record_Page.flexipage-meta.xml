@@ -319,7 +319,7 @@
         <type>Facet</type>
     </flexiPageRegions>
 
-    <!-- SECTION: AI Analysis — Column 2 -->
+    <!-- SECTION: AI Triage Results — Column 2 (rationale + provenance only) -->
     <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
@@ -327,10 +327,26 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_response_status__c</fieldItem>
-                <identifier>Recordnepa_response_status_cField</identifier>
+                <fieldItem>Record.nepa_ai_triage_rationale__c</fieldItem>
+                <identifier>Recordnepa_ai_triage_rationale_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>readonly</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_ai_generated__c</fieldItem>
+                <identifier>Recordnepa_ai_generated_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>cmt-ai-c2</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Human Review — Column 1 (visible when requires_human_review = true) -->
+    <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
@@ -357,10 +373,32 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_ai_triage_rationale__c</fieldItem>
-                <identifier>Recordnepa_ai_triage_rationale_cField</identifier>
+                <fieldItem>Record.nepa_human_validated_by__c</fieldItem>
+                <identifier>Recordnepa_human_validated_by_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <name>cmt-human-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Human Review — Columns Wrapper (1-col) -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>cmt-human-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>cmt_human_col1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>cmt-human-cols</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Triage Risk Flags — Column 1 (visible when any flag = true) -->
+    <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
@@ -401,27 +439,23 @@
                 <identifier>Recordnepa_duplicate_of_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <name>cmt-flags-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION: Triage Risk Flags — Columns Wrapper (1-col) -->
+    <flexiPageRegions>
         <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>readonly</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_ai_generated__c</fieldItem>
-                <identifier>Recordnepa_ai_generated_cField</identifier>
-            </fieldInstance>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>cmt-flags-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>cmt_flags_col1</identifier>
+            </componentInstance>
         </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_human_validated_by__c</fieldItem>
-                <identifier>Recordnepa_human_validated_by_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <name>cmt-ai-c2</name>
+        <name>cmt-flags-cols</name>
         <type>Facet</type>
     </flexiPageRegions>
 
@@ -453,6 +487,16 @@
 
     <!-- SECTION: Agency Response — Column 1 (full-width) -->
     <flexiPageRegions>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_response_status__c</fieldItem>
+                <identifier>Recordnepa_response_status_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
@@ -795,13 +839,74 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>label</name>
-                    <value>AI Analysis</value>
+                    <value>AI Triage Results</value>
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>cmt_section_ai</identifier>
                 <visibilityRule>
                     <criteria>
                         <leftValue>{!Record.nepa_is_substantive__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>cmt-human-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Human Review</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>cmt_section_human</identifier>
+                <visibilityRule>
+                    <criteria>
+                        <leftValue>{!Record.nepa_requires_human_review__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>cmt-flags-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Triage Risk Flags</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>cmt_section_flags</identifier>
+                <visibilityRule>
+                    <booleanFilter>1 OR 2 OR 3</booleanFilter>
+                    <criteria>
+                        <leftValue>{!Record.nepa_litigation_threat_flag__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.nepa_is_ej_comment__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.nepa_is_duplicate__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>true</rightValue>
                     </criteria>
@@ -825,6 +930,7 @@
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>cmt_section_litigation</identifier>
                 <visibilityRule>
+                    <booleanFilter>1 OR 2</booleanFilter>
                     <criteria>
                         <leftValue>{!Record.nepa_litigation_threat_flag__c}</leftValue>
                         <operator>EQUAL</operator>
