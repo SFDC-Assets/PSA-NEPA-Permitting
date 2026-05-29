@@ -358,4 +358,66 @@ private class NepaCeqFullExportServiceTest {
         System.assert(permit.containsKey('last_updated'));
         System.assertEquals(true, (Boolean) permit.get('is_critical_path'));
     }
+
+    // ── Legal structure: Entity 9 populated via junction object ───────────────
+    // Regression guard: legal_structure was hardcoded to [] at line 361.
+    // This test inserts a RegulatoryCode linked via nepa_process_regulatory_code__c
+    // and asserts the export returns a non-empty legal_structure array containing
+    // the CFR citation.
+
+    @IsTest
+    static void legalStructure_exportedInProcessDto_whenRegulatoryCodeLinked() {
+        Program proj = NepaTestFactory.insertProgram('CEQ-LEGAL-001', 'Legal Structure Test', 'EPA');
+        IndividualApplication ia = NepaTestFactory.insertOpenProcess(proj.Id, 'EIS');
+        RegulatoryCode rc = NepaTestFactory.insertRegulatoryCode('40 CFR 1502.14', 'Alternatives');
+
+        nepa_process_regulatory_code__c junc = new nepa_process_regulatory_code__c();
+        junc.nepa_process__c          = ia.Id;
+        junc.nepa_regulatory_code__c  = rc.Id;
+        junc.nepa_data_record_version__c = '1.2';
+        junc.nepa_data_source_agency__c  = 'CEQ';
+        junc.nepa_data_source_system__c  = 'eCFR';
+        junc.nepa_record_owner_agency__c = 'CEQ';
+        insert junc;
+
+        Map<String, Object> body = callExport(proj.Id);
+
+        System.assertEquals(200, RestContext.response.statusCode);
+        Map<String, Object> data    = (Map<String, Object>) body.get('data');
+        Map<String, Object> project = (Map<String, Object>) data.get('project');
+        List<Object> processes      = (List<Object>) project.get('processes');
+        Map<String, Object> process = (Map<String, Object>) processes[0];
+
+        List<Object> legalStructures = (List<Object>) process.get('legal_structure');
+        System.assertNotEquals(null, legalStructures,
+            'legal_structure key must be present in process DTO');
+        System.assertEquals(1, legalStructures.size(),
+            'legal_structure must contain exactly one entry for the linked RegulatoryCode');
+
+        Map<String, Object> ls = (Map<String, Object>) legalStructures[0];
+        System.assertEquals('40 CFR 1502.14', (String) ls.get('citation'),
+            'legal_structure citation must match the RegulatoryCode Name');
+        System.assertEquals('Alternatives', (String) ls.get('subject'),
+            'legal_structure subject must match the RegulatoryCode Subject');
+    }
+
+    @IsTest
+    static void legalStructure_emptyWhenNoRegulatoryCodeLinked() {
+        Program proj = NepaTestFactory.insertProgram('CEQ-LEGAL-002', 'Legal Structure Empty Test', 'BLM');
+        NepaTestFactory.insertOpenProcess(proj.Id, 'CE');
+
+        Map<String, Object> body = callExport(proj.Id);
+
+        System.assertEquals(200, RestContext.response.statusCode);
+        Map<String, Object> data    = (Map<String, Object>) body.get('data');
+        Map<String, Object> project = (Map<String, Object>) data.get('project');
+        List<Object> processes      = (List<Object>) project.get('processes');
+        Map<String, Object> process = (Map<String, Object>) processes[0];
+
+        List<Object> legalStructures = (List<Object>) process.get('legal_structure');
+        System.assertNotEquals(null, legalStructures,
+            'legal_structure key must always be present even when no codes linked');
+        System.assertEquals(0, legalStructures.size(),
+            'legal_structure must be empty when no junction records exist for this process');
+    }
 }

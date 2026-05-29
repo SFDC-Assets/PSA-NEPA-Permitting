@@ -237,4 +237,50 @@ private class NepaStageGateDocCheckTest {
             'Error message must reference field surveys; got: ' + errorMsg
         );
     }
+
+    // ── Permit gate error message contains blocked count ─────────────────────
+    // Regression guard: the Flow formula embeds TEXT(nepa_blocked_permit_count__c)
+    // in the gate error string. This test verifies the specific count is present
+    // in the error message so coordinators know exactly how many permits are blocked.
+
+    @IsTest
+    static void permitGate_rodBlocked_errorMessageContainsBlockedCount() {
+        Program proj = getProgram();
+        IndividualApplication ia = NepaTestFactory.insertProcess(proj.Id, 'EIS', null, null);
+        ia.nepa_surveys_complete__c = true;
+        update ia;
+
+        NepaTestFactory.insertRequiredPermit(ia.Id, 'Not Started', true, null);
+        NepaTestFactory.insertRequiredPermit(ia.Id, 'Not Started', true, null);
+
+        ApplicationTimeline evt = new ApplicationTimeline();
+        evt.Name                    = 'Test ROD Error Msg';
+        evt.nepa_event_type__c      = 'ROD Issued';
+        evt.nepa_status__c          = 'Completed';
+        evt.nepa_tier__c            = '1';
+        evt.nepa_source__c          = 'Test';
+        evt.nepa_start_date__c      = Date.today().addDays(-1);
+        evt.nepa_public_access__c   = true;
+        evt.nepa_related_process__c = ia.Id;
+
+        String errorMsg = '';
+        Boolean blocked = false;
+        Test.startTest();
+        try {
+            insert evt;
+        } catch (DmlException e) {
+            blocked = true;
+            errorMsg = e.getMessage();
+        }
+        Test.stopTest();
+
+        System.assertEquals(true, blocked,
+            'ROD Issued with 2 Not Started critical permits must block the save');
+        System.assert(errorMsg.contains('2'),
+            'Error message must contain the specific blocked permit count (2); got: ' + errorMsg);
+        System.assert(
+            errorMsg.toLowerCase().contains('permit'),
+            'Error message must reference permits; got: ' + errorMsg
+        );
+    }
 }

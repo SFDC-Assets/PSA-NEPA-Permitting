@@ -284,6 +284,40 @@ global with sharing class NepaCeqFullExportService {
                 }
             }
 
+            // Legal structures (Entity 9 — RegulatoryCode linked via junction nepa_process_regulatory_code__c)
+            Map<Id, List<RegulatoryCode>> legalStructuresByProcess = new Map<Id, List<RegulatoryCode>>();
+            if (!processIds.isEmpty()) {
+                List<nepa_process_regulatory_code__c> junctions = Database.query(
+                    'SELECT nepa_process__c,'
+                    + ' nepa_regulatory_code__r.Id,'
+                    + ' nepa_regulatory_code__r.Name,'
+                    + ' nepa_regulatory_code__r.Subject,'
+                    + ' nepa_regulatory_code__r.Description,'
+                    + ' nepa_regulatory_code__r.ExternalUrl,'
+                    + ' nepa_regulatory_code__r.nepa_text_content__c,'
+                    + ' nepa_regulatory_code__r.nepa_compliance_requirements__c,'
+                    + ' nepa_regulatory_code__r.EffectiveFrom,'
+                    + ' nepa_regulatory_code__r.EffectiveTo,'
+                    + ' nepa_regulatory_code__r.nepa_data_record_version__c,'
+                    + ' nepa_regulatory_code__r.nepa_data_source_agency__c,'
+                    + ' nepa_regulatory_code__r.nepa_data_source_system__c,'
+                    + ' nepa_regulatory_code__r.nepa_record_owner_agency__c,'
+                    + ' nepa_regulatory_code__r.nepa_retrieved_timestamp__c,'
+                    + ' nepa_regulatory_code__r.LastModifiedDate'
+                    + ' FROM nepa_process_regulatory_code__c'
+                    + ' WHERE nepa_process__c IN :processIds'
+                    + ' ORDER BY nepa_process__c, nepa_regulatory_code__r.Name ASC',
+                    AccessLevel.USER_MODE
+                );
+                for (nepa_process_regulatory_code__c junc : junctions) {
+                    Id pid = junc.nepa_process__c;
+                    if (!legalStructuresByProcess.containsKey(pid)) {
+                        legalStructuresByProcess.put(pid, new List<RegulatoryCode>());
+                    }
+                    legalStructuresByProcess.get(pid).add(junc.nepa_regulatory_code__r);
+                }
+            }
+
             // Permits
             Map<Id, List<nepa_required_permit__c>> permitsByProcess = new Map<Id, List<nepa_required_permit__c>>();
             if (!processIds.isEmpty()) {
@@ -334,7 +368,7 @@ global with sharing class NepaCeqFullExportService {
                 processDto.put('public_engagement_events', engagementDtos(engagementsByProcess.get(pid)));
                 processDto.put('case_events', caseEventDtos(caseEventsByProcess.get(pid)));
                 processDto.put('team_members', teamMemberDtos(teamByProcess.get(pid)));
-                processDto.put('legal_structure', new List<Object>());
+                processDto.put('legal_structure', legalStructureDtos(legalStructuresByProcess.get(pid)));
                 processDto.put('gis_data', gisDtos(gisByProcess.get(pid)));
                 processDto.put('permits', permitDtos(permitsByProcess.get(pid)));
                 processDtos.add(processDto);
@@ -659,6 +693,31 @@ global with sharing class NepaCeqFullExportService {
                 'record_owner_agency' => g.nepa_record_owner_agency__c,
                 'retrieved_timestamp' => g.nepa_retrieved_timestamp__c,
                 'last_updated'        => g.LastModifiedDate
+            });
+        }
+        return dtos;
+    }
+
+    private static List<Map<String, Object>> legalStructureDtos(List<RegulatoryCode> codes) {
+        List<Map<String, Object>> dtos = new List<Map<String, Object>>();
+        if (codes == null) { return dtos; }
+        for (RegulatoryCode rc : codes) {
+            dtos.add(new Map<String, Object>{
+                'id'                      => rc.Id,
+                'citation'                => rc.Name,
+                'subject'                 => rc.Subject,
+                'description'             => rc.Description,
+                'url'                     => rc.ExternalUrl,
+                'text_content'            => rc.nepa_text_content__c,
+                'compliance_requirements' => rc.nepa_compliance_requirements__c,
+                'effective_from'          => rc.EffectiveFrom,
+                'effective_to'            => rc.EffectiveTo,
+                'data_record_version'     => rc.nepa_data_record_version__c,
+                'data_source_agency'      => rc.nepa_data_source_agency__c,
+                'data_source_system'      => rc.nepa_data_source_system__c,
+                'record_owner_agency'     => rc.nepa_record_owner_agency__c,
+                'retrieved_timestamp'     => rc.nepa_retrieved_timestamp__c,
+                'last_updated'            => rc.LastModifiedDate
             });
         }
         return dtos;

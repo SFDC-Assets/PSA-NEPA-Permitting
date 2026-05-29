@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <allowInChatterGroups>false</allowInChatterGroups>
+    <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Junction object linking a NEPA process instance (IndividualApplication) to the legal/regulatory structures (RegulatoryCode) that govern it. Supports the many-to-many relationship required by PIC v1.2 Entity 9 (legal_structure). A single RegulatoryCode (e.g., 40 CFR 1501.4) may apply to thousands of processes; a single process may be governed by many codes.</description>
+    <enableActivities>false</enableActivities>
+    <enableBulkApi>true</enableBulkApi>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableLicensing>false</enableLicensing>
+    <enableReports>true</enableReports>
+    <enableSearch>false</enableSearch>
+    <enableSharing>true</enableSharing>
+    <enableStreamingApi>true</enableStreamingApi>
+    <externalSharingModel>ReadWrite</externalSharingModel>
+    <fields>
+        <fullName>nepa_process__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <description>The NEPA process instance (IndividualApplication) that is governed by the linked regulatory code.</description>
+        <inlineHelpText>The NEPA process governed by this regulatory code.</inlineHelpText>
+        <label>NEPA Process</label>
+        <referenceTo>IndividualApplication</referenceTo>
+        <relationshipLabel>Governing Regulatory Codes</relationshipLabel>
+        <relationshipName>Governing_Regulatory_Codes</relationshipName>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_regulatory_code__c</fullName>
+        <deleteConstraint>Restrict</deleteConstraint>
+        <description>The regulatory code (statute, regulation, or CFR citation) that governs the linked NEPA process.</description>
+        <inlineHelpText>The legal or regulatory citation that applies to this process.</inlineHelpText>
+        <label>Regulatory Code</label>
+        <referenceTo>RegulatoryCode</referenceTo>
+        <relationshipLabel>Governed NEPA Processes</relationshipLabel>
+        <relationshipName>Governed_NEPA_Processes</relationshipName>
+        <required>true</required>
+        <trackTrending>false</trackTrending>
+        <type>Lookup</type>
+    </fields>
+    <fields>
+        <fullName>nepa_data_record_version__c</fullName>
+        <description>PIC standard version this record conforms to (e.g., 1.2).</description>
+        <label>Data Record Version</label>
+        <length>10</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_agency__c</fullName>
+        <description>Agency that originally published or owns this record.</description>
+        <label>Data Source Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_data_source_system__c</fullName>
+        <description>Source system identifier (e.g., NEPA_DASHBOARD, PERMITTING_PORTAL).</description>
+        <label>Data Source System</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_record_owner_agency__c</fullName>
+        <description>Agency responsible for the accuracy and maintenance of this record.</description>
+        <label>Record Owner Agency</label>
+        <length>255</length>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>nepa_retrieved_timestamp__c</fullName>
+        <description>Timestamp when this record was last retrieved or synchronized from the source system.</description>
+        <label>Retrieved Timestamp</label>
+        <required>false</required>
+        <trackTrending>false</trackTrending>
+        <type>DateTime</type>
+    </fields>
+    <label>NEPA Process Regulatory Code</label>
+    <nameField>
+        <displayFormat>PRC-{000000000}</displayFormat>
+        <label>Process Regulatory Code Name</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>NEPA Process Regulatory Codes</pluralLabel>
+    <searchLayouts/>
+    <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>
