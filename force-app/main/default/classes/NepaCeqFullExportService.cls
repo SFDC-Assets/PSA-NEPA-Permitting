@@ -48,7 +48,7 @@ global with sharing class NepaCeqFullExportService {
             List<Program> programs = Database.query(
                 'SELECT Id, nepa_project_id__c, nepa_project_title__c, Name,'
                 + ' nepa_project_description__c, nepa_project_sector__c, nepa_project_type__c,'
-                + ' nepa_current_status__c, nepa_lead_agency__c, nepa_project_sponsor__c,'
+                + ' nepa_current_status__c, nepa_lead_agency__c, nepa_lead_agency__r.Name, nepa_project_sponsor__c,'
                 + ' nepa_funding__c, nepa_start_date__c, nepa_location__c,'
                 + ' nepa_location_lat__c, nepa_location_lon__c, nepa_location_text__c,'
                 + ' nepa_polygon__c, nepa_parent_project__c,'
@@ -471,7 +471,7 @@ global with sharing class NepaCeqFullExportService {
             'project_sector'      => p.nepa_project_sector__c,
             'project_type'        => p.nepa_project_type__c,
             'status'              => mapProjectStatus(p.nepa_current_status__c),
-            'lead_agency'         => p.nepa_lead_agency__c,
+            'lead_agency'         => p.nepa_lead_agency__r != null ? p.nepa_lead_agency__r.Name : null,
             'project_sponsor'     => p.nepa_project_sponsor__c,
             'funding_sources'     => p.nepa_funding__c,
             'start_date'          => p.nepa_start_date__c,

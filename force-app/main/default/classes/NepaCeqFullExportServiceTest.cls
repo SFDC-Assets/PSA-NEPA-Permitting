@@ -212,7 +212,7 @@ private class NepaCeqFullExportServiceTest {
         System.assertEquals('My Project Title', (String) project.get('project_title'));
         System.assertEquals('My Project Title', (String) project.get('name'));
         System.assert(project.containsKey('status'));
-        System.assert(project.containsKey('lead_agency'));
+        System.assertEquals('BLM', (String) project.get('lead_agency'), 'lead_agency must be Account Name, not Id');
         System.assert(project.containsKey('last_updated'));
     }
 

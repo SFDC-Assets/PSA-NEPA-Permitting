@@ -215,16 +215,17 @@ Two delivered Apex REST services expose the CEQ v1.2 payload:
 INSTANCE=$(sf org display --target-org $ALIAS --json | jq -r '.result.instanceUrl')
 TOKEN=$(sf org display --target-org $ALIAS --json | jq -r '.result.accessToken')
 
-# Replace TEST-BLM-EIS-001 with the nepa_project_id__c value of a deployed test project
+# Replace IDI-38709 with the nepa_federal_unique_id__c value of a deployed IndividualApplication
+# (nepa_federal_unique_id__c is a process-level field, not the Program's nepa_project_id__c)
 curl -s \
   -H "Authorization: Bearer $TOKEN" \
-  "$INSTANCE/services/apexrest/nepa/v1/processes/TEST-BLM-EIS-001" | jq .
+  "$INSTANCE/services/apexrest/nepa/v1/processes/IDI-38709" | jq .
 ```
 
 **Pass criteria:**
 - `success: true`
-- `data` is an array of process objects
-- Each process object contains CEQ v1.2 snake_case keys: `federal_id`, `type`, `status`, `agency_id`, `lead_agency`, `data_record_version`, and an `other` block with `salesforce_id`, `risk_score`, `required_permits`
+- `data` is a single process object (not an array — single-record GET returns one object)
+- Process object contains CEQ v1.2 snake_case keys: `federal_id`, `type`, `status`, `agency_id`, `lead_agency`, `data_record_version`, and an `other` block with `salesforce_id`, `risk_score`, `required_permits`
 
 ### 17b. Call the Full Project Graph Export Endpoint
 
@@ -810,18 +811,20 @@ sf data query \
   --target-org <alias>
 ```
 
-Expected counts:
+Expected counts (version suffix is V1 on a clean deploy; V2 or higher if the loader ran against an org that already had an active V1 — the version number increments each time `create_new_dmdv_version` runs):
 
 | CalculationMatrixVersion.Name | Expected cnt |
 |---|---|
-| NEPA CE Screener - NAICS Routing V1 | 7 |
-| NEPA CE Screener - Tier 1 Agency Sector Rules V1 | 17 |
-| NEPA CE Screener - Tier 2 Agency Action Type Rules V1 | 16 |
-| NEPA Risk Scorer - Review Type Points V1 | 4 |
-| NEPA Risk Scorer - Agency Risk Points V1 | 7 |
-| NEPA Risk Scorer - Circuit Risk Points V1 | 13 |
-| NEPA Permit Matrix V1 | 9 |
-| NEPA Risk Scorer - Sector Circuit Risk Points V1 | 17 (V3 only) |
+| NEPA CE Screener - NAICS Routing V1 (or V2+) | 7 |
+| NEPA CE Screener - Tier 1 Agency Sector Rules V1 (or V2+) | 17 |
+| NEPA CE Screener - Tier 2 Agency Action Type Rules V1 (or V2+) | 16 |
+| NEPA Risk Scorer - Review Type Points V1 (or V2+) | 4 |
+| NEPA Risk Scorer - Agency Risk Points V1 (or V2+) | 7 |
+| NEPA Risk Scorer - Circuit Risk Points V1 (or V2+) | 13 |
+| NEPA Permit Matrix V1 (or V2+) | 9 |
+| NEPA Risk Scorer - Sector Circuit Risk Points V1 (or V2+) | 17 |
+
+The SOQL groups by `CalculationMatrixVersion.Name` — verify each DM has exactly one row with the expected count. If the deploy was run multiple times, multiple versions may appear; only the highest-numbered version should have rows.
 
 If a version shows 0 rows, re-run the load script:
 
@@ -839,7 +842,7 @@ sf data query \
   --target-org <alias>
 ```
 
-All V1 versions should show `IsEnabled: true`. To re-activate Expression Sets if needed:
+All active versions should show `IsEnabled: true`. To re-activate Expression Sets if needed:
 
 ```bash
 python3 scripts/load_decision_matrix_rows.py --org <alias> --activate-es --no-skip
