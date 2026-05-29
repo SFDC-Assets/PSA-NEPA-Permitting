@@ -280,6 +280,13 @@ run_apex "ActionPlanTemplate seed" "demo/import_data/31b_postload_apt.apex"
 step_header "Step 31c: ActionPlanTemplateItemValue + publish"
 run_apex "ActionPlanTemplateItemValue + publish" "demo/import_data/31c_postload_apt_values.apex"
 
+# ── step 32: CEQ v1.2 provenance backfill ─────────────────────────────────────
+# Sets data_record_version, data_source_agency, data_source_system, and
+# record_owner_agency on Carrie Placer Mine records that pre-date the v1.2
+# provenance field additions.
+step_header "Step 32: CEQ v1.2 Provenance Backfill (IDI-38709)"
+run_apex "provenance backfill" "demo/import_data/32_provenance_backfill.apex"
+
 # ── post-load summary ─────────────────────────────────────────────────────────
 echo ""
 echo "==> Demo data load complete."

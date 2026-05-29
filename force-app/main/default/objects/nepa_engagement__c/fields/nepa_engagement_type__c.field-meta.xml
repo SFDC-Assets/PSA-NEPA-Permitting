@@ -52,6 +52,11 @@
                     <label>Virtual Webinar</label>
                 </value>
                 <value>
+                    <fullName>Coordination Meeting</fullName>
+                    <default>false</default>
+                    <label>Coordination Meeting</label>
+                </value>
+                <value>
                     <fullName>Other</fullName>
                     <default>false</default>
                     <label>Other</label>

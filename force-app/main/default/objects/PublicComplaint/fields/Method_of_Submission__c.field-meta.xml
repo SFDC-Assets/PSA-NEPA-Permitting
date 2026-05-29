@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>Method_of_Submission__c</fullName>
-        <description>Method used to submit the comment.</description>
-        <inlineHelpText>How the comment was submitted (online, email, mail, or in-person).</inlineHelpText>
+        <description>Method used to submit the comment. Values align to CEQ NEPA and Permitting Data and Technology Standard v1.2 submission_method enumeration.</description>
+        <inlineHelpText>How the comment was submitted. Select the channel that best matches the submitter's method.</inlineHelpText>
         <label>Method of Submission</label>
         <required>false</required>
         <trackHistory>false</trackHistory>
@@ -11,9 +11,14 @@
             <valueSetDefinition>
                 <sorted>false</sorted>
                 <value>
-                    <fullName>Online</fullName>
+                    <fullName>Federal Register</fullName>
                     <default>false</default>
-                    <label>Online</label>
+                    <label>Federal Register</label>
+                </value>
+                <value>
+                    <fullName>Regulations.gov</fullName>
+                    <default>false</default>
+                    <label>Regulations.gov</label>
                 </value>
                 <value>
                     <fullName>Email</fullName>
@@ -26,9 +31,19 @@
                     <label>Mail</label>
                 </value>
                 <value>
-                    <fullName>In-Person</fullName>
+                    <fullName>In Person</fullName>
                     <default>false</default>
-                    <label>In-Person</label>
+                    <label>In Person</label>
+                </value>
+                <value>
+                    <fullName>Web Portal</fullName>
+                    <default>false</default>
+                    <label>Web Portal</label>
+                </value>
+                <value>
+                    <fullName>Other</fullName>
+                    <default>false</default>
+                    <label>Other</label>
                 </value>
             </valueSetDefinition>
         </valueSet>

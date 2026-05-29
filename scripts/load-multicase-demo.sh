@@ -59,6 +59,24 @@ for CASE_DIR in "$BASE_DIR"/case_*/; do
       -o "$TARGET_ORG" -w 10 --line-ending CRLF
   fi
 
+  # 6. Public engagement events
+  if [[ -f "$CASE_DIR/11_nepa_engagement__c.csv" ]]; then
+    echo "  Engagement events..."
+    sf data upsert bulk -s nepa_engagement__c \
+      -f "$CASE_DIR/11_nepa_engagement__c.csv" \
+      -i External_ID__c \
+      -o "$TARGET_ORG" -w 10 --line-ending CRLF
+  fi
+
+  # 7. Public comments
+  if [[ -f "$CASE_DIR/16_PublicComplaint.csv" ]]; then
+    echo "  Public complaints..."
+    sf data upsert bulk -s PublicComplaint \
+      -f "$CASE_DIR/16_PublicComplaint.csv" \
+      -i External_ID__c \
+      -o "$TARGET_ORG" -w 10 --line-ending CRLF
+  fi
+
   echo "  $CASE_NAME: done"
 done
 
@@ -76,6 +94,14 @@ sf data query \
 
 sf data query \
   --query "SELECT Id, nepa_federal_unique_id__c, nepa_review_type__c FROM IndividualApplication WHERE nepa_federal_unique_id__c LIKE 'SAMPLE%' ORDER BY nepa_review_type__c" \
+  -o "$TARGET_ORG"
+
+sf data query \
+  --query "SELECT Id, External_ID__c, nepa_engagement_type__c FROM nepa_engagement__c WHERE External_ID__c LIKE 'DEMO_%' ORDER BY External_ID__c" \
+  -o "$TARGET_ORG"
+
+sf data query \
+  --query "SELECT Id, External_ID__c, Subject FROM PublicComplaint WHERE External_ID__c LIKE 'DEMO_%' ORDER BY External_ID__c" \
   -o "$TARGET_ORG"
 
 echo ""

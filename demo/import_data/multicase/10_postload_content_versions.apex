@@ -16,7 +16,7 @@ for (IndividualApplication ia : [
     FROM IndividualApplication
     WHERE nepa_federal_unique_id__c IN (
         'SAMPLE-C7C614DB', 'SAMPLE-E70EA3AD', 'SAMPLE-A8F2A17D',
-        'SAMPLE-13839469', 'SAMPLE-13438D6B'
+        'SAMPLE-13839469', 'SAMPLE-13438D6B', 'SAMPLE-FAA-EIS-001'
     )
 ]) {
     iaMap.put(ia.nepa_federal_unique_id__c, ia.Id);
@@ -143,6 +143,63 @@ if (ia_E != null) {
         nepa_document_summary__c   = 'Final Decision Notice and Finding of No Significant Impact — Skillem Integrated Resource Restoration Project',
         nepa_document_type__c      = 'FONSI',
         nepa_process__c            = ia_E
+    ));
+}
+
+// ── Case F: EIS / FAA (Denver TRACON Airspace Redesign) ─────────────────────
+Id ia_F = iaMap.get('SAMPLE-FAA-EIS-001');
+if (ia_F != null) {
+    toInsert.add(new ContentVersion(
+        Title                       = 'Denver TRACON Airspace Redesign - Notice of Intent',
+        PathOnClient                = 'Denver_TRACON_NOI_2021.pdf',
+        VersionData                 = placeholder,
+        nepa_document_type__c       = 'NOI',
+        nepa_document_summary__c    = 'Federal Register Notice of Intent to prepare an EIS for the Denver TRACON Airspace Redesign Project',
+        nepa_status__c              = 'Published',
+        nepa_process__c             = ia_F,
+        nepa_record_owner_agency__c = 'Federal Aviation Administration',
+        nepa_data_source_agency__c  = 'Federal Aviation Administration',
+        nepa_data_source_system__c  = 'FAA-NEPA-System',
+        nepa_data_record_version__c = '1.2'
+    ));
+    toInsert.add(new ContentVersion(
+        Title                       = 'Denver TRACON Airspace Redesign - Draft EIS',
+        PathOnClient                = 'Denver_TRACON_DEIS_2023.pdf',
+        VersionData                 = placeholder,
+        nepa_document_type__c       = 'Draft EIS',
+        nepa_document_summary__c    = 'Draft Environmental Impact Statement for the Denver TRACON Airspace Redesign Project covering noise, air quality, and environmental justice impacts',
+        nepa_status__c              = 'Published',
+        nepa_process__c             = ia_F,
+        nepa_record_owner_agency__c = 'Federal Aviation Administration',
+        nepa_data_source_agency__c  = 'Federal Aviation Administration',
+        nepa_data_source_system__c  = 'FAA-NEPA-System',
+        nepa_data_record_version__c = '1.2'
+    ));
+    toInsert.add(new ContentVersion(
+        Title                       = 'Denver TRACON Airspace Redesign - Final EIS',
+        PathOnClient                = 'Denver_TRACON_FEIS_2024.pdf',
+        VersionData                 = placeholder,
+        nepa_document_type__c       = 'Final EIS',
+        nepa_document_summary__c    = 'Final Environmental Impact Statement for the Denver TRACON Airspace Redesign Project with responses to public comments and updated analysis',
+        nepa_status__c              = 'Published',
+        nepa_process__c             = ia_F,
+        nepa_record_owner_agency__c = 'Federal Aviation Administration',
+        nepa_data_source_agency__c  = 'Federal Aviation Administration',
+        nepa_data_source_system__c  = 'FAA-NEPA-System',
+        nepa_data_record_version__c = '1.2'
+    ));
+    toInsert.add(new ContentVersion(
+        Title                       = 'Denver TRACON Airspace Redesign - Record of Decision',
+        PathOnClient                = 'Denver_TRACON_ROD_2024.pdf',
+        VersionData                 = placeholder,
+        nepa_document_type__c       = 'ROD',
+        nepa_document_summary__c    = 'Record of Decision selecting Alternative B for the Denver TRACON Airspace Redesign with binding noise mitigation commitments',
+        nepa_status__c              = 'Approved',
+        nepa_process__c             = ia_F,
+        nepa_record_owner_agency__c = 'Federal Aviation Administration',
+        nepa_data_source_agency__c  = 'Federal Aviation Administration',
+        nepa_data_source_system__c  = 'FAA-NEPA-System',
+        nepa_data_record_version__c = '1.2'
     ));
 }
 
