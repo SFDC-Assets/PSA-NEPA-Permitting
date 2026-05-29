@@ -468,9 +468,10 @@ private class NepaCeqExportServiceTest {
         Map<String, Object> dto = (Map<String, Object>) parseBody().get('data');
 
         // CEQ standard top-level fields (snake_case per v1.2 spec)
+        // estimated_completion is NEPA-operational, nested under "other" — not a top-level spec field
         Set<String> requiredTopLevel = new Set<String>{
-            'federal_id', 'parent_project_id', 'agency_id', 'type', 'status', 'stage',
-            'start_date', 'complete_date', 'estimated_completion', 'outcome',
+            'id', 'federal_id', 'parent_project_id', 'agency_id', 'type', 'status', 'stage',
+            'start_date', 'complete_date', 'outcome',
             'purpose_need', 'description', 'comment_start', 'comment_end',
             'lead_agency', 'joint_lead_agency', 'cooperating_agencies', 'process_code',
             'created_at', 'record_owner_agency', 'data_source_agency', 'data_source_system',
@@ -487,6 +488,7 @@ private class NepaCeqExportServiceTest {
         Map<String, Object> other = (Map<String, Object>) dto.get('other');
         Set<String> requiredOther = new Set<String>{
             'salesforce_id', 'salesforce_name',
+            'estimated_completion',
             'sla_due_date', 'sla_overdue',
             'risk_score', 'risk_tier', 'record_completeness_pct',
             'last_stage_transition', 'required_permits'
@@ -515,8 +517,8 @@ private class NepaCeqExportServiceTest {
 
         System.assertNotEquals(null, dto.get('data_record_version'),
             'data_record_version must be present and non-null');
-        System.assertEquals('1.0', (String) dto.get('data_record_version'),
-            'data_record_version must be 1.0');
+        System.assertEquals('1.2', (String) dto.get('data_record_version'),
+            'data_record_version must be 1.2 per CEQ PIC standard');
         System.assertNotEquals(null, dto.get('last_updated'),
             'last_updated must be non-null');
         System.assertNotEquals(null, dto.get('retrieved_timestamp'),
@@ -602,17 +604,19 @@ private class NepaCeqExportServiceTest {
         Map<String, Object> other = (Map<String, Object>) dto.get('other');
 
         System.assertNotEquals(null, other, 'other block must be present');
-        System.assert(other.containsKey('salesforce_id'),   'other.salesforce_id missing');
-        System.assert(other.containsKey('sla_due_date'),    'other.sla_due_date missing');
-        System.assert(other.containsKey('sla_overdue'),     'other.sla_overdue missing');
-        System.assert(other.containsKey('risk_score'),      'other.risk_score missing');
-        System.assert(other.containsKey('risk_tier'),       'other.risk_tier missing');
-        System.assert(other.containsKey('required_permits'), 'other.required_permits missing');
+        System.assert(other.containsKey('salesforce_id'),        'other.salesforce_id missing');
+        System.assert(other.containsKey('estimated_completion'), 'other.estimated_completion missing');
+        System.assert(other.containsKey('sla_due_date'),         'other.sla_due_date missing');
+        System.assert(other.containsKey('sla_overdue'),          'other.sla_overdue missing');
+        System.assert(other.containsKey('risk_score'),           'other.risk_score missing');
+        System.assert(other.containsKey('risk_tier'),            'other.risk_tier missing');
+        System.assert(other.containsKey('required_permits'),     'other.required_permits missing');
 
         // These NEPA fields must NOT appear at the top level
-        System.assert(!dto.containsKey('sla_due_date'),    'sla_due_date must not be top-level');
-        System.assert(!dto.containsKey('risk_score'),      'risk_score must not be top-level');
-        System.assert(!dto.containsKey('required_permits'), 'required_permits must not be top-level');
+        System.assert(!dto.containsKey('estimated_completion'), 'estimated_completion must not be top-level');
+        System.assert(!dto.containsKey('sla_due_date'),         'sla_due_date must not be top-level');
+        System.assert(!dto.containsKey('risk_score'),           'risk_score must not be top-level');
+        System.assert(!dto.containsKey('required_permits'),     'required_permits must not be top-level');
     }
 
     // ── permits[] subresource ─────────────────────────────────────────────────
@@ -909,8 +913,8 @@ private class NepaCeqExportServiceTest {
         Map<String, Object> dto = (Map<String, Object>) parsed;
         System.assertEquals('FUID-001', (String) dto.get('federal_id'),
             'federal_id must round-trip through generateCeqExport');
-        System.assertEquals('1.0', (String) dto.get('data_record_version'),
-            'data_record_version must be present in AuraEnabled export');
+        System.assertEquals('1.2', (String) dto.get('data_record_version'),
+            'data_record_version must be 1.2 in AuraEnabled export');
         Map<String, Object> other = (Map<String, Object>) dto.get('other');
         System.assertNotEquals(null, other, 'other block must be present in AuraEnabled export');
         System.assert(other.containsKey('required_permits'), 'other.required_permits must be present');

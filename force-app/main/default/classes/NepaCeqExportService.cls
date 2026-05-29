@@ -227,8 +227,27 @@ global with sharing class NepaCeqExportService {
             ? r.nepa_related_project__r.nepa_lead_agency__r.Name
             : null;
 
+        // Spec requires array; field stores semicolon-delimited text or is null
+        List<String> cooperatingAgencies = new List<String>();
+        if (String.isNotBlank(r.nepa_cooperating_agencies__c)) {
+            for (String s : r.nepa_cooperating_agencies__c.split(';')) {
+                String trimmed = s.trim();
+                if (String.isNotBlank(trimmed)) { cooperatingAgencies.add(trimmed); }
+            }
+        }
+
+        // Surface missing required-field violations so consumers can act on them
+        List<String> warnings = new List<String>();
+        if (String.isBlank(leadAgency)) {
+            warnings.add('lead_agency is null — required by CEQ PIC v1.2');
+        }
+        if (String.isBlank(r.nepa_federal_unique_id__c)) {
+            warnings.add('federal_id (nepa_federal_unique_id__c) is null — required for MFR submission');
+        }
+
         return new Map<String, Object>{
             // ── CEQ standard fields ───────────────────────────────────────────
+            'id'                      => r.Id,
             'federal_id'              => r.nepa_federal_unique_id__c,
             'parent_project_id'       => r.nepa_related_project__r != null
                                             ? r.nepa_related_project__r.nepa_project_id__c : null,
@@ -238,7 +257,6 @@ global with sharing class NepaCeqExportService {
             'stage'                   => r.nepa_process_stage__c,
             'start_date'              => r.nepa_start_date__c,
             'complete_date'           => r.nepa_completion_date__c,
-            'estimated_completion'    => r.nepa_target_completion_date__c,
             'outcome'                 => r.nepa_process_outcome__c,
             'purpose_need'            => r.nepa_purpose_need__c,
             'description'             => r.nepa_description__c,
@@ -246,7 +264,7 @@ global with sharing class NepaCeqExportService {
             'comment_end'             => r.nepa_public_comment_period_end_date__c,
             'lead_agency'             => leadAgency,
             'joint_lead_agency'       => r.nepa_joint_lead_agency__c,
-            'cooperating_agencies'    => r.nepa_cooperating_agencies__c,
+            'cooperating_agencies'    => cooperatingAgencies,
             'process_code'            => r.nepa_process_code__c,
             'created_at'              => r.CreatedDate,
             // ── Provenance ────────────────────────────────────────────────────
@@ -262,20 +280,22 @@ global with sharing class NepaCeqExportService {
                                             ? r.nepa_data_source_system__c
                                             : (r.nepa_related_project__r != null
                                                 ? r.nepa_related_project__r.nepa_data_source_system__c : null),
-            'data_record_version'     => '1.0',
+            'data_record_version'     => '1.2',
             'last_updated'            => r.LastModifiedDate,
             'retrieved_timestamp'     => Datetime.now(),
             // ── NEPA-operational (non-standard, nested per CEQ "other" field) ─
             'other'                   => new Map<String, Object>{
                 'salesforce_id'           => r.Id,
                 'salesforce_name'         => r.Name,
+                'estimated_completion'    => r.nepa_target_completion_date__c,
                 'sla_due_date'            => r.nepa_sla_due_date__c,
                 'sla_overdue'             => r.nepa_sla_overdue__c,
                 'risk_score'              => r.nepa_risk_score__c,
                 'risk_tier'               => r.nepa_risk_tier__c,
                 'record_completeness_pct' => r.nepa_record_completeness__c,
                 'last_stage_transition'   => r.nepa_last_stage_transition__c,
-                'required_permits'        => toPermitDtos(r.Required_Permits__r)
+                'required_permits'        => toPermitDtos(r.Required_Permits__r),
+                'compliance_warnings'     => warnings.isEmpty() ? null : warnings
             }
         };
     }
