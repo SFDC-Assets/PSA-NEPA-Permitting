@@ -55,7 +55,7 @@ private class NepaMapCreateCtrTest {
 
         System.assertEquals('39.5', ctr.defaultlat, 'Latitude should be read from page parameter');
         System.assertEquals('-98.35', ctr.defaultlng, 'Longitude should be read from page parameter');
-        // apiKey is null until NEPA_Map_Config__mdt.ApiKey.Value__c is set post-deploy — test confirms constructor runs cleanly
+        // apiKey is null until NEPA_Map_Config__mdt.Default.Api_Key__c is set post-deploy — test confirms constructor runs cleanly
         System.assertEquals(true, ctr.defaultlat != null, 'Constructor should complete successfully');
     }
 }
