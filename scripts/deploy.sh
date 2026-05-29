@@ -857,15 +857,21 @@ if [[ "$DRY_RUN" == "false" ]]; then
     python3 scripts/load_decision_matrix_rows.py \
         --org "$TARGET_ORG" \
         --skip-existing \
-        --csv-dir decision_matrix_rows \
-        || echo "    WARNING: DM row load encountered errors — check output above"
+        --csv-dir decision_matrix_rows
+    _5b_data_rc=$?
+    if [[ $_5b_data_rc -ne 0 ]]; then
+        echo "    ERROR: DM row load failed (exit $_5b_data_rc). Phase 5c ES defs require activated DMs and will be skipped." >&2
+    fi
 else
     phase_header "Phase 5b-data: BRE Decision Matrix rows + activation (SKIPPED in --check)"
     echo "    (skipped — dry-run mode; run: python3 scripts/load_decision_matrix_rows.py --org $TARGET_ORG --dry-run)"
+    _5b_data_rc=0
 fi
 
-# ── parallel group B (after 5b-data): Apex + ES defs — both independent ───────
-# ESD deploy can now succeed because DMs have active versions from 5b-data above.
+# ── parallel group B (after 5b-data): Apex + ES defs ──────────────────────────
+# ES defs are gated on 5b-data success — they resolve <decisionTableName> refs
+# to active DM version records; deploying against empty/unactivated DMs fails
+# with "unsupported field type". Apex/permset chain is unconditional.
 echo ""
 echo "==> Parallel group B: Apex classes+triggers+permset chain  |  BRE Expression Set defs"
 
@@ -910,12 +916,18 @@ PYEOF
         || echo "    WARNING: permset assign failed (may already be assigned) — continuing"
 ) >"$_tmp_apex" 2>&1 & _pid_apex=$!
 
-( phase_5c_es_defs ) >"$_tmp_es" 2>&1 & _pid_es=$!
-
-wait_jobs \
-    "$_tmp_apex"  "$_pid_apex" \
-    "$_tmp_es"    "$_pid_es"
-rm -f "$_tmp_apex" "$_tmp_es"
+if [[ $_5b_data_rc -eq 0 ]]; then
+    ( phase_5c_es_defs ) >"$_tmp_es" 2>&1 & _pid_es=$!
+    wait_jobs \
+        "$_tmp_apex"  "$_pid_apex" \
+        "$_tmp_es"    "$_pid_es"
+    rm -f "$_tmp_apex" "$_tmp_es"
+else
+    echo "    SKIP phase_5c_es_defs — DM row load did not complete successfully" >&2
+    wait_jobs \
+        "$_tmp_apex"  "$_pid_apex"
+    rm -f "$_tmp_apex"
+fi
 
 # ── phase 5c-activate / 5d / 5e — sequential post-group-B data loads ──────────
 # ES activation must run after ESD deploy (group B). DM activation already done.

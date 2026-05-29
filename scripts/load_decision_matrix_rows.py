@@ -126,7 +126,10 @@ def tooling_query(base_url, token, soql):
         conn.request("GET", f"/services/data/v62.0/tooling/query/?q={encoded}",
                      headers={"Authorization": f"Bearer {token}"})
         resp = conn.getresponse()
-        return json.loads(resp.read()).get("records", [])
+        body = json.loads(resp.read())
+        if isinstance(body, list):
+            raise RuntimeError(f"Tooling API error: {body[0].get('message', body)}")
+        return body.get("records", [])
     finally:
         conn.close()
 
@@ -141,7 +144,10 @@ def tooling_get(base_url, token, sobject, record_id, fields="Metadata"):
     try:
         conn.request("GET", path, headers={"Authorization": f"Bearer {token}"})
         resp = conn.getresponse()
-        return json.loads(resp.read())
+        body = json.loads(resp.read())
+        if isinstance(body, list):
+            raise RuntimeError(f"Tooling API error: {body[0].get('message', body)}")
+        return body
     finally:
         conn.close()
 

@@ -5,17 +5,6 @@
     <label>NEPA Slack Stage Notifier</label>
     <processType>AutoLaunchedFlow</processType>
     <status>Draft</status>
-    <triggerType>RecordAfterSave</triggerType>
-
-    <object>IndividualApplication</object>
-    <triggerType>RecordAfterSave</triggerType>
-    <recordTriggerType>CreateAndUpdate</recordTriggerType>
-    <filterLogic>1</filterLogic>
-    <filters>
-        <field>nepa_process_stage__c</field>
-        <operator>IsChanged</operator>
-        <value><booleanValue>true</booleanValue></value>
-    </filters>
 
     <!-- ============================================================
          ELEMENT 1: GET SLACK CONFIG CMT
