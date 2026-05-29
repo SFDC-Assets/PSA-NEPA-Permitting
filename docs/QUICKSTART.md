@@ -4,15 +4,15 @@ This guide walks you from a fresh Agentforce for Public Sector org to a fully op
 
 ---
 
-## Step 0 — Get a Trial Org
+## Step 0 — Get a Learner Trial Org
 
 **If you don't already have an Agentforce for Public Sector org, start here.**
 
-Sign up for a free APS trial org using the Salesforce PSC Trial Org setup guide:
+Sign up for a free APS **learner trial org** using the Salesforce PSC Trial Org setup guide. Make sure to select the **learner trial** option — a base developer org does not include Agentforce for Public Sector, OmniStudio, or the APS data model this accelerator requires.
 
 **[https://help.salesforce.com/s/articleView?id=ind.psc_create_trial_org.htm&language=en_US&type=5](https://help.salesforce.com/s/articleView?id=ind.psc_create_trial_org.htm&language=en_US&type=5)**
 
-The trial org includes Agentforce for Public Sector (Foundations), OmniStudio, and the standard APS objects (`Program`, `IndividualApplication`, `ApplicationTimeline`) that this accelerator requires. Provisioning typically takes 5–10 minutes.
+The learner trial org includes Agentforce for Public Sector (Foundations), OmniStudio, and the standard APS objects (`Program`, `IndividualApplication`, `ApplicationTimeline`) that this accelerator requires. Provisioning typically takes 5–10 minutes.
 
 Once your org is provisioned, note the **My Domain URL** from Setup → My Domain — you'll need it for the `sf org login` command in Step 1.
 
@@ -41,7 +41,7 @@ The deploy script automates nearly everything. The following steps still require
 
 | Requirement | Notes |
 |---|---|
-| Salesforce org with **Agentforce for Public Sector** | See Step 0 above. Use the [APS trial org setup guide](https://help.salesforce.com/s/articleView?id=ind.psc_create_trial_org.htm&language=en_US&type=5) if you don't have one. Foundations or Advanced license required. |
+| Salesforce org with **Agentforce for Public Sector** | See Step 0 above. Use the [APS learner trial org setup guide](https://help.salesforce.com/s/articleView?id=ind.psc_create_trial_org.htm&language=en_US&type=5) if you don't have one — a base developer org is not sufficient. Foundations or Advanced license required. |
 | **Salesforce Path enabled** | Setup → User Interface → Path Settings → click **Enable**. Required for the `IndividualApplication_NEPA_Process_Path` PathAssistant that guides coordinators through CE/EA/EIS stages. |
 | **Agentforce enabled** | Setup → Einstein Generative AI → Agentforce Studio → Agentforce Agents → turn on **Agentforce**. Required for `NEPA_Comment_Triage` and `NEPA_PreApp_Screener` agent deployment and activation. |
 | **Salesforce CLI v2** (`sf`) | Install from [developer.salesforce.com/tools/salesforcecli](https://developer.salesforce.com/tools/salesforcecli). Verify with `sf --version`. |
@@ -70,7 +70,7 @@ This Accelerator depends on three APS standard objects that are not available in
 
 The custom objects (`nepa_engagement__c`, `nepa_litigation__c`, `nepa_process_related_agencies__c`, `nepa_ce_library__c`, `nepa_gis_data__c`) and all custom metadata types are APS-independent and deploy without modification.
 
-A free APS trial org is available at the [APS trial org setup guide](https://help.salesforce.com/s/articleView?id=ind.psc_create_trial_org.htm&language=en_US&type=5). This is the recommended path — substituting the APS objects removes access to PSS-native features such as Action Plans, OmniStudio, and the Application data model relationships the CEQ export relies on.
+A free APS learner trial org is available at the [APS learner trial org setup guide](https://help.salesforce.com/s/articleView?id=ind.psc_create_trial_org.htm&language=en_US&type=5). This is the recommended path — a base developer org does not include APS, and substituting the APS objects removes access to PSS-native features such as Action Plans, OmniStudio, and the Application data model relationships the CEQ export relies on.
 
 ---
 

@@ -77,7 +77,7 @@ A clear AI/rules boundary is a legal requirement for federal permitting. This so
 An agency can spin up a Salesforce sandbox, deploy this MIT-licensed accelerator, and be running a live proof-of-concept with their own historical data **in an afternoon** — bypassing the traditional 6-month software implementation cycle.
 
 **Prerequisites:**
-- Salesforce org with **Agentforce for Public Sector** (Foundations or Advanced). A free APS developer org is available at the [APS trial org setup guide](https://help.salesforce.com/s/articleView?id=ind.psc_create_trial_org.htm&language=en_US&type=5).
+- Salesforce org with **Agentforce for Public Sector** (Foundations or Advanced). Sign up for a free APS **learner trial org** at the [APS learner trial org setup guide](https://help.salesforce.com/s/articleView?id=ind.psc_create_trial_org.htm&language=en_US&type=5) — a base developer org does not include APS.
 - **Salesforce Path enabled** — Setup → User Interface → Path Settings → Enable
 - **Agentforce enabled** — Setup → Einstein Generative AI → Agentforce Studio → Agentforce Agents → turn on Agentforce
 - **Salesforce CLI v2** (`sf`) — install from [developer.salesforce.com/tools/salesforcecli](https://developer.salesforce.com/tools/salesforcecli)
@@ -487,7 +487,7 @@ The `NEPA/CEQExport` Integration Procedure accepts a `projectId` and returns a n
 
 ## APS Dependency
 
-This accelerator requires **Salesforce Agentforce for Public Sector (APS)**. If your org does not have APS installed, see [docs/QUICKSTART.md — APS Substitution](docs/QUICKSTART.md) for object replacement guidance. A free APS developer org is available at the [APS trial org setup guide](https://help.salesforce.com/s/articleView?id=ind.psc_create_trial_org.htm&language=en_US&type=5).
+This accelerator requires **Salesforce Agentforce for Public Sector (APS)**. If your org does not have APS installed, see [docs/QUICKSTART.md — APS Substitution](docs/QUICKSTART.md) for object replacement guidance. A free APS **learner trial org** is available at the [APS learner trial org setup guide](https://help.salesforce.com/s/articleView?id=ind.psc_create_trial_org.htm&language=en_US&type=5) — a base developer org does not include APS.
 
 ---
 
