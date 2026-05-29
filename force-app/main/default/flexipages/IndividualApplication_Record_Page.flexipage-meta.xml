@@ -241,7 +241,7 @@
         <type>Facet</type>
     </flexiPageRegions>
 
-    <!-- SECTION CE: CE Determination — Column 1 -->
+    <!-- SECTION CE: CE Determination — Column 1 (key decision fields only; GIS flags moved to ia-ce-flags) -->
     <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
@@ -283,6 +283,32 @@
                 <identifier>ia_ce_disturbance_acres</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_screener_last_run__c</fieldItem>
+                <identifier>ia_ce_screener_last_run</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_project_type__c</fieldItem>
+                <identifier>ia_ce_project_type</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <name>ia-ce-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION CE: Triggered Environmental Flags — Column 1 -->
+    <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
@@ -333,6 +359,12 @@
                 <identifier>ia_ce_air_nonattainment_flag</identifier>
             </fieldInstance>
         </itemInstances>
+        <name>ia-ce-flags-c1</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION CE: Triggered Environmental Flags — Column 2 -->
+    <flexiPageRegions>
         <itemInstances>
             <fieldInstance>
                 <fieldInstanceProperties>
@@ -373,27 +405,33 @@
                 <identifier>ia_ce_wild_scenic_river_flag</identifier>
             </fieldInstance>
         </itemInstances>
+        <name>ia-ce-flags-c2</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- SECTION CE: Triggered Environmental Flags — Columns Wrapper -->
+    <flexiPageRegions>
         <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_screener_last_run__c</fieldItem>
-                <identifier>ia_ce_screener_last_run</identifier>
-            </fieldInstance>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>ia-ce-flags-c1</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>ia_ce_flags_col1</identifier>
+            </componentInstance>
         </itemInstances>
         <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_project_type__c</fieldItem>
-                <identifier>ia_ce_project_type</identifier>
-            </fieldInstance>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>ia-ce-flags-c2</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:column</componentName>
+                <identifier>ia_ce_flags_col2</identifier>
+            </componentInstance>
         </itemInstances>
-        <name>ia-ce-c1</name>
+        <name>ia-ce-flags-cols</name>
         <type>Facet</type>
     </flexiPageRegions>
 
@@ -1985,6 +2023,72 @@
                         <leftValue>{!Record.nepa_review_type__c}</leftValue>
                         <operator>EQUAL</operator>
                         <rightValue>CE</rightValue>
+                    </criteria>
+                </visibilityRule>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>ia-ce-flags-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Triggered Environmental Flags</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>ia_section_ce_flags</identifier>
+                <visibilityRule>
+                    <booleanFilter>1 OR 2 OR 3 OR 4 OR 5 OR 6 OR 7 OR 8 OR 9</booleanFilter>
+                    <criteria>
+                        <leftValue>{!Record.nepa_nhd_proximity_flag__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.nepa_tribal_lands_flag__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.nepa_wetlands_flag__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.nepa_plss_flag__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.nepa_air_nonattainment_flag__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.nepa_blm_acec_flag__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.nepa_fema_flood_flag__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.nepa_fuds_flag__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
+                    </criteria>
+                    <criteria>
+                        <leftValue>{!Record.nepa_wild_scenic_river_flag__c}</leftValue>
+                        <operator>EQUAL</operator>
+                        <rightValue>true</rightValue>
                     </criteria>
                 </visibilityRule>
             </componentInstance>
