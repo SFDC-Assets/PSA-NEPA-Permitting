@@ -10,6 +10,7 @@
  * after-save flow's transaction commits. The existing NEPA_GIS_Proximity_Check flow
  * continues to work unchanged — only the action class reference changes.
  */
+@SuppressWarnings('PMD.OperationWithLimitsInLoop')
 public with sharing class NepaGISProximityService {
 
     // ── Invocable contract ────────────────────────────────────────────────────

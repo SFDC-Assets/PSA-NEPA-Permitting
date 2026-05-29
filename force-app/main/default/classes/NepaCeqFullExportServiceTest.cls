@@ -49,6 +49,7 @@ private class NepaCeqFullExportServiceTest {
         System.assertEquals('MISSING_PARAM', (String) body.get('errorCode'));
     }
 
+    @SuppressWarnings('PMD.AvoidHardcodingId')
     @IsTest
     static void export_unknownProjectId_returns404() {
         Map<String, Object> body = callExport('001000000000001AAA');
@@ -119,7 +120,7 @@ private class NepaCeqFullExportServiceTest {
         ia.nepa_federal_unique_id__c = 'FUID-FULL-001';
         update ia;
 
-        ContentVersion cv = NepaTestFactory.insertPublicContentVersion(ia.Id, 'Draft EIS');
+        NepaTestFactory.insertPublicContentVersion(ia.Id, 'Draft EIS');
         NepaTestFactory.insertPublicEngagement(ia.Id);
         NepaTestFactory.insertPublicTimelineEvent(ia.Id);
         NepaTestFactory.insertRequiredPermit(ia.Id, 'Not Started', true, Date.today().addDays(90));

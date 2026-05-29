@@ -30,7 +30,7 @@ public with sharing class NepaCEIntakeController {
             if (programData.get('startDate') != null) {
                 prog.nepa_start_date__c = Date.valueOf((String) programData.get('startDate'));
             }
-            insert prog;
+            Database.insert(prog, AccessLevel.USER_MODE);
 
             Id licenseTypeId = getLicenseTypeId();
 
@@ -51,7 +51,7 @@ public with sharing class NepaCEIntakeController {
             if (processDesc != null && processDesc.length() > 0) {
                 ia.nepa_description__c = processDesc;
             }
-            insert ia;
+            Database.insert(ia, AccessLevel.USER_MODE);
 
             return ia.Id;
         } catch (Exception e) {
@@ -86,6 +86,7 @@ public with sharing class NepaCEIntakeController {
         List<RegulatoryAuthorizationType> existing = [
             SELECT Id FROM RegulatoryAuthorizationType
             WHERE Name = 'NEPA Environmental Review'
+            WITH USER_MODE
             LIMIT 1
         ];
         if (!existing.isEmpty()) {
@@ -94,7 +95,7 @@ public with sharing class NepaCEIntakeController {
         RegulatoryAuthorizationType rat = new RegulatoryAuthorizationType();
         rat.Name = 'NEPA Environmental Review';
         rat.RegulatoryAuthCategory = 'Permit';
-        insert rat;
+        Database.insert(rat, AccessLevel.USER_MODE);
         return rat.Id;
     }
 }

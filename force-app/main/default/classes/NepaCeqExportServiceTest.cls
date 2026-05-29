@@ -363,8 +363,10 @@ private class NepaCeqExportServiceTest {
 
     @IsTest
     static void compliance_processStatus_isValidPicValue() {
+        // PIC v1.2 exported enum values — raw field values are mapped before export
+        // (e.g. 'in progress' → 'underway'); see NepaCeqExportService.mapProcessStatus()
         Set<String> validStatuses = new Set<String>{
-            'planned', 'pre-application', 'in progress', 'paused', 'completed', 'cancelled'
+            'planned', 'pre-application', 'underway', 'paused', 'completed', 'cancelled'
         };
         for (Object rec : getListRecords()) {
             Map<String, Object> dto = (Map<String, Object>) rec;
@@ -853,7 +855,8 @@ private class NepaCeqExportServiceTest {
         List<Object> data = (List<Object>) body.get('data');
         Map<String, Object> row = (Map<String, Object>) data[0];
         System.assertEquals('EIS', (String) row.get('type'));
-        System.assertEquals('in progress', (String) row.get('status'));
+        System.assertEquals('underway', (String) row.get('status'),
+            'status field must reflect PIC-mapped value: in progress → underway');
     }
 
     @IsTest
@@ -974,12 +977,12 @@ private class NepaCeqExportServiceTest {
         }
     }
 
+    @SuppressWarnings('PMD.AvoidHardcodingId')
     @IsTest
     static void generateCeqExport_notFound_returnsErrorObject() {
-        Test.startTest();
-        String jsonOut = NepaCeqExportService.generateCeqExport(null); // valid call
-        // Verify single-record not-found case returns error JSON without throwing
         Id fakeId = '001000000000000AAA';
+        Test.startTest();
+        NepaCeqExportService.generateCeqExport(null); // exercises the null/empty path
         String notFoundOut = NepaCeqExportService.generateCeqExport(fakeId);
         Test.stopTest();
 

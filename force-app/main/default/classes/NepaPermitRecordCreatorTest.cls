@@ -271,7 +271,7 @@ private class NepaPermitRecordCreatorTest {
             update updates;
         } catch (Exception e) {
             threw = true;
-            System.debug('Bulk test exception: ' + e.getMessage());
+            System.debug(LoggingLevel.ERROR, 'Bulk test exception: ' + e.getMessage());
         }
         Test.stopTest();
 

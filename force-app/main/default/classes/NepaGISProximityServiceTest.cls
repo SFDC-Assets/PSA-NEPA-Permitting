@@ -221,6 +221,7 @@ private class NepaGISProximityServiceTest {
         System.assertEquals(0, recs.size(), 'Missing coordinates must produce no gis_data records');
     }
 
+    @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveAsserts,PMD.AvoidHardcodingId')
     @IsTest
     static void queueable_unknownProjectId_doesNotThrow() {
         Test.setMock(HttpCalloutMock.class, new HitMock());
@@ -228,7 +229,7 @@ private class NepaGISProximityServiceTest {
         Test.startTest();
         System.enqueueJob(new NepaGISProximityService.GISProximityQueueable('001000000000001AAA'));
         Test.stopTest();
-        // No assertion needed — test passes if no unhandled exception.
+        // Passes if no unhandled exception — the queueable must degrade gracefully on bad IDs.
     }
 
     @IsTest

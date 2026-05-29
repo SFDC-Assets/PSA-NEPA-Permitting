@@ -179,8 +179,6 @@ public with sharing class NepaLayerDisciplineResolver {
                                 ? workTypeExtIdToId.get(cmt.Work_Type_Developer_Name__c)
                                 : null;
 
-                String visitSubject = tokenReplace(cmt.WO_Subject_Template__c, '', cmt.Discipline__c);
-
                 Visit v = new Visit(
                     VisitTypeId            = workTypeId,
                     VisitorId              = srId,

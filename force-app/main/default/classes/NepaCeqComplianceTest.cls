@@ -345,8 +345,6 @@ private class NepaCeqComplianceTest {
         // CEQ v1.2 spec: cooperating_agencies is an array in NepaCeqExportService.
         // NepaCeqFullExportService exports the raw semicolon-delimited text field.
         // Verify the value round-trips and is non-blank.
-        Map<String, Object> process = getFirstProcess('SAMPLE-FAA-EIS-001');
-        Object coop = process.get('joint_lead_agency');
         // joint_lead_agency is a single field; cooperating agencies are in the process description
         // Verify the process has cooperating agencies populated in the IA
         IndividualApplication ia = [
