@@ -396,6 +396,36 @@
                 <identifier>eng_prov_retrieved_ts</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.External_ID__c</fieldItem>
+                <identifier>eng_prov_external_id</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_consultation_certified__c</fieldItem>
+                <identifier>eng_prov_consultation_certified</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_other__c</fieldItem>
+                <identifier>eng_prov_other</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>eng-notes-c2</name>
         <type>Facet</type>
     </flexiPageRegions>

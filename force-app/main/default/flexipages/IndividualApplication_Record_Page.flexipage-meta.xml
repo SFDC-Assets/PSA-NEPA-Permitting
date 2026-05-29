@@ -787,6 +787,36 @@
                 <identifier>ia_sla_blocked_permit_count</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_days_elapsed__c</fieldItem>
+                <identifier>ia_sla_days_elapsed</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_flow_error_count__c</fieldItem>
+                <identifier>ia_sla_flow_error_count</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_stage_gate_processed__c</fieldItem>
+                <identifier>ia_sla_stage_gate_processed</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>ia-sla-c1</name>
         <type>Facet</type>
     </flexiPageRegions>
@@ -985,6 +1015,26 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_record_completeness__c</fieldItem>
                 <identifier>ia_details_record_completeness</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_record_completeness_updated__c</fieldItem>
+                <identifier>ia_details_record_completeness_updated</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_process_model_id__c</fieldItem>
+                <identifier>ia_details_process_model_id</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -1343,6 +1393,46 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_defensibility_updated__c</fieldItem>
                 <identifier>ia_risk_defensibility_updated</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_defensibility_bar__c</fieldItem>
+                <identifier>ia_risk_defensibility_bar</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_risk_score_bar__c</fieldItem>
+                <identifier>ia_risk_score_bar</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_risk_tier_visual__c</fieldItem>
+                <identifier>ia_risk_tier_visual</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_tribal_consultation_count__c</fieldItem>
+                <identifier>ia_risk_tribal_consultation_count</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -1793,6 +1883,16 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.nepa_retrieved_timestamp__c</fieldItem>
                 <identifier>ia_prov_retrieved_ts</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_other__c</fieldItem>
+                <identifier>ia_prov_other</identifier>
             </fieldInstance>
         </itemInstances>
         <name>ia-prov-c2</name>

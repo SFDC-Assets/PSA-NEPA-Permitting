@@ -408,6 +408,26 @@
                 <identifier>gis_other</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_data_access_restriction__c</fieldItem>
+                <identifier>gis_prov_data_access_restriction</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_sensitivity_classification__c</fieldItem>
+                <identifier>gis_prov_sensitivity_classification</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>gis-prov-c2</name>
         <type>Facet</type>
     </flexiPageRegions>

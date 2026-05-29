@@ -659,6 +659,36 @@
                 <identifier>Recordnepa_retrieved_timestamp_cField</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.External_ID__c</fieldItem>
+                <identifier>cmt_prov_external_id</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_other__c</fieldItem>
+                <identifier>cmt_prov_other</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_plaintiff_visual__c</fieldItem>
+                <identifier>cmt_prov_plaintiff_visual</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>cmt-prov-c2</name>
         <type>Facet</type>
     </flexiPageRegions>

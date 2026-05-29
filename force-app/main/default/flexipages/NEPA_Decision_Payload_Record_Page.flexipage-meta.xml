@@ -290,6 +290,36 @@
                 <identifier>dp_prov_source_system</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_other__c</fieldItem>
+                <identifier>dp_prov_other</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_record_owner_agency__c</fieldItem>
+                <identifier>dp_prov_record_owner_agency</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_retrieved_timestamp__c</fieldItem>
+                <identifier>dp_prov_retrieved_ts</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>dp-prov-c1</name>
         <type>Facet</type>
     </flexiPageRegions>

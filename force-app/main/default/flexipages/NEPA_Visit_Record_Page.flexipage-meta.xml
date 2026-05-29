@@ -249,6 +249,26 @@
                 <identifier>visit_trigger_layer</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.External_ID__c</fieldItem>
+                <identifier>visit_external_id</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_gate_status_visual__c</fieldItem>
+                <identifier>visit_gate_status_visual</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>visit-details-c2</name>
         <type>Facet</type>
     </flexiPageRegions>

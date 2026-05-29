@@ -299,6 +299,26 @@
                 <identifier>rp_inspection_lead_agency</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.External_ID__c</fieldItem>
+                <identifier>rp_inspection_external_id</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_permit_status_visual__c</fieldItem>
+                <identifier>rp_inspection_permit_status_visual</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>rp-inspection-c2</name>
         <type>Facet</type>
     </flexiPageRegions>

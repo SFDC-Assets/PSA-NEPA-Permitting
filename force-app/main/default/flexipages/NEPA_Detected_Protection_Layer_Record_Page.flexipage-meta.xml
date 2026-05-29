@@ -122,6 +122,16 @@
                 <identifier>dl_feature_name</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_upsert_key__c</fieldItem>
+                <identifier>dl_detection_upsert_key</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>dl-detection-c2</name>
         <type>Facet</type>
     </flexiPageRegions>

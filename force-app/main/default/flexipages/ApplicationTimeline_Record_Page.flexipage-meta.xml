@@ -376,6 +376,26 @@
                 <identifier>at_prov_retrieved_ts</identifier>
             </fieldInstance>
         </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.External_ID__c</fieldItem>
+                <identifier>at_prov_external_id</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.nepa_other__c</fieldItem>
+                <identifier>at_prov_other</identifier>
+            </fieldInstance>
+        </itemInstances>
         <name>at-prov-c2</name>
         <type>Facet</type>
     </flexiPageRegions>
