@@ -177,6 +177,35 @@ private class NepaPermitIssuedScheduleCreatorTest {
     }
 
     @IsTest
+    static void permitIssued_programHasNoLocation_createsNoVisitsAndNoError() {
+        String permitType = getMatchingPermitType();
+        if (permitType == null) { return; }
+
+        Program proj = NepaTestFactory.insertProgram(
+            'PISC-NOLOC-001', 'No Location Project', 'BLM'
+        );
+        // Intentionally no nepa_location__c — mirrors the real-world failure case
+
+        IndividualApplication ia = NepaTestFactory.makeProcess(proj.Id, 'EA', null, null);
+        insert ia;
+
+        nepa_required_permit__c permit = NepaTestFactory.makeRequiredPermit(
+            ia.Id, 'Not Started', true, Date.today().addDays(90)
+        );
+        permit.nepa_permit_type__c = permitType;
+        insert permit;
+
+        Test.startTest();
+        permit.nepa_permit_status__c = 'Issued';
+        update permit;
+        Test.stopTest();
+
+        List<Visit> visits = [SELECT Id FROM Visit WHERE nepa_process__c = :ia.Id];
+        System.assertEquals(0, visits.size(),
+            'No Visits must be created when Program has no location — PlaceId cannot be null on Visit');
+    }
+
+    @IsTest
     static void bulkPath_multiplePermits_createsVisits() {
         String permitType = getMatchingPermitType();
         if (permitType == null) { return; }

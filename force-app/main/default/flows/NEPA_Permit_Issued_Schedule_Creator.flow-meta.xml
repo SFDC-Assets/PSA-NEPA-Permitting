@@ -226,7 +226,7 @@
         <locationY>372</locationY>
         <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Loop_Schedules</targetReference>
+            <targetReference>Decision_LocationAvailable</targetReference>
         </connector>
         <faultConnector>
             <targetReference>Handle_Error</targetReference>
@@ -249,6 +249,29 @@
     </recordLookups>
 
     <!-- DECISIONS -->
+    <decisions>
+        <name>Decision_LocationAvailable</name>
+        <label>Location Available?</label>
+        <locationX>352</locationX>
+        <locationY>426</locationY>
+        <defaultConnectorLabel>No location — exit</defaultConnectorLabel>
+        <rules>
+            <name>Location_Available</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>var_LocationId</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Loop_Schedules</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+
     <decisions>
         <name>Decision_SchedulesFound</name>
         <label>Schedules Found?</label>
