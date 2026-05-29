@@ -227,4 +227,28 @@
     <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>
     <showSolutionSection>false</showSolutionSection>
     <showSubmitAndAttachButton>false</showSubmitAndAttachButton>
+    <relatedLists>
+        <relatedList>IndividualApplication.nepa_related_project__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>nepa_project_agency_relationship__c.nepa_Project__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>nepa_detected_protection_layer__c.nepa_program__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>nepa_gis_data__c.nepa_parent_project__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>nepa_decision_log__c.nepa_project__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>nepa_litigation__c.nepa_related_project__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>nepa_project_analogous_case__c.nepa_project__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>Program.nepa_parent_project__c</relatedList>
+    </relatedLists>
 </Layout>

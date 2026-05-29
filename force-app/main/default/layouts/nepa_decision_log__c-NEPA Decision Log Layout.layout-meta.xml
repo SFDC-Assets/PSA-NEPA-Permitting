@@ -166,4 +166,7 @@
     <showInteractionLogPanel>false</showInteractionLogPanel>
     <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>
     <showSubmitAndAttachButton>false</showSubmitAndAttachButton>
+    <relatedLists>
+        <relatedList>nepa_decision_log__c.nepa_parent_log__c</relatedList>
+    </relatedLists>
 </Layout>

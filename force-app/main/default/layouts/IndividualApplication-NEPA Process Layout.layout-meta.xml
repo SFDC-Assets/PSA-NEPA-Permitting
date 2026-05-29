@@ -210,13 +210,55 @@
         </layoutColumns>
         <style>TwoColumnsLeftToRight</style>
     </layoutSections>
-    <relatedLists>
-        <relatedList>PublicComplaint.nepa_related_process__c</relatedList>
-    </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>true</showHighlightsPanel>
     <showInteractionLogPanel>false</showInteractionLogPanel>
     <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>
     <showSolutionSection>false</showSolutionSection>
     <showSubmitAndAttachButton>false</showSubmitAndAttachButton>
+    <relatedLists>
+        <relatedList>ApplicationTimeline.nepa_related_process__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>PublicComplaint.nepa_related_process__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>nepa_required_permit__c.nepa_process__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>nepa_engagement__c.nepa_process__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>Visit.nepa_process__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>nepa_process_team_member__c.nepa_process__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>nepa_process_related_agencies__c.Processes__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>nepa_gis_data__c.nepa_parent_process__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>nepa_decision_log__c.nepa_process__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>nepa_decision_payload__c.nepa_process__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>nepa_decision_element__c.nepa_process__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>nepa_decision_modification__c.nepa_process__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>nepa_process_regulatory_code__c.nepa_process__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>nepa_ar_export__c.nepa_process__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>IndividualApplication.nepa_parent_process__c</relatedList>
+    </relatedLists>
 </Layout>

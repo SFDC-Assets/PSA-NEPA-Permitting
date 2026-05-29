@@ -155,4 +155,13 @@
     <showInteractionLogPanel>false</showInteractionLogPanel>
     <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>
     <showSubmitAndAttachButton>false</showSubmitAndAttachButton>
+    <relatedLists>
+        <relatedList>ContentVersion.nepa_related_case_event__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>ApplicationTimeline.nepa_parent_case_event__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>nepa_gis_data__c.nepa_parent_case_event__c</relatedList>
+    </relatedLists>
 </Layout>

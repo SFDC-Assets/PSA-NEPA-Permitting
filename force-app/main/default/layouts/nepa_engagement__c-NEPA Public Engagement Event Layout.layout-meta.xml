@@ -129,4 +129,10 @@
     <showInteractionLogPanel>false</showInteractionLogPanel>
     <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>
     <showSubmitAndAttachButton>false</showSubmitAndAttachButton>
+    <relatedLists>
+        <relatedList>ApplicationTimeline.nepa_related_engagement__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>nepa_gis_data__c.nepa_parent_engagement__c</relatedList>
+    </relatedLists>
 </Layout>

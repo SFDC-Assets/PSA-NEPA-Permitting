@@ -63,4 +63,13 @@
     <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>
     <showSolutionSection>false</showSolutionSection>
     <showSubmitAndAttachButton>false</showSubmitAndAttachButton>
+    <relatedLists>
+        <relatedList>PublicComplaint.nepa_duplicate_of__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>nepa_comment_attribution__c.nepa_comment__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <relatedList>nepa_gis_data__c.nepa_parent_comment__c</relatedList>
+    </relatedLists>
 </Layout>
