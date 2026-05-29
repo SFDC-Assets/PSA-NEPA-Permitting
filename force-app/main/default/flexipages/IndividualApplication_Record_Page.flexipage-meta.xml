@@ -1925,7 +1925,8 @@
         <type>Facet</type>
     </flexiPageRegions>
 
-    <!-- DETAIL TAB CONTENT -->
+    <!-- DETAIL TAB CONTENT: sub-tab structure -->
+    <!-- Sub-tab 1 body: Workflow -->
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
@@ -2028,6 +2029,108 @@
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
+                    <value>ia-details-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Process Details</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>ia_section_details</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>ia-permit-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Permit Coordination</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>ia_section_permit</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>ia-purpose-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Purpose and Need</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>ia_section_purpose</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>ia-workflow-tab-body</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- Sub-tab 2 body: Risk and Timeline -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentName>c:nepaRiskIntelligenceCard</componentName>
+                <identifier>ia_nepa_risk_intelligence_card</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>ia-risk-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Risk Intelligence</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>ia_section_risk</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
+                    <value>ia-tl-risk-cols</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>horizontalAlignment</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>label</name>
+                    <value>Timeline Risk</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:fieldSection</componentName>
+                <identifier>ia_section_tl_risk</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>columns</name>
                     <value>ia-sla-cols</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
@@ -2075,38 +2178,26 @@
         </itemInstances>
         <itemInstances>
             <componentInstance>
-                <componentInstanceProperties>
-                    <name>columns</name>
-                    <value>ia-details-cols</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>horizontalAlignment</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>label</name>
-                    <value>Process Details</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:fieldSection</componentName>
-                <identifier>ia_section_details</identifier>
+                <componentName>c:nepaPermitDependencies</componentName>
+                <identifier>ia_nepa_permit_dependencies</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>ia-risk-tab-body</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- Sub-tab 3 body: Exports and System -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentName>c:nepaFpiscExportButton</componentName>
+                <identifier>ia_nepa_fpisc_export_button</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
             <componentInstance>
-                <componentInstanceProperties>
-                    <name>columns</name>
-                    <value>ia-permit-cols</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>horizontalAlignment</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>label</name>
-                    <value>Permit Coordination</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:fieldSection</componentName>
-                <identifier>ia_section_permit</identifier>
+                <componentName>c:nepaCeqExportButton</componentName>
+                <identifier>ia_nepa_ceq_export_button</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>
@@ -2138,84 +2229,6 @@
             <componentInstance>
                 <componentInstanceProperties>
                     <name>columns</name>
-                    <value>ia-purpose-cols</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>horizontalAlignment</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>label</name>
-                    <value>Purpose and Need</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:fieldSection</componentName>
-                <identifier>ia_section_purpose</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentName>c:nepaRiskIntelligenceCard</componentName>
-                <identifier>ia_nepa_risk_intelligence_card</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentName>c:nepaPermitDependencies</componentName>
-                <identifier>ia_nepa_permit_dependencies</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentName>c:nepaFpiscExportButton</componentName>
-                <identifier>ia_nepa_fpisc_export_button</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentName>c:nepaCeqExportButton</componentName>
-                <identifier>ia_nepa_ceq_export_button</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>columns</name>
-                    <value>ia-risk-cols</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>horizontalAlignment</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>label</name>
-                    <value>Risk Intelligence</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:fieldSection</componentName>
-                <identifier>ia_section_risk</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>columns</name>
-                    <value>ia-tl-risk-cols</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>horizontalAlignment</name>
-                    <value>false</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>label</name>
-                    <value>Timeline Risk</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:fieldSection</componentName>
-                <identifier>ia_section_tl_risk</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>columns</name>
                     <value>ia-prov-cols</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
@@ -2228,6 +2241,82 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:fieldSection</componentName>
                 <identifier>ia_section_provenance</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>ia-system-tab-body</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- Sub-tab wrapper: three tabs referencing the three bodies -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>active</name>
+                    <value>true</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>ia-workflow-tab-body</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>title</name>
+                    <value>Workflow</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:tab</componentName>
+                <identifier>ia_sub_tab_workflow</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>active</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>ia-risk-tab-body</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>title</name>
+                    <value>Risk and Timeline</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:tab</componentName>
+                <identifier>ia_sub_tab_risk</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>active</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>ia-system-tab-body</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>title</name>
+                    <value>Exports and System</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:tab</componentName>
+                <identifier>ia_sub_tab_system</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>ia-detail-subtabs</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+
+    <!-- DETAIL TAB CONTENT: points to sub-tab set -->
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>tabs</name>
+                    <value>ia-detail-subtabs</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:tabset</componentName>
+                <identifier>ia_detail_tabset</identifier>
             </componentInstance>
         </itemInstances>
         <mode>Replace</mode>
