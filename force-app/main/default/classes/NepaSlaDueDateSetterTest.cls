@@ -41,11 +41,11 @@ private class NepaSlaDueDateSetterTest {
             WHERE Id = :ia.Id
         ];
 
-        if (result.nepa_sla_due_date__c != null) {
-            System.assertEquals(startDate.addDays(totalDays), result.nepa_sla_due_date__c,
-                'SLA due date must equal start date + ' + totalDays + ' days for review type ' + reviewType
-                + '; got: ' + result.nepa_sla_due_date__c);
-        }
+        System.assertNotEquals(null, result.nepa_sla_due_date__c,
+            'NEPA_SLA_Due_Date_Setter flow must populate nepa_sla_due_date__c when both review type and start date are set');
+        System.assertEquals(startDate.addDays(totalDays), result.nepa_sla_due_date__c,
+            'SLA due date must equal start date + ' + totalDays + ' days for review type ' + reviewType
+            + '; got: ' + result.nepa_sla_due_date__c);
     }
 
     // ── Test 2: changing review type + start date resets warning/overdue flags ─
@@ -79,12 +79,12 @@ private class NepaSlaDueDateSetterTest {
             WHERE Id = :ia.Id
         ];
 
-        if (result.nepa_sla_due_date__c != null) {
-            System.assertEquals(false, result.nepa_sla_warning_sent__c,
-                'nepa_sla_warning_sent__c must be reset to false when due date is (re)computed');
-            System.assertEquals(false, result.nepa_sla_overdue__c,
-                'nepa_sla_overdue__c must be reset to false when due date is (re)computed');
-        }
+        System.assertNotEquals(null, result.nepa_sla_due_date__c,
+            'NEPA_SLA_Due_Date_Setter flow must populate nepa_sla_due_date__c when both review type and start date are set');
+        System.assertEquals(false, result.nepa_sla_warning_sent__c,
+            'nepa_sla_warning_sent__c must be reset to false when due date is (re)computed');
+        System.assertEquals(false, result.nepa_sla_overdue__c,
+            'nepa_sla_overdue__c must be reset to false when due date is (re)computed');
     }
 
     // ── Test 3: review type set, no start date → due date stays null ──────────

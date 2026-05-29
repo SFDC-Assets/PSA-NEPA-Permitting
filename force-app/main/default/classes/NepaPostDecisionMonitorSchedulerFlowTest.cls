@@ -34,8 +34,6 @@ private class NepaPostDecisionMonitorSchedulerFlowTest {
         Test.stopTest();
 
         List<Task> tasks = [SELECT Id FROM Task WHERE WhatId = :ia.Id];
-        // Flow may not be deployed in this org — skip assertion rather than block CI
-        if (tasks.isEmpty()) { return; }
         System.assertEquals(expectedTaskCount, tasks.size(),
             'Task count should match active Post-Decision CMT records for EIS — expected ' +
             expectedTaskCount + ', got ' + tasks.size());
@@ -51,8 +49,8 @@ private class NepaPostDecisionMonitorSchedulerFlowTest {
         Test.stopTest();
 
         List<Task> tasks = [SELECT Subject FROM Task WHERE WhatId = :ia.Id];
-        // Flow may not be deployed in this org — skip assertion rather than block CI
-        if (tasks.isEmpty()) { return; }
+        System.assertNotEquals(0, tasks.size(),
+            'Post-decision monitoring flow must create tasks when nepa_ar_locked__c is set to true');
         for (Task t : tasks) {
             System.assert(t.Subject.startsWith('Post-Decision Monitoring:'),
                 'Task subject should start with "Post-Decision Monitoring:" — got: ' + t.Subject);
@@ -69,8 +67,8 @@ private class NepaPostDecisionMonitorSchedulerFlowTest {
         Test.stopTest();
 
         List<Task> tasks = [SELECT Priority FROM Task WHERE WhatId = :ia.Id];
-        // Flow may not be deployed in this org — skip assertion rather than block CI
-        if (tasks.isEmpty()) { return; }
+        System.assertNotEquals(0, tasks.size(),
+            'Post-decision monitoring flow must create tasks when nepa_ar_locked__c is set to true');
         for (Task t : tasks) {
             System.assertEquals('High', t.Priority, 'Post-decision monitoring tasks should be High priority');
         }

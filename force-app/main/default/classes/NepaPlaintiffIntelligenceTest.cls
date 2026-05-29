@@ -431,9 +431,10 @@ private class NepaPlaintiffIntelligenceTest {
             SELECT nepa_plaintiff_risk_flag__c
             FROM PublicComplaint WHERE Id = :pc.Id
         ];
-        // Document current behavior: exact org name required for match
-        System.assert(comment.nepa_plaintiff_risk_flag__c == true || comment.nepa_plaintiff_risk_flag__c == false,
-            'ICL abbreviation: flag should be true if keyword-token matching is active, false if org-name-only');
+        // Documents current behavior: "ICL" abbreviation does not CONTAINS "Idaho Conservation League".
+        // Flip to assertEquals(true) when keyword-token matching is implemented.
+        System.assertEquals(false, comment.nepa_plaintiff_risk_flag__c,
+            'ICL abbreviation must NOT match — current flow uses org-name CONTAINS, not keyword-token matching');
     }
 
     @IsTest
@@ -489,8 +490,8 @@ private class NepaPlaintiffIntelligenceTest {
         // Documents current (org-name-only CONTAINS) behavior: "Duck Valley Reservation" does
         // not CONTAINS "Shoshone-Paiute Tribes". Flip to assertEquals(true) when keyword-token
         // matching is implemented.
-        System.assert(comment.nepa_plaintiff_risk_flag__c == true || comment.nepa_plaintiff_risk_flag__c == false,
-            'Duck Valley keyword boundary: documents current CONTAINS-only matching behavior');
+        System.assertEquals(false, comment.nepa_plaintiff_risk_flag__c,
+            'Duck Valley Reservation keyword must NOT match — current flow uses org-name CONTAINS, not keyword-token matching');
     }
 
     // ── CMT shape: field-value integrity assertions ───────────────────────────
