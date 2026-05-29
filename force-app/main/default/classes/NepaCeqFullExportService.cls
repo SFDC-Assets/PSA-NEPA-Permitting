@@ -379,6 +379,52 @@ global with sharing class NepaCeqFullExportService {
         }
     }
 
+    // ── PIC v1.2 enum mappings ────────────────────────────────────────────────
+
+    private static final Map<String, String> PROCESS_STATUS_TO_PIC = new Map<String, String>{
+        'planned'          => 'planned',
+        'pre-application'  => 'planned',
+        'in progress'      => 'underway',
+        'paused'           => 'paused',
+        'completed'        => 'completed',
+        'cancelled'        => 'completed'
+    };
+
+    // PIC project.current_status enum: ["pre-application","underway","paused","completed"]
+    private static final Map<String, String> PROJECT_STATUS_TO_PIC = new Map<String, String>{
+        'planned'          => 'pre-application',
+        'pre-application'  => 'pre-application',
+        'in progress'      => 'underway',
+        'paused'           => 'paused',
+        'completed'        => 'completed',
+        'cancelled'        => 'completed'
+    };
+
+    private static final Map<String, String> REVIEW_TYPE_TO_PIC = new Map<String, String>{
+        'EIS'                 => 'EIS',
+        'EA'                  => 'EA',
+        'CE'                  => 'CE',
+        'Other Authorization' => 'Other'
+    };
+
+    private static String mapProcessStatus(String raw) {
+        if (String.isBlank(raw)) { return null; }
+        String mapped = PROCESS_STATUS_TO_PIC.get(raw.toLowerCase());
+        return mapped != null ? mapped : raw;
+    }
+
+    private static String mapProjectStatus(String raw) {
+        if (String.isBlank(raw)) { return null; }
+        String mapped = PROJECT_STATUS_TO_PIC.get(raw.toLowerCase());
+        return mapped != null ? mapped : raw;
+    }
+
+    private static String mapReviewType(String raw) {
+        if (String.isBlank(raw)) { return null; }
+        String mapped = REVIEW_TYPE_TO_PIC.get(raw);
+        return mapped != null ? mapped : raw;
+    }
+
     // ── DTO builders ──────────────────────────────────────────────────────────
 
     private static Map<String, Object> projectDto(Program p) {
@@ -390,7 +436,7 @@ global with sharing class NepaCeqFullExportService {
             'project_description' => p.nepa_project_description__c,
             'project_sector'      => p.nepa_project_sector__c,
             'project_type'        => p.nepa_project_type__c,
-            'status'              => p.nepa_current_status__c,
+            'status'              => mapProjectStatus(p.nepa_current_status__c),
             'lead_agency'         => p.nepa_lead_agency__c,
             'project_sponsor'     => p.nepa_project_sponsor__c,
             'funding_sources'     => p.nepa_funding__c,
@@ -419,8 +465,8 @@ global with sharing class NepaCeqFullExportService {
             'name'                       => ia.Name,
             'process_description'        => ia.nepa_description__c,
             'purpose_and_need'           => ia.nepa_purpose_need__c,
-            'nepa_review_type'           => ia.nepa_review_type__c,
-            'status'                     => ia.nepa_process_status__c,
+            'nepa_review_type'           => mapReviewType(ia.nepa_review_type__c),
+            'status'                     => mapProcessStatus(ia.nepa_process_status__c),
             'stage'                      => ia.nepa_process_stage__c,
             'outcome'                    => ia.nepa_process_outcome__c,
             'project_id'                 => ia.nepa_related_project__c,
@@ -525,9 +571,15 @@ global with sharing class NepaCeqFullExportService {
         List<Map<String, Object>> dtos = new List<Map<String, Object>>();
         if (events == null) { return dtos; }
         for (ApplicationTimeline evt : events) {
+            // PIC requires a top-level "datetime" string field on case_event
+            String datetimeStr = null;
+            if (evt.nepa_retrieved_timestamp__c != null) {
+                datetimeStr = evt.nepa_retrieved_timestamp__c.formatGmt('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'');
+            }
             dtos.add(new Map<String, Object>{
                 'id'                   => evt.Id,
                 'name'                 => evt.Name,
+                'datetime'             => datetimeStr,
                 'event_type'           => evt.nepa_event_type__c,
                 'event_description'    => evt.nepa_event_description__c,
                 'source'               => evt.nepa_source__c,

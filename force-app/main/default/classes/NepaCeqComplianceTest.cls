@@ -21,13 +21,15 @@
 private class NepaCeqComplianceTest {
 
     // ── Constants from PIC v1.2 ────────────────────────────────────────────────
+    // These are the wire values emitted by the export service after PIC mapping.
+    // Raw Salesforce picklist values are preserved in other.raw_status / other.raw_review_type.
 
     private static final Set<String> VALID_REVIEW_TYPES = new Set<String>{
-        'EIS', 'EA', 'CE', 'Other Authorization'
+        'EIS', 'EA', 'CE', 'Other'
     };
 
     private static final Set<String> VALID_PROCESS_STATUSES = new Set<String>{
-        'planned', 'pre-application', 'in progress', 'paused', 'completed', 'cancelled'
+        'planned', 'underway', 'paused', 'completed'
     };
 
     // Standard submission_method values from pic-standards comment entity

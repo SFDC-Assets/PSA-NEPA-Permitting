@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>nepa_data_access_restriction__c</fullName>
+    <description>Data access restriction notes for this GIS dataset independent of the public-facing NEPA record. Used to flag datasets that may not be released in FOIA responses or public comment packages.</description>
+    <inlineHelpText>Free-text notes on data access restrictions, FOIA exemptions, or tribal confidentiality protections applicable to this GIS layer.</inlineHelpText>
+    <label>Data Access Restriction</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

@@ -218,6 +218,39 @@ global with sharing class NepaCeqExportService {
         );
     }
 
+    // ── PIC v1.2 enum mappings ────────────────────────────────────────────────
+
+    // PIC process_instance.status enum: ["planned","underway","paused","completed"]
+    // Our picklist has richer values; map on export so consumers see conformant values.
+    private static final Map<String, String> PROCESS_STATUS_TO_PIC = new Map<String, String>{
+        'planned'          => 'planned',
+        'pre-application'  => 'planned',
+        'in progress'      => 'underway',
+        'paused'           => 'paused',
+        'completed'        => 'completed',
+        'cancelled'        => 'completed'
+    };
+
+    // PIC process_instance.type enum: ["EIS","EA","CE","Other"]
+    private static final Map<String, String> REVIEW_TYPE_TO_PIC = new Map<String, String>{
+        'EIS'                 => 'EIS',
+        'EA'                  => 'EA',
+        'CE'                  => 'CE',
+        'Other Authorization' => 'Other'
+    };
+
+    private static String mapProcessStatus(String raw) {
+        if (String.isBlank(raw)) { return null; }
+        String mapped = PROCESS_STATUS_TO_PIC.get(raw.toLowerCase());
+        return mapped != null ? mapped : raw;
+    }
+
+    private static String mapReviewType(String raw) {
+        if (String.isBlank(raw)) { return null; }
+        String mapped = REVIEW_TYPE_TO_PIC.get(raw);
+        return mapped != null ? mapped : raw;
+    }
+
     // ── DTO ───────────────────────────────────────────────────────────────────
 
     // CEQ Data Standard v1.2 process_instance shape.
@@ -252,8 +285,8 @@ global with sharing class NepaCeqExportService {
             'parent_project_id'       => r.nepa_related_project__r != null
                                             ? r.nepa_related_project__r.nepa_project_id__c : null,
             'agency_id'               => r.nepa_agency_id__c,
-            'type'                    => r.nepa_review_type__c,
-            'status'                  => r.nepa_process_status__c,
+            'type'                    => mapReviewType(r.nepa_review_type__c),
+            'status'                  => mapProcessStatus(r.nepa_process_status__c),
             'stage'                   => r.nepa_process_stage__c,
             'start_date'              => r.nepa_start_date__c,
             'complete_date'           => r.nepa_completion_date__c,
@@ -287,6 +320,8 @@ global with sharing class NepaCeqExportService {
             'other'                   => new Map<String, Object>{
                 'salesforce_id'           => r.Id,
                 'salesforce_name'         => r.Name,
+                'raw_status'              => r.nepa_process_status__c,
+                'raw_review_type'         => r.nepa_review_type__c,
                 'estimated_completion'    => r.nepa_target_completion_date__c,
                 'sla_due_date'            => r.nepa_sla_due_date__c,
                 'sla_overdue'             => r.nepa_sla_overdue__c,

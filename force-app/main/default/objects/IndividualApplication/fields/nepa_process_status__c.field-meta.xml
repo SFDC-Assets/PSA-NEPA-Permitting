@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>nepa_process_status__c</fullName>
         <description>Structured status of the NEPA review process per CEQ standard. Use Process Stage for narrative description.</description>
-        <inlineHelpText>Structured status: planned, pre-application, in progress, paused, completed, or cancelled.</inlineHelpText>
+        <inlineHelpText>Structured status: planned, pre-application, underway, in progress, paused, completed, or cancelled. "underway" is the PIC v1.2 standard value; "in progress" is retained for existing records.</inlineHelpText>
         <label>Process Status</label>
         <required>false</required>
         <trackHistory>false</trackHistory>
@@ -24,6 +24,11 @@
                     <fullName>in progress</fullName>
                     <default>false</default>
                     <label>in progress</label>
+                </value>
+                <value>
+                    <fullName>underway</fullName>
+                    <default>false</default>
+                    <label>underway</label>
                 </value>
                 <value>
                     <fullName>paused</fullName>
