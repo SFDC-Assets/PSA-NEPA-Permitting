@@ -268,7 +268,7 @@ private class NepaApiComplianceTest {
         pc.nepa_related_process__c  = ia.Id;
         pc.nepa_comment_body__c     = 'Concerned about wetland impacts.';
         pc.nepa_date_submitted__c   = Date.today();
-        pc.Method_of_Submission__c  = 'Online';
+        pc.Method_of_Submission__c  = 'Web Portal';
         pc.nepa_public_source__c    = true;
         pc.nepa_public_access__c    = 'Public';
         insert pc;
@@ -279,7 +279,7 @@ private class NepaApiComplianceTest {
             FROM PublicComplaint WHERE Id = :pc.Id
         ];
         System.assert(result.nepa_comment_body__c.contains('wetland'));
-        System.assertEquals('Online', result.Method_of_Submission__c);
+        System.assertEquals('Web Portal', result.Method_of_Submission__c);
         System.assertEquals(true,     result.nepa_public_source__c);
         System.assertEquals(ia.Id,    result.nepa_related_process__c);
     }

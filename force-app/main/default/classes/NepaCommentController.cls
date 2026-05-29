@@ -35,7 +35,7 @@ public with sharing class NepaCommentController {
         comment.nepa_date_submitted__c          = Date.today();
         comment.IncidentDate                    = Date.today();
         comment.nepa_public_source__c           = true;
-        comment.Method_of_Submission__c         = 'Online';
+        comment.Method_of_Submission__c         = 'Web Portal';
         comment.nepa_public_access__c           = 'Public';
 
         if (input.notifyMe == true && String.isNotBlank(input.email)) {

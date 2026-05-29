@@ -55,7 +55,7 @@ private class NepaCommentControllerTest {
         System.assertEquals('Sierra Club',                               created.nepa_organization__c);
         System.assertEquals('Wildlife',                                  created.nepa_category__c);
         System.assertEquals(true,                                        created.nepa_public_source__c);
-        System.assertEquals('Online',                                    created.Method_of_Submission__c);
+        System.assertEquals('Web Portal',                                created.Method_of_Submission__c);
         System.assertEquals('Public',                                    created.nepa_public_access__c);
         System.assertEquals('jane@example.com',                          created.nepa_email__c);
         System.assertEquals(Date.today(),                                created.nepa_date_submitted__c);
