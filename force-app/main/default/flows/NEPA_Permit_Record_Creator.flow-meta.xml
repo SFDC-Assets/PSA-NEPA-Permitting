@@ -346,7 +346,7 @@ IF(
         <label>RA Type Matched?</label>
         <locationX>176</locationX>
         <locationY>863</locationY>
-        <defaultConnectorLabel>No Match — Use Label Only</defaultConnectorLabel>
+        <defaultConnectorLabel>No Match — Skip Token</defaultConnectorLabel>
         <rules>
             <name>RAType_Found</name>
             <conditionLogic>and</conditionLogic>
@@ -361,7 +361,7 @@ IF(
             <label>RA Type Matched</label>
         </rules>
         <defaultConnector>
-            <targetReference>Build_PermitRecord_LabelOnly</targetReference>
+            <targetReference>Loop_PermitTokens</targetReference>
         </defaultConnector>
     </decisions>
 

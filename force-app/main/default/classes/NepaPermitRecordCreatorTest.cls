@@ -5,15 +5,18 @@ private class NepaPermitRecordCreatorTest {
     // Label strings that NEPA_Permit_Record_Creator looks up in RegulatoryAuthorizationType
     private static final String PERMIT_LABEL_APD  = 'BLM Application for Permit to Drill';
     private static final String PERMIT_LABEL_CWA  = 'CWA Section 404 Permit';
+    private static final String PERMIT_LABEL_CWA401 = 'CWA Section 401 Water Quality Certification';
     private static final String PERMIT_LABEL_NHPA = 'NHPA Section 106 Consultation';
     private static final String PERMIT_LABEL_CZMA = 'CZMA Federal Consistency Determination';
 
     @TestSetup
     static void setup() {
-        // Seed RegulatoryAuthorizationType records the flow looks up by Name when building permit records
+        // Seed RegulatoryAuthorizationType records the flow looks up by Name when building permit records.
+        // CWA 401 is required here because the GIS NHD bridge appends it as a token; without a matching
+        // RAT the flow skips the token (by design — see unknownPermitLabel_noRatMatch_createsNoPermit).
         List<RegulatoryAuthorizationType> rats = new List<RegulatoryAuthorizationType>();
         for (String lbl : new List<String>{
-            PERMIT_LABEL_APD, PERMIT_LABEL_CWA, PERMIT_LABEL_NHPA, PERMIT_LABEL_CZMA
+            PERMIT_LABEL_APD, PERMIT_LABEL_CWA, PERMIT_LABEL_CWA401, PERMIT_LABEL_NHPA, PERMIT_LABEL_CZMA
         }) {
             rats.add(new RegulatoryAuthorizationType(
                 Name = lbl,
