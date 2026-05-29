@@ -1843,6 +1843,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>nepa_engagement__c.nepa_consultation_certified__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>nepa_engagement__c.nepa_interpreter_languages__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -2074,6 +2079,16 @@
     <fieldPermissions>
         <editable>true</editable>
         <field>nepa_gis_data__c.nepa_retrieved_timestamp__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_sensitivity_classification__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>nepa_gis_data__c.nepa_data_access_restriction__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
