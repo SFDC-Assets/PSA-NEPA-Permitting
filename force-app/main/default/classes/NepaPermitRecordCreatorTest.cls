@@ -197,6 +197,51 @@ private class NepaPermitRecordCreatorTest {
             + gisCount + ' noGis=' + noGisCount);
     }
 
+    // ── Unrecognized permit label — no RAT match, no permit created ──────────
+    // Root cause of Carrie Placer Mine missing-permit defect (SESSION-EXECUTIVE-SUMMARY 2026-05-28):
+    // the demo load included permit labels ("BLM APD", "ESA §7 Consultation") that had no matching
+    // RegulatoryAuthorizationType record in the org. The flow skipped those tokens silently.
+    // This test locks that behavior: unrecognized labels must not crash the flow and must not
+    // produce phantom permit records.
+
+    @IsTest
+    static void unknownPermitLabel_noRatMatch_createsNoPermit() {
+        IndividualApplication ia = getIA();
+        ia.nepa_co_permits_required__c = 'Completely Unknown Permit XYZ';
+
+        Test.startTest();
+        update ia;
+        Test.stopTest();
+
+        List<nepa_required_permit__c> permits = [
+            SELECT Id FROM nepa_required_permit__c WHERE nepa_process__c = :ia.Id
+        ];
+        System.assertEquals(0, permits.size(),
+            'No permit must be created when the label has no matching RegulatoryAuthorizationType — '
+            + 'unrecognized tokens must be skipped, not crash the flow');
+    }
+
+    @IsTest
+    static void mixedLabels_someKnownSomeUnknown_onlyKnownCreated() {
+        IndividualApplication ia = getIA();
+        // One valid label (seeded in @TestSetup) + one with no RAT record
+        ia.nepa_co_permits_required__c = PERMIT_LABEL_APD + ';Unknown Permit Type XYZ';
+
+        Test.startTest();
+        update ia;
+        Test.stopTest();
+
+        List<nepa_required_permit__c> permits = [
+            SELECT Id, nepa_permit_type__c FROM nepa_required_permit__c
+            WHERE nepa_process__c = :ia.Id
+        ];
+        System.assertEquals(1, permits.size(),
+            'Exactly one permit must be created — the known label — when a semicolon-delimited '
+            + 'string mixes valid and unrecognized RAT labels');
+        System.assertEquals(PERMIT_LABEL_APD, permits[0].nepa_permit_type__c,
+            'The created permit must be for the known label, not the unrecognized one');
+    }
+
     // ── Bulk: 200 IAs — no governor limit exception ───────────────────────────
 
     @IsTest

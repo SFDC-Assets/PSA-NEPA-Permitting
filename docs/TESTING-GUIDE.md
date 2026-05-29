@@ -6,7 +6,7 @@ End-to-end test scenarios for the PSA-NEPA accelerator's live-integration and UI
 
 **Note:** Section 16 (GIS Proximity Check) requires backlog OmniStudio components; the live integration test in that section cannot be completed. All other sections in this guide are for delivered features.
 
-**Test suite size:** 64 test classes, 628+ test methods across all feature areas. Run `sf apex run test --test-level RunLocalTests` to execute the full automated suite (see [Section 20](#20-apex-test-suite)).
+**Test suite size:** 65 test classes, 666+ test methods across all feature areas. Run `sf apex run test --test-level RunLocalTests` to execute the full automated suite (see [Section 20](#20-apex-test-suite)).
 
 ---
 
@@ -19,6 +19,7 @@ End-to-end test scenarios for the PSA-NEPA accelerator's live-integration and UI
 12. [Public Comment Triage and EJ Detection](#12-public-comment-triage-and-ej-detection)
 16. [GIS Proximity Check — Backlog](#16-gis-proximity-check)
 17. [CEQ JSON Export API](#17-ceq-json-export-api)
+18. [CEQ v1.2 Compliance Test Suite](#18-ceq-v12-compliance-test-suite)
 20. [Apex Test Suite](#20-apex-test-suite)
 21. [BRE Configuration Integrity](#21-bre-configuration-integrity)
 23. [Test Results Summary Matrix](#23-test-results-summary-matrix)
@@ -112,6 +113,8 @@ These IDs are referenced throughout this guide.
 5. Save the `PublicComplaint`.
 6. Wait 10–15 seconds, refresh the parent `IndividualApplication` record.
 
+> **Timing note:** `NEPA_Plaintiff_Intelligence` runs `AsyncAfterCommit` with a `CreateAndUpdate` trigger. The Salesforce UI saves `PublicComplaint` in two steps — a bare insert followed by an update that sets relationship fields (`nepa_related_process__c`, `nepa_organization__c`). The flow fires on the *update* step, not the initial insert. If flags do not appear after 15 seconds, reload the comment record and confirm `nepa_organization__c` is populated; if blank, the UI did not complete both steps and the flow had nothing to match against.
+
 **Expected on the `IndividualApplication`:**
 - `nepa_plaintiff_risk_flag__c` = `true`
 - `nepa_tribal_plaintiff_flag__c` = `true`
@@ -145,7 +148,7 @@ sf data query \
 
 ### 11a. Gate Blocks Without Certified Consultation
 
-1. Open an EIS `IndividualApplication` that has `nepa_tribal_plaintiff_flag__c = true` (set in Test 5a).
+1. Open an EIS `IndividualApplication` that has `nepa_tribal_plaintiff_flag__c = true` (set in Test 5a — confirm the flag is actually `true` before proceeding; the gate cannot fire if the flag is false).
 2. Attempt to advance `nepa_process_stage__c` to `Final EIS Preparation` or `Record of Decision`.
 3. Click **Save**.
 
@@ -167,15 +170,18 @@ sf data query \
 
 **Tests:** EJ keyword detection, comment triage parsing, supportive comment pass-through, tribal sovereignty keyword matching, and non-tribal plaintiff flag isolation are fully covered by `NepaCommentEJDetectorTest` (16 tests), `NepaCommentTriageParserTest` (16 tests), and `NepaPlaintiffIntelligenceTest` (23 tests). The step below verifies the AI AUP guardrail — the separation between the AI staging field and the human-editable classification field — which requires live org and field history verification.
 
-### 12d. AI Classification vs. Human-Editable Field
+### 12d. AI Triage Status and Human Override
 
-Verify OMB M-24-10 guardrail:
+Verify OMB M-24-10 guardrail — the AI provides a recommendation; a coordinator can override it:
 
 1. After triage runs on any comment, check that:
-   - `nepa_ai_classification__c` (read-only staging field) is populated
-   - `nepa_comment_classification__c` (editable field) defaults to the AI suggestion but can be manually changed
-2. Change `nepa_comment_classification__c` to a different value.
+   - `nepa_ai_triage_status__c` is set (e.g. `EJ-Routed`, `Queued`, or `Classified`) — this is the AI-assigned routing status
+   - `nepa_ai_substantive_recommendation__c` is populated — the AI's substantive/non-substantive classification
+   - `nepa_ai_triage_rationale__c` is populated — the AI's reasoning
+2. A coordinator can manually change `nepa_ai_triage_status__c` to override the AI routing.
 3. Verify field history tracking records the override with your user identity and timestamp.
+
+> **Field name note:** The deployed schema uses `nepa_ai_triage_status__c`, `nepa_ai_substantive_recommendation__c`, and `nepa_ai_triage_rationale__c` on `PublicComplaint`. The fields `nepa_ai_classification__c` and `nepa_comment_classification__c` do not exist in this release.
 
 ---
 
