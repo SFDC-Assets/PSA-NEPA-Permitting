@@ -26,7 +26,7 @@ for CASE_DIR in "$BASE_DIR"/case_*/; do
     sf data upsert bulk -s Account \
       -f "$CASE_DIR/02_Account.csv" \
       -i External_ID__c \
-      -o "$TARGET_ORG" -w 10 --line-ending CRLF
+      -o "$TARGET_ORG" -w 10 --line-ending LF
   fi
 
   # 2. Program (project container)
@@ -35,7 +35,7 @@ for CASE_DIR in "$BASE_DIR"/case_*/; do
     sf data upsert bulk -s Program \
       -f "$CASE_DIR/08_Program.csv" \
       -i nepa_project_id__c \
-      -o "$TARGET_ORG" -w 10 --line-ending CRLF
+      -o "$TARGET_ORG" -w 10 --line-ending LF
   fi
 
   # 3. IndividualApplication (NEPA process)
@@ -44,7 +44,7 @@ for CASE_DIR in "$BASE_DIR"/case_*/; do
     sf data upsert bulk -s IndividualApplication \
       -f "$CASE_DIR/09_IndividualApplication.csv" \
       -i nepa_federal_unique_id__c \
-      -o "$TARGET_ORG" -w 10 --line-ending CRLF
+      -o "$TARGET_ORG" -w 10 --line-ending LF
   fi
 
   # 4. ContentVersion — VersionData (Blob) required; cannot load via Bulk API CSV.
@@ -56,7 +56,7 @@ for CASE_DIR in "$BASE_DIR"/case_*/; do
     sf data upsert bulk -s ApplicationTimeline \
       -f "$CASE_DIR/12_ApplicationTimeline.csv" \
       -i External_ID__c \
-      -o "$TARGET_ORG" -w 10 --line-ending CRLF
+      -o "$TARGET_ORG" -w 10 --line-ending LF
   fi
 
   # 6. Public engagement events
@@ -65,7 +65,7 @@ for CASE_DIR in "$BASE_DIR"/case_*/; do
     sf data upsert bulk -s nepa_engagement__c \
       -f "$CASE_DIR/11_nepa_engagement__c.csv" \
       -i External_ID__c \
-      -o "$TARGET_ORG" -w 10 --line-ending CRLF
+      -o "$TARGET_ORG" -w 10 --line-ending LF
   fi
 
   # 7. Public comments
@@ -74,7 +74,7 @@ for CASE_DIR in "$BASE_DIR"/case_*/; do
     sf data upsert bulk -s PublicComplaint \
       -f "$CASE_DIR/16_PublicComplaint.csv" \
       -i External_ID__c \
-      -o "$TARGET_ORG" -w 10 --line-ending CRLF
+      -o "$TARGET_ORG" -w 10 --line-ending LF
   fi
 
   echo "  $CASE_NAME: done"
