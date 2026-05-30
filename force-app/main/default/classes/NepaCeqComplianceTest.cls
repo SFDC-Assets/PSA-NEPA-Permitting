@@ -891,11 +891,11 @@ private class NepaCeqComplianceTest {
         pc.IncidentDate                = Date.today();
         pc.nepa_parent_document__c     = docId;
         pc.nepa_related_process__c     = processId;
-        pc.nepa_organization__c        = org;
+        pc.ReporterOrganization        = org;
         pc.nepa_comment_body__c        = body;
         pc.Method_of_Submission__c     = submissionMethod;
         pc.nepa_public_source__c       = true;
-        pc.nepa_date_submitted__c      = Date.today().addDays(-30);
+        pc.ReceivedDate                = Date.today().addDays(-30);
         pc.nepa_record_owner_agency__c = 'Federal Aviation Administration';
         pc.nepa_data_source_agency__c  = 'Federal Aviation Administration';
         pc.nepa_data_source_system__c  = 'FAA-NEPA-System';

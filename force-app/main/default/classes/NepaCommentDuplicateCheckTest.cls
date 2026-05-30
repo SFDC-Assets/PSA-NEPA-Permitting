@@ -28,7 +28,7 @@ private class NepaCommentDuplicateCheckTest {
         pc.IncidentDate            = Date.today();
         pc.nepa_related_process__c = processId;
         pc.nepa_comment_body__c    = body;
-        pc.nepa_date_submitted__c  = Date.today();
+        pc.ReceivedDate            = Date.today();
         return pc;
     }
 

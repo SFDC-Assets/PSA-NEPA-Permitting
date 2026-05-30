@@ -21,7 +21,7 @@ private class NepaCommentResponseTaskTest {
         pc.IncidentDate            = Date.today();
         pc.nepa_related_process__c = processId;
         pc.nepa_comment_body__c    = 'This agency must conduct additional analysis of cumulative impacts on the watershed before proceeding.';
-        pc.nepa_date_submitted__c  = Date.today();
+        pc.ReceivedDate            = Date.today();
         insert pc;
         return pc;
     }

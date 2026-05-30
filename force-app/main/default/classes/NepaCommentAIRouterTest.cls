@@ -31,7 +31,7 @@ private class NepaCommentAIRouterTest {
         pc.nepa_comment_body__c    =
             'The agency should analyze downstream water quality more carefully. '
             + 'Sediment discharge from this project will affect fish habitat.';
-        pc.nepa_date_submitted__c  = Date.today();
+        pc.ReceivedDate            = Date.today();
         return pc;
     }
 
@@ -44,7 +44,7 @@ private class NepaCommentAIRouterTest {
             + 'The proposed pipeline would cross sacred ground and ancestral burial sites '
             + 'within our tribal sovereignty boundaries. We demand full government-to-government '
             + 'consultation under EO 13175 before any further action is taken.';
-        pc.nepa_date_submitted__c  = Date.today();
+        pc.ReceivedDate            = Date.today();
         return pc;
     }
 

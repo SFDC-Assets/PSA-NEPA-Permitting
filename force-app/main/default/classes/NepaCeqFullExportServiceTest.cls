@@ -247,7 +247,7 @@ private class NepaCeqFullExportServiceTest {
         pc.LastName                  = 'Test Commenter';
         pc.IncidentDate              = Date.today();
         pc.nepa_parent_document__c   = cv.Id;
-        pc.nepa_organization__c      = 'Sierra Club';
+        pc.ReporterOrganization      = 'Sierra Club';
         pc.nepa_comment_body__c      = 'Test comment body';
         insert pc;
 

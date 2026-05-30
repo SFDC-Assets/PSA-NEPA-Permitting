@@ -71,18 +71,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_email__c</fieldItem>
-                <identifier>Recordnepa_email_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.nepa_organization__c</fieldItem>
-                <identifier>Recordnepa_organization_cField</identifier>
+                <fieldItem>Record.Email</fieldItem>
+                <identifier>RecordEmailField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>cmt-commenter-c1</name>
@@ -117,8 +107,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_date_submitted__c</fieldItem>
-                <identifier>Recordnepa_date_submitted_cField</identifier>
+                <fieldItem>Record.ReceivedDate</fieldItem>
+                <identifier>RecordReceivedDateField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>

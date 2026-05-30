@@ -113,7 +113,7 @@
             <name>OrgName_Populated</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>$Record.nepa_organization__c</leftValueReference>
+                <leftValueReference>$Record.ReporterOrganization</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue><booleanValue>false</booleanValue></rightValue>
             </conditions>
@@ -210,7 +210,7 @@ TEXT(ROUND({!var_MatchedSuccessRate} * 100, 0)) &amp; "% success rate"</expressi
         <description>True when the commenter org name contains the profile org name (case-insensitive).</description>
         <dataType>Boolean</dataType>
         <expression>CONTAINS(
-  UPPER({!$Record.nepa_organization__c}),
+  UPPER({!$Record.ReporterOrganization}),
   UPPER({!Loop_CheckProfiles.Organization_Name__c})
 )</expression>
     </formulas>
@@ -438,7 +438,7 @@ TEXT(ROUND({!var_MatchedSuccessRate} * 100, 0)) &amp; "% success rate"</expressi
         </connector>
         <filterLogic>1 AND 2 AND 3</filterLogic>
         <filters>
-            <field>nepa_organization__c</field>
+            <field>ReporterOrganization</field>
             <operator>IsNull</operator>
             <value><booleanValue>false</booleanValue></value>
         </filters>

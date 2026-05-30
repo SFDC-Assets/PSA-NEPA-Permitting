@@ -58,13 +58,13 @@ private class NepaApiComplianceTest {
         p.nepa_location_lon__c   = -110.0;
         p.nepa_location_text__c  = 'Carbon County, Wyoming';
         p.nepa_funding__c        = 'Federal';
-        p.nepa_start_date__c     = Date.today();
+        p.StartDate              = Date.today();
         update p;
 
         Program result = [
             SELECT nepa_project_title__c, nepa_project_sector__c, nepa_current_status__c,
                    nepa_location_lat__c, nepa_location_lon__c, nepa_location_text__c,
-                   nepa_funding__c, nepa_start_date__c
+                   nepa_funding__c, StartDate
             FROM Program WHERE Id = :p.Id
         ];
         System.assertEquals('Pipeline Corridor EIS', result.nepa_project_title__c);
@@ -112,11 +112,11 @@ private class NepaApiComplianceTest {
     static void project_parentProject_selfLookup_resolves() {
         Program parent = NepaTestFactory.insertProgram('PARENT-001', 'Parent Program', 'USFS');
         Program child  = NepaTestFactory.makeProgram('CHILD-001', 'Child Program', 'USFS');
-        child.nepa_parent_project__c = parent.Id;
+        child.ParentProgramId = parent.Id;
         insert child;
 
-        Program result = [SELECT nepa_parent_project__c FROM Program WHERE Id = :child.Id];
-        System.assertEquals(parent.Id, result.nepa_parent_project__c);
+        Program result = [SELECT ParentProgramId FROM Program WHERE Id = :child.Id];
+        System.assertEquals(parent.Id, result.ParentProgramId);
     }
 
     // ══════════════════════════════════════════════════════════════════════════
@@ -267,14 +267,14 @@ private class NepaApiComplianceTest {
         pc.IncidentDate             = Date.today();
         pc.nepa_related_process__c  = ia.Id;
         pc.nepa_comment_body__c     = 'Concerned about wetland impacts.';
-        pc.nepa_date_submitted__c   = Date.today();
+        pc.ReceivedDate             = Date.today();
         pc.Method_of_Submission__c  = 'Web Portal';
         pc.nepa_public_source__c    = true;
         pc.nepa_public_access__c    = 'Public';
         insert pc;
 
         PublicComplaint result = [
-            SELECT nepa_comment_body__c, nepa_date_submitted__c, Method_of_Submission__c,
+            SELECT nepa_comment_body__c, ReceivedDate, Method_of_Submission__c,
                    nepa_public_source__c, nepa_public_access__c, nepa_related_process__c
             FROM PublicComplaint WHERE Id = :pc.Id
         ];

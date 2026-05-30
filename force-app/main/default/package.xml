@@ -73,13 +73,13 @@
         <members>Program.nepa_current_status__c</members>
         <members>Program.nepa_lead_agency__c</members>
         <members>Program.nepa_location__c</members>
-        <members>Program.nepa_parent_project__c</members>
+
         <members>Program.nepa_project_description__c</members>
         <members>Program.nepa_project_id__c</members>
         <members>Program.nepa_project_sector__c</members>
         <members>Program.nepa_project_sponsor__c</members>
         <members>Program.nepa_project_title__c</members>
-        <members>Program.nepa_start_date__c</members>
+
         <members>Program.nepa_project_type__c</members>
         <members>Program.nepa_funding__c</members>
         <members>Program.nepa_location_lat__c</members>
@@ -122,9 +122,9 @@
         <members>PublicComplaint.Method_of_Submission__c</members>
         <members>PublicComplaint.nepa_agency_response__c</members>
         <members>PublicComplaint.nepa_public_access__c</members>
-        <members>PublicComplaint.nepa_organization__c</members>
+
         <members>PublicComplaint.nepa_category__c</members>
-        <members>PublicComplaint.nepa_date_submitted__c</members>
+
         <members>PublicComplaint.nepa_document_location_ref__c</members>
         <members>PublicComplaint.nepa_public_source__c</members>
         <members>PublicComplaint.nepa_data_record_version__c</members>
@@ -187,7 +187,6 @@
         <members>ApplicationTimeline.nepa_related_process__c</members>
         <!-- PublicComplaint portal submission fields -->
         <members>PublicComplaint.nepa_comment_body__c</members>
-        <members>PublicComplaint.nepa_email__c</members>
         <!-- Mandate 1: Comment period gating -->
         <members>PublicComplaint.nepa_related_process__c</members>
         <!-- Phase 3: CEQ Phase 2 compliance fields -->
@@ -578,6 +577,7 @@
         <members>nepa_engagement__c.nepa_interpreter_languages__c</members>
         <members>nepa_engagement__c.nepa_notification_channels__c</members>
         <members>nepa_engagement__c.nepa_transcript_available__c</members>
+        <members>nepa_engagement__c.nepa_consultation_certified__c</members>
         <name>CustomField</name>
     </types>
     <types>

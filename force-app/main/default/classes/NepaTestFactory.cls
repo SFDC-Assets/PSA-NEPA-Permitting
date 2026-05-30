@@ -575,7 +575,7 @@ public class NepaTestFactory {
      * Inserts a PublicComplaint with an explicit commenter organization name.
      * Use this when the org name drives CMT-based plaintiff lookup (bulk plaintiff tests).
      * @param processId   Parent IndividualApplication Id
-     * @param orgName     Value for nepa_organization__c
+     * @param orgName     Value for ReporterOrganization
      * @param commentBody Value for nepa_comment_body__c (null uses a default)
      * @return Saved PublicComplaint record
      */
@@ -583,7 +583,7 @@ public class NepaTestFactory {
         PublicComplaint pc = new PublicComplaint();
         pc.LastName                = 'Test Commenter';
         pc.IncidentDate            = Date.today();
-        pc.nepa_organization__c    = orgName;
+        pc.ReporterOrganization    = orgName;
         pc.nepa_related_process__c = processId;
         pc.nepa_comment_body__c    = commentBody != null ? commentBody : 'Test comment.';
         insert pc;

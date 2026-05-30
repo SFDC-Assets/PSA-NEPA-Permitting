@@ -5,7 +5,7 @@
     <pluralLabel>NEPA Plaintiff Profiles</pluralLabel>
     <fields>
         <fullName>Organization_Name__c</fullName>
-        <description>Exact organization name matched against PublicComplaint.nepa_organization__c. Case-insensitive CONTAINS match is performed in the Flow.</description>
+        <description>Exact organization name matched against PublicComplaint.ReporterOrganization. Case-insensitive CONTAINS match is performed in the Flow.</description>
         <fieldManageability>DeveloperControlled</fieldManageability>
         <label>Organization Name</label>
         <length>255</length>

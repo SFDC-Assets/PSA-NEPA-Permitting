@@ -21,7 +21,7 @@ private class NepaPlaintiffIntelligenceTest {
         PublicComplaint pc = new PublicComplaint();
         pc.LastName                       = 'Test Commenter';
         pc.IncidentDate                   = Date.today();
-        pc.nepa_organization__c           = orgName;
+        pc.ReporterOrganization           = orgName;
         pc.nepa_related_process__c  = parentAppId;
         pc.nepa_related_process__c        = parentAppId;
         return pc;
@@ -110,7 +110,7 @@ private class NepaPlaintiffIntelligenceTest {
         PublicComplaint pc = new PublicComplaint();
         pc.LastName                       = 'Anonymous Commenter';
         pc.IncidentDate                   = Date.today();
-        pc.nepa_organization__c           = null;
+        pc.ReporterOrganization           = null;
         pc.nepa_related_process__c  = ia.Id;
         pc.nepa_related_process__c        = ia.Id;
 
@@ -133,7 +133,7 @@ private class NepaPlaintiffIntelligenceTest {
         PublicComplaint pc = new PublicComplaint();
         pc.LastName                       = 'Orphaned Commenter';
         pc.IncidentDate                   = Date.today();
-        pc.nepa_organization__c           = 'Center for Biological Diversity';
+        pc.ReporterOrganization           = 'Center for Biological Diversity';
         pc.nepa_related_process__c  = null;
 
         Test.startTest();

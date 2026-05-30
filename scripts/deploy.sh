@@ -221,12 +221,21 @@
 #     use storeOutputAutomatically if preferred, but explicit outputParameters work
 #     for all types and should be preferred for clarity and cross-type safety.
 #
-# 22. Rollup Summary fields (e.g., nepa_tribal_consultation_count__c on IndividualApplication)
-#     must deploy in Phase 2 (objects/fields) before any flow that reads them deploys in Phase 8.
-#     The NEPA_Stage_Gate VR-005 gate reads nepa_tribal_consultation_count__c at runtime; if
-#     the field is missing the flow silently skips the condition (null ≤ 0 evaluates true) and
-#     the gate never fires. Phase 2 deploys the full objects/ directory which includes this field.
-#     No change to phase order is needed — Phase 2 already runs before Phase 8.
+# 22. PSS managed-object field restrictions — two fields related to the VR-005 tribal gate:
+#
+#     a) nepa_tribal_consultation_count__c (rollup on IndividualApplication): This field was
+#        intentionally NOT implemented as a RollupSummary field — IndividualApplication is a
+#        PSS managed object and rollup fields cannot be added to it via metadata deploy. The
+#        NEPA_Stage_Gate flow (VR-005) works around this with a Get Records query on
+#        nepa_engagement__c instead of reading the rollup. No field file exists in the repo;
+#        the flow comment referencing it is historical only.
+#
+#     b) nepa_consultation_certified__c (checkbox on nepa_engagement__c): This field IS in
+#        the repo (objects/nepa_engagement__c/fields/) and deploys cleanly to full orgs.
+#        On PSS trial orgs, the SOAP deploy may return "Unchanged" while the field is absent
+#        from the org's REST describe — a PSS managed-package restriction on nepa_engagement__c.
+#        Workaround for trial orgs: manually verify the field exists via Setup before running
+#        Step 4b of the test script. The gate logic in NEPA_Stage_Gate is correct and verified.
 #
 # 19. Text field length for formula-populated fields:
 #     Flow formula values written to Text fields fail silently when the output string

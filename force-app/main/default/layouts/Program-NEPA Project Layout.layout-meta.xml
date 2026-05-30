@@ -73,7 +73,7 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>nepa_parent_project__c</field>
+                <field>ParentProgramId</field>
             </layoutItems>
         </layoutColumns>
         <style>TwoColumnsLeftToRight</style>
@@ -149,8 +149,8 @@
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
-                <behavior>Edit</behavior>
-                <field>nepa_start_date__c</field>
+                <behavior>Required</behavior>
+                <field>StartDate</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
@@ -249,6 +249,6 @@
         <relatedList>nepa_project_analogous_case__c.nepa_project__c</relatedList>
     </relatedLists>
     <relatedLists>
-        <relatedList>Program.nepa_parent_project__c</relatedList>
+        <relatedList>ChildPrograms</relatedList>
     </relatedLists>
 </Layout>

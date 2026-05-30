@@ -30,7 +30,7 @@ private class NepaRfpRequirementsTest {
         pc.IncidentDate            = Date.today();
         pc.nepa_related_process__c = proc.Id;
         pc.nepa_comment_body__c    = 'Test.';
-        pc.nepa_date_submitted__c  = Date.today();
+        pc.ReceivedDate            = Date.today();
         pc.nepa_is_substantive__c  = false;
         insert pc;
         System.assertNotEquals(null, pc.Id);
@@ -66,7 +66,7 @@ private class NepaRfpRequirementsTest {
         pc.IncidentDate                   = Date.today();
         pc.nepa_related_process__c        = proc.Id;
         pc.nepa_comment_body__c           = 'The project will harm wetlands adjacent to the creek.';
-        pc.nepa_date_submitted__c         = Date.today();
+        pc.ReceivedDate                   = Date.today();
         pc.nepa_is_substantive__c         = false;
         pc.nepa_ai_confidence_score__c    = 0.87;
         pc.nepa_ai_triage_rationale__c    = 'Comment raises substantive wetland impact issue.';

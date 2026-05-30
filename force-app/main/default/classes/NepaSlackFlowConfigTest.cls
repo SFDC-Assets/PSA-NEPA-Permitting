@@ -140,7 +140,7 @@ private class NepaSlackFlowConfigTest {
         pc.IncidentDate            = Date.today();
         pc.nepa_related_process__c = ia.Id;
         pc.nepa_comment_body__c    = 'This project threatens tribal sovereignty and treaty rights.';
-        pc.nepa_date_submitted__c  = Date.today();
+        pc.ReceivedDate            = Date.today();
         insert pc;
 
         Map<String, Object> inputs = new Map<String, Object>{

@@ -28,7 +28,7 @@ public with sharing class NepaCEIntakeController {
             }
             prog.nepa_location_text__c = (String) programData.get('locationText');
             if (programData.get('startDate') != null) {
-                prog.nepa_start_date__c = Date.valueOf((String) programData.get('startDate'));
+                prog.StartDate = Date.valueOf((String) programData.get('startDate'));
             }
             Database.insert(prog, AccessLevel.USER_MODE);
 

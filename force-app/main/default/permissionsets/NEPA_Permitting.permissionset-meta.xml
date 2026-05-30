@@ -1071,11 +1071,7 @@
         <field>Program.nepa_location_text__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Program.nepa_parent_project__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
+
     <fieldPermissions>
         <editable>true</editable>
         <field>Program.nepa_polygon__c</field>
@@ -1136,11 +1132,7 @@
         <field>Program.nepa_sponsor_type__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>Program.nepa_start_date__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
+
     <fieldPermissions>
         <editable>true</editable>
         <field>PublicComplaint.External_ID__c</field>
@@ -1226,21 +1218,13 @@
         <field>PublicComplaint.nepa_data_source_system__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>PublicComplaint.nepa_date_submitted__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
+
     <fieldPermissions>
         <editable>true</editable>
         <field>PublicComplaint.nepa_document_location_ref__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>PublicComplaint.nepa_email__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
+
     <fieldPermissions>
         <editable>true</editable>
         <field>PublicComplaint.nepa_human_override__c</field>
@@ -1276,11 +1260,7 @@
         <field>PublicComplaint.nepa_litigation_threat_flag__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
-        <field>PublicComplaint.nepa_organization__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
+
     <fieldPermissions>
         <editable>true</editable>
         <field>PublicComplaint.nepa_parent_document__c</field>

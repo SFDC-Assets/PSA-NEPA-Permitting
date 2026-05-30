@@ -24,7 +24,7 @@ private class NepaAIGovernanceFlowTest {
         pc.IncidentDate            = Date.today();
         pc.nepa_related_process__c = processId;
         pc.nepa_comment_body__c    = 'Test comment body for governance testing.';
-        pc.nepa_date_submitted__c  = Date.today();
+        pc.ReceivedDate            = Date.today();
         pc.nepa_is_substantive__c  = false;
         insert pc;
         return pc;

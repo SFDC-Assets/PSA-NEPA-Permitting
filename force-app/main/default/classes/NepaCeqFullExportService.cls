@@ -49,9 +49,9 @@ global with sharing class NepaCeqFullExportService {
                 'SELECT Id, nepa_project_id__c, nepa_project_title__c, Name,'
                 + ' nepa_project_description__c, nepa_project_sector__c, nepa_project_type__c,'
                 + ' nepa_current_status__c, nepa_lead_agency__c, nepa_lead_agency__r.Name, nepa_project_sponsor__c,'
-                + ' nepa_funding__c, nepa_start_date__c, nepa_location__c,'
+                + ' nepa_funding__c, StartDate, nepa_location__c,'
                 + ' nepa_location_lat__c, nepa_location_lon__c, nepa_location_text__c,'
-                + ' nepa_polygon__c, nepa_parent_project__c,'
+                + ' nepa_polygon__c, ParentProgramId,'
                 + ' nepa_data_record_version__c, nepa_data_source_agency__c,'
                 + ' nepa_data_source_system__c, nepa_record_owner_agency__c,'
                 + ' nepa_retrieved_timestamp__c, LastModifiedDate'
@@ -140,8 +140,8 @@ global with sharing class NepaCeqFullExportService {
             Map<Id, List<PublicComplaint>> commentsByDoc = new Map<Id, List<PublicComplaint>>();
             if (!docIds.isEmpty()) {
                 List<PublicComplaint> comments = Database.query(
-                    'SELECT Id, Name, nepa_parent_document__c, nepa_organization__c,'
-                    + ' nepa_category__c, nepa_date_submitted__c, Method_of_Submission__c,'
+                    'SELECT Id, Name, nepa_parent_document__c, ReporterOrganization,'
+                    + ' nepa_category__c, ReceivedDate, Method_of_Submission__c,'
                     + ' nepa_document_location_ref__c, nepa_public_source__c,'
                     + ' nepa_agency_response__c, nepa_public_access__c,'
                     + ' nepa_data_record_version__c, nepa_data_source_agency__c,'
@@ -149,7 +149,7 @@ global with sharing class NepaCeqFullExportService {
                     + ' nepa_retrieved_timestamp__c, LastModifiedDate'
                     + ' FROM PublicComplaint'
                     + ' WHERE nepa_parent_document__c IN :docIds'
-                    + ' ORDER BY nepa_parent_document__c, nepa_date_submitted__c ASC NULLS LAST',
+                    + ' ORDER BY nepa_parent_document__c, ReceivedDate ASC NULLS LAST',
                     AccessLevel.USER_MODE
                 );
                 for (PublicComplaint pc : comments) {
@@ -474,13 +474,13 @@ global with sharing class NepaCeqFullExportService {
             'lead_agency'         => p.nepa_lead_agency__r != null ? p.nepa_lead_agency__r.Name : null,
             'project_sponsor'     => p.nepa_project_sponsor__c,
             'funding_sources'     => p.nepa_funding__c,
-            'start_date'          => p.nepa_start_date__c,
+            'start_date'          => p.StartDate,
             'location'            => p.nepa_location__c,
             'location_latitude'   => p.nepa_location_lat__c,
             'location_longitude'  => p.nepa_location_lon__c,
             'location_text'       => p.nepa_location_text__c,
             'polygon_id'          => p.nepa_polygon__c,
-            'parent_project_id'   => p.nepa_parent_project__c,
+            'parent_project_id'   => p.ParentProgramId,
             'data_record_version' => p.nepa_data_record_version__c,
             'data_source_agency'  => p.nepa_data_source_agency__c,
             'data_source_system'  => p.nepa_data_source_system__c,
@@ -556,9 +556,9 @@ global with sharing class NepaCeqFullExportService {
             'id'                         => pc.Id,
             'name'                       => pc.Name,
             'parent_document_id'         => pc.nepa_parent_document__c,
-            'organization'               => pc.nepa_organization__c,
+            'organization'               => pc.ReporterOrganization,
             'comment_category'           => pc.nepa_category__c,
-            'date_submitted'             => pc.nepa_date_submitted__c,
+            'date_submitted'             => pc.ReceivedDate,
             'method_of_submission'       => pc.Method_of_Submission__c,
             'document_location_reference'=> pc.nepa_document_location_ref__c,
             'public_source'              => pc.nepa_public_source__c,

@@ -4,7 +4,7 @@ public with sharing class NepaProjectController {
     // ── Query constants — declared before inner classes per PMD ───────────────
 
     private static final Set<String> VALID_SORT_FIELDS = new Set<String>{
-        'nepa_project_title__c', 'nepa_lead_agency__c', 'nepa_start_date__c'
+        'nepa_project_title__c', 'nepa_lead_agency__c', 'StartDate'
     };
 
     private static final Integer DEFAULT_PAGE_SIZE = 20;
@@ -102,7 +102,7 @@ public with sharing class NepaProjectController {
 
         // sfge-disable-next-line ApexFlsViolation -- USER_MODE enforces FLS at runtime; sfge cannot resolve dynamic query field names
         List<Program> programs = Database.query(
-            'SELECT Id, nepa_project_id__c, nepa_project_title__c, nepa_lead_agency__c, nepa_lead_agency__r.Name, nepa_start_date__c, ' +
+            'SELECT Id, nepa_project_id__c, nepa_project_title__c, nepa_lead_agency__c, nepa_lead_agency__r.Name, StartDate, ' +
             '(SELECT Id, nepa_federal_unique_id__c, nepa_review_type__c, nepa_process_stage__c, ' +
             'nepa_public_comment_period_end_date__c, nepa_public_comment_period_start__c, nepa_process_status__c ' +
             'FROM Individual_Applications__r ORDER BY LastModifiedDate DESC LIMIT 1) ' +
@@ -147,7 +147,7 @@ public with sharing class NepaProjectController {
                    nepa_location_text__c,
                    nepa_project_sector__c,
                    nepa_project_type__c,
-                   nepa_start_date__c,
+                   StartDate,
                    (SELECT Id,
                            nepa_federal_unique_id__c,
                            nepa_review_type__c,
@@ -178,7 +178,7 @@ public with sharing class NepaProjectController {
         d.locationText    = p.nepa_location_text__c;
         d.projectSector   = p.nepa_project_sector__c;
         d.projectType     = p.nepa_project_type__c;
-        d.startDate       = p.nepa_start_date__c != null ? String.valueOf(p.nepa_start_date__c) : null;
+        d.startDate       = p.StartDate != null ? String.valueOf(p.StartDate) : null;
 
         if (!p.Individual_Applications__r.isEmpty()) {
             IndividualApplication ia = p.Individual_Applications__r[0];

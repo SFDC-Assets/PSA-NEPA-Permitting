@@ -29,17 +29,17 @@ public with sharing class NepaCommentController {
         comment.nepa_related_process__c         = input.processId;
         // PSS PublicComplaint uses LastName as the commenter identity field (Name is auto-composed)
         comment.LastName                        = sanitize(input.commenterName);
-        comment.nepa_organization__c            = sanitize(input.organization);
+        comment.ReporterOrganization            = sanitize(input.organization);
         comment.nepa_category__c                = sanitize(input.category);
         comment.nepa_comment_body__c            = sanitize(input.commentBody);
-        comment.nepa_date_submitted__c          = Date.today();
+        comment.ReceivedDate                    = Date.today();
         comment.IncidentDate                    = Date.today();
         comment.nepa_public_source__c           = true;
         comment.Method_of_Submission__c         = 'Web Portal';
         comment.nepa_public_access__c           = 'Public';
 
         if (input.notifyMe == true && String.isNotBlank(input.email)) {
-            comment.nepa_email__c = sanitize(input.email);
+            comment.Email = sanitize(input.email);
         }
 
         if (String.isNotBlank(input.contentVersionId)) {

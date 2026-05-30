@@ -43,22 +43,22 @@ private class NepaCommentControllerTest {
         System.assertNotEquals(null, commentId, 'Should return the new comment Id');
 
         PublicComplaint created = [
-            SELECT Id, Name, LastName, nepa_comment_body__c, nepa_organization__c,
+            SELECT Id, Name, LastName, nepa_comment_body__c, ReporterOrganization,
                    nepa_category__c, nepa_public_source__c, Method_of_Submission__c,
-                   nepa_public_access__c, nepa_email__c, nepa_date_submitted__c
+                   nepa_public_access__c, Email, ReceivedDate
             FROM PublicComplaint
             WHERE Id = :commentId
         ];
 
         System.assertEquals('Jane Public',                               created.LastName);
         System.assertEquals('This project will harm migratory birds.',   created.nepa_comment_body__c);
-        System.assertEquals('Sierra Club',                               created.nepa_organization__c);
+        System.assertEquals('Sierra Club',                               created.ReporterOrganization);
         System.assertEquals('Wildlife',                                  created.nepa_category__c);
         System.assertEquals(true,                                        created.nepa_public_source__c);
         System.assertEquals('Web Portal',                                created.Method_of_Submission__c);
         System.assertEquals('Public',                                    created.nepa_public_access__c);
-        System.assertEquals('jane@example.com',                          created.nepa_email__c);
-        System.assertEquals(Date.today(),                                created.nepa_date_submitted__c);
+        System.assertEquals('jane@example.com',                          created.Email);
+        System.assertEquals(Date.today(),                                created.ReceivedDate);
     }
 
     @IsTest
@@ -76,8 +76,8 @@ private class NepaCommentControllerTest {
         String commentId = NepaCommentController.submitComment(input);
         Test.stopTest();
 
-        PublicComplaint created = [SELECT nepa_email__c FROM PublicComplaint WHERE Id = :commentId];
-        System.assertEquals(null, created.nepa_email__c, 'Email should not be stored when notifyMe is false');
+        PublicComplaint created = [SELECT Email FROM PublicComplaint WHERE Id = :commentId];
+        System.assertEquals(null, created.Email, 'Email should not be stored when notifyMe is false');
     }
 
     @IsTest
