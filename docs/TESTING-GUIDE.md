@@ -145,7 +145,7 @@ sf data query \
 
 **Tests:** Stage gate blocks EA/EIS publication until tribal consultation is certified. `NepaStageGateTest` covers VR-001 (tiering), VR-004 (ESA consultation), and VR-005 (tribal consultation) — see `stageGate_vr005_tribalFlagNoConsultation_blocksFinalEIS` and `stageGate_vr005_certifiedConsultation_allowsFinalEIS`. Live org verification below confirms the same behavior end-to-end.
 
-**Mechanism:** VR-005 is the third gate in `NEPA_Stage_Gate` (before-save). It fires when `nepa_tribal_plaintiff_flag__c = true`, the target stage is `Final EIS Preparation` or `Record of Decision`, and `nepa_tribal_consultation_count__c = 0`. The count field is a rollup summary on `IndividualApplication` counting certified `nepa_engagement__c` child records (`nepa_engagement_type__c = 'Tribal Consultation'` and `nepa_consultation_certified__c = true`). Citation: EO 13175; NHPA Section 106.
+**Mechanism:** VR-005 is the third gate in `NEPA_Stage_Gate` (before-save). It fires when `nepa_tribal_plaintiff_flag__c = true`, the target stage is `Final EIS Preparation` or `Record of Decision`, and no certified Tribal Consultation engagement exists. The flow executes a `Get Records` lookup (`Get_CertifiedTribalConsultation`) against `nepa_engagement__c` filtered by `nepa_process__c = $Record.Id`, `nepa_engagement_type__c = 'Tribal Consultation'`, and `nepa_consultation_certified__c = true` — if the result is null, the gate fires. (The rollup summary field `nepa_tribal_consultation_count__c` was removed because custom rollup summary fields cannot be deployed on PSS-managed objects such as `IndividualApplication`.) Citation: EO 13175; NHPA Section 106.
 
 ### 11a. Gate Blocks Without Certified Consultation
 

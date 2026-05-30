@@ -335,9 +335,9 @@
                 <rightValue><booleanValue>true</booleanValue></rightValue>
             </conditions>
             <conditions>
-                <leftValueReference>$Record.nepa_tribal_consultation_count__c</leftValueReference>
-                <operator>LessThanOrEqualTo</operator>
-                <rightValue><numberValue>0</numberValue></rightValue>
+                <leftValueReference>rec_CertifiedTribalConsultation</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue><booleanValue>true</booleanValue></rightValue>
             </conditions>
             <connector>
                 <targetReference>Error_VR005</targetReference>
@@ -354,7 +354,7 @@
         <locationY>0</locationY>
         <defaultConnectorLabel>ESA Cleared or Not Applicable</defaultConnectorLabel>
         <defaultConnector>
-            <targetReference>Decision_VR005_TribalGate</targetReference>
+            <targetReference>Get_CertifiedTribalConsultation</targetReference>
         </defaultConnector>
         <rules>
             <name>VR004_ESAOpenOnDecision</name>
@@ -380,6 +380,44 @@
             <label>Decision Issued + EA/EIS + ESA Not Cleared</label>
         </rules>
     </decisions>
+
+    <recordLookups>
+        <name>Get_CertifiedTribalConsultation</name>
+        <label>Get Certified Tribal Consultation</label>
+        <description>VR-005: Replaces the rollup field nepa_tribal_consultation_count__c (cannot deploy on managed IndividualApplication). Retrieves one certified Tribal Consultation engagement on this process. If null, the tribal gate fires.</description>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Decision_VR005_TribalGate</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>nepa_process__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_engagement_type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Tribal Consultation</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>nepa_consultation_certified__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>nepa_engagement__c</object>
+        <outputReference>rec_CertifiedTribalConsultation</outputReference>
+        <queriedFields>Id</queriedFields>
+    </recordLookups>
 
     <formulas>
         <name>formula_TribalGateStage</name>
@@ -456,6 +494,16 @@
             <value><booleanValue>true</booleanValue></value>
         </filters>
     </start>
+
+    <variables>
+        <name>rec_CertifiedTribalConsultation</name>
+        <description>Output variable for Get_CertifiedTribalConsultation. Null means no certified Tribal Consultation engagement exists for this process; VR-005 fires when null.</description>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>nepa_engagement__c</objectType>
+    </variables>
 
     <variables>
         <name>var_TargetDays</name>

@@ -1469,16 +1469,6 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.nepa_tribal_consultation_count__c</fieldItem>
-                <identifier>ia_risk_tribal_consultation_count</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
                 <fieldItem>Record.nepa_litigation_duration_cost__c</fieldItem>
                 <identifier>ia_risk_litigation_duration_cost</identifier>
             </fieldInstance>
